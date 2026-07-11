@@ -14,5 +14,5 @@ Not included:
 - Generated Web/macOS exports and historical release ZIPs.
 - `.godot` import/editor cache.
 - `user://` settings or saves.
-- Git object history; the archive records its source revision in its filename and generated `SOURCE_REVISION.txt`.
+- Git object history; the archive records its source revision in its filename.
 - Auditor output, which should be written into the live repository handoff output folder or returned separately.
