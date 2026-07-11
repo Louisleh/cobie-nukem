@@ -2,7 +2,7 @@ class_name BuildInfo
 extends RefCounted
 
 const VERSION := "0.4.0-mobile-rc1"
-const REVISION := "eb562e0"
+const REVISION := "c8ab8b3"
 const BUILD_ID := "2026-07-11-public-ipad-rc"
 
 static func label() -> String:
