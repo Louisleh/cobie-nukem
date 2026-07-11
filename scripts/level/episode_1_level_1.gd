@@ -33,6 +33,7 @@ const ROUTE_PROGRESS := [
 ]
 
 @export var metadata: LevelMetadata = preload("res://resources/level/episode_1_level_1.tres")
+@export var content_manifest: ContentManifest = preload("res://resources/content/salmon_creek_manifest.tres")
 @export var spawn_player := true
 @export var start_run_automatically := true
 
@@ -57,6 +58,8 @@ var _victory_screen: VictoryScreen
 var _combat_audio: CombatAudioBridge
 var _opening_enemies: Array[Node] = []
 var _opening_encounter_active := false
+var _objective_tracker: ObjectiveTracker
+var _encounter_runner: EncounterRunner
 
 var waves := {
 	&"forbidden_field": [
@@ -87,6 +90,7 @@ var waves := {
 func _ready() -> void:
 	_run_started_ms = Time.get_ticks_msec()
 	_apply_requested_checkpoint()
+	_setup_gameplay_systems()
 	_build_level()
 	if spawn_player: _spawn_player()
 	_setup_presentation()
@@ -97,6 +101,24 @@ func _ready() -> void:
 	level_ready.emit(player)
 	# Ensure the opening encounter exists even when body-enter events settle before connections.
 	_enter_zone(&"forbidden_field", "FORBIDDEN FIELD", player)
+
+
+func _setup_gameplay_systems() -> void:
+	_objective_tracker = ObjectiveTracker.new()
+	_objective_tracker.name = "ObjectiveTracker"
+	add_child(_objective_tracker)
+	_objective_tracker.objective_activated.connect(func(definition: ObjectiveDefinition) -> void:
+		objective_changed.emit(definition.title)
+	)
+	_objective_tracker.configure(content_manifest.objectives if content_manifest != null else [])
+	_encounter_runner = EncounterRunner.new()
+	_encounter_runner.name = "EncounterRunner"
+	add_child(_encounter_runner)
+	_encounter_runner.actor_spawned.connect(_on_encounter_actor_spawned)
+	_encounter_runner.actor_defeated.connect(func(enemy: Node, definition: EncounterDefinition) -> void:
+		_on_enemy_died(enemy, definition.zone_id)
+	)
+	_encounter_runner.configure(content_manifest.encounters if content_manifest != null else [], _spawn_scene)
 
 
 func _apply_requested_checkpoint() -> void:
@@ -206,7 +228,7 @@ func _build_story_objects() -> void:
 	var shed_switch := SwitchScene.instantiate() as LevelSwitch; shed_switch.switch_id = &"shed_power"; shed_switch.position = Vector3(-5.8, 1.2, -39); _interactables.add_child(shed_switch); shed_switch.target_path = shed_switch.get_path_to(tunnel_gate); shed_switch.activated.connect(func(_id, _actor): narrative_message.emit("MAINTENANCE ACCESS: NEEDLESSLY DRAMATIC.", 2.5))
 	var lab_gate := DoorScene.instantiate() as LevelDoor; lab_gate.name = "LabGate"; lab_gate.position = Vector3(0, 2, -83); lab_gate.size = Vector3(8, 4, 0.6); lab_gate.requires_access_collar = true; lab_gate.locked_message = "ACCESS COLLAR REQUIRED. NO EXCEPTIONS, EXCEPT COBIE."; lab_gate.access_denied.connect(_message); _interactables.add_child(lab_gate)
 	var arena_gate := DoorScene.instantiate() as LevelDoor; arena_gate.name = "ArenaGate"; arena_gate.position = Vector3(0, 2, -124); arena_gate.size = Vector3(10, 4, 0.6); arena_gate.starts_locked = true; arena_gate.access_denied.connect(_message); _interactables.add_child(arena_gate)
-	var lab_switch := SwitchScene.instantiate() as LevelSwitch; lab_switch.switch_id = &"walker_release"; lab_switch.prompt = "OVERRIDE ANIMAL CONTROL"; lab_switch.position = Vector3(8.5, 1.2, -117); _interactables.add_child(lab_switch); lab_switch.target_path = lab_switch.get_path_to(arena_gate); lab_switch.activated.connect(func(_id, _actor): objective_changed.emit("DEFEAT THE ANIMAL CONTROL WALKER"))
+	var lab_switch := SwitchScene.instantiate() as LevelSwitch; lab_switch.switch_id = &"walker_release"; lab_switch.prompt = "OVERRIDE ANIMAL CONTROL"; lab_switch.position = Vector3(8.5, 1.2, -117); _interactables.add_child(lab_switch); lab_switch.target_path = lab_switch.get_path_to(arena_gate); lab_switch.activated.connect(func(_id, _actor): _objective_tracker.record(ObjectiveDefinition.Kind.ACTIVATE, &"walker_release"))
 
 	var secret_wall := WallScene.instantiate() as BreakableSecretWall; secret_wall.position = Vector3(11.8, 1.5, -103); secret_wall.rotation_degrees.y = 90; secret_wall.broken.connect(_discover_secret); _interactables.add_child(secret_wall)
 	var ball_return := BallReturnScene.instantiate() as BallReturnSecret; ball_return.position = Vector3(25, 1.4, -108); ball_return.rotation_degrees.y = -90; ball_return.secret_requested.connect(_discover_secret); _interactables.add_child(ball_return)
@@ -244,34 +266,30 @@ func _enter_zone(zone_id: StringName, title: String, _actor: Node) -> void:
 	var game_state := get_node_or_null("/root/GameState")
 	if game_state:
 		game_state.run_stats["last_zone"] = String(zone_id)
-	if zone_id == &"compliance_lab": objective_changed.emit("EXPOSE THE ANIMAL COMPLIANCE FACILITY")
-	if zone_id == &"walker_arena": objective_changed.emit("DEFEAT THE ANIMAL CONTROL WALKER")
+	_objective_tracker.record(ObjectiveDefinition.Kind.REACH_ZONE, zone_id)
 	_spawn_wave(zone_id)
 
 
 func _spawn_wave(zone_id: StringName) -> void:
 	if spawned_zones.has(zone_id): return
 	spawned_zones[zone_id] = true
-	for entry in waves.get(zone_id, []):
-		var enemy := _spawn_scene(entry[0], entry[1])
-		if enemy:
-			if enemy is ComplianceHound:
-				enemy.name = "FetchGuard"
-			enemies_total += 1
-			if zone_id == &"forbidden_field":
-				enemy.process_mode = Node.PROCESS_MODE_DISABLED
-				_opening_enemies.append(enemy)
-			elif enemy.has_method("set_target") and player:
-				enemy.set_target(player)
-			if enemy.has_signal("died"): enemy.died.connect(func(dead_enemy, _source): _on_enemy_died(dead_enemy, zone_id))
-			enemy_spawned.emit(enemy, zone_id)
-			if enemy is AnimalControlWalker: _bind_walker(enemy)
+	_encounter_runner.activate_zone(zone_id, player)
 	if zone_id == &"walker_arena" and _walker == null:
 		# Development fallback: a missing boss scene must not trap QA in the level.
 		_golden_ball.enable_for_boss(null)
 		narrative_message.emit("BOSS ASSET MISSING — GOLDEN BALL QA FALLBACK ENABLED.", 4.0)
 	if zone_id == &"forbidden_field":
 		get_tree().create_timer(12.0).timeout.connect(_activate_opening_encounter)
+
+
+func _on_encounter_actor_spawned(enemy: Node, definition: EncounterDefinition) -> void:
+	if enemy is ComplianceHound: enemy.name = "FetchGuard"
+	enemies_total += 1
+	if definition.zone_id == &"forbidden_field":
+		enemy.process_mode = Node.PROCESS_MODE_DISABLED
+		_opening_enemies.append(enemy)
+	enemy_spawned.emit(enemy, definition.zone_id)
+	if enemy is AnimalControlWalker: _bind_walker(enemy)
 
 
 func _activate_opening_encounter(_weapon: WeaponBase = null, _secondary := false) -> void:
@@ -289,7 +307,10 @@ func _bind_walker(walker: Node) -> void:
 	_walker = walker
 	if walker.has_signal("golden_ball_enabled"): walker.golden_ball_enabled.connect(func(target): _golden_ball.enable_for_boss(target); objective_changed.emit("FETCH THE GOLDEN TENNIS BALL"))
 	if walker.has_signal("boss_phase_changed"): walker.boss_phase_changed.connect(func(_old, phase): boss_state_changed.emit(StringName(str(phase)), walker.health_fraction()))
-	if walker.has_signal("walker_defeated"): walker.walker_defeated.connect(func(): boss_state_changed.emit(&"defeated", 0.0))
+	if walker.has_signal("walker_defeated"): walker.walker_defeated.connect(func():
+		boss_state_changed.emit(&"defeated", 0.0)
+		_objective_tracker.record(ObjectiveDefinition.Kind.DEFEAT, &"animal_control_walker")
+	)
 
 
 func _on_enemy_died(enemy: Node, zone_id: StringName) -> void:
@@ -336,6 +357,7 @@ func restart_from_checkpoint() -> void:
 func _on_golden_ball_claimed(_actor: Node) -> void:
 	if completion_started: return
 	completion_started = true
+	_objective_tracker.record(ObjectiveDefinition.Kind.COLLECT_ITEM, &"golden_tennis_ball")
 	narrative_message.emit("THEY SAID NO ANIMALS. THEY SHOULD HAVE SAID PLEASE.", 5.0)
 	await get_tree().create_timer(1.2).timeout
 	var summary := get_level_summary(); level_completed.emit(summary)

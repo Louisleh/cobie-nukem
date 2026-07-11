@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="EncounterDefinition" load_steps=2 format=3]
+[ext_resource type="Script" path="res://scripts/gameplay/encounter_definition.gd" id="1"]
+[resource]
+script = ExtResource("1")
+id = &"salmon_walker"
+zone_id = &"walker_arena"
+display_name = "ANIMAL CONTROL WALKER"
+completion_policy = 1
+spawns = Array[Dictionary]([{"scene":"res://scenes/enemies/animal_control_walker.tscn","position":Vector3(0,0,-150)}])

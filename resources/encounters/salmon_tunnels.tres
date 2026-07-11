@@ -1,0 +1,8 @@
+[gd_resource type="Resource" script_class="EncounterDefinition" load_steps=2 format=3]
+[ext_resource type="Script" path="res://scripts/gameplay/encounter_definition.gd" id="1"]
+[resource]
+script = ExtResource("1")
+id = &"salmon_tunnels"
+zone_id = &"maintenance_tunnels"
+display_name = "TUNNEL AMBUSH"
+spawns = Array[Dictionary]([{"scene":"res://scenes/enemies/squirrel_trooper.tscn","position":Vector3(-2,0,-53)}, {"scene":"res://scenes/enemies/squirrel_trooper.tscn","position":Vector3(2,0,-64)}, {"scene":"res://scenes/enemies/mutant_groundskeeper.tscn","position":Vector3(0,0,-74)}])

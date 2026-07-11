@@ -34,6 +34,10 @@ var _health_bar_fill_mesh: QuadMesh
 var _health_bar_fill_material: StandardMaterial3D
 var _health_label: Label3D
 var _health_bar_width := 1.4
+var _damage_scale := 1.0
+var _speed_scale := 1.0
+var _max_health := 1.0
+var _aggression_scale := 1.0
 
 func _ready() -> void:
 	floor_snap_length = 0.45
@@ -42,7 +46,9 @@ func _ready() -> void:
 	if definition == null:
 		push_error("Enemy requires an EnemyDefinition: %s" % name)
 		return
-	health = definition.max_health
+	var game_state := get_node_or_null("/root/GameState")
+	var profile: DifficultyProfile = game_state.get_difficulty_profile() if game_state != null and game_state.has_method("get_difficulty_profile") else null
+	apply_difficulty(profile)
 	auto_aim_threat = definition.threat_weight
 	target = initial_target
 	_build_health_bar()
@@ -78,7 +84,7 @@ func _physics_process(delta: float) -> void:
 		State.IDLE:
 			velocity = velocity.move_toward(Vector3.ZERO, definition.acceleration * delta)
 			move_and_slide()
-			if distance <= definition.detection_range:
+			if distance <= definition.detection_range * _aggression_scale:
 				_set_state(State.ALERT)
 		State.ALERT:
 			_face_target(delta)
@@ -101,13 +107,21 @@ func _physics_process(delta: float) -> void:
 				_perform_attack()
 				attack_fired.emit(attack_kind)
 			if _state_time >= definition.telegraph_seconds + 0.2:
-				_cooldown = definition.attack_cooldown
+				_cooldown = definition.attack_cooldown / maxf(_aggression_scale, 0.1)
 				_set_state(State.CHASE)
 
 func set_target(value: Node3D) -> void:
 	target = value
 	if _target_valid() and state == State.IDLE:
 		_set_state(State.ALERT)
+
+
+func apply_difficulty(profile: DifficultyProfile) -> void:
+	_damage_scale = profile.enemy_damage_multiplier if profile != null else 1.0
+	_speed_scale = profile.enemy_speed_multiplier if profile != null else 1.0
+	_aggression_scale = profile.enemy_aggression_multiplier if profile != null else 1.0
+	_max_health = profile.scaled_enemy_health(definition.max_health) if profile != null else definition.max_health
+	health = _max_health
 
 func apply_damage(amount: float, source: Node = null, hit_position := Vector3.ZERO) -> float:
 	if is_dead or amount <= 0.0:
@@ -151,7 +165,7 @@ func get_auto_aim_position() -> Vector3:
 	return marker.global_position if marker != null else global_position + Vector3.UP * target_height
 
 func health_fraction() -> float:
-	return 0.0 if definition == null else health / maxf(definition.max_health, 0.001)
+	return 0.0 if definition == null else health / maxf(_max_health, 0.001)
 
 
 func _build_health_bar() -> void:
@@ -225,7 +239,7 @@ func _update_health_bar() -> void:
 	var fraction := clampf(health_fraction(), 0.0, 1.0)
 	_health_bar_fill_mesh.size.x = maxf(0.001, _health_bar_width * fraction)
 	if _health_label != null:
-		_health_label.text = "%d / %d HP" % [ceili(maxf(health, 0.0)), ceili(definition.max_health)]
+		_health_label.text = "%d / %d HP" % [ceili(maxf(health, 0.0)), ceili(_max_health)]
 	if fraction > 0.55:
 		_health_bar_fill_material.albedo_color = Color("65d36e")
 	elif fraction > 0.25:
@@ -234,12 +248,19 @@ func _update_health_bar() -> void:
 		_health_bar_fill_material.albedo_color = Color("ef5b4c")
 	_health_bar_fill_material.emission = _health_bar_fill_material.albedo_color
 
-func _move_for_combat(_distance: float, delta: float) -> void:
-	_move_toward(target.global_position, definition.move_speed, delta)
+func _move_for_combat(distance: float, delta: float) -> void:
+	if definition.retreat_distance > 0.0 and distance < definition.retreat_distance:
+		var retreat := global_position + target.global_position.direction_to(global_position) * 4.0
+		_move_toward(retreat, definition.move_speed, delta)
+	elif definition.preferred_distance > 0.0 and distance <= definition.preferred_distance:
+		var tangent := global_position.direction_to(target.global_position).cross(Vector3.UP).normalized()
+		_move_toward(global_position + tangent * 3.0, definition.move_speed * 0.72, delta)
+	else:
+		_move_toward(target.global_position, definition.move_speed, delta)
 
 func _move_toward(destination: Vector3, speed: float, delta: float) -> void:
 	var flat_direction := global_position.direction_to(Vector3(destination.x, global_position.y, destination.z))
-	var desired := flat_direction * speed
+	var desired := flat_direction * speed * _speed_scale
 	velocity.x = move_toward(velocity.x, desired.x, definition.acceleration * delta)
 	velocity.z = move_toward(velocity.z, desired.z, definition.acceleration * delta)
 	if uses_gravity and not is_on_floor():
@@ -273,7 +294,7 @@ func _perform_attack() -> void:
 	if not _target_valid():
 		return
 	if global_position.distance_to(target.global_position) <= definition.attack_range * 1.2 and target.has_method("apply_damage"):
-		target.apply_damage(definition.attack_damage, self, target.global_position)
+		target.apply_damage(definition.attack_damage * _damage_scale, self, target.global_position)
 
 func _spawn_projectile(scene: PackedScene, speed: float, splash_radius := 0.0) -> Node3D:
 	if not _target_valid() or scene == null:
@@ -284,7 +305,7 @@ func _spawn_projectile(scene: PackedScene, speed: float, splash_radius := 0.0) -
 	var direction := origin.direction_to(target.global_position + Vector3.UP * 0.8)
 	projectile.global_position = origin
 	if projectile.has_method("launch"):
-		projectile.launch(direction, self, definition.attack_damage, speed, splash_radius)
+		projectile.launch(direction, self, definition.attack_damage * _damage_scale, speed, splash_radius)
 	return projectile
 
 func _damage_multiplier(_hit_position: Vector3) -> float:

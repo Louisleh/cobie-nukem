@@ -1,0 +1,8 @@
+[gd_resource type="Resource" script_class="ObjectiveDefinition" load_steps=2 format=3]
+[ext_resource type="Script" path="res://scripts/gameplay/objective_definition.gd" id="1"]
+[resource]
+script = ExtResource("1")
+id = &"fetch_ball"
+title = "RECOVER THE GOLDEN TENNIS BALL"
+kind = 1
+target_id = &"golden_tennis_ball"

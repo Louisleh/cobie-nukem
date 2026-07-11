@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="DifficultyProfile" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/gameplay/difficulty_profile.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = &"story"
+display_name = "BEST FRIEND"
+description = "More supplies, gentler enemies, and strong aim assistance."
+enemy_health_multiplier = 0.75
+enemy_damage_multiplier = 0.55
+enemy_speed_multiplier = 0.88
+enemy_aggression_multiplier = 0.75
+pickup_amount_multiplier = 1.4
+aim_assist_strength = 0.9

@@ -1,0 +1,354 @@
+# Cobie Nukem — Multi-Phase Production PRD
+
+**Status:** Active production source of truth  
+**Created:** 2026-07-11  
+**Current release baseline:** `0.2.0-rc1`  
+**Engine:** Godot 4.7 stable, GDScript, Compatibility renderer  
+**Purpose:** Turn the family-playtest vertical slice into a sustainable, original multi-level game without sacrificing responsiveness, humor, Web support, or unusual-controller accessibility.
+
+## 1. Product direction
+
+Cobie Nukem is a compact, fast, funny retro FPS starring Cobie, a leather-jacketed labradoodle who treats petty rules as boss encounters. The next buildout must prove that new missions, enemies, objectives, and environmental jokes can be produced from reusable systems instead of copying Salmon Creek's level script.
+
+The project remains an original work. Location references may evoke real places through original geometry, writing, and art. Do not copy protected game assets, maps, dialogue, music, logos, restaurant branding, or trade dress. Real-business references such as Ruse should be affectionate, incidental environmental detail and should receive owner/legal review before public commercial distribution.
+
+## 2. Success measures
+
+### Production measures
+
+- A new encounter can be authored as a Resource without editing a level controller.
+- A new linear or optional objective can be authored as a Resource with prerequisites and count requirements.
+- Every level has a manifest that validates IDs, scene paths, objectives, encounters, and difficulty profiles headlessly.
+- Mission 2 production reuses at least 80% of runtime gameplay systems from Salmon Creek.
+- Critical progression content has automated route and deadlock tests.
+
+### Player measures
+
+- First-time players can finish each mission without debug intervention.
+- Combat communicates alert, attack, damage, stagger, death, and objective state clearly.
+- Difficulty changes behavior and resource pressure, not merely enemy HP.
+- Each mission introduces one enemy family, one traversal/environment mechanic, one signature set piece, and one meaningful reward.
+- The campaign remains playable on keyboard/mouse; controller and flight-stick paths remain recoverable.
+
+### Technical measures
+
+- Web and Universal macOS exports remain green.
+- No content manifest ships with duplicate IDs, missing scenes, empty required encounters, missing prerequisites, or invalid spawn data.
+- Headless scene/resource smoke and full Salmon Creek route remain regression gates.
+- Save payloads are versioned and migrations are explicit.
+
+## 3. Phase map
+
+| Phase | Outcome | Exit gate |
+| --- | --- | --- |
+| 1. Gameplay systems foundation | **Implemented foundation** — reusable objectives, encounters, difficulty, enemy roles, progression contracts | Salmon Creek runs through the new systems with all existing route tests passing |
+| 2. Content-production pipeline | **Implemented foundation** — Resource schema, manifests, templates, validation, authoring rules | A designer can define a valid mission skeleton without changing core runtime code |
+| 3. World and episode structure | Vancouver Waterfront, Mount Hood, and Moon mission briefs and production plans | Each mission has a route, landmark plan, mechanic, enemy addition, boss/set piece, and asset list |
+| 4. Combat and presentation expansion | Deeper reactions, weak points, hazards, animations, music, identity | Combat sandbox and one production mission demonstrate the expanded vocabulary |
+| 5. Accessibility, persistence, and observability | Durable saves, profiles, assists, metrics, soak testing | Alpha-quality settings/save compatibility and diagnostic coverage |
+| 6. Alpha, beta, and release | Content complete, balanced, performant, distributable | Human/browser/native/device matrices and release/legal gates complete |
+
+## 4. Phase 1 — Gameplay systems foundation
+
+### 4.1 Objectives
+
+Create a data-driven objective system supporting:
+
+- reach zone;
+- collect item;
+- activate switch/device;
+- defeat enemy or count;
+- survive encounter/time window;
+- complete level;
+- required and optional objectives;
+- prerequisite chains;
+- progress snapshots suitable for saves and reports.
+
+Runtime requirements:
+
+- Objectives use stable `StringName` IDs.
+- The tracker emits activated, progressed, completed, and all-required-completed signals.
+- UI observes objective signals; it never owns objective truth.
+- Duplicate completion events are idempotent.
+- Prerequisites prevent premature progress.
+- Snapshot data contains primitives only.
+
+### 4.2 Encounters
+
+Create data-driven encounter definitions with:
+
+- stable encounter and zone IDs;
+- scene path and world-position spawn entries;
+- completion policy;
+- activation/opening grace metadata;
+- started, spawned, defeated, and completed signals;
+- one-shot activation per zone;
+- target assignment through a public enemy boundary.
+
+Future extension points include multi-wave timing, reinforcement conditions, patrol splines, encounter budgets, spawn volumes, and combat-director pressure. These are schema extensions, not requirements for the first migration.
+
+### 4.3 Difficulty profiles
+
+Provide at least three data profiles:
+
+- **Best Friend:** reduced enemy pressure, more recovery, stronger aim support.
+- **Good Dog:** intended baseline.
+- **Off Leash:** faster aggression, higher damage, scarcer recovery, reduced aim support.
+
+Profiles separately control health, damage, speed, aggression, pickup amount, and aim assistance. Phase 1 must establish runtime enemy scaling and selected-difficulty run metadata. Menu selection and complete pickup/aim-assist integration can iterate later without changing the Resource contract.
+
+### 4.4 Enemy archetypes
+
+Definitions identify a tactical role:
+
+- melee pursuer;
+- ranged keeper;
+- skirmisher;
+- tank;
+- flying pressure;
+- support;
+- boss.
+
+Phase 1 adds preferred/retreat distance behavior so ranged and skirmisher enemies stop behaving like melee enemies. Later phases add cover selection, support actions, coordinated flanks, suspicion, and group alert propagation.
+
+### 4.5 Progression and saves
+
+- Run summaries record selected difficulty.
+- Objective snapshots are serializable.
+- Level scripts remain responsible for mission-specific narrative and geometry.
+- Save schema migrations are required before persisting new objective snapshots into existing checkpoint slots.
+
+### 4.6 Phase 1 acceptance criteria
+
+- Salmon Creek opening, lab access, Walker release, Walker defeat, and Golden Ball completion are represented by objective Resources.
+- All five Salmon Creek combat zones are represented by encounter Resources.
+- Salmon Creek spawns encounters through the reusable runner.
+- Existing enemy, route, boss, pickup, death, and victory behavior remains intact.
+- Unit tests cover prerequisites, idempotency, completion, encounter one-shot activation, and difficulty math.
+
+## 5. Phase 2 — Content-production pipeline
+
+### 5.1 Level manifest
+
+Every production level owns a `ContentManifest` containing:
+
+- schema/content version;
+- level ID and scene path;
+- supported difficulty profiles;
+- objective definitions;
+- encounter definitions.
+
+The manifest is the machine-readable inventory for validation, CI, release reporting, and future editor tooling.
+
+### 5.2 Content validator
+
+Headless validation must reject:
+
+- missing level scenes;
+- blank or duplicate objective/encounter IDs;
+- self-dependencies and missing prerequisites;
+- empty encounters;
+- missing enemy scenes;
+- invalid spawn positions;
+- invalid difficulty identity.
+
+The validator scans `resources/content/*.tres`, prints actionable resource-specific errors, and exits non-zero. It becomes part of `tools/release_validate.sh` and CI.
+
+### 5.3 Authoring kit
+
+Provide reusable templates and documentation for:
+
+- manifest;
+- objective chain;
+- encounter;
+- level metadata/card;
+- zone trigger;
+- door/switch/key requirement;
+- checkpoint;
+- pickup cluster;
+- secret and narrative sign.
+
+Authoring rules:
+
+- Put tuning in Resources, not script dictionaries.
+- Keep mission prose/geometry in the mission domain.
+- Use stable lowercase snake-case IDs.
+- Scene paths must be `res://` paths.
+- Each critical item must have a progression owner and recovery strategy.
+- Every gated route requires an automated proof that the key/objective is reachable first.
+
+### 5.4 Phase 2 acceptance criteria
+
+- Salmon Creek has a valid manifest.
+- CI runs the content validator.
+- Authoring documentation explains how to add a mission skeleton and encounter without editing shared gameplay code.
+- A template manifest exists for Mission 2.
+- Smoke tests discover all new Resources and scripts.
+
+## 6. Phase 3 — Personally relevant episode plan
+
+The campaign moves through places connected to the owner. These are stylized memories and jokes, not geographic simulations.
+
+### Mission 1 — Salmon Creek: No Dogs Allowed
+
+Status: playable foundation mission. Role: onboarding, field-to-facility descent, first three weapons, Fetch Collar, secrets, Walker finale.
+
+### Mission 2 — Downtown Vancouver / Waterfront: Rain City Run
+
+**Fantasy:** Cobie chases an automated citation convoy from a rain-soaked downtown block onto Vancouver's waterfront while the city declares an emergency leash protocol.
+
+**Route proposal:**
+
+1. Rainy downtown service alley and parking entrance.
+2. Waterfront streets and café/pizza frontage.
+3. Seawall promenade with sightlines across the water.
+4. Convention/terminal service corridors.
+5. Rooftop or pier confrontation with the bridge framed in the distance.
+
+**Recognizable but original details:**
+
+- North Shore mountains and a stylized bridge silhouette in the distance; choose a legally safe original skyline composition rather than copied photography.
+- Wet pavement, glass towers, seawall railings, floatplanes/ferries, harbor cranes, umbrellas, bike-lane markings, gulls, and rain-slick neon.
+- A small affectionate **Ruse Pizza** restaurant reference: pizza boxes, a “RUSE SLICE / DOGS NEGOTIABLE” poster, delivery scooter, or optional health-secret interaction. Confirm naming/logo permission before public release; use original typography and art.
+- Local-flavor posters such as “RAIN DELAYED DUE TO RAIN,” “SEAWALL SPEED LIMIT: ZOOMIES,” and “NO FETCHING FROM THE HARBOUR.”
+- Easter eggs may include a Cobie reservation card, owner initials, a familiar order, or a date—stored as configurable copy rather than hard-coded personal data.
+
+**New mechanic:** vertical combat across stairs, ramps, seawall levels, and interior/exterior transitions.  
+**New enemy:** umbrella shield unit or gull reconnaissance/support enemy.  
+**Signature set piece:** moving citation convoy/ferry-terminal lockdown.  
+**Reward:** weapon alternate fire or mobility upgrade.  
+**Target:** 15–22 minutes, 3–4 secrets.
+
+### Mission 3 — Mount Hood: Off-Leash Summit
+
+**Fantasy:** Cobie follows a stolen weather-control beacon from the forest highway through a snowbound lodge complex and onto Mount Hood.
+
+**Route proposal:**
+
+1. Forest pullout with **Sandy, OR**-style highway signage.
+2. Snow road, maintenance sheds, and lift machinery.
+3. Timberline-inspired lodge exterior and original grand-lodge interior.
+4. Service tunnels/boiler room.
+5. Ski slope or summit relay finale.
+
+**Relevant props and Easter eggs:**
+
+- Original green highway signs referencing **Sandy OR**, Government Camp, and Mount Hood destinations; verify exact sign/trademark use before commercial release.
+- A Timberline Lodge-inspired silhouette, stonework, timber beams, fireplaces, snowbanks, trail maps, ski racks, lift chairs, grooming machines, hot-cocoa props, and vintage mountain posters. Do not reproduce protected floorplans, signage, logos, or branded artwork.
+- Posters: “CHAIRLIFT RESERVED FOR GOOD DOGS,” “AVALANCHE CONTROL / BARK TWICE,” and “SANDY: LAST TREATS FOR 37 MILES.”
+- Optional cabin-room Easter eggs drawn from owner memories, kept configurable and privacy-reviewed.
+
+**New mechanic:** slippery/snowy exposure zones, wind gusts, warming shelters, or lift traversal.  
+**New enemy:** snowplow tank or ski-patrol ranged unit.  
+**Signature set piece:** lodge siege into chairlift/slope assault.  
+**Reward:** cold-resistant armor or charged Fetch shot.  
+**Target:** 18–25 minutes, 4 secrets.
+
+### Mission 4 — Moon: One Giant Fetch
+
+**Fantasy:** The Golden Tennis Ball signal leads to an absurd lunar compliance base where Earth itself is marked “NO DOGS.”
+
+**Route proposal:**
+
+1. Lunar landing pad.
+2. Low-gravity exterior trenches.
+3. Kennel research habitat.
+4. Observatory/control core.
+5. Crater arena and episode boss.
+
+**Props and Easter eggs:**
+
+- Earthrise vista, rover with chew marks, tennis-ball craters, oxygen hydrants, paw-print boot marks, freeze-dried treats, mission patches, and retro space posters.
+- Posters: “MOON LEASHES MUST BE 384,400 KM OR SHORTER,” “EARTHRISE: NOT A FETCH TOY,” and “ONE SMALL STEP FOR DOG.”
+- Callback props from Vancouver and Mount Hood aboard cargo pallets.
+
+**New mechanic:** controlled low gravity and decompression/airlock timing.  
+**New enemy:** vacuum drone/support constellation.  
+**Signature set piece:** crater-scale boss with Earth in the sky.  
+**Reward/outcome:** episode completion and New Game+ difficulty unlock.  
+**Target:** 20–28 minutes, 4–5 secrets.
+
+## 7. Phase 4 — Combat and presentation expansion
+
+- Directional hit reactions and weapon-specific stagger thresholds.
+- Weak points, shields, armor, explosive props, hazards, and status effects.
+- Alert/suspicion presentation and group tactics.
+- Proper weapon view-model reload animations.
+- Enemy animation vocabulary: idle, alert, locomotion, telegraph, attack, hurt, stagger, death.
+- Exploration/combat/boss/victory music state machine with original music.
+- Original Cobie barks and enemy vocals; no imitation of protected dialogue or performances.
+- Comic-panel mission intros/outros and end-rank presentation.
+
+Exit gate: Mission 2 demonstrates the expanded combat vocabulary without bespoke forks of shared systems.
+
+## 8. Phase 5 — Accessibility, persistence, and observability
+
+- Multiple versioned save profiles and migrations.
+- Mission completion, secrets, difficulty, best time, rank, and collectibles.
+- Corrupt-save recovery and checkpoint compatibility tests.
+- Full input remapping and specialist-device recovery.
+- Subtitle presentation, color-safe indicators, scalable UI, and reduced-motion/flash controls.
+- Separate assists for aim, incoming damage, aggression, navigation, ammunition, and timing.
+- Privacy-conscious local playtest metrics: encounter time, deaths, accuracy, weapon share, damage source, pickups missed, and objective stalls.
+- Long-running soak, unstable-frame pickup/collision, and save-upgrade tests.
+
+## 9. Phase 6 — Alpha, beta, and release
+
+### Alpha
+
+- Episode content complete and start-to-finish playable.
+- No progression blockers or missing critical assets.
+- Save format frozen with migration policy.
+- Performance budgets met on target Mac and representative Web hardware.
+
+### Beta
+
+- Broad human balance and onboarding tests.
+- Chrome, Safari, Firefox, native Apple Silicon, and available Intel validation.
+- Controller and exact flight-stick hardware matrix.
+- Accessibility signoff and photosensitivity review.
+- Working-title, real-place, real-business, music, voice, and asset legal review.
+
+### Release
+
+- Signed/notarized Mac build if distributed publicly.
+- Store/itch metadata, privacy statement, credits, licenses, support instructions, and reproducible artifact hashes.
+- No Blocker/Critical issues; every retained Major issue has an owner-approved disposition.
+
+## 10. Cross-phase non-goals
+
+- Multiplayer, online accounts, cloud saves, mobile/console, procedural campaign generation, photorealism, and a public mod SDK remain out of scope until the single-player episode is stable.
+- Do not grow content breadth faster than the production pipeline. Mission 2 is the proof that the project can scale.
+
+## 11. Working method
+
+For each phase:
+
+1. Create a phase branch/commit with a short design note.
+2. Implement the smallest reusable contract that supports a real mission need.
+3. Migrate Salmon Creek or the current production mission as proof.
+4. Add unit, integration, route, smoke, and content-validation coverage.
+5. Run Web/macOS exports for export-affecting changes.
+6. Record evidence and explicitly list human/hardware checks not performed.
+7. Update this PRD's status and acceptance evidence rather than starting a disconnected roadmap.
+
+## 12. Phase 1–2 implementation record
+
+Implemented in the first production-foundation pass:
+
+- `DifficultyProfile`, three initial balance profiles, selected difficulty in run state, and runtime enemy health/damage/speed/aggression scaling.
+- Enemy tactical archetype metadata plus preferred-distance, strafe, and retreat behavior.
+- `ObjectiveDefinition` and `ObjectiveTracker` with prerequisites, counts, idempotency, lifecycle signals, snapshots, and cycle validation.
+- `EncounterDefinition` and `EncounterRunner` with one-shot zone activation, target assignment, lifecycle signals, and completion policies.
+- Salmon Creek manifest, four critical objectives, and five encounter Resources replacing runtime use of the level's wave table.
+- Content-manifest validation for level paths, identities, prerequisites, cycles, encounter zones, spawn scenes, and spawn positions.
+- Authoring guide, template manifest, CI/release-gate integration, focused unit coverage, and full Salmon Creek route regression.
+
+Intentionally deferred refinements that fit the established contracts:
+
+- difficulty-selection UI and full pickup/aim-assist multiplier consumption;
+- multi-wave/reinforcement encounter schema and combat director;
+- objective-list HUD instead of the current notification presentation;
+- checkpoint persistence of objective snapshots, gated on an explicit save-version migration;
+- editor plugin/visual encounter authoring;
+- coordinated group tactics, cover selection, and support actions.

@@ -6,6 +6,7 @@
 script = ExtResource("1")
 id = &"mutant_groundskeeper"
 display_name = "MUTANT GROUNDSKEEPER"
+archetype = 3
 warning_text = "THE TURF HAS STANDARDS."
 max_health = 80.0
 move_speed = 3.2

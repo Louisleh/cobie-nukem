@@ -6,6 +6,7 @@
 script = ExtResource("1")
 id = &"leash_enforcement_drone"
 display_name = "LEASH ENFORCEMENT DRONE"
+archetype = 4
 warning_text = "UNLICENSED ZOOMIES DETECTED."
 max_health = 40.0
 move_speed = 3.6
@@ -17,3 +18,5 @@ attack_cooldown = 2.2
 telegraph_seconds = 0.52
 threat_weight = 0.65
 score_value = 100
+preferred_distance = 10.0
+retreat_distance = 5.0

@@ -11,6 +11,13 @@ var phase: Phase = Phase.BOOT
 var current_level_id: StringName = &""
 var run_stats: Dictionary = {}
 var continue_requested := false
+var difficulty_id: StringName = &"classic"
+
+const DIFFICULTY_PATHS := {
+	&"story": "res://resources/difficulty/story.tres",
+	&"classic": "res://resources/difficulty/classic.tres",
+	&"mayhem": "res://resources/difficulty/mayhem.tres",
+}
 
 func begin_boot() -> void:
 	_set_phase(Phase.BOOT)
@@ -27,9 +34,21 @@ func begin_run(level_id: StringName) -> void:
 		"deaths": 0,
 		"last_zone": "forbidden_field",
 		"checkpoint_id": "start",
+		"difficulty_id": String(difficulty_id),
 	}
 	_set_phase(Phase.PLAYING)
 	run_started.emit()
+
+
+func select_difficulty(value: StringName) -> bool:
+	if not DIFFICULTY_PATHS.has(value): return false
+	difficulty_id = value
+	return true
+
+
+func get_difficulty_profile() -> DifficultyProfile:
+	var path := String(DIFFICULTY_PATHS.get(difficulty_id, DIFFICULTY_PATHS[&"classic"]))
+	return load(path) as DifficultyProfile
 
 func finish_run(extra_summary: Dictionary = {}) -> Dictionary:
 	var summary := run_stats.duplicate(true)

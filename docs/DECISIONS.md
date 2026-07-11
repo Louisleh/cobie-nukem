@@ -29,3 +29,9 @@ CI exports an unsigned Universal macOS ZIP and a single-threaded Web build. Sign
 **Status:** accepted from owner visual feedback on 2026-07-10.
 
 Use Godot's `canvas_items` stretch mode so the 3D world renders at the output resolution while the deliberately compact retro HUD keeps its authored 320×180 layout. Replace abstract enemy primitives at runtime with original, camera-facing high-resolution illustrations; retain the underlying 3D collision, telegraphs, AI, weak points, hit reactions, and boss logic. This preserves the boomer-shooter read while materially improving clarity and character identity.
+
+## D-006 — Resource-driven mission contracts
+
+**Status:** accepted for production Phase 1–2.
+
+Objectives, encounters, difficulty profiles, and each mission's content inventory use typed custom Resources under `resources/`. Reusable runtime behavior lives in `scripts/gameplay`; mission controllers translate local signals into semantic objective/encounter events. This avoids a new autoload, keeps Web compatibility, allows headless validation, and prevents future missions from copying Salmon Creek's hard-coded wave and progression tables.

@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="DifficultyProfile" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/gameplay/difficulty_profile.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = &"mayhem"
+display_name = "OFF LEASH"
+description = "Faster, more aggressive enemies with scarcer recovery."
+enemy_health_multiplier = 1.2
+enemy_damage_multiplier = 1.35
+enemy_speed_multiplier = 1.15
+enemy_aggression_multiplier = 1.25
+pickup_amount_multiplier = 0.8
+aim_assist_strength = 0.45

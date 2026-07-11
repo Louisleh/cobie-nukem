@@ -1,0 +1,8 @@
+[gd_resource type="Resource" script_class="EncounterDefinition" load_steps=2 format=3]
+[ext_resource type="Script" path="res://scripts/gameplay/encounter_definition.gd" id="1"]
+[resource]
+script = ExtResource("1")
+id = &"salmon_shed"
+zone_id = &"equipment_shed"
+display_name = "EQUIPMENT SHED RESPONSE"
+spawns = Array[Dictionary]([{"scene":"res://scenes/enemies/mutant_groundskeeper.tscn","position":Vector3(-3,0,-31)}, {"scene":"res://scenes/enemies/leash_enforcement_drone.tscn","position":Vector3(3,2,-37)}])

@@ -30,6 +30,17 @@ No feature should reach through an autoload to mutate another feature's nodes. P
 
 Feature systems may introduce additional contracts in their owned directory. Promote one to `scripts/core/contracts` only when at least two independent domains consume it.
 
+The reusable production gameplay layer lives in `scripts/gameplay`:
+
+| Contract | Responsibility |
+| --- | --- |
+| `ObjectiveDefinition` / `ObjectiveTracker` | Data-driven required/optional goals, prerequisite chains, progress, and primitive snapshots |
+| `EncounterDefinition` / `EncounterRunner` | One-shot zone encounters, spawn lifecycle, target assignment, and completion |
+| `DifficultyProfile` | Independent enemy pressure, pickup, and aim-assist tuning dimensions |
+| `ContentManifest` | Versioned machine-readable inventory for a production mission |
+
+Mission controllers translate mission-specific events into these semantic contracts. They still own geometry, prose, set pieces, and fail-safe progression, but they do not own reusable encounter tables or objective state machines.
+
 ## Scene and resource boundaries
 
 - A level scene composes player spawn, encounter instances, progression interactables, and level metadata.
@@ -82,4 +93,3 @@ Before adding a new global or abstraction, answer:
 4. Does it remain valid in the single-threaded Web build?
 
 Document material exceptions in `docs/DECISIONS.md`.
-

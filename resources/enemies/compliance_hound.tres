@@ -6,6 +6,7 @@
 script = ExtResource("1")
 id = &"compliance_hound"
 display_name = "COMPLIANCE HOUND"
+archetype = 0
 warning_text = "GOOD DOG STATUS: REVOKED."
 max_health = 220.0
 move_speed = 5.0

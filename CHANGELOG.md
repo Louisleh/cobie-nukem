@@ -6,6 +6,9 @@ All notable changes are recorded here. This project follows a lightweight form o
 
 ### Added
 
+- Phase 1–2 production foundation: typed objective chains, data-driven encounter runner, three multidimensional difficulty profiles, enemy tactical archetypes, versioned level content manifests, and a headless content validator.
+- Detailed multi-phase production PRD with Vancouver Waterfront, Mount Hood, and Moon mission briefs, relevant props/posters/Easter eggs, legal guardrails, and phase exit criteria.
+- Mission content-authoring guide, template manifest, critical-path checklist, and regression tests for prerequisite, encounter, difficulty, and manifest contracts.
 - Magazine and reserve-ammunition combat with manual/automatic reloads, per-weapon capacities, reload animation, and loaded/reserve HUD state.
 - Original lower-pitched layered weapon synthesis, dry-fire/reload cues, grounded walking/running footsteps, and polyphonic effect playback.
 - Reusable mission selector with one playable Salmon Creek course and three safely locked future-course cards.

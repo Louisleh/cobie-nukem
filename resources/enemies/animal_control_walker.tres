@@ -6,6 +6,7 @@
 script = ExtResource("1")
 id = &"animal_control_walker"
 display_name = "ANIMAL CONTROL WALKER"
+archetype = 6
 warning_text = "FETCH PERMIT DENIED."
 max_health = 1000.0
 move_speed = 4.2
