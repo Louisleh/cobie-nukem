@@ -48,6 +48,7 @@ var _head_base_position := Vector3.ZERO
 var _zoomies_remaining := 0.0
 var _wheel_switch_time_ms := -1000
 var _run_toggled := false
+var _touch_move := Vector2.ZERO
 var _step_distance := 0.0
 var _last_step_position := Vector3.ZERO
 
@@ -62,7 +63,7 @@ func _ready() -> void:
 	if settings != null and settings.has_method("get_value"):
 		mouse_sensitivity *= clampf(float(settings.call("get_value", &"gameplay", &"mouse_sensitivity", 1.0)), 0.25, 3.0)
 		camera.fov = clampf(float(settings.call("get_value", &"video", &"fov", 90.0)), 70.0, 110.0)
-	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE if MobileControls.touchscreen_expected() else Input.MOUSE_MODE_CAPTURED
 	health_armor.died.connect(_on_died)
 	health_armor.damaged.connect(_on_damaged)
 	for child in weapon_mount.get_children():
@@ -150,6 +151,7 @@ func _physics_process(delta: float) -> void:
 	elif Input.is_action_just_pressed("jump"):
 		velocity.y = jump_velocity
 	var input := Input.get_vector("strafe_left", "strafe_right", "move_forward", "move_backward")
+	if _touch_move.length_squared() > input.length_squared(): input = _touch_move
 	var wish_direction := (global_basis * Vector3(input.x, 0.0, input.y)).normalized()
 	var run_mode := "hold"
 	var settings := get_node_or_null("/root/SettingsManager")
@@ -183,6 +185,16 @@ func _check_out_of_bounds() -> bool:
 func apply_damage(amount: float, source: Node = null, _hit_position := Vector3.ZERO) -> float:
 	return health_armor.apply_damage(amount, source)
 
+
+func set_touch_move(value: Vector2) -> void:
+	_touch_move = value.limit_length(1.0)
+
+
+func apply_touch_look(relative: Vector2) -> void:
+	if is_dead: return
+	rotate_y(-relative.x * mouse_sensitivity * 1.35)
+	head.rotation.x = clampf(head.rotation.x - relative.y * mouse_sensitivity * 1.35, deg_to_rad(-max_look_degrees), deg_to_rad(max_look_degrees))
+
 func heal(amount: float) -> float:
 	return health_armor.heal(amount)
 
@@ -192,13 +204,15 @@ func add_armor(amount: float) -> float:
 func restore_full() -> void:
 	health_armor.restore_full()
 
-func respawn(at_position: Vector3) -> void:
+func respawn(at_position: Vector3, protection_seconds := 1.5) -> void:
 	global_position = at_position
 	velocity = Vector3.ZERO
+	_touch_move = Vector2.ZERO
 	is_dead = false
 	health_armor.restore_full()
+	health_armor.grant_invulnerability(protection_seconds)
 	collision_shape.set_deferred("disabled", false)
-	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE if MobileControls.touchscreen_expected() else Input.MOUSE_MODE_CAPTURED
 
 func add_ammo(ammo_type: String, amount: int) -> int:
 	var added := 0

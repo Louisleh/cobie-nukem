@@ -30,7 +30,11 @@ func validate() -> PackedStringArray:
 		encounter_ids[encounter.id] = true
 		encounter_zones[encounter.zone_id] = true
 		errors.append_array(encounter.validate())
-	for profile in difficulty_profiles: errors.append_array(profile.validate())
+	var difficulty_ids := {}
+	for profile in difficulty_profiles:
+		if difficulty_ids.has(profile.id): errors.append("duplicate difficulty id: %s" % profile.id)
+		difficulty_ids[profile.id] = true
+		errors.append_array(profile.validate())
 	return errors
 
 

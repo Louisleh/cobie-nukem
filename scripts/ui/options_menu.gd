@@ -16,6 +16,7 @@ func _ready() -> void:
 	_bind_slider(%ShakeSlider, &"accessibility", &"camera_shake")
 	_bind_slider(%BobSlider, &"accessibility", &"head_bob")
 	_bind_slider(%MouseSensitivitySlider, &"gameplay", &"mouse_sensitivity")
+	_bind_slider(%TouchSensitivitySlider, &"gameplay", &"touch_sensitivity")
 	%FovSlider.value = float(_setting_value(&"video", &"fov", 90.0))
 	%FovSlider.value_changed.connect(func(value: float) -> void: _set_setting(&"video", &"fov", value))
 	%ReducedFlashes.button_pressed = bool(_setting_value(&"video", &"reduced_flashes", false))
@@ -85,6 +86,7 @@ func _refresh_values() -> void:
 	%ShakeSlider.value = float(_setting_value(&"accessibility", &"camera_shake", 1.0)) * 100.0
 	%BobSlider.value = float(_setting_value(&"accessibility", &"head_bob", 1.0)) * 100.0
 	%MouseSensitivitySlider.value = float(_setting_value(&"gameplay", &"mouse_sensitivity", 1.0)) * 100.0
+	%TouchSensitivitySlider.value = float(_setting_value(&"gameplay", &"touch_sensitivity", 1.0)) * 100.0
 	%FovSlider.value = float(_setting_value(&"video", &"fov", 90.0))
 	%ReducedFlashes.button_pressed = bool(_setting_value(&"video", &"reduced_flashes", false))
 	_select_choice(%AutoAimChoice, String(_setting_value(&"accessibility", &"auto_aim", "classic")).to_upper())

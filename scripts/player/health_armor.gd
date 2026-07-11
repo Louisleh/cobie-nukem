@@ -13,13 +13,18 @@ signal died(source: Node)
 @export var armor := 0.0
 
 var is_dead := false
+var invulnerable_remaining := 0.0
 
 func _ready() -> void:
 	health = clampf(health, 0.0, max_health)
 	armor = clampf(armor, 0.0, max_armor)
 
+
+func _process(delta: float) -> void:
+	invulnerable_remaining = maxf(0.0, invulnerable_remaining - delta)
+
 func apply_damage(amount: float, source: Node = null) -> float:
-	if amount <= 0.0 or is_dead:
+	if amount <= 0.0 or is_dead or invulnerable_remaining > 0.0:
 		return 0.0
 	var armor_damage := minf(armor, amount * armor_absorption)
 	var health_damage := minf(health, amount - armor_damage)
@@ -56,3 +61,6 @@ func restore_full() -> void:
 	health_changed.emit(health, max_health)
 	armor_changed.emit(armor, max_armor)
 
+
+func grant_invulnerability(seconds: float) -> void:
+	invulnerable_remaining = maxf(invulnerable_remaining, maxf(seconds, 0.0))

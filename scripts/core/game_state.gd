@@ -18,6 +18,7 @@ const DIFFICULTY_PATHS := {
 	&"classic": "res://resources/difficulty/classic.tres",
 	&"mayhem": "res://resources/difficulty/mayhem.tres",
 }
+var _difficulty_cache: Dictionary = {}
 
 func begin_boot() -> void:
 	_set_phase(Phase.BOOT)
@@ -47,8 +48,11 @@ func select_difficulty(value: StringName) -> bool:
 
 
 func get_difficulty_profile() -> DifficultyProfile:
+	if _difficulty_cache.has(difficulty_id): return _difficulty_cache[difficulty_id]
 	var path := String(DIFFICULTY_PATHS.get(difficulty_id, DIFFICULTY_PATHS[&"classic"]))
-	return load(path) as DifficultyProfile
+	var profile := load(path) as DifficultyProfile
+	_difficulty_cache[difficulty_id] = profile
+	return profile
 
 func finish_run(extra_summary: Dictionary = {}) -> Dictionary:
 	var summary := run_stats.duplicate(true)

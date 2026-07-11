@@ -1,6 +1,6 @@
 # Cobie Nukem — Multi-Phase Production PRD
 
-**Status:** Active production source of truth; Phases 1–2 foundation complete, Phases 3–6 not started
+**Status:** Active production source of truth; Phase 1–2 hardening and public iPad release are the current critical gate; Phases 3–6 content work not started
 
 **Created:** 2026-07-11
 
@@ -28,7 +28,39 @@ This section is the first place a new Codex or external-auditor run should read.
 
 ### Immediate next gate
 
-Before Phase 3 implementation, complete an independent Phase 1–2 hardening audit against the live repository and packaged `0.3.0-dev` build. Triage and fix reproducible correctness, progression, performance, architecture, test-coverage, and authoring-efficiency issues. Do not treat missing Phase 3–6 features as Phase 1–2 defects unless a current contract falsely claims to support them.
+Before Phase 3 implementation, close the accepted Fable audit findings, publish the game through the owner website, and deliver a touch-first iPad browser experience with mobile regression evidence. Do not treat missing Phase 3–6 content as a current defect unless a current contract falsely claims to support it.
+
+### Independent Fable audit disposition — 2026-07-11
+
+| Finding | Decision | PRD priority | Required outcome |
+| --- | --- | --- | --- |
+| FA-01 checkpoint restart leaves live enemies at spawn | **Accepted** | **Critical now** | Reset the active encounter and provide short respawn protection; behavioral regression test |
+| FA-02 opening enemies appear too passive | **Partially accepted; audit input was unreliable and the authored grace window is 12 seconds** | **Tune after controlled measurement** | Add bounded engagement evidence and tune per difficulty only if reproducible; avoid making the family opener punitive |
+| FA-03 actors without `died` deadlock ALL_DEFEATED | **Accepted** | **Critical now** | Fail the encounter loudly and reject invalid content |
+| FA-04 all-null spawns silently complete | **Accepted** | **Critical now** | Emit named failure; never report completion |
+| FA-05 stale `waves` table | **Accepted** | **Critical now / cheap cleanup** | Remove duplicate source of truth |
+| FA-06 repeated difficulty Resource load | **Accepted** | **Critical now / cheap performance** | Cache profile by selected difficulty |
+| FA-07 repeated objective activation signals | **Accepted** | **Critical now / correctness** | Emit only on transition; preserve JSON-safe snapshots |
+| FA-08 save migration and snapshot type drift | **Accepted in part** | **Next phase before save-schema expansion** | JSON round-trip contract now; version migration framework before objective persistence ships |
+| FA-09 packaged build can lag source | **Accepted** | **Critical for public hosting** | Stamp, export, package, and deploy the same feature revision; verify public build identity |
+| FA-10 test leaks/assertion-light coverage | **Accepted** | **Critical now for touched paths; ongoing thereafter** | Clean teardown and add behavioral restart/mobile tests; do not block on unrelated engine internals |
+| FA-11 per-frame route fallback scan | **Accepted as low-impact technical debt** | **Future nice-to-have before larger levels** | Replace with indexed/event fallback when Mission 2 route architecture is built |
+| FA-12 difficulty picker absent | **Accepted, already documented** | **Next player-facing phase** | Add accessible selector after mobile/public-release gate unless capacity remains |
+| FA-13 Web focus/pause timing recovery | **Accepted as mobile risk** | **Critical now** | Verify and harden touch/focus recovery during reload, encounter grace, pause, and death |
+| FA-14 validator misses difficulty uniqueness/enemy contract | **Accepted** | **Critical now** | Validate unique difficulty IDs, finite positions, and spawn scene contract with named errors |
+
+### Public Web and iPad critical-release requirements
+
+- The game is accessible from the owner’s public website over HTTPS with a stable, shareable URL.
+- iPad Safari is a first-class browser target, not an experimental afterthought.
+- Touch UI provides simultaneous left-thumb movement and right-thumb look with multi-touch-safe finger ownership.
+- Primary fire, use, jump, reload, weapon previous/next, and pause are reachable without a keyboard.
+- Right-side aiming supports smooth drag, sensitivity scaling, pitch clamping, and no accidental firing while looking.
+- Touch controls respect safe-area insets, landscape orientation, common iPad aspect ratios, and browser chrome changes.
+- HUD, menus, mission cards, options, death, pause, and victory remain readable and tappable at mobile sizes.
+- Pointer-lock instructions are hidden or replaced on touch devices; keyboard/mouse behavior remains unchanged.
+- Focus loss, app switching, orientation/viewport changes, and resumed audio cannot strand input or gameplay state.
+- Automated touch contract tests plus live tablet-size browser interaction are required; physical iPad Safari remains a named human/device gate until run on hardware.
 
 ## 1. Product direction
 

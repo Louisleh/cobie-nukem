@@ -19,6 +19,15 @@ func _ready() -> void:
 		add_child(voice)
 		_voices.append(voice)
 
+
+func _exit_tree() -> void:
+	for voice in _voices:
+		if is_instance_valid(voice):
+			voice.stop()
+			voice.stream = null
+	_voices.clear()
+	_cache.clear()
+
 func play(cue: Cue, volume_db := 0.0) -> void:
 	if _player == null:
 		return

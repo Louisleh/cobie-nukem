@@ -129,6 +129,11 @@ menu_back={
 ]
 }
 
+[input_devices]
+
+pointing/emulate_mouse_from_touch=true
+pointing/emulate_touch_from_mouse=false
+
 [layer_names]
 
 3d_physics/layer_1="World"

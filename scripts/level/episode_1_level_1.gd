@@ -25,6 +25,7 @@ const PauseScene = preload("res://scenes/ui/pause_menu.tscn")
 const DeathScene = preload("res://scenes/ui/death_screen.tscn")
 const VictoryScene = preload("res://scenes/ui/victory_screen.tscn")
 const CombatAudioScene = preload("res://scenes/ui/combat_audio_bridge.tscn")
+const MobileControlsScene = preload("res://scenes/ui/mobile_controls.tscn")
 const ROUTE_PROGRESS := [
 	[-22.0, &"equipment_shed", "EQUIPMENT SHED"],
 	[-47.0, &"maintenance_tunnels", "MAINTENANCE TUNNELS"],
@@ -36,6 +37,7 @@ const ROUTE_PROGRESS := [
 @export var content_manifest: ContentManifest = preload("res://resources/content/salmon_creek_manifest.tres")
 @export var spawn_player := true
 @export var start_run_automatically := true
+@export var setup_presentation := true
 
 var player: Node3D
 var current_zone: StringName = &""
@@ -56,36 +58,13 @@ var _pause_menu: PauseMenu
 var _death_screen: DeathScreen
 var _victory_screen: VictoryScreen
 var _combat_audio: CombatAudioBridge
+var _mobile_controls: MobileControls
 var _opening_enemies: Array[Node] = []
 var _opening_encounter_active := false
 var _objective_tracker: ObjectiveTracker
 var _encounter_runner: EncounterRunner
-
-var waves := {
-	&"forbidden_field": [
-		["res://scenes/enemies/leash_enforcement_drone.tscn", Vector3(-5, 2, -4)],
-		["res://scenes/enemies/leash_enforcement_drone.tscn", Vector3(5, 2, -9)],
-		["res://scenes/enemies/mutant_groundskeeper.tscn", Vector3(0, 0, -14)],
-	],
-	&"equipment_shed": [
-		["res://scenes/enemies/mutant_groundskeeper.tscn", Vector3(-3, 0, -31)],
-		["res://scenes/enemies/leash_enforcement_drone.tscn", Vector3(3, 2, -37)],
-	],
-	&"maintenance_tunnels": [
-		["res://scenes/enemies/squirrel_trooper.tscn", Vector3(-2, 0, -53)],
-		["res://scenes/enemies/squirrel_trooper.tscn", Vector3(2, 0, -64)],
-		["res://scenes/enemies/mutant_groundskeeper.tscn", Vector3(0, 0, -74)],
-	],
-	&"compliance_lab": [
-		["res://scenes/enemies/leash_enforcement_drone.tscn", Vector3(-7, 2, -94)],
-		["res://scenes/enemies/leash_enforcement_drone.tscn", Vector3(7, 2, -103)],
-		["res://scenes/enemies/compliance_hound.tscn", Vector3(0, 0, -109)],
-	],
-	&"walker_arena": [
-		["res://scenes/enemies/animal_control_walker.tscn", Vector3(0, 0, -150)],
-	],
-}
-
+var _last_combat_zone: StringName = &""
+var _resetting_encounter := false
 
 func _ready() -> void:
 	_run_started_ms = Time.get_ticks_msec()
@@ -93,7 +72,7 @@ func _ready() -> void:
 	_setup_gameplay_systems()
 	_build_level()
 	if spawn_player: _spawn_player()
-	_setup_presentation()
+	if setup_presentation: _setup_presentation()
 	if start_run_automatically and get_node_or_null("/root/GameState"):
 		get_node("/root/GameState").begin_run(metadata.level_id)
 	objective_changed.emit(metadata.opening_objective)
@@ -273,6 +252,7 @@ func _enter_zone(zone_id: StringName, title: String, _actor: Node) -> void:
 func _spawn_wave(zone_id: StringName) -> void:
 	if spawned_zones.has(zone_id): return
 	spawned_zones[zone_id] = true
+	if _encounter_runner.definitions.has(zone_id): _last_combat_zone = zone_id
 	_encounter_runner.activate_zone(zone_id, player)
 	if zone_id == &"walker_arena" and _walker == null:
 		# Development fallback: a missing boss scene must not trap QA in the level.
@@ -284,7 +264,7 @@ func _spawn_wave(zone_id: StringName) -> void:
 
 func _on_encounter_actor_spawned(enemy: Node, definition: EncounterDefinition) -> void:
 	if enemy is ComplianceHound: enemy.name = "FetchGuard"
-	enemies_total += 1
+	if not _resetting_encounter: enemies_total += 1
 	if definition.zone_id == &"forbidden_field":
 		enemy.process_mode = Node.PROCESS_MODE_DISABLED
 		_opening_enemies.append(enemy)
@@ -343,6 +323,7 @@ func _on_checkpoint(id: StringName, position_value: Vector3) -> void:
 
 
 func restart_from_checkpoint() -> void:
+	_reset_active_encounter_for_checkpoint()
 	if player:
 		if player.has_method("respawn"):
 			player.respawn(checkpoint_position)
@@ -352,6 +333,20 @@ func restart_from_checkpoint() -> void:
 			if "velocity" in player: player.velocity = Vector3.ZERO
 	if _death_screen:
 		_death_screen.visible = false
+
+
+func _reset_active_encounter_for_checkpoint() -> void:
+	if _encounter_runner == null or _last_combat_zone == &"" or not _encounter_runner.definitions.has(_last_combat_zone): return
+	var zone_id := _last_combat_zone
+	_encounter_runner.reset_zone(zone_id)
+	spawned_zones.erase(zone_id)
+	if zone_id == &"forbidden_field":
+		_opening_enemies.clear()
+		_opening_encounter_active = false
+	if zone_id == &"walker_arena": _walker = null
+	_resetting_encounter = true
+	_spawn_wave(zone_id)
+	_resetting_encounter = false
 
 
 func _on_golden_ball_claimed(_actor: Node) -> void:
@@ -396,14 +391,17 @@ func _setup_presentation() -> void:
 	_death_screen = DeathScene.instantiate() as DeathScreen
 	_victory_screen = VictoryScene.instantiate() as VictoryScreen
 	_combat_audio = CombatAudioScene.instantiate() as CombatAudioBridge
+	_mobile_controls = MobileControlsScene.instantiate() as MobileControls
 	add_child(_hud)
 	add_child(_pause_menu)
 	add_child(_death_screen)
 	add_child(_victory_screen)
 	add_child(_combat_audio)
+	_hud.get_node("Root").add_child(_mobile_controls)
 	if player:
 		_hud.bind_player(player)
 		_combat_audio.bind_player(player)
+		_mobile_controls.bind_player(player)
 		if player.has_signal("died"):
 			player.died.connect(_on_player_died_for_ui)
 	_pause_menu.restart_requested.connect(restart_from_checkpoint)
@@ -431,6 +429,7 @@ func _setup_presentation() -> void:
 
 
 func _on_player_died_for_ui(_source: Node) -> void:
+	if _mobile_controls != null: _mobile_controls.release_all()
 	if _pause_menu != null:
 		_pause_menu.close_for_death()
 	_death_screen.show_death()

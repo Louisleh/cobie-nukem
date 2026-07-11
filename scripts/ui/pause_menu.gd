@@ -52,6 +52,7 @@ func _notification(what: int) -> void:
 		open()
 
 func open() -> void:
+	get_tree().call_group(&"mobile_controls", &"release_all")
 	visible = true
 	_set_paused(true)
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
@@ -66,7 +67,7 @@ func resume() -> void:
 		_feedback_overlay = null
 	visible = false
 	_set_paused(false)
-	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE if MobileControls.touchscreen_expected() else Input.MOUSE_MODE_CAPTURED
 
 func _set_paused(value: bool) -> void:
 	var game_state := get_node_or_null("/root/GameState")

@@ -11,6 +11,7 @@ func _initialize() -> void:
 	var level := packed.instantiate() as EpisodeOneLevel
 	level.spawn_player = false
 	level.start_run_automatically = false
+	level.setup_presentation = false
 	root.add_child.call_deferred(level)
 	await process_frame
 	await process_frame
@@ -52,6 +53,17 @@ func _initialize() -> void:
 	await process_frame
 	check(player.is_in_group(&"player"), "Player identity group missing; zone progression cannot trigger")
 	check(player.is_in_group(&"damageable_player"), "Player damageable identity group missing")
+	level.player = player
+	player.health_armor.health = 1.0
+	level.restart_from_checkpoint()
+	await process_frame
+	check(player.health_armor.health == player.health_armor.max_health, "Checkpoint restart does not restore player health")
+	check(player.health_armor.invulnerable_remaining > 0.0, "Checkpoint restart lacks immediate spawn protection")
+	var reset_actors: Array = level._encounter_runner.active.get(&"forbidden_field", {}).get("actors", [])
+	check(reset_actors.size() == 3, "Checkpoint restart does not respawn the active encounter")
+	var authored_positions: Array[Vector3] = [Vector3(-5, 2, -4), Vector3(5, 2, -9), Vector3(0, 0, -14)]
+	for actor in reset_actors:
+		check(actor.position in authored_positions, "Restarted enemy did not return to an authored spawn")
 	var compliance_trigger: LevelZoneTrigger
 	for child in level.get_node("Interactables").get_children():
 		if child is LevelZoneTrigger and child.zone_id == &"compliance_lab":
@@ -60,7 +72,6 @@ func _initialize() -> void:
 	check(compliance_trigger != null, "Compliance Lab trigger missing")
 	if compliance_trigger != null:
 		check(compliance_trigger.collision_mask == 2, "Progression trigger does not detect the player physics layer")
-		level.player = player
 		player.global_position.z = -90.0
 		level._physics_process(0.0)
 		check(level.spawned_zones.has(&"equipment_shed"), "Spatial fallback missed Equipment Shed progression")
@@ -74,7 +85,8 @@ func _initialize() -> void:
 	if fetch_guard != null:
 		check(fetch_guard.global_position.z > -112.0, "Fetch Guard spawned too far behind the launcher encounter")
 	check(level.spawned_zones.has(&"walker_arena"), "Boss encounter does not arm")
-	check(level.enemies_total == 12, "Complete route must spawn all 12 encounter enemies")
+	check(level.enemies_total == 12, "Complete route must count all 12 authored enemies without double-counting checkpoint respawns")
+	player.health_armor.invulnerable_remaining = 0.0
 	player.global_position.y = player.out_of_bounds_y - 1.0
 	check(player._check_out_of_bounds(), "Player crossing the kill plane triggers out-of-bounds death")
 	check(player.is_dead and player.health_armor.is_dead, "Out-of-bounds fall uses the normal death state")
@@ -85,7 +97,8 @@ func _initialize() -> void:
 	var summary := level.get_level_summary()
 	check(summary.secrets_total == 3, "Summary secret total incorrect")
 	check(summary.level_id == &"episode_1_level_1", "Summary level id incorrect")
-	level.queue_free()
+	level.free()
+	await process_frame
 	await process_frame
 	finish()
 

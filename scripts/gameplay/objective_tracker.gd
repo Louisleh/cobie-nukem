@@ -9,12 +9,14 @@ signal all_required_completed()
 var definitions: Array[ObjectiveDefinition] = []
 var progress: Dictionary = {}
 var completed: Dictionary = {}
+var activated: Dictionary = {}
 
 
 func configure(values: Array[ObjectiveDefinition]) -> void:
 	definitions = values.duplicate()
 	progress.clear()
 	completed.clear()
+	activated.clear()
 	_emit_available()
 
 
@@ -51,12 +53,19 @@ func is_complete() -> bool:
 
 
 func snapshot() -> Dictionary:
-	return {"progress": progress.duplicate(true), "completed": completed.keys()}
+	var serialized_progress := {}
+	for id in progress: serialized_progress[String(id)] = int(progress[id])
+	var serialized_completed: Array[String] = []
+	for id in completed: serialized_completed.append(String(id))
+	return {"progress": serialized_progress, "completed": serialized_completed}
 
 
 func restore(data: Dictionary) -> void:
-	progress = data.get("progress", {}).duplicate(true)
+	progress.clear()
+	var restored_progress: Dictionary = data.get("progress", {})
+	for id in restored_progress: progress[StringName(id)] = int(restored_progress[id])
 	completed.clear()
+	activated.clear()
 	for id in data.get("completed", []): completed[StringName(id)] = true
 	_emit_available()
 
@@ -68,4 +77,7 @@ func _prerequisites_met(definition: ObjectiveDefinition) -> bool:
 
 
 func _emit_available() -> void:
-	for definition in active_objectives(): objective_activated.emit(definition)
+	for definition in active_objectives():
+		if activated.has(definition.id): continue
+		activated[definition.id] = true
+		objective_activated.emit(definition)

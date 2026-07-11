@@ -22,6 +22,15 @@ func validate() -> PackedStringArray:
 		var path := String(spawn.get("scene", ""))
 		if path.is_empty(): errors.append("encounter %s spawn %d has no scene" % [id, index])
 		elif not ResourceLoader.exists(path): errors.append("encounter %s spawn %d scene missing: %s" % [id, index, path])
+		else:
+			var packed := load(path) as PackedScene
+			if packed == null:
+				errors.append("encounter %s spawn %d is not a PackedScene: %s" % [id, index, path])
+			else:
+				var instance := packed.instantiate()
+				if not instance.has_method("set_target") or not instance.has_signal("died"):
+					errors.append("encounter %s spawn %d lacks enemy contract set_target+died: %s" % [id, index, path])
+				instance.free()
 		var position = spawn.get("position")
-		if not position is Vector3: errors.append("encounter %s spawn %d has invalid position" % [id, index])
+		if not position is Vector3 or not position.is_finite(): errors.append("encounter %s spawn %d has invalid finite Vector3 position" % [id, index])
 	return errors

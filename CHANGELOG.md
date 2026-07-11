@@ -6,6 +6,8 @@ All notable changes are recorded here. This project follows a lightweight form o
 
 ### Added
 
+- Touch-first iPad/Web controls with independent movement and look fingers, on-screen fire/use/jump/reload/weapon/pause buttons, touch sensitivity, landscape scaling, and pointer-lock-free aiming.
+- Behavioral checkpoint-respawn, mobile multi-touch, encounter failure, objective idempotence, JSON snapshot, validator-negative, and content-contract tests.
 - Phase 1–2 production foundation: typed objective chains, data-driven encounter runner, three multidimensional difficulty profiles, enemy tactical archetypes, versioned level content manifests, and a headless content validator.
 - Detailed multi-phase production PRD with Vancouver Waterfront, Mount Hood, and Moon mission briefs, relevant props/posters/Easter eggs, legal guardrails, and phase exit criteria.
 - Mission content-authoring guide, template manifest, critical-path checklist, and regression tests for prerequisite, encounter, difficulty, and manifest contracts.
@@ -19,6 +21,8 @@ All notable changes are recorded here. This project follows a lightweight form o
 
 ### Changed
 
+- Fable Phase 1–2 audit findings are triaged in the phase PRD; active encounters now reset at checkpoint retry with short spawn protection, authored enemy totals remain stable, and invalid encounters fail loudly.
+- Content validation now rejects duplicate difficulties, non-finite positions, and spawn scenes without the enemy contract; difficulty profiles are cached and objective activation signals emit once.
 - GitHub Actions now runs the complete repository validator, both exports, package verification, evidence upload, and immutable Pages-artifact deployment.
 
 ## 0.1.0-rc — 2026-07-11
