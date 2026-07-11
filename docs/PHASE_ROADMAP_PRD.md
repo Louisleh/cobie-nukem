@@ -1,10 +1,34 @@
 # Cobie Nukem — Multi-Phase Production PRD
 
-**Status:** Active production source of truth  
-**Created:** 2026-07-11  
-**Current release baseline:** `0.2.0-rc1`  
-**Engine:** Godot 4.7 stable, GDScript, Compatibility renderer  
+**Status:** Active production source of truth; Phases 1–2 foundation complete, Phases 3–6 not started
+
+**Created:** 2026-07-11
+
+**Last status review:** 2026-07-11
+
+**Current development baseline:** `0.3.0-dev` (`f7631fb` feature revision, `4d31054` evidence commit)
+
+**Last playtest RC:** `0.2.0-rc1`
+
+**Engine:** Godot 4.7 stable, GDScript, Compatibility renderer
 **Purpose:** Turn the family-playtest vertical slice into a sustainable, original multi-level game without sacrificing responsiveness, humor, Web support, or unusual-controller accessibility.
+
+## 0. Current status dashboard
+
+This section is the first place a new Codex or external-auditor run should read. “Foundation complete” means the reusable contract exists, Salmon Creek exercises it, and automated regression passes; it does not mean every future extension listed in the phase is finished.
+
+| Phase | Status | Completed | Explicitly remaining |
+| --- | --- | --- | --- |
+| 1. Gameplay systems foundation | **FOUNDATION COMPLETE** | Typed objectives/tracker, encounter definitions/runner, three difficulty Resources, selected difficulty in run state, enemy archetypes and spacing behavior, Salmon Creek migration, focused tests | Difficulty-selection UI; pickup and aim-assist multiplier consumption; multi-wave director; persistent objective snapshots; group tactics/support actions |
+| 2. Content-production pipeline | **FOUNDATION COMPLETE** | Versioned manifest, Salmon Creek content data, headless validator, release-gate integration, authoring guide, manifest template, critical-path rules | Visual editor tooling; spawn volumes/patrol paths; richer pickup/prop/zone schemas; automated nav/reachability analysis; Mission 2 production proof |
+| 3. World and episode structure | **NOT STARTED — BRIEFS ONLY** | Vancouver Waterfront, Mount Hood, and Moon design briefs and personal-detail/legal notes are documented | No new level scenes, geometry, props, mission Resources, encounters, enemies, or assets have been built |
+| 4. Combat and presentation expansion | **NOT STARTED** | Requirements captured only | Weak points, hazards, richer reactions/animations, music state system, voice, comic-panel sequences, Mission 2 demonstration |
+| 5. Accessibility, persistence, observability | **NOT STARTED** | Existing RC options/input/reporting remain; future requirements captured | Save migrations/profiles, objective persistence, expanded assists, telemetry-free metrics, soak and compatibility matrices |
+| 6. Alpha, beta, release | **NOT STARTED** | Existing development packaging and CI are available | Episode content completion, full human/device/browser matrices, signing/notarization, legal review, store readiness |
+
+### Immediate next gate
+
+Before Phase 3 implementation, complete an independent Phase 1–2 hardening audit against the live repository and packaged `0.3.0-dev` build. Triage and fix reproducible correctness, progression, performance, architecture, test-coverage, and authoring-efficiency issues. Do not treat missing Phase 3–6 features as Phase 1–2 defects unless a current contract falsely claims to support them.
 
 ## 1. Product direction
 
