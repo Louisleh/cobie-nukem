@@ -61,6 +61,7 @@ fi
 
 if [[ "${QA_EXPORTS:-0}" == "1" ]]; then
   echo "==> release exports"
+  rm -rf builds/web builds/macos
   mkdir -p builds/web builds/macos
   "$GODOT_BIN" --headless --path . --export-release Web builds/web/index.html
   "$GODOT_BIN" --headless --path . --export-release macOS builds/macos/CobieNukem.zip

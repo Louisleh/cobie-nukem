@@ -6,6 +6,8 @@ cd "$(dirname "$0")/.."
 VERSION="${VERSION:-0.4.0-mobile-rc1}"
 REVISION="${GITHUB_SHA:-$(git rev-parse --verify HEAD 2>/dev/null || printf unknown)}"
 SHORT_REVISION="${REVISION:0:12}"
+RUNTIME_REVISION="$(sed -n 's/^const REVISION := "\([^"]*\)"/\1/p' scripts/core/build_info.gd | head -1)"
+[[ -n "$RUNTIME_REVISION" ]] || { echo "ERROR runtime revision missing from BuildInfo"; exit 1; }
 PACKAGES_DIR="builds/packages"
 PAGES_DIR="builds/pages"
 
@@ -34,7 +36,7 @@ cp -R builds/web/. "$PAGES_DIR/play/"
 cp web/landing/styles.css "$PAGES_DIR/styles.css"
 cp assets/brand/cobie_nukem_cover.png "$PAGES_DIR/assets/cobie-nukem-cover.png"
 sed -e "s/__BUILD_VERSION__/$VERSION/g" \
-    -e "s/__GIT_REVISION__/$SHORT_REVISION/g" \
+    -e "s/__GIT_REVISION__/$RUNTIME_REVISION/g" \
     web/landing/index.html > "$PAGES_DIR/index.html"
 touch "$PAGES_DIR/.nojekyll"
 
@@ -81,6 +83,7 @@ cat > "$PACKAGES_DIR/BUILD_INFO.txt" <<EOF
 Cobie Nukem release package
 Version: $VERSION
 Git revision: $REVISION
+Runtime gameplay/export revision: $RUNTIME_REVISION
 Generated UTC: $(date -u +%FT%TZ)
 Web entry: builds/web/index.html
 Pages entry: builds/pages/index.html

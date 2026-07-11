@@ -6,3 +6,4 @@ builds/*
 *.log
 tmp/
 export_credentials.cfg
+handoffs/fable_phase12_audit/outputs/**
