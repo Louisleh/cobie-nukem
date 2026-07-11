@@ -14,13 +14,13 @@ var _touch_enabled := false
 
 const MOVE_RADIUS := 25.0
 const BUTTONS := {
-	&"fire_primary": {"center": Vector2(287, 139), "radius": 24.0, "label": "FIRE"},
-	&"use": {"center": Vector2(239, 148), "radius": 15.0, "label": "USE"},
-	&"jump": {"center": Vector2(286, 91), "radius": 15.0, "label": "JUMP"},
-	&"reload": {"center": Vector2(244, 112), "radius": 13.0, "label": "R"},
-	&"weapon_previous": {"center": Vector2(274, 48), "radius": 12.0, "label": "◀"},
-	&"weapon_next": {"center": Vector2(304, 48), "radius": 12.0, "label": "▶"},
-	&"pause": {"center": Vector2(304, 15), "radius": 10.0, "label": "Ⅱ"},
+	&"fire_primary": {"center": Vector2(291, 122), "radius": 21.0, "label": "FIRE"},
+	&"use": {"center": Vector2(250, 133), "radius": 12.0, "label": "USE"},
+	&"jump": {"center": Vector2(291, 78), "radius": 13.0, "label": "JUMP"},
+	&"reload": {"center": Vector2(254, 101), "radius": 11.0, "label": "R"},
+	&"weapon_previous": {"center": Vector2(278, 43), "radius": 10.0, "label": "<"},
+	&"weapon_next": {"center": Vector2(305, 43), "radius": 10.0, "label": ">"},
+	&"pause": {"center": Vector2(304, 14), "radius": 10.0, "label": "MENU"},
 }
 
 
@@ -79,7 +79,7 @@ func _handle_touch(event: InputEventScreenTouch) -> void:
 			return
 		if position.x < 120.0 and position.y > 75.0 and _move_finger < 0:
 			_move_finger = event.index
-			_move_origin = Vector2(52, 137)
+			_move_origin = Vector2(48, 109)
 			_update_move(position)
 			get_viewport().set_input_as_handled()
 			return
@@ -152,7 +152,7 @@ func _draw() -> void:
 	if not visible: return
 	var scale_value := minf(size.x / 320.0, size.y / 180.0)
 	var font := ThemeDB.fallback_font
-	var move_center := _from_design(Vector2(52, 137))
+	var move_center := _from_design(Vector2(48, 109))
 	draw_circle(move_center, MOVE_RADIUS * scale_value, Color(0.05, 0.08, 0.09, 0.38))
 	draw_arc(move_center, MOVE_RADIUS * scale_value, 0.0, TAU, 40, Color(0.78, 0.72, 0.42, 0.6), maxf(1.0, scale_value))
 	var knob := move_center + _move_value * MOVE_RADIUS * 0.55 * scale_value

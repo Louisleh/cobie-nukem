@@ -14,8 +14,8 @@ func _initialize() -> void:
 	controls.bind_player(player)
 	await process_frame
 	_expect(controls.visible and controls.is_touch_enabled(), "forced mobile controls are visible")
-	_expect(controls._button_at(Vector2(287, 139)) == &"fire_primary", "fire hit target maps correctly")
-	var move_down := InputEventScreenTouch.new(); move_down.index = 1; move_down.position = Vector2(52, 112); move_down.pressed = true
+	_expect(controls._button_at(Vector2(291, 122)) == &"fire_primary", "fire hit target maps correctly")
+	var move_down := InputEventScreenTouch.new(); move_down.index = 1; move_down.position = Vector2(48, 84); move_down.pressed = true
 	controls._handle_touch(move_down)
 	_expect(controls._move_finger == 1 and player._touch_move.y < -0.9, "left thumb drives forward movement")
 	var look_down := InputEventScreenTouch.new(); look_down.index = 2; look_down.position = Vector2(170, 90); look_down.pressed = true
