@@ -7,7 +7,7 @@ This is a durable evidence template, not a claim that every listed check has run
 | Field | Value |
 | --- | --- |
 | Version | `0.2.0-rc1` / build `2026-07-11-ambitious-rc` |
-| Git base | `000aafb4026d`; final feature revision recorded in the handoff |
+| Feature revision | `67d6a33` (`feat: deliver ambitious family playtest rc`) |
 | Working tree | Candidate source complete; packaging artifacts ignored |
 | Godot | `4.7.stable.official.5b4e0cb0f` |
 | Platform | macOS host plus packaged Web build in Codex Chromium; no physical-device claim |
@@ -32,7 +32,7 @@ This is a durable evidence template, not a claim that every listed check has run
 
 | Artifact | Bytes | SHA-256 |
 | --- | ---: | --- |
-| `cobie-nukem-0.2.0-rc1-itch.zip` | 17,623,184 | `7d92c074c2bdb83fda3872e9a83a45b0a4eda68e64e4aee7da79554230675632` |
-| `cobie-nukem-0.2.0-rc1-macos-unsigned.zip` | 66,987,144 | `9daff1c6d84e6888d613be37829ddd9e3a8d6ffe8882261068b8c37395f30108` |
+| `cobie-nukem-0.2.0-rc1-itch.zip` | 17,623,182 | `7e4bcf554d80a3b9128ecd662a12e326fb58e2c21aa885ea4713b8e1462ac910` |
+| `cobie-nukem-0.2.0-rc1-macos-unsigned.zip` | 66,987,145 | `c6f32804a0d3f1dff31c0bd8fbad6035063d3e65923fa30e11074b643fbfbf52` |
 
 Browser acceptance used the locally served packaged Pages artifact at `http://127.0.0.1:8060/`. No Godot asset/navigation failure was observed. A generic in-app Chromium automation error appeared around screenshot/clipboard operations and is not attributed to game code. Audio implementation and timing are contract-tested, but subjective mix quality still needs human listening on the target speakers/headphones.

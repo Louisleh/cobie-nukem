@@ -22,8 +22,8 @@ Built on 2026-07-11 with Godot `4.7.stable.official.5b4e0cb0f` and matching offi
 
 ## Local artifacts
 
-- `builds/packages/cobie-nukem-0.2.0-rc1-itch.zip` — 17,623,184 bytes; SHA-256 `7d92c074c2bdb83fda3872e9a83a45b0a4eda68e64e4aee7da79554230675632`.
-- `builds/packages/cobie-nukem-0.2.0-rc1-macos-unsigned.zip` — 66,987,144 bytes; SHA-256 `9daff1c6d84e6888d613be37829ddd9e3a8d6ffe8882261068b8c37395f30108`.
+- `builds/packages/cobie-nukem-0.2.0-rc1-itch.zip` — 17,623,182 bytes; SHA-256 `7e4bcf554d80a3b9128ecd662a12e326fb58e2c21aa885ea4713b8e1462ac910`.
+- `builds/packages/cobie-nukem-0.2.0-rc1-macos-unsigned.zip` — 66,987,145 bytes; SHA-256 `c6f32804a0d3f1dff31c0bd8fbad6035063d3e65923fa30e11074b643fbfbf52`.
 - `builds/pages/` — static landing page plus playable `/play/` route.
 
 ## Validation
