@@ -3,7 +3,7 @@ set -euo pipefail
 
 cd "$(dirname "$0")/.."
 
-VERSION="${VERSION:-0.2.0-rc1}"
+VERSION="${VERSION:-0.4.0-mobile-rc1}"
 REVISION="${GITHUB_SHA:-$(git rev-parse --verify HEAD 2>/dev/null || printf unknown)}"
 SHORT_REVISION="${REVISION:0:12}"
 PACKAGES_DIR="builds/packages"
