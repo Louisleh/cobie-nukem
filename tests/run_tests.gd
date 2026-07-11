@@ -4,7 +4,7 @@ const REQUIRED_ACTIONS := [
 	"move_forward", "move_backward", "strafe_left", "strafe_right",
 	"look_left", "look_right", "look_up", "look_down", "fire_primary",
 	"fire_secondary", "use", "jump", "run", "weapon_next",
-	"weapon_previous", "pause", "menu_accept", "menu_back",
+	"weapon_previous", "reload", "pause", "menu_accept", "menu_back",
 ]
 
 var failures: Array[String] = []
@@ -41,4 +41,3 @@ func _check_scene(path: String) -> void:
 		failures.append("Could not instantiate critical scene: %s" % path)
 	else:
 		instance.free()
-

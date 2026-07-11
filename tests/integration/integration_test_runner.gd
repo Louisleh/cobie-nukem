@@ -22,6 +22,7 @@ func _run() -> void:
 	await _test_enemy_transition()
 	await _test_shot_feedback()
 	await _test_paused_options_return()
+	await _test_playtest_report()
 	await _test_secret_counting_and_exit()
 	_test_level_metadata()
 	if failures.is_empty():
@@ -54,6 +55,7 @@ func _test_ammo_and_cooldown() -> void:
 	definition.ammo_type = "qa_ammo"
 	definition.magazine_size = 5
 	definition.starting_ammo = 2
+	definition.reserve_capacity = 5
 	definition.primary_cooldown = 0.25
 	var weapon := WeaponBase.new()
 	weapon.definition = definition
@@ -71,7 +73,7 @@ func _test_ammo_and_cooldown() -> void:
 	weapon._process(0.3)
 	_expect(not weapon._begin_fire(false), "empty weapon cannot fire")
 	_expect(weapon.add_ammo(99) == 5, "ammo refill clamps and reports actual gain")
-	_expect(weapon.ammo == 5, "ammo never exceeds magazine capacity")
+	_expect(weapon.ammo == 0 and weapon.reserve_ammo == 5, "ammo refill fills reserve without bypassing reload")
 	weapon.free()
 
 func _test_save_round_trip() -> void:
@@ -208,6 +210,24 @@ func _test_paused_options_return() -> void:
 	pause_menu.resume()
 	_expect(not paused, "resume remains available after closing options")
 	pause_menu.free()
+
+func _test_playtest_report() -> void:
+	var report := preload("res://scenes/ui/playtest_report.tscn").instantiate() as PlaytestReport
+	root.add_child(report)
+	await process_frame
+	var summary := {
+		"completed": true, "duration_msec": 125000, "deaths": 2,
+		"enemies_defeated": 12, "enemies_total": 12,
+		"secrets_found": 3, "secrets_total": 3,
+		"last_zone": "walker_arena", "checkpoint_id": "lab_entry",
+	}
+	report.open(summary)
+	var text := (report.get_node("Panel/VBox/ReportText") as TextEdit).text
+	_expect(report.visible and BuildInfo.VERSION in text, "playtest report exposes traceable build version")
+	_expect("What was the most fun moment?" in text and "text it to Louis" in text, "playtest report contains the three-question handoff")
+	_expect("Enemies: 12 / 12" in text and "Completion: COMPLETE" in text, "playtest report summarizes completion evidence")
+	report.close()
+	report.free()
 
 func _test_secret_counting_and_exit() -> void:
 	var found: Dictionary = {}

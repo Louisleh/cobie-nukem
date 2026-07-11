@@ -4,8 +4,10 @@ extends CanvasLayer
 signal restart_requested
 
 const OptionsScene := preload("res://scenes/menus/options_menu.tscn")
+const FeedbackScene := preload("res://scenes/ui/playtest_report.tscn")
 
 var _options_overlay: OptionsMenu
+var _feedback_overlay: PlaytestReport
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
@@ -16,6 +18,8 @@ func _ready() -> void:
 		restart_requested.emit()
 	)
 	%OptionsButton.pressed.connect(_open_options)
+	%FeedbackButton.pressed.connect(_open_feedback)
+	%BuildLabel.text = "v%s • %s" % [BuildInfo.VERSION, BuildInfo.REVISION]
 	%MainMenuButton.pressed.connect(func() -> void:
 		_set_paused(false)
 		_route("res://scenes/menus/main_menu.tscn")
@@ -25,6 +29,8 @@ func _input(event: InputEvent) -> void:
 	if event.is_action_pressed("pause"):
 		if is_instance_valid(_options_overlay):
 			_close_options()
+		elif is_instance_valid(_feedback_overlay):
+			_close_feedback()
 		elif visible:
 			resume()
 		else:
@@ -35,6 +41,9 @@ func close_for_death() -> void:
 	if is_instance_valid(_options_overlay):
 		_options_overlay.queue_free()
 		_options_overlay = null
+	if is_instance_valid(_feedback_overlay):
+		_feedback_overlay.queue_free()
+		_feedback_overlay = null
 	visible = false
 	_set_paused(false)
 
@@ -52,6 +61,9 @@ func resume() -> void:
 	if is_instance_valid(_options_overlay):
 		_options_overlay.queue_free()
 		_options_overlay = null
+	if is_instance_valid(_feedback_overlay):
+		_feedback_overlay.queue_free()
+		_feedback_overlay = null
 	visible = false
 	_set_paused(false)
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
@@ -83,3 +95,21 @@ func _close_options() -> void:
 	$Dim.visible = true
 	$Panel.visible = true
 	%OptionsButton.grab_focus()
+
+func _open_feedback() -> void:
+	if is_instance_valid(_feedback_overlay):
+		return
+	$Dim.visible = false
+	$Panel.visible = false
+	_feedback_overlay = FeedbackScene.instantiate() as PlaytestReport
+	add_child(_feedback_overlay)
+	_feedback_overlay.closed.connect(_close_feedback)
+	_feedback_overlay.open()
+
+func _close_feedback() -> void:
+	if is_instance_valid(_feedback_overlay):
+		_feedback_overlay.queue_free()
+	_feedback_overlay = null
+	$Dim.visible = true
+	$Panel.visible = true
+	%FeedbackButton.grab_focus()

@@ -16,6 +16,11 @@ var _notification_tween: Tween
 func bind_player(player: Node) -> void:
 	if player.has_signal("weapon_changed"):
 		player.weapon_changed.connect(_on_weapon_changed)
+	if player.has_signal("weapon_ammo_state_changed"):
+		player.weapon_ammo_state_changed.connect(_on_weapon_ammo_state_changed)
+	if player is CobiePlayer and not player.weapons.is_empty():
+		var current: WeaponBase = player.weapons[player.current_weapon_index]
+		_on_weapon_ammo_state_changed(current.definition.display_name, current.ammo, current.definition.magazine_size, current.reserve_ammo, current.definition.infinite_reserve)
 	if player.has_signal("interaction_available"):
 		player.interaction_available.connect(_on_interaction_available)
 	if player.has_signal("pickup_message"):
@@ -62,6 +67,10 @@ func _on_armor_changed(current: float, _maximum: float) -> void:
 func _on_weapon_changed(display_name: String, ammo: int, maximum_ammo: int) -> void:
 	weapon_label.text = display_name.to_upper()
 	ammo_label.text = "∞" if maximum_ammo <= 0 else "%02d" % ammo
+
+func _on_weapon_ammo_state_changed(display_name: String, loaded: int, _capacity: int, reserve: int, infinite_reserve: bool) -> void:
+	weapon_label.text = display_name.to_upper()
+	ammo_label.text = "%02d / %s" % [loaded, "∞" if infinite_reserve else "%02d" % reserve]
 
 func _on_interaction_available(label: String) -> void:
 	interaction_label.visible = not label.is_empty()

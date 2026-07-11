@@ -203,7 +203,6 @@ func _health_bar_material(color: Color) -> StandardMaterial3D:
 	material.emission_enabled = true
 	material.emission = color
 	material.emission_energy_multiplier = 1.4
-	material.set_flag(BaseMaterial3D.FLAG_FIXED_SIZE, true)
 	return material
 
 
@@ -214,6 +213,7 @@ func _update_health_bar_presentation() -> void:
 	if view_camera == null:
 		return
 	var distance := global_position.distance_to(view_camera.global_position)
+	_health_bar.visible = distance >= 2.6 and distance <= 24.0
 	_health_bar.scale = Vector3.ONE * clampf(distance * 0.016, 0.08, 0.34)
 	if _health_label != null:
 		_health_label.visible = distance <= 16.0

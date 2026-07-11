@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="LevelCardData" load_steps=2 format=3]
+[ext_resource type="Script" path="res://scripts/ui/level_card_data.gd" id="1"]
+[resource]
+script = ExtResource("1")
+level_id = &"rain_city_kennel"
+title = "RAIN CITY KENNEL"
+episode = "EPISODE 2 // CLASSIFIED"
+description = "A neon kennel district remains under Animal Control quarantine."
+difficulty = 3
+expected_minutes = "CLASSIFIED"
+encounter = "LOCKED"

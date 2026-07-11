@@ -1,6 +1,9 @@
 class_name VictoryScreen
 extends CanvasLayer
 
+const FeedbackScene := preload("res://scenes/ui/playtest_report.tscn")
+var _summary: Dictionary = {}
+
 func _ready() -> void:
 	visible = false
 	%MainMenuButton.pressed.connect(func() -> void: _route("res://scenes/menus/main_menu.tscn"))
@@ -9,8 +12,11 @@ func _ready() -> void:
 		if game_state: game_state.begin_run(&"no_dogs_allowed")
 		_route("res://scenes/levels/episode_1_level_1.tscn")
 	)
+	%FeedbackButton.pressed.connect(_open_feedback)
+	%BuildLabel.text = BuildInfo.label()
 
 func show_summary(summary: Dictionary) -> void:
+	_summary = summary.duplicate(true)
 	visible = true
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 	var seconds := int(summary.get("duration_msec", 0)) / 1000
@@ -26,6 +32,12 @@ func show_summary(summary: Dictionary) -> void:
 	%RankLabel.text = _rank(seconds, secrets, accuracy)
 	%ProceduralAudio.play(ProceduralAudio.Cue.VICTORY)
 	%ReplayButton.grab_focus()
+
+func _open_feedback() -> void:
+	var report := FeedbackScene.instantiate() as PlaytestReport
+	add_child(report)
+	report.closed.connect(report.queue_free)
+	report.open(_summary)
 
 func _rank(seconds: int, secrets: int, accuracy: float) -> String:
 	var score := secrets * 2 + int(accuracy >= 0.5) + int(seconds > 0 and seconds < 900)

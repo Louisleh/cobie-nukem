@@ -107,7 +107,17 @@ text = "PLAY AGAIN"
 unique_name_in_owner = true
 layout_mode = 2
 text = "MAIN MENU"
+[node name="FeedbackButton" type="Button" parent="Panel/VBox/Buttons"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "FEEDBACK"
+[node name="BuildLabel" type="Label" parent="Panel/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.57, 0.68, 0.62, 1)
+theme_override_font_sizes/font_size = 5
+text = "BUILD"
+horizontal_alignment = 1
 [node name="ProceduralAudio" type="Node" parent="."]
 unique_name_in_owner = true
 script = ExtResource("3")
-

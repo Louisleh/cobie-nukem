@@ -28,6 +28,7 @@ run_godot_test res://tests/run_tests.gd
 run_godot_test res://tests/unit/input_system_test.gd
 run_godot_test res://tests/unit/combat_test_runner.gd
 run_godot_test res://tests/unit/enemy_contract_tests.gd
+run_godot_test res://tests/unit/ui_scene_test.gd
 run_godot_test res://tests/integration/integration_test_runner.gd
 run_godot_test res://tests/integration/test_episode_1_level.gd
 run_godot_test res://tests/smoke/smoke_test_runner.gd

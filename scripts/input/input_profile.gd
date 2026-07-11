@@ -6,7 +6,7 @@ const UNIVERSAL_ACTIONS: Array[StringName] = [
 	&"move_forward", &"move_backward", &"strafe_left", &"strafe_right",
 	&"look_left", &"look_right", &"look_up", &"look_down",
 	&"fire_primary", &"fire_secondary", &"use", &"jump", &"run",
-	&"weapon_next", &"weapon_previous", &"pause", &"menu_accept", &"menu_back"
+	&"weapon_next", &"weapon_previous", &"reload", &"pause", &"menu_accept", &"menu_back"
 ]
 
 @export var profile_id := "generic_gamepad"
@@ -196,6 +196,7 @@ static func default_bindings_for(profile_preset: String) -> Dictionary:
 				"use": [_key(KEY_E)], "jump": [_key(KEY_SPACE)], "run": [_key(KEY_SHIFT)],
 				"weapon_previous": [_key(KEY_UP)],
 				"weapon_next": [_key(KEY_DOWN)],
+				"reload": [_key(KEY_R)],
 				"pause": [_key(KEY_ESCAPE)], "menu_accept": [_key(KEY_ENTER)], "menu_back": [_key(KEY_ESCAPE)],
 			}
 		"classic_1996":

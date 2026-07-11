@@ -6,10 +6,12 @@ signal restart_requested
 signal interaction_available(label: String)
 signal interacted(target: Node)
 signal weapon_changed(display_name: String, ammo: int, maximum_ammo: int)
+signal weapon_ammo_state_changed(display_name: String, loaded: int, magazine_capacity: int, reserve: int, infinite_reserve: bool)
 signal pickup_message(message: String)
 signal temporary_effect_started(effect: StringName, duration: float)
 signal shot_resolved(kind: StringName, position: Vector3)
 signal access_item_changed(label: String)
+signal footstep(running: bool)
 
 @export_category("Movement")
 @export var walk_speed := 6.0
@@ -46,6 +48,8 @@ var _head_base_position := Vector3.ZERO
 var _zoomies_remaining := 0.0
 var _wheel_switch_time_ms := -1000
 var _run_toggled := false
+var _step_distance := 0.0
+var _last_step_position := Vector3.ZERO
 
 func _ready() -> void:
 	# Level zones key progression off this stable identity. Keeping it in code
@@ -53,6 +57,7 @@ func _ready() -> void:
 	add_to_group(&"player")
 	add_to_group(&"damageable_player")
 	_head_base_position = head.position
+	_last_step_position = global_position
 	var settings := get_node_or_null("/root/SettingsManager")
 	if settings != null and settings.has_method("get_value"):
 		mouse_sensitivity *= clampf(float(settings.call("get_value", &"gameplay", &"mouse_sensitivity", 1.0)), 0.25, 3.0)
@@ -66,6 +71,7 @@ func _ready() -> void:
 			weapons.append(weapon)
 			weapon.configure(camera, auto_aim, feedback)
 			weapon.ammo_changed.connect(_on_weapon_ammo_changed.bind(weapon))
+			weapon.ammo_state_changed.connect(_on_weapon_ammo_state_changed.bind(weapon))
 			weapon.shot_resolved.connect(_on_shot_resolved)
 	if not weapons.is_empty():
 		select_weapon(0)
@@ -104,6 +110,9 @@ func _input(event: InputEvent) -> void:
 		get_viewport().set_input_as_handled()
 	elif event.is_action_pressed("weapon_previous"):
 		select_weapon(current_weapon_index - 1)
+		get_viewport().set_input_as_handled()
+	elif event.is_action_pressed("reload"):
+		request_reload()
 		get_viewport().set_input_as_handled()
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -158,6 +167,7 @@ func _physics_process(delta: float) -> void:
 	velocity.z = move_toward(velocity.z, target_velocity.z, acceleration * delta)
 	_apply_keyboard_look(delta)
 	move_and_slide()
+	_update_footsteps(running)
 	_update_head_bob(delta, input.length())
 	_update_interaction_prompt()
 
@@ -231,6 +241,7 @@ func select_weapon(index: int) -> void:
 	if _weapon_selection_initialized and candidate == current_weapon_index:
 		return
 	if _weapon_selection_initialized:
+		weapons[current_weapon_index].cancel_reload()
 		weapons[current_weapon_index].enabled = false
 	else:
 		for weapon in weapons:
@@ -240,6 +251,7 @@ func select_weapon(index: int) -> void:
 	_weapon_selection_initialized = true
 	var current := weapons[current_weapon_index]
 	weapon_changed.emit(current.definition.display_name, current.ammo, current.definition.magazine_size)
+	weapon_ammo_state_changed.emit(current.definition.display_name, current.ammo, current.definition.magazine_size, current.reserve_ammo, current.definition.infinite_reserve)
 
 
 func select_weapon_slot(index: int) -> bool:
@@ -264,6 +276,26 @@ func _current_weapon_fire(secondary: bool) -> void:
 		weapon.fire_secondary()
 	else:
 		weapon.fire_primary()
+
+func request_reload() -> bool:
+	if weapons.is_empty() or is_dead:
+		return false
+	return weapons[current_weapon_index].request_reload()
+
+func _update_footsteps(running: bool) -> void:
+	var horizontal_delta := Vector2(global_position.x - _last_step_position.x, global_position.z - _last_step_position.z).length()
+	_last_step_position = global_position
+	if not should_play_footsteps(is_on_floor(), Vector2(velocity.x, velocity.z).length(), is_dead, get_tree().paused):
+		_step_distance = 0.0
+		return
+	_step_distance += horizontal_delta
+	var stride := 1.35 if running else 1.65
+	if _step_distance >= stride:
+		_step_distance = fmod(_step_distance, stride)
+		footstep.emit(running)
+
+static func should_play_footsteps(grounded: bool, horizontal_speed: float, dead: bool, paused: bool) -> bool:
+	return grounded and horizontal_speed >= 0.8 and not dead and not paused
 
 func _apply_keyboard_look(delta: float) -> void:
 	var yaw := Input.get_axis("look_left", "look_right")
@@ -329,6 +361,11 @@ func _on_weapon_ammo_changed(current: int, maximum: int, weapon: WeaponBase) -> 
 	if weapons.is_empty() or weapon != weapons[current_weapon_index]:
 		return
 	weapon_changed.emit(weapon.definition.display_name, current, maximum)
+
+func _on_weapon_ammo_state_changed(loaded: int, capacity: int, reserve: int, infinite: bool, weapon: WeaponBase) -> void:
+	if weapons.is_empty() or weapon != weapons[current_weapon_index]:
+		return
+	weapon_ammo_state_changed.emit(weapon.definition.display_name, loaded, capacity, reserve, infinite)
 
 func _on_shot_resolved(kind: StringName, position_value: Vector3) -> void:
 	shot_resolved.emit(kind, position_value)

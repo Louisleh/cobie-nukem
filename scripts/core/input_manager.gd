@@ -8,7 +8,7 @@ const REQUIRED_ACTIONS: Array[StringName] = [
 	&"move_forward", &"move_backward", &"strafe_left", &"strafe_right",
 	&"look_left", &"look_right", &"look_up", &"look_down",
 	&"fire_primary", &"fire_secondary", &"use", &"jump", &"run",
-	&"weapon_next", &"weapon_previous", &"pause", &"menu_accept", &"menu_back",
+	&"weapon_next", &"weapon_previous", &"reload", &"pause", &"menu_accept", &"menu_back",
 ]
 
 var active_control_method: StringName = &"keyboard_mouse"

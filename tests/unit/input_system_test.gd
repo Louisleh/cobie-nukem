@@ -53,6 +53,7 @@ func check_default_profiles() -> void:
 	if int(keyboard.bindings_for(&"fire_primary")[0].index) != MOUSE_BUTTON_LEFT: failures.append("Keyboard primary fire must display LMB")
 	if int(keyboard.bindings_for(&"weapon_previous")[0].index) != KEY_UP: failures.append("Previous weapon must display Up")
 	if int(keyboard.bindings_for(&"weapon_next")[0].index) != KEY_DOWN: failures.append("Next weapon must display Down")
+	if int(keyboard.bindings_for(&"reload")[0].index) != KEY_R: failures.append("Reload must display R")
 	var classic := InputProfileScript.new()
 	classic.preset = "classic_1996"
 	classic.ensure_defaults()

@@ -1,4 +1,4 @@
-name: Godot CI
+name: Godot release gates
 
 on:
   pull_request:
@@ -8,71 +8,90 @@ on:
 
 permissions:
   contents: read
-  pages: write
-  id-token: write
 
 concurrency:
-  group: "godot-${{ github.ref }}"
+  group: godot-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  validate-and-export:
+  validate-package:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Godot 4.7 stable
+      - name: Set up Godot 4.7 stable and export templates
         uses: chickensoft-games/setup-godot@v2
         with:
           version: 4.7.0
           use-dotnet: false
           include-templates: true
 
-      - name: Verify pinned engine
-        run: godot --version | tee godot-version.txt
-
-      - name: Import project
-        run: godot --headless --path . --editor --quit
-
-      - name: Run headless tests
-        run: godot --headless --path . --script res://tests/run_tests.gd
-
-      - name: Export Web and macOS
+      - name: Record toolchain
         run: |
-          mkdir -p builds/web builds/macos
-          godot --headless --path . --export-release Web builds/web/index.html
-          godot --headless --path . --export-release macOS builds/macos/CobieNukem.zip
+          godot --version | tee godot-version.txt
+          python3 --version | tee python-version.txt
 
-      - name: Upload Web artifact
+      - name: Run full validation and export matrix
+        env:
+          GODOT_BIN: godot
+          QA_EXPORTS: "1"
+        run: bash tools/release_validate.sh | tee validation.log
+
+      - name: Package Web, itch.io, Pages, and unsigned macOS deliverables
+        env:
+          SKIP_VALIDATION: "1"
+        run: bash tools/package_release.sh
+
+      - name: Upload validation evidence
         uses: actions/upload-artifact@v4
         with:
-          name: cobie-nukem-web
+          name: cobie-nukem-validation-${{ github.sha }}
+          path: |
+            validation.log
+            godot-version.txt
+            python-version.txt
+            builds/packages/SHA256SUMS.txt
+          if-no-files-found: error
+
+      - name: Upload Web export
+        uses: actions/upload-artifact@v4
+        with:
+          name: cobie-nukem-web-${{ github.sha }}
           path: builds/web
           if-no-files-found: error
 
-      - name: Upload macOS artifact
+      - name: Upload itch.io package
         uses: actions/upload-artifact@v4
         with:
-          name: cobie-nukem-macos-unsigned
-          path: builds/macos/CobieNukem.zip
+          name: cobie-nukem-itch-${{ github.sha }}
+          path: builds/packages/*-itch.zip
           if-no-files-found: error
 
-      - name: Prepare GitHub Pages artifact
+      - name: Upload unsigned macOS package
+        uses: actions/upload-artifact@v4
+        with:
+          name: cobie-nukem-macos-unsigned-${{ github.sha }}
+          path: builds/packages/*-macos-unsigned.zip
+          if-no-files-found: error
+
+      - name: Upload GitHub Pages artifact
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         uses: actions/upload-pages-artifact@v3
         with:
-          path: builds/web
+          path: builds/pages
 
   deploy-pages:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    needs: validate-and-export
+    needs: validate-package
     runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - name: Deploy Web build
+      - name: Deploy immutable build artifact
         id: deployment
         uses: actions/deploy-pages@v4
-

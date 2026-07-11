@@ -241,6 +241,9 @@ func _add_zone(id: StringName, title: String, position_value: Vector3, size: Vec
 
 func _enter_zone(zone_id: StringName, title: String, _actor: Node) -> void:
 	current_zone = zone_id; zone_entered.emit(zone_id, title); narrative_message.emit(title, 2.0)
+	var game_state := get_node_or_null("/root/GameState")
+	if game_state:
+		game_state.run_stats["last_zone"] = String(zone_id)
 	if zone_id == &"compliance_lab": objective_changed.emit("EXPOSE THE ANIMAL COMPLIANCE FACILITY")
 	if zone_id == &"walker_arena": objective_changed.emit("DEFEAT THE ANIMAL CONTROL WALKER")
 	_spawn_wave(zone_id)
@@ -313,6 +316,9 @@ func _on_sign_read(_id: StringName, text: String, _actor: Node, times: int) -> v
 
 func _on_checkpoint(id: StringName, position_value: Vector3) -> void:
 	checkpoint_position = position_value; checkpoint_activated.emit(id, position_value); narrative_message.emit("CHECKPOINT: GOOD DOG STATUS TEMPORARILY RESTORED.", 2.5)
+	var game_state := get_node_or_null("/root/GameState")
+	if game_state:
+		game_state.run_stats["checkpoint_id"] = String(id)
 
 
 func restart_from_checkpoint() -> void:
@@ -354,7 +360,11 @@ func _spawn_player() -> void:
 		_add_weather_to_player()
 		for weapon in player.weapons:
 			weapon.fired.connect(_activate_opening_encounter)
-		if player.has_signal("died"): player.died.connect(func(_source): narrative_message.emit("GOOD DOG DOWN. PRESS FIRE TO RESTART.", 3.0))
+		if player.has_signal("died"): player.died.connect(func(_source):
+			narrative_message.emit("GOOD DOG DOWN. PRESS FIRE TO RESTART.", 3.0)
+			var game_state := get_node_or_null("/root/GameState")
+			if game_state: game_state.run_stats["deaths"] = int(game_state.run_stats.get("deaths", 0)) + 1
+		)
 		if player.has_signal("restart_requested"): player.restart_requested.connect(restart_from_checkpoint)
 
 

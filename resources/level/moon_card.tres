@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="LevelCardData" load_steps=2 format=3]
+[ext_resource type="Script" path="res://scripts/ui/level_card_data.gd" id="1"]
+[resource]
+script = ExtResource("1")
+level_id = &"dark_side_fetch"
+title = "DARK SIDE OF FETCH"
+episode = "EPISODE 4 // CLASSIFIED"
+description = "One small step for dog. One enormous violation of leash policy."
+difficulty = 5
+expected_minutes = "CLASSIFIED"
+encounter = "LOCKED"

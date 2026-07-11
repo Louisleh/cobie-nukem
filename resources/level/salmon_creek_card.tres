@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="LevelCardData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/level_card_data.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/brand/cobie_nukem_cover.png" id="2"]
+
+[resource]
+script = ExtResource("1")
+level_id = &"episode_1_level_1"
+title = "NO DOGS ALLOWED"
+episode = "EPISODE 1 // SALMON CREEK"
+description = "Break the field rules, breach Animal Control, and recover the Golden Tennis Ball."
+difficulty = 2
+expected_minutes = "12–20 MIN"
+secrets = 3
+encounter = "WALKER BOSS"
+unlocked = true
+scene_path = "res://scenes/levels/episode_1_level_1.tscn"
+preview = ExtResource("2")

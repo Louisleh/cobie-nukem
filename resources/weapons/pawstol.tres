@@ -6,7 +6,13 @@
 script = ExtResource("1")
 display_name = "Pawstol"
 pickup_message = "PAWSTOL READY. SIT? NEVER."
-ammo_type = "none"
+ammo_type = "bullets"
+magazine_size = 15
+starting_ammo = 15
+reserve_capacity = 0
+starting_reserve = 0
+infinite_reserve = true
+reload_seconds = 0.9
 primary_damage = 18.0
 secondary_damage = 9.0
 primary_cooldown = 0.22

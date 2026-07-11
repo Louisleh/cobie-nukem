@@ -1,4 +1,4 @@
-# Release Notes — 0.1.0 Vertical Slice RC
+# Release Notes — 0.2.0-rc1 Family Playtest RC
 
 Built on 2026-07-11 with Godot `4.7.stable.official.5b4e0cb0f` and matching official export templates.
 
@@ -9,6 +9,9 @@ Built on 2026-07-11 with Godot `4.7.stable.official.5b4e0cb0f` and matching offi
 - Input diagnostics, calibration, response curves, inversion, remapping, conflicts, persistence, and report export.
 - Compact Input Setup presentation with visible default keyboard/mouse mappings and independently scrollable diagnostics panels.
 - Cover-led title/menu presentation, HUD, pause/death/victory screens, accessibility options, original procedural audio, and 320×180 retro rendering.
+- Responsive full-height Cobie title art and a mission-select flow with one playable Salmon Creek course plus clearly locked future courses.
+- Weapon-specific magazines and reload cadence: 15-round infinite-reserve Pawstol, six-shell Barkshot with per-shell reload, and three-ball Fetch Launcher with finite reserve.
+- Lower, heavier original weapon synthesis, dry-fire/reload cues, grounded walk/run footsteps, ammo HUD state, and a copyable in-game playtest report.
 - Reliable overlap-safe pickup collection, explicit access-collar HUD state, and first-frame Web canvas sizing.
 - Continuous Secret Dog Park doorway/floor geometry and resilient zone-triggered Compliance Lab/Fetch Guard progression.
 - Correct player-layer progression detection plus route-position fallbacks for all four post-opening encounters.
@@ -19,16 +22,15 @@ Built on 2026-07-11 with Godot `4.7.stable.official.5b4e0cb0f` and matching offi
 
 ## Local artifacts
 
-- `builds/macos/CobieNukem.zip` — unsigned Universal macOS build; SHA-256 `b0c2211cf2d119983c4c66ef16b74435f26de4cb41aa3013d1b7d2e8fd0ae8f0`.
-- `builds/web/index.html` — single-threaded Web entry; SHA-256 `91978ecd7f56576c70e7a9f5c0fa360c73be3b0725656f32cf3fd3caa9856b46`.
-- `builds/web/index.wasm` — SHA-256 `7eda98958eb09135a1acb54a4323a00b1a55af1997f15fa1cdc2b93e3df46656`.
-- `builds/web/index.pck` — SHA-256 `c2214b6cdde1f681ee8af702c0a01bc02fe1f98afae921babc16718d7bf3639b`.
+- `builds/packages/cobie-nukem-0.2.0-rc1-itch.zip` — 17,623,184 bytes; SHA-256 `7d92c074c2bdb83fda3872e9a83a45b0a4eda68e64e4aee7da79554230675632`.
+- `builds/packages/cobie-nukem-0.2.0-rc1-macos-unsigned.zip` — 66,987,144 bytes; SHA-256 `9daff1c6d84e6888d613be37829ddd9e3a8d6ffe8882261068b8c37395f30108`.
+- `builds/pages/` — static landing page plus playable `/play/` route.
 
 ## Validation
 
-- All automated suites passed; 51 scenes and 28 resources load.
-- Headless 180-frame level smoke averaged 6.827 ms with a 10.737 ms maximum. This detects stalls but is not GPU performance evidence.
-- Web UI was interactively checked at 1280×720 from title → menu → Options and title → gameplay. The canvas was normalized on first paint, mouse scrolling reached every accessibility row without overlap, and an idle player retained 100 health throughout the verified opening safety window.
+- All automated suites passed; 53 scenes and 32 resources load.
+- Headless 180-frame level smoke averaged 6.834 ms with a 10.640 ms maximum. This detects stalls but is not GPU performance evidence.
+- Packaged Web UI was interactively checked at 1280×720 across title, main menu, mission selector/locked courses, gameplay HUD/enemy HP, pause, and playtest feedback; the title was also checked at 1440×900.
 - The macOS and Web release exports completed successfully.
 
 ## Release gates still requiring owner hardware

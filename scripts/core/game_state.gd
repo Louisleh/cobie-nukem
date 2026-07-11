@@ -24,6 +24,9 @@ func begin_run(level_id: StringName) -> void:
 		"shots_fired": 0,
 		"shots_hit": 0,
 		"damage_taken": 0.0,
+		"deaths": 0,
+		"last_zone": "forbidden_field",
+		"checkpoint_id": "start",
 	}
 	_set_phase(Phase.PLAYING)
 	run_started.emit()
@@ -33,6 +36,7 @@ func finish_run(extra_summary: Dictionary = {}) -> Dictionary:
 	summary.merge(extra_summary, true)
 	summary["finished_at_msec"] = Time.get_ticks_msec()
 	summary["duration_msec"] = summary.finished_at_msec - summary.get("started_at_msec", summary.finished_at_msec)
+	summary["completed"] = true
 	_set_phase(Phase.VICTORY)
 	run_ended.emit(summary)
 	return summary

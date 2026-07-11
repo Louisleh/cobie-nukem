@@ -2,6 +2,7 @@ class_name MainMenuController
 extends Control
 
 @export_file("*.tscn") var level_scene_path := "res://scenes/levels/episode_1_level_1.tscn"
+@export_file("*.tscn") var level_select_scene_path := "res://scenes/menus/level_select.tscn"
 @export_file("*.tscn") var options_scene_path := "res://scenes/menus/options_menu.tscn"
 @export_file("*.tscn") var credits_scene_path := "res://scenes/menus/credits.tscn"
 @export_file("*.tscn") var input_setup_scene_path := "res://scenes/debug/input_diagnostics.tscn"
@@ -44,9 +45,7 @@ func _wire_button(button: Button, callback: Callable) -> void:
 
 func _new_game() -> void:
 	GameState.continue_requested = false
-	SaveManager.delete_slot(&"checkpoint")
-	GameState.begin_run(&"no_dogs_allowed")
-	_route(level_scene_path)
+	_route(level_select_scene_path)
 
 func _continue_game() -> void:
 	var checkpoint := SaveManager.load_slot(&"checkpoint")

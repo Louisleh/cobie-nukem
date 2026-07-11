@@ -6,6 +6,11 @@ extends Resource
 @export var ammo_type := "none"
 @export var magazine_size := 0
 @export var starting_ammo := 0
+@export var reserve_capacity := 0
+@export var starting_reserve := 0
+@export var infinite_reserve := false
+@export var reload_seconds := 1.0
+@export var reload_per_round := false
 @export var ammo_per_primary := 1
 @export var ammo_per_secondary := 1
 @export var primary_damage := 10.0
@@ -18,4 +23,3 @@ extends Resource
 @export var knockback := 0.0
 @export var projectile_speed := 18.0
 @export var projectile_fuse := 2.5
-

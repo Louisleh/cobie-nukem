@@ -56,9 +56,20 @@ python3 -m http.server 8060 --directory builds/web
 
 Open `http://localhost:8060`. The preset is single-threaded and does not require cross-origin isolation headers. Production hosting must use HTTPS. Browser input activation begins after user interaction and keyboard/mouse remains the supported baseline.
 
+### Distribution packages
+
+After both exports pass, stage the landing page and create verified distribution archives:
+
+```bash
+SKIP_VALIDATION=1 VERSION=0.2.0-rc1 bash tools/package_release.sh
+python3 -m http.server 8060 --directory builds/pages
+```
+
+Omit `SKIP_VALIDATION=1` to have the packager rerun the full validator and both exports itself. The itch.io ZIP is verified to contain `index.html`, `index.js`, `index.pck`, and `index.wasm` at archive root. `builds/packages/SHA256SUMS.txt` records both distribution archives. See [DEPLOYMENT.md](DEPLOYMENT.md) for host-specific instructions.
+
 ## CI behavior
 
-`.github/workflows/ci.yml` runs import, contract tests, and macOS/Web exports on pull requests and `main`. It uploads both build products. A `main` build publishes the Web artifact to GitHub Pages when Pages is enabled for GitHub Actions in repository settings.
+`.github/workflows/ci.yml` runs the full release validator, macOS/Web exports, package verification, and evidence upload on pull requests and `main`. A `main` build publishes the tested Pages artifact: a static landing page at `/` and the Godot build under `/play/`, when Pages is enabled for GitHub Actions in repository settings.
 
 CI does not notarize, claim physical hardware testing, perform a gameplay feel assessment, or establish asset licensing. Those remain explicit release checks.
 
@@ -76,4 +87,3 @@ For a release candidate, record in release notes:
 - remaining known issues and any unverified Definition of Done item.
 
 Signing and notarization are a later credentialed operation. Never place certificates, profiles, API keys, or `export_credentials.cfg` in the repository.
-

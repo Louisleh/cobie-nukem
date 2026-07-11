@@ -1,8 +1,26 @@
 # Known Issues
 
-- The Thrustmaster USB Joystick model 2960623 has not been physically verified on the target Mac/adapter combination. Software diagnostics and remapping do not prove hardware compatibility.
-- Browser joystick mappings are experimental and may expose ambiguous axes/buttons or insufficient device identity. Keyboard/mouse is the browser baseline.
-- macOS CI/local exports are unsigned and unnotarized until owner-controlled Apple credentials and a release signing process exist.
-- The working title requires an IP/name review before public commercial distribution.
-- The generated working-title cover is original to this build, but the title itself still requires IP/name review before public commercial distribution.
-- Native and browser artifacts are locally exportable and automated smoke-tested; a complete human playthrough on the owner’s target M4 Mac mini, Chrome/Safari matrix, and physical joystick remains an owner hardware release gate.
+This file distinguishes confirmed product limitations from unperformed validation. Update it for every release candidate; do not silently convert “not tested” into “passed.”
+
+## Distribution and legal
+
+- The working title requires an IP/name review before public commercial distribution. The original generated cover does not resolve title clearance.
+- macOS exports are unsigned and unnotarized until owner-controlled Apple credentials and an explicit signing process are available. Gatekeeper may warn or block a downloaded build.
+- The static landing page intentionally has no analytics, login, telemetry, or feedback submission backend. Testers copy a non-sensitive playtest report and send it separately.
+
+## Input and browser limitations
+
+- Keyboard/mouse is the supported Web baseline. Browser joystick identity and mappings remain experimental and vary by browser.
+- The Thrustmaster USB Joystick model 2960623 has not been physically verified on the target Mac and adapter/hub. Software diagnostics are not hardware evidence.
+- Browser audio and pointer lock require a user gesture. The landing/game copy must remain explicit about the first click.
+
+## Validation still requiring real hardware
+
+- A complete non-debug human playthrough remains required on the owner’s target Mac for every final candidate.
+- Chrome and Safari each require a full keyboard/mouse playthrough of the packaged Web artifact, including reload/audio, options, death, and victory states.
+- Native frame pacing, GPU performance, memory ceiling, load time, and the 12–20 minute first-time pacing target cannot be inferred from headless smoke tests.
+- Generic controller and flight-stick completion remain unverified until exact device models, connection path, diagnostics, reconnect, persistence, and playthrough results are recorded.
+
+## Reporting policy
+
+Open Blocker/Critical defects cannot ship. Any Major issue retained for a candidate must be added here with its owner-approved disposition and workaround. Automated tests, browser automation, and debug-assisted route checks must not be described as a human full playthrough.

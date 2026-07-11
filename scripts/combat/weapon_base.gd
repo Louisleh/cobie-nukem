@@ -3,7 +3,12 @@ extends Node3D
 
 signal fired(weapon: WeaponBase, secondary: bool)
 signal ammo_changed(current: int, maximum: int)
+signal ammo_state_changed(loaded: int, magazine_capacity: int, reserve: int, infinite_reserve: bool)
 signal dry_fired(weapon: WeaponBase)
+signal reload_started(weapon: WeaponBase, duration: float)
+signal reload_step(weapon: WeaponBase)
+signal reload_finished(weapon: WeaponBase)
+signal reload_cancelled(weapon: WeaponBase)
 signal hit_confirmed(target: Node, damage: float)
 signal shot_resolved(kind: StringName, position: Vector3)
 
@@ -15,16 +20,22 @@ signal shot_resolved(kind: StringName, position: Vector3)
 @export var unlocked := true
 
 var ammo := 0
+var reserve_ammo := 0
+var is_reloading := false
 var enabled := false:
 	set(value):
 		enabled = value
 		visible = value
 var _cooldown_remaining := 0.0
 var _muzzle_flash_generation := 0
+var _reload_remaining := 0.0
+var _reload_origin := Vector3.ZERO
 
 func _ready() -> void:
 	if definition != null:
 		ammo = definition.starting_ammo
+		reserve_ammo = definition.starting_reserve
+	_reload_origin = position
 	if muzzle_flash != null:
 		muzzle_flash.visible = false
 	var burst := get_node_or_null("MuzzleBurst") as GeometryInstance3D
@@ -34,6 +45,13 @@ func _ready() -> void:
 
 func _process(delta: float) -> void:
 	_cooldown_remaining = maxf(0.0, _cooldown_remaining - delta)
+	if is_reloading:
+		_reload_remaining -= delta
+		var duration := maxf(definition.reload_seconds, 0.01)
+		var phase := clampf(1.0 - _reload_remaining / duration, 0.0, 1.0)
+		position = _reload_origin + Vector3(0.0, -sin(phase * PI) * 0.16, sin(phase * PI) * 0.08)
+		if _reload_remaining <= 0.0:
+			_complete_reload_step()
 
 func configure(aim_camera: Camera3D, aim_component: AutoAimComponent, tactile: TactileFeedback) -> void:
 	camera = aim_camera
@@ -41,7 +59,7 @@ func configure(aim_camera: Camera3D, aim_component: AutoAimComponent, tactile: T
 	feedback = tactile
 
 func can_fire(secondary := false) -> bool:
-	if not unlocked or not enabled or definition == null or camera == null or _cooldown_remaining > 0.0:
+	if not unlocked or not enabled or definition == null or camera == null or _cooldown_remaining > 0.0 or is_reloading:
 		return false
 	var cost := definition.ammo_per_secondary if secondary else definition.ammo_per_primary
 	return _has_ammo(cost)
@@ -59,29 +77,72 @@ func fire_secondary() -> bool:
 	return true
 
 func add_ammo(amount: int) -> int:
-	if definition == null or amount <= 0 or definition.magazine_size <= 0:
+	if definition == null or amount <= 0 or definition.magazine_size <= 0 or definition.infinite_reserve:
 		return 0
-	var previous := ammo
-	ammo = mini(definition.magazine_size, ammo + amount)
-	ammo_changed.emit(ammo, definition.magazine_size)
-	return ammo - previous
+	var previous := reserve_ammo
+	reserve_ammo = mini(definition.reserve_capacity, reserve_ammo + amount)
+	_emit_ammo_state()
+	return reserve_ammo - previous
+
+func request_reload() -> bool:
+	if definition == null or is_reloading or ammo >= definition.magazine_size or definition.magazine_size <= 0:
+		return false
+	if not definition.infinite_reserve and reserve_ammo <= 0:
+		return false
+	is_reloading = true
+	_reload_remaining = definition.reload_seconds
+	_reload_origin = position
+	reload_started.emit(self, definition.reload_seconds)
+	return true
+
+func cancel_reload() -> bool:
+	if not is_reloading:
+		return false
+	is_reloading = false
+	_reload_remaining = 0.0
+	position = _reload_origin
+	reload_cancelled.emit(self)
+	return true
+
+func _complete_reload_step() -> void:
+	var needed := definition.magazine_size - ammo
+	var amount := 1 if definition.reload_per_round else needed
+	if not definition.infinite_reserve:
+		amount = mini(amount, reserve_ammo)
+	ammo += amount
+	if not definition.infinite_reserve:
+		reserve_ammo -= amount
+	reload_step.emit(self)
+	_emit_ammo_state()
+	if definition.reload_per_round and ammo < definition.magazine_size and (definition.infinite_reserve or reserve_ammo > 0):
+		_reload_remaining = definition.reload_seconds
+		return
+	is_reloading = false
+	position = _reload_origin
+	reload_finished.emit(self)
 
 func _begin_fire(secondary: bool) -> bool:
 	if not can_fire(secondary):
 		if enabled and _cooldown_remaining <= 0.0:
 			dry_fired.emit(self)
+			if not is_reloading and definition != null and ammo <= 0:
+				request_reload()
 		return false
 	var cost := definition.ammo_per_secondary if secondary else definition.ammo_per_primary
 	if definition.ammo_type != "none":
 		ammo -= cost
-		ammo_changed.emit(ammo, definition.magazine_size)
+		_emit_ammo_state()
 	_cooldown_remaining = definition.secondary_cooldown if secondary else definition.primary_cooldown
 	fired.emit(self, secondary)
 	_flash_muzzle()
 	return true
 
 func _has_ammo(cost: int) -> bool:
-	return definition.ammo_type == "none" or ammo >= cost
+	return ammo >= cost
+
+func _emit_ammo_state() -> void:
+	ammo_changed.emit(ammo, definition.magazine_size)
+	ammo_state_changed.emit(ammo, definition.magazine_size, reserve_ammo, definition.infinite_reserve)
 
 func _aim_direction(range_limit: float) -> Vector3:
 	if auto_aim != null:

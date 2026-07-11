@@ -12,9 +12,9 @@ anchor_bottom = 1.0
 color = Color(0, 0, 0, 0.72)
 [node name="Panel" type="Panel" parent="."]
 offset_left = 85.0
-offset_top = 26.0
+offset_top = 5.0
 offset_right = 235.0
-offset_bottom = 154.0
+offset_bottom = 175.0
 theme = ExtResource("2")
 [node name="VBox" type="VBoxContainer" parent="Panel"]
 layout_mode = 1
@@ -47,8 +47,18 @@ text = "RESTART CHECKPOINT"
 unique_name_in_owner = true
 layout_mode = 2
 text = "OPTIONS"
+[node name="FeedbackButton" type="Button" parent="Panel/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "PLAYTEST FEEDBACK"
 [node name="MainMenuButton" type="Button" parent="Panel/VBox"]
 unique_name_in_owner = true
 layout_mode = 2
 text = "MAIN MENU"
-
+[node name="BuildLabel" type="Label" parent="Panel/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.57, 0.68, 0.62, 1)
+theme_override_font_sizes/font_size = 5
+text = "BUILD"
+horizontal_alignment = 1

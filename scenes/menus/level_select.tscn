@@ -1,0 +1,226 @@
+[gd_scene load_steps=13 format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/level_select.gd" id="1"]
+[ext_resource type="Theme" path="res://resources/ui/retro_theme.tres" id="2"]
+[ext_resource type="Resource" path="res://resources/level/salmon_creek_card.tres" id="3"]
+[ext_resource type="Resource" path="res://resources/level/rain_city_card.tres" id="4"]
+[ext_resource type="Resource" path="res://resources/level/mountain_card.tres" id="5"]
+[ext_resource type="Resource" path="res://resources/level/moon_card.tres" id="6"]
+[ext_resource type="Script" path="res://scripts/ui/procedural_audio.gd" id="7"]
+[ext_resource type="Script" path="res://scripts/ui/retro_overlay.gd" id="8"]
+[ext_resource type="Script" path="res://scripts/ui/level_card_data.gd" id="9"]
+
+[sub_resource type="StyleBoxFlat" id="PanelStyle"]
+bg_color = Color(0.025, 0.045, 0.052, 0.96)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.93, 0.58, 0.08, 0.8)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[sub_resource type="StyleBoxFlat" id="PreviewStyle"]
+bg_color = Color(0.01, 0.02, 0.025, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.42, 0.55, 0.48, 1)
+
+[sub_resource type="Gradient" id="BackgroundGradient"]
+colors = PackedColorArray(0.015, 0.03, 0.035, 1, 0.03, 0.075, 0.07, 1)
+
+[sub_resource type="GradientTexture2D" id="BackgroundTexture"]
+gradient = SubResource("BackgroundGradient")
+width = 320
+height = 180
+fill_from = Vector2(0.1, 0.1)
+fill_to = Vector2(0.9, 0.9)
+
+[node name="LevelSelect" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("2")
+script = ExtResource("1")
+levels = Array[ExtResource("9")]([ExtResource("3"), ExtResource("4"), ExtResource("5"), ExtResource("6")])
+
+[node name="Background" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+texture = SubResource("BackgroundTexture")
+expand_mode = 1
+stretch_mode = 6
+mouse_filter = 2
+
+[node name="SafeArea" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 8.0
+offset_top = 5.0
+offset_right = -8.0
+offset_bottom = -5.0
+
+[node name="Main" type="VBoxContainer" parent="SafeArea"]
+layout_mode = 2
+theme_override_constants/separation = 3
+
+[node name="Header" type="HBoxContainer" parent="SafeArea/Main"]
+layout_mode = 2
+
+[node name="Heading" type="Label" parent="SafeArea/Main/Header"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(1, 0.73, 0.19, 1)
+theme_override_font_sizes/font_size = 11
+text = "CHOOSE YOUR MISSION"
+
+[node name="EpisodeBadge" type="Label" parent="SafeArea/Main/Header"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.65, 0.78, 0.7, 1)
+theme_override_font_sizes/font_size = 7
+text = "SALMON CREEK TOUR"
+vertical_alignment = 1
+visible = false
+
+[node name="BuildLabel" type="Label" parent="SafeArea/Main/Header"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.47, 0.57, 0.52, 1)
+theme_override_font_sizes/font_size = 5
+text = "BUILD"
+vertical_alignment = 1
+visible = false
+
+[node name="MissionPanel" type="PanelContainer" parent="SafeArea/Main"]
+custom_minimum_size = Vector2(0, 64)
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("PanelStyle")
+
+[node name="MissionMargin" type="MarginContainer" parent="SafeArea/Main/MissionPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 5
+theme_override_constants/margin_top = 5
+theme_override_constants/margin_right = 5
+theme_override_constants/margin_bottom = 5
+
+[node name="Mission" type="HBoxContainer" parent="SafeArea/Main/MissionPanel/MissionMargin"]
+layout_mode = 2
+theme_override_constants/separation = 7
+
+[node name="PreviewFrame" type="PanelContainer" parent="SafeArea/Main/MissionPanel/MissionMargin/Mission"]
+custom_minimum_size = Vector2(78, 54)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("PreviewStyle")
+
+[node name="Preview" type="TextureRect" parent="SafeArea/Main/MissionPanel/MissionMargin/Mission/PreviewFrame"]
+unique_name_in_owner = true
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5
+mouse_filter = 2
+
+[node name="Info" type="VBoxContainer" parent="SafeArea/Main/MissionPanel/MissionMargin/Mission"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 0
+
+[node name="EpisodeLabel" type="Label" parent="SafeArea/Main/MissionPanel/MissionMargin/Mission/Info"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.59, 0.71, 0.64, 1)
+theme_override_font_sizes/font_size = 6
+text = "EPISODE"
+
+[node name="LevelTitle" type="Label" parent="SafeArea/Main/MissionPanel/MissionMargin/Mission/Info"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.77, 0.26, 1)
+theme_override_font_sizes/font_size = 11
+text = "LEVEL"
+
+[node name="Description" type="Label" parent="SafeArea/Main/MissionPanel/MissionMargin/Mission/Info"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_font_sizes/font_size = 6
+text = "DESCRIPTION"
+autowrap_mode = 2
+
+[node name="Difficulty" type="Label" parent="SafeArea/Main/MissionPanel/MissionMargin/Mission/Info"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.65, 0.18, 1)
+theme_override_font_sizes/font_size = 7
+text = "DIFFICULTY"
+
+[node name="Details" type="Label" parent="SafeArea/Main/MissionPanel/MissionMargin/Mission/Info"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.7, 0.79, 0.72, 1)
+theme_override_font_sizes/font_size = 6
+text = "DETAILS"
+autowrap_mode = 2
+
+[node name="CourseScroll" type="ScrollContainer" parent="SafeArea/Main"]
+custom_minimum_size = Vector2(0, 47)
+layout_mode = 2
+horizontal_scroll_mode = 2
+vertical_scroll_mode = 0
+
+[node name="CardRow" type="HBoxContainer" parent="SafeArea/Main/CourseScroll"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="Footer" type="HBoxContainer" parent="SafeArea/Main"]
+layout_mode = 2
+
+[node name="StatusLabel" type="Label" parent="SafeArea/Main/Footer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(150, 14)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(1, 0.54, 0.22, 1)
+theme_override_font_sizes/font_size = 5
+text = "SELECT A MISSION"
+vertical_alignment = 1
+autowrap_mode = 2
+clip_text = true
+text_overrun_behavior = 3
+
+[node name="BackButton" type="Button" parent="SafeArea/Main/Footer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(48, 0)
+layout_mode = 2
+text = "BACK"
+
+[node name="PlayButton" type="Button" parent="SafeArea/Main/Footer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(70, 0)
+layout_mode = 2
+text = "START"
+
+[node name="ProceduralAudio" type="Node" parent="."]
+unique_name_in_owner = true
+script = ExtResource("7")
+
+[node name="RetroOverlay" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+script = ExtResource("8")

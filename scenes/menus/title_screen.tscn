@@ -1,71 +1,144 @@
-[gd_scene load_steps=6 format=3]
+[gd_scene load_steps=7 format=3]
+
 [ext_resource type="Script" path="res://scripts/ui/title_screen.gd" id="1"]
 [ext_resource type="Theme" path="res://resources/ui/retro_theme.tres" id="2"]
 [ext_resource type="Texture2D" path="res://assets/brand/cobie_nukem_cover.png" id="3"]
 [ext_resource type="Script" path="res://scripts/ui/procedural_audio.gd" id="4"]
 [ext_resource type="Script" path="res://scripts/ui/retro_overlay.gd" id="5"]
+
+[sub_resource type="StyleBoxFlat" id="BrandBox"]
+bg_color = Color(0.015, 0.025, 0.03, 0.93)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.95, 0.59, 0.08, 0.8)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
 [node name="TitleScreen" type="Control"]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 theme = ExtResource("2")
 script = ExtResource("1")
-[node name="Cover" type="TextureRect" parent="."]
+
+[node name="Backdrop" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0.012, 0.024, 0.03, 1)
+mouse_filter = 2
+
+[node name="ArtColumn" type="Control" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.56
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Cover" type="TextureRect" parent="ArtColumn"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 texture = ExtResource("3")
 expand_mode = 1
-stretch_mode = 6
-[node name="Shade" type="ColorRect" parent="."]
+stretch_mode = 5
+mouse_filter = 2
+
+[node name="ArtVignette" type="ColorRect" parent="ArtColumn"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-color = Color(0, 0, 0, 0.28)
-[node name="Title" type="Label" parent="."]
+color = Color(0, 0, 0, 0.08)
+mouse_filter = 2
+
+[node name="BrandPanel" type="PanelContainer" parent="."]
+unique_name_in_owner = true
 layout_mode = 1
-anchors_preset = 10
+anchors_preset = 15
+anchor_left = 0.56
 anchor_right = 1.0
-offset_top = 8.0
-offset_bottom = 34.0
+anchor_bottom = 1.0
+offset_left = 0.0
+theme_override_styles/panel = SubResource("BrandBox")
+
+[node name="Margin" type="MarginContainer" parent="BrandPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 14
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 14
+theme_override_constants/margin_bottom = 12
+
+[node name="VBox" type="VBoxContainer" parent="BrandPanel/Margin"]
+layout_mode = 2
+alignment = 1
+
+[node name="Episode" type="Label" parent="BrandPanel/Margin/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.57, 0.68, 0.62, 1)
+theme_override_font_sizes/font_size = 7
+text = "EPISODE 1 // SALMON CREEK"
+horizontal_alignment = 1
+
+[node name="Title" type="Label" parent="BrandPanel/Margin/VBox"]
+layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.76, 0.19, 1)
 theme_override_colors/font_outline_color = Color(0.07, 0.035, 0.01, 1)
 theme_override_constants/outline_size = 3
-theme_override_font_sizes/font_size = 22
+theme_override_font_sizes/font_size = 20
 text = "COBIE NUKEM"
 horizontal_alignment = 1
-[node name="Subtitle" type="Label" parent="."]
-layout_mode = 1
-anchors_preset = 10
-anchor_right = 1.0
-offset_top = 34.0
-offset_bottom = 48.0
+
+[node name="Subtitle" type="Label" parent="BrandPanel/Margin/VBox"]
+layout_mode = 2
 theme_override_colors/font_color = Color(0.95, 0.91, 0.76, 1)
 theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
 theme_override_constants/outline_size = 2
+theme_override_font_sizes/font_size = 8
 text = "RETRO MAYHEM 3D"
 horizontal_alignment = 1
-[node name="Prompt" type="Label" parent="."]
+
+[node name="Spacer" type="Control" parent="BrandPanel/Margin/VBox"]
+custom_minimum_size = Vector2(0, 12)
+layout_mode = 2
+
+[node name="Prompt" type="Label" parent="BrandPanel/Margin/VBox"]
 unique_name_in_owner = true
-layout_mode = 1
-anchors_preset = 12
-anchor_top = 1.0
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_top = -25.0
-offset_bottom = -8.0
+layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.78, 0.25, 1)
 theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
 theme_override_constants/outline_size = 2
-theme_override_font_sizes/font_size = 11
+theme_override_font_sizes/font_size = 9
 text = "PRESS ANY BUTTON TO DISOBEY"
 horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="BuildLabel" type="Label" parent="BrandPanel/Margin/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.47, 0.57, 0.52, 1)
+theme_override_font_sizes/font_size = 5
+text = "BUILD"
+horizontal_alignment = 1
+
 [node name="ProceduralAudio" type="Node" parent="."]
 unique_name_in_owner = true
 script = ExtResource("4")
+
 [node name="RetroOverlay" type="Control" parent="."]
 layout_mode = 1
 anchors_preset = 15
@@ -73,4 +146,3 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 mouse_filter = 2
 script = ExtResource("5")
-

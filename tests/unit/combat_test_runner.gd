@@ -7,6 +7,8 @@ func _initialize() -> void:
 	_test_healing_and_armor_caps()
 	_test_auto_aim_modes()
 	_test_weapon_ammo_and_cooldown()
+	_test_magazines_reserve_and_reload()
+	_test_footstep_conditions()
 	_test_visible_muzzle_flash()
 	_test_enemy_hit_pop()
 	_test_player_forwards_weapon_ammo()
@@ -78,6 +80,45 @@ func _test_weapon_ammo_and_cooldown() -> void:
 	_expect(not weapon.can_fire(false), "weapon cooldown blocks immediate refire")
 	weapon.free()
 
+func _test_magazines_reserve_and_reload() -> void:
+	var pawstol := load("res://resources/weapons/pawstol.tres") as WeaponDefinition
+	var barkshot := load("res://resources/weapons/barkshot.tres") as WeaponDefinition
+	var fetch := load("res://resources/weapons/fetch_launcher.tres") as WeaponDefinition
+	_expect(pawstol.magazine_size == 15 and pawstol.infinite_reserve, "Pawstol has a 15-round magazine and infinite reserve")
+	_expect(barkshot.magazine_size == 6 and barkshot.reload_per_round, "Barkshot holds six and reloads shell by shell")
+	_expect(fetch.magazine_size == 3 and fetch.reload_seconds > barkshot.reload_seconds, "Fetch Launcher holds three and has the longest reload action")
+
+	var definition := WeaponDefinition.new()
+	definition.ammo_type = "test"
+	definition.magazine_size = 3
+	definition.starting_ammo = 0
+	definition.reserve_capacity = 9
+	definition.starting_reserve = 5
+	definition.reload_seconds = 0.1
+	var weapon := WeaponBase.new()
+	weapon.definition = definition
+	weapon.ammo = 0
+	weapon.reserve_ammo = 5
+	root.add_child(weapon)
+	_expect(weapon.request_reload(), "manual reload begins with reserve available")
+	weapon._process(0.11)
+	_expect(weapon.ammo == 3 and weapon.reserve_ammo == 2, "reload transfers reserve into the magazine")
+	weapon.ammo = 0
+	weapon.reserve_ammo = 2
+	weapon.enabled = true
+	weapon.camera = Camera3D.new()
+	weapon.add_child(weapon.camera)
+	_expect(not weapon._begin_fire(false) and weapon.is_reloading, "empty trigger starts automatic reload")
+	_expect(weapon.cancel_reload() and weapon.ammo == 0 and weapon.reserve_ammo == 2, "reload cancellation preserves ammunition state")
+	weapon.free()
+
+func _test_footstep_conditions() -> void:
+	_expect(CobiePlayer.should_play_footsteps(true, 4.0, false, false), "grounded movement permits footsteps")
+	_expect(not CobiePlayer.should_play_footsteps(false, 4.0, false, false), "airborne movement suppresses footsteps")
+	_expect(not CobiePlayer.should_play_footsteps(true, 0.0, false, false), "stationary player suppresses footsteps")
+	_expect(not CobiePlayer.should_play_footsteps(true, 4.0, true, false), "dead player suppresses footsteps")
+	_expect(not CobiePlayer.should_play_footsteps(true, 4.0, false, true), "paused game suppresses footsteps")
+
 func _test_player_forwards_weapon_ammo() -> void:
 	var definition := WeaponDefinition.new()
 	definition.display_name = "Barkshot"
@@ -136,6 +177,7 @@ func _test_visible_muzzle_flash() -> void:
 	weapon.add_child(weapon.camera)
 	root.add_child(weapon)
 	weapon.enabled = true
+	weapon.ammo = weapon.definition.starting_ammo
 	_expect(weapon._begin_fire(false), "Pawstol begins firing")
 	var burst := weapon.get_node_or_null("MuzzleBurst") as GeometryInstance3D
 	_expect(burst != null and burst.visible, "firing shows a visible muzzle burst")
