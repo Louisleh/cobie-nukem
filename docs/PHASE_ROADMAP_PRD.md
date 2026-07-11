@@ -1,14 +1,14 @@
 # Cobie Nukem — Multi-Phase Production PRD
 
-**Status:** Active production source of truth; Phase 1–2 hardening and public iPad release are the current critical gate; Phases 3–6 content work not started
+**Status:** Active production source of truth; Phase 1–2 foundations and the public iPad browser release are complete; Phases 3–6 content work not started
 
 **Created:** 2026-07-11
 
 **Last status review:** 2026-07-11
 
-**Current development baseline:** `0.3.0-dev` (`f7631fb` feature revision, `4d31054` evidence commit)
+**Current development baseline:** `0.4.0-mobile-rc1` (`0dad139` gameplay/export revision; public evidence in `docs/MOBILE_RELEASE_EVIDENCE.md`)
 
-**Last playtest RC:** `0.2.0-rc1`
+**Last playtest RC:** `0.4.0-mobile-rc1` — live at <https://www.louislehmann.fyi/games/cobie-nukem/>
 
 **Engine:** Godot 4.7 stable, GDScript, Compatibility renderer
 **Purpose:** Turn the family-playtest vertical slice into a sustainable, original multi-level game without sacrificing responsiveness, humor, Web support, or unusual-controller accessibility.
@@ -28,7 +28,7 @@ This section is the first place a new Codex or external-auditor run should read.
 
 ### Immediate next gate
 
-Before Phase 3 implementation, close the accepted Fable audit findings, publish the game through the owner website, and deliver a touch-first iPad browser experience with mobile regression evidence. Do not treat missing Phase 3–6 content as a current defect unless a current contract falsely claims to support it.
+**Gate passed 2026-07-11.** Accepted critical Fable findings are addressed, the stamped build is public through the owner website, and the touch-first iPad browser path has automated and tablet-viewport regression evidence. The remaining hardware gate is a real iPad Safari feel/thermal/network pass. Next implementation priority is the accessible difficulty selector and controlled family playtesting before Mission 2 production. Do not treat missing Phase 3–6 content as a current defect unless a current contract falsely claims to support it.
 
 ### Independent Fable audit disposition — 2026-07-11
 
