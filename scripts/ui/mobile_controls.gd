@@ -51,7 +51,7 @@ func is_touch_enabled() -> bool:
 static func touchscreen_expected() -> bool:
 	if DisplayServer.is_touchscreen_available() or OS.has_feature("web_ios") or OS.has_feature("web_android"): return true
 	if OS.has_feature("web"):
-		return bool(JavaScriptBridge.eval("('ontouchstart' in window) || (navigator.maxTouchPoints > 0)", true))
+		return bool(JavaScriptBridge.eval("location.search.includes('touch=1') || ('ontouchstart' in window) || (navigator.maxTouchPoints > 0)", true))
 	return false
 
 
