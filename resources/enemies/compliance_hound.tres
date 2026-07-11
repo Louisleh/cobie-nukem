@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="EnemyDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/ai/enemy_definition.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = &"compliance_hound"
+display_name = "COMPLIANCE HOUND"
+warning_text = "GOOD DOG STATUS: REVOKED."
+max_health = 210.0
+move_speed = 5.0
+acceleration = 32.0
+detection_range = 28.0
+attack_range = 2.6
+attack_damage = 28.0
+attack_cooldown = 2.25
+telegraph_seconds = 0.7
+threat_weight = 1.4
+score_value = 600
+drop_id = &"leather_padding"
+

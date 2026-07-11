@@ -1,0 +1,28 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://scripts/combat/fetch_projectile.gd" id="1"]
+[sub_resource type="StandardMaterial3D" id="Mat"]
+albedo_color = Color(0.72, 0.98, 0.08, 1)
+emission_enabled = true
+emission = Color(0.35, 0.8, 0.03, 1)
+emission_energy_multiplier = 2.5
+[sub_resource type="SphereMesh" id="Mesh"]
+material = SubResource("Mat")
+radius = 0.16
+height = 0.32
+[sub_resource type="SphereShape3D" id="Shape"]
+radius = 0.16
+
+[node name="FetchProjectile" type="CharacterBody3D"]
+collision_layer = 4
+collision_mask = 1
+script = ExtResource("1")
+[node name="Ball" type="MeshInstance3D" parent="."]
+mesh = SubResource("Mesh")
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("Shape")
+[node name="Glow" type="OmniLight3D" parent="."]
+light_color = Color(0.62, 1, 0.1, 1)
+light_energy = 2.2
+omni_range = 2.4
+

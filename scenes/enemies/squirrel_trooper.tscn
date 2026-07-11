@@ -1,0 +1,60 @@
+[gd_scene load_steps=10 format=3]
+
+[ext_resource type="Script" path="res://scripts/ai/squirrel_trooper.gd" id="1"]
+[ext_resource type="Resource" path="res://resources/enemies/squirrel_trooper.tres" id="2"]
+[sub_resource type="CapsuleShape3D" id="Shape"]
+radius = 0.32
+height = 0.92
+[sub_resource type="StandardMaterial3D" id="Fur"]
+albedo_color = Color(0.48, 0.19, 0.055, 1)
+[sub_resource type="CapsuleMesh" id="BodyMesh"]
+material = SubResource("Fur")
+radius = 0.28
+height = 0.72
+[sub_resource type="SphereMesh" id="HeadMesh"]
+material = SubResource("Fur")
+radius = 0.3
+height = 0.5
+[sub_resource type="StandardMaterial3D" id="Vest"]
+shading_mode = 0
+albedo_color = Color(0.9, 0.62, 0.04, 1)
+[sub_resource type="BoxMesh" id="VestMesh"]
+material = SubResource("Vest")
+size = Vector3(0.62, 0.34, 0.48)
+[sub_resource type="SphereMesh" id="TelegraphMesh"]
+material = SubResource("Vest")
+radius = 0.12
+height = 0.24
+
+[node name="SquirrelTrooper" type="CharacterBody3D"]
+collision_layer = 4
+collision_mask = 3
+script = ExtResource("1")
+definition = ExtResource("2")
+target_height = 0.72
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+position = Vector3(0, 0.46, 0)
+shape = SubResource("Shape")
+[node name="Visual" type="Node3D" parent="."]
+[node name="Body" type="MeshInstance3D" parent="Visual"]
+position = Vector3(0, 0.48, 0)
+mesh = SubResource("BodyMesh")
+[node name="Head" type="MeshInstance3D" parent="Visual"]
+position = Vector3(0, 0.94, -0.08)
+mesh = SubResource("HeadMesh")
+[node name="SafetyVest" type="MeshInstance3D" parent="Visual"]
+position = Vector3(0, 0.57, -0.02)
+mesh = SubResource("VestMesh")
+[node name="Tail" type="MeshInstance3D" parent="Visual"]
+position = Vector3(0, 0.72, 0.34)
+scale = Vector3(0.72, 1.8, 0.72)
+rotation = Vector3(0.65, 0, 0)
+mesh = SubResource("HeadMesh")
+[node name="AutoAimTarget" type="Marker3D" parent="."]
+position = Vector3(0, 0.72, 0)
+[node name="Telegraph" type="MeshInstance3D" parent="."]
+position = Vector3(0, 1.24, -0.08)
+scale = Vector3(1.8, 1.8, 1.8)
+mesh = SubResource("TelegraphMesh")
+visible = false
+

@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="WeaponDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/combat/weapon_definition.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+display_name = "Pawstol"
+pickup_message = "PAWSTOL READY. SIT? NEVER."
+ammo_type = "none"
+primary_damage = 18.0
+secondary_damage = 9.0
+primary_cooldown = 0.22
+secondary_cooldown = 0.48
+range = 90.0
+spread_degrees = 0.35
+knockback = 1.5
+

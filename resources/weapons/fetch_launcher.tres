@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="WeaponDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/combat/weapon_definition.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+display_name = "Fetch Launcher"
+pickup_message = "FETCH WAS A WARNING."
+ammo_type = "tennis_balls"
+magazine_size = 24
+starting_ammo = 6
+ammo_per_primary = 1
+ammo_per_secondary = 0
+primary_damage = 58.0
+secondary_damage = 32.0
+primary_cooldown = 0.78
+secondary_cooldown = 0.2
+range = 70.0
+projectile_speed = 19.0
+projectile_fuse = 2.8
+

@@ -1,0 +1,8 @@
+[gd_resource type="Resource" script_class="PickupDefinition" load_steps=2 format=3]
+[ext_resource type="Script" path="res://scripts/combat/pickup_definition.gd" id="1"]
+[resource]
+script = ExtResource("1")
+kind = 1
+amount = 30.0
+message = "THE JACKET COUNTS AS ARMOR."
+

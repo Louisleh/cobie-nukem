@@ -1,0 +1,38 @@
+[gd_resource type="Resource" script_class="LevelMetadata" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/level/level_metadata.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+level_id = &"episode_1_level_1"
+title = "NO DOGS ALLOWED"
+subtitle = "The Salmon Creek Incident"
+target_minutes_min = 12
+target_minutes_max = 20
+total_secrets = 3
+opening_objective = "RECOVER THE GOLDEN TENNIS BALL"
+zones = Array[Dictionary]([{
+"id": &"forbidden_field",
+"title": "FORBIDDEN FIELD",
+"target_minutes": 2.5
+}, {
+"id": &"equipment_shed",
+"title": "EQUIPMENT SHED",
+"target_minutes": 2.0
+}, {
+"id": &"maintenance_tunnels",
+"title": "MAINTENANCE TUNNELS",
+"target_minutes": 3.0
+}, {
+"id": &"compliance_lab",
+"title": "ANIMAL COMPLIANCE LAB",
+"target_minutes": 4.0
+}, {
+"id": &"secret_dog_park",
+"title": "SECRET DOG PARK",
+"target_minutes": 1.0
+}, {
+"id": &"walker_arena",
+"title": "ANIMAL CONTROL WALKER",
+"target_minutes": 4.0
+}])

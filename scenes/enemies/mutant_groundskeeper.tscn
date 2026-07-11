@@ -1,0 +1,65 @@
+[gd_scene load_steps=11 format=3]
+
+[ext_resource type="Script" path="res://scripts/ai/mutant_groundskeeper.gd" id="1"]
+[ext_resource type="Resource" path="res://resources/enemies/mutant_groundskeeper.tres" id="2"]
+[sub_resource type="CapsuleShape3D" id="Shape"]
+radius = 0.52
+height = 1.85
+[sub_resource type="StandardMaterial3D" id="Uniform"]
+albedo_color = Color(0.16, 0.28, 0.12, 1)
+roughness = 0.92
+[sub_resource type="CapsuleMesh" id="BodyMesh"]
+material = SubResource("Uniform")
+radius = 0.5
+height = 1.65
+[sub_resource type="StandardMaterial3D" id="Skin"]
+albedo_color = Color(0.44, 0.62, 0.19, 1)
+[sub_resource type="SphereMesh" id="HeadMesh"]
+material = SubResource("Skin")
+radius = 0.38
+height = 0.7
+[sub_resource type="StandardMaterial3D" id="BladeMaterial"]
+albedo_color = Color(0.38, 0.42, 0.4, 1)
+metallic = 0.8
+[sub_resource type="CylinderMesh" id="BladeMesh"]
+material = SubResource("BladeMaterial")
+top_radius = 0.62
+bottom_radius = 0.62
+height = 0.1
+[sub_resource type="StandardMaterial3D" id="TelegraphMaterial"]
+shading_mode = 0
+albedo_color = Color(1, 0.55, 0.02, 0.75)
+transparency = 1
+[sub_resource type="CylinderMesh" id="TelegraphMesh"]
+material = SubResource("TelegraphMaterial")
+top_radius = 0.85
+bottom_radius = 0.85
+height = 0.04
+
+[node name="MutantGroundskeeper" type="CharacterBody3D"]
+collision_layer = 4
+collision_mask = 3
+script = ExtResource("1")
+definition = ExtResource("2")
+target_height = 1.35
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+position = Vector3(0, 0.92, 0)
+shape = SubResource("Shape")
+[node name="Visual" type="Node3D" parent="."]
+[node name="Body" type="MeshInstance3D" parent="Visual"]
+position = Vector3(0, 0.95, 0)
+mesh = SubResource("BodyMesh")
+[node name="Head" type="MeshInstance3D" parent="Visual"]
+position = Vector3(0, 1.8, -0.04)
+mesh = SubResource("HeadMesh")
+[node name="MowerBlade" type="MeshInstance3D" parent="Visual"]
+position = Vector3(0, 0.36, -0.72)
+rotation = Vector3(1.5708, 0, 0)
+mesh = SubResource("BladeMesh")
+[node name="AutoAimTarget" type="Marker3D" parent="."]
+position = Vector3(0, 1.35, 0)
+[node name="Telegraph" type="MeshInstance3D" parent="."]
+position = Vector3(0, 0.04, -1.05)
+mesh = SubResource("TelegraphMesh")
+visible = false
+

@@ -1,0 +1,6 @@
+[gd_scene load_steps=3 format=3]
+[ext_resource type="PackedScene" path="res://scenes/pickups/pickup_base.tscn" id="1"]
+[ext_resource type="Resource" path="res://resources/pickups/zoomies.tres" id="2"]
+[node name="Zoomies" instance=ExtResource("1")]
+definition = ExtResource("2")
+

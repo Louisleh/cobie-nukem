@@ -1,0 +1,7 @@
+[gd_scene load_steps=3 format=3]
+[ext_resource type="PackedScene" path="res://scenes/pickups/pickup_base.tscn" id="1"]
+[ext_resource type="Resource" path="res://resources/pickups/premium_treat.tres" id="2"]
+[node name="PremiumTreat" instance=ExtResource("1")]
+definition = ExtResource("2")
+scale = Vector3(1.3, 1.3, 1.3)
+

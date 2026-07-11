@@ -1,0 +1,35 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://scripts/combat/pawstol.gd" id="1"]
+[ext_resource type="Resource" path="res://resources/weapons/pawstol.tres" id="2"]
+
+[sub_resource type="StandardMaterial3D" id="Mat"]
+albedo_color = Color(0.055, 0.06, 0.07, 1)
+emission_enabled = true
+emission = Color(0.18, 0.13, 0.055, 1)
+emission_energy_multiplier = 0.65
+metallic = 0.75
+roughness = 0.28
+
+[sub_resource type="BoxMesh" id="Mesh"]
+material = SubResource("Mat")
+size = Vector3(0.22, 0.2, 0.64)
+
+[node name="Pawstol" type="Node3D" node_paths=PackedStringArray("muzzle_flash")]
+script = ExtResource("1")
+definition = ExtResource("2")
+muzzle_flash = NodePath("MuzzleFlash")
+
+[node name="JacketSleeve" type="MeshInstance3D" parent="."]
+position = Vector3(0.2, -0.23, 0.16)
+mesh = SubResource("Mesh")
+
+[node name="Body" type="MeshInstance3D" parent="."]
+position = Vector3(0.2, -0.17, -0.2)
+mesh = SubResource("Mesh")
+
+[node name="MuzzleFlash" type="OmniLight3D" parent="."]
+position = Vector3(0.2, -0.15, -0.58)
+light_color = Color(1, 0.58, 0.16, 1)
+light_energy = 3.0
+omni_range = 2.8

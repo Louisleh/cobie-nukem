@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="AutoAimTuning" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/combat/auto_aim_tuning.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+mode = 2
+horizontal_cone_degrees = 14.0
+vertical_cone_degrees = 24.0
+maximum_correction_degrees = 9.0
+lock_persistence_seconds = 0.35
+controller_multiplier = 1.0
+reticle_weight = 1.0
+distance_weight = 0.35
+threat_weight = 0.2
+

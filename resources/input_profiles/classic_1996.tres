@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="InputProfile" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/input/input_profile.gd" id="1_profile"]
+
+[resource]
+script = ExtResource("1_profile")
+profile_id = "classic_1996"
+display_name = "Flight Stick — Classic 1996"
+preset = "classic_1996"
+device_name_hint = "Thrustmaster USB Joystick"
+browser_experimental = true

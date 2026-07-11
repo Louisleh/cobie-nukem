@@ -1,0 +1,31 @@
+[gd_scene load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://scripts/ai/enemy_projectile.gd" id="1"]
+[sub_resource type="SphereShape3D" id="Shape"]
+radius = 0.23
+[sub_resource type="StandardMaterial3D" id="Brown"]
+shading_mode = 0
+albedo_color = Color(0.25, 0.09, 0.025, 1)
+[sub_resource type="SphereMesh" id="Mesh"]
+material = SubResource("Brown")
+radius = 0.23
+height = 0.38
+[sub_resource type="StandardMaterial3D" id="FuseMaterial"]
+shading_mode = 0
+albedo_color = Color(1, 0.45, 0.02, 1)
+emission_enabled = true
+emission = Color(1, 0.18, 0.01, 1)
+
+[node name="ExplosiveAcorn" type="CharacterBody3D"]
+collision_layer = 16
+collision_mask = 3
+script = ExtResource("1")
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("Shape")
+[node name="Acorn" type="MeshInstance3D" parent="."]
+mesh = SubResource("Mesh")
+[node name="Fuse" type="OmniLight3D" parent="."]
+light_color = Color(1, 0.18, 0.01, 1)
+light_energy = 1.8
+omni_range = 2.0
+

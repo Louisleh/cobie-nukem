@@ -1,0 +1,45 @@
+[gd_scene load_steps=10 format=3]
+
+[ext_resource type="Script" path="res://scripts/player/player_controller.gd" id="1"]
+[ext_resource type="Script" path="res://scripts/player/health_armor.gd" id="2"]
+[ext_resource type="Script" path="res://scripts/player/auto_aim_component.gd" id="3"]
+[ext_resource type="Script" path="res://scripts/player/tactile_feedback.gd" id="4"]
+[ext_resource type="Resource" path="res://resources/balance/auto_aim_classic.tres" id="5"]
+[ext_resource type="PackedScene" path="res://scenes/weapons/pawstol.tscn" id="6"]
+[ext_resource type="PackedScene" path="res://scenes/weapons/barkshot.tscn" id="7"]
+[ext_resource type="PackedScene" path="res://scenes/weapons/fetch_launcher.tscn" id="8"]
+[sub_resource type="CapsuleShape3D" id="PlayerShape"]
+radius = 0.42
+height = 1.78
+
+[node name="CobiePlayer" type="CharacterBody3D"]
+collision_layer = 2
+collision_mask = 1
+floor_stop_on_slope = true
+floor_max_angle = 0.872665
+script = ExtResource("1")
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+position = Vector3(0, 0.89, 0)
+shape = SubResource("PlayerShape")
+[node name="Head" type="Node3D" parent="."]
+position = Vector3(0, 1.56, 0)
+[node name="Camera" type="Camera3D" parent="Head"]
+current = true
+fov = 82.0
+[node name="WeaponMount" type="Node3D" parent="Head/Camera"]
+position = Vector3(0.38, -0.22, -0.75)
+scale = Vector3(0.36, 0.36, 0.36)
+[node name="Pawstol" parent="Head/Camera/WeaponMount" instance=ExtResource("6")]
+enabled = true
+[node name="Barkshot" parent="Head/Camera/WeaponMount" instance=ExtResource("7")]
+unlocked = false
+[node name="FetchLauncher" parent="Head/Camera/WeaponMount" instance=ExtResource("8")]
+unlocked = false
+[node name="HealthArmor" type="Node" parent="."]
+script = ExtResource("2")
+[node name="AutoAim" type="Node" parent="."]
+script = ExtResource("3")
+tuning = ExtResource("5")
+[node name="TactileFeedback" type="Node" parent="." node_paths=PackedStringArray("camera")]
+script = ExtResource("4")
+camera = NodePath("../Head/Camera")

@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="WeaponDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/combat/weapon_definition.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+display_name = "Barkshot"
+pickup_message = "BARKSHOT. LOUDER THAN THE MAIL SLOT."
+ammo_type = "shells"
+magazine_size = 40
+starting_ammo = 12
+ammo_per_primary = 1
+ammo_per_secondary = 2
+primary_damage = 11.0
+secondary_damage = 14.0
+primary_cooldown = 0.72
+secondary_cooldown = 1.0
+range = 28.0
+pellets = 8
+spread_degrees = 5.5
+knockback = 7.0
+

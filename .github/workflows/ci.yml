@@ -1,0 +1,78 @@
+name: Godot CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "godot-${{ github.ref }}"
+  cancel-in-progress: true
+
+jobs:
+  validate-and-export:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Godot 4.7 stable
+        uses: chickensoft-games/setup-godot@v2
+        with:
+          version: 4.7.0
+          use-dotnet: false
+          include-templates: true
+
+      - name: Verify pinned engine
+        run: godot --version | tee godot-version.txt
+
+      - name: Import project
+        run: godot --headless --path . --editor --quit
+
+      - name: Run headless tests
+        run: godot --headless --path . --script res://tests/run_tests.gd
+
+      - name: Export Web and macOS
+        run: |
+          mkdir -p builds/web builds/macos
+          godot --headless --path . --export-release Web builds/web/index.html
+          godot --headless --path . --export-release macOS builds/macos/CobieNukem.zip
+
+      - name: Upload Web artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: cobie-nukem-web
+          path: builds/web
+          if-no-files-found: error
+
+      - name: Upload macOS artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: cobie-nukem-macos-unsigned
+          path: builds/macos/CobieNukem.zip
+          if-no-files-found: error
+
+      - name: Prepare GitHub Pages artifact
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: builds/web
+
+  deploy-pages:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: validate-and-export
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy Web build
+        id: deployment
+        uses: actions/deploy-pages@v4
+

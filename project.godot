@@ -1,0 +1,119 @@
+; Engine configuration file.
+; Edit with Godot 4.7 stable. Keep shared settings reviewable in source control.
+config_version=5
+
+[application]
+
+config/name="Cobie Nukem: Retro Mayhem 3D"
+config/description="An original macOS-first retro FPS vertical slice."
+run/main_scene="res://scenes/boot/boot.tscn"
+config/features=PackedStringArray("4.7", "GL Compatibility")
+boot_splash/bg_color=Color(0.025, 0.035, 0.04, 1)
+
+[autoload]
+
+DebugLog="*res://scripts/core/debug_log.gd"
+SettingsManager="*res://scripts/core/settings_manager.gd"
+SaveManager="*res://scripts/core/save_manager.gd"
+InputManager="*res://scripts/core/input_manager.gd"
+AudioManager="*res://scripts/core/audio_manager.gd"
+GameState="*res://scripts/core/game_state.gd"
+SceneRouter="*res://scripts/core/scene_router.gd"
+
+[display]
+
+window/size/viewport_width=320
+window/size/viewport_height=180
+window/size/window_width_override=1280
+window/size/window_height_override=720
+window/stretch/mode="viewport"
+window/stretch/aspect="keep"
+window/handheld/orientation=1
+
+[input]
+
+move_forward={
+"deadzone": 0.2,
+"events": [Object(InputEventKey,"physical_keycode":87,"unicode":119)]
+}
+move_backward={
+"deadzone": 0.2,
+"events": [Object(InputEventKey,"physical_keycode":83,"unicode":115)]
+}
+strafe_left={
+"deadzone": 0.2,
+"events": [Object(InputEventKey,"physical_keycode":65,"unicode":97)]
+}
+strafe_right={
+"deadzone": 0.2,
+"events": [Object(InputEventKey,"physical_keycode":68,"unicode":100)]
+}
+look_left={"deadzone": 0.2,"events": []}
+look_right={"deadzone": 0.2,"events": []}
+look_up={"deadzone": 0.2,"events": []}
+look_down={"deadzone": 0.2,"events": []}
+fire_primary={
+"deadzone": 0.2,
+"events": [Object(InputEventMouseButton,"button_index":1)]
+}
+fire_secondary={
+"deadzone": 0.2,
+"events": [Object(InputEventMouseButton,"button_index":2)]
+}
+use={
+"deadzone": 0.2,
+"events": [Object(InputEventKey,"physical_keycode":69,"unicode":101)]
+}
+jump={
+"deadzone": 0.2,
+"events": [Object(InputEventKey,"physical_keycode":32,"unicode":32)]
+}
+run={
+"deadzone": 0.2,
+"events": [Object(InputEventKey,"physical_keycode":4194325)]
+}
+weapon_next={
+"deadzone": 0.2,
+"events": [Object(InputEventMouseButton,"button_index":5)]
+}
+weapon_previous={
+"deadzone": 0.2,
+"events": [Object(InputEventMouseButton,"button_index":4)]
+}
+pause={
+"deadzone": 0.2,
+"events": [Object(InputEventKey,"physical_keycode":4194305)]
+}
+menu_accept={
+"deadzone": 0.2,
+"events": [Object(InputEventKey,"physical_keycode":4194309)]
+}
+menu_back={
+"deadzone": 0.2,
+"events": [Object(InputEventKey,"physical_keycode":4194305)]
+}
+
+[layer_names]
+
+3d_physics/layer_1="World"
+3d_physics/layer_2="Player"
+3d_physics/layer_3="Enemies"
+3d_physics/layer_4="PlayerProjectiles"
+3d_physics/layer_5="EnemyProjectiles"
+3d_physics/layer_6="Interactables"
+3d_physics/layer_7="Pickups"
+3d_physics/layer_8="Hazards"
+
+[physics]
+
+common/physics_ticks_per_second=60
+3d/default_gravity=19.6
+
+[rendering]
+
+renderer/rendering_method="gl_compatibility"
+renderer/rendering_method.mobile="gl_compatibility"
+textures/vram_compression/import_etc2_astc=true
+textures/default_filters/use_nearest_mipmap_filter=false
+textures/canvas_textures/default_texture_filter=0
+environment/defaults/default_clear_color=Color(0.025, 0.035, 0.04, 1)

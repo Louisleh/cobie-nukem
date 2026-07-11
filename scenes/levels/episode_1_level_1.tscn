@@ -1,0 +1,8 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/level/episode_1_level_1.gd" id="1"]
+[ext_resource type="Resource" path="res://resources/level/episode_1_level_1.tres" id="2"]
+
+[node name="Episode1Level1" type="Node3D"]
+script = ExtResource("1")
+metadata = ExtResource("2")
