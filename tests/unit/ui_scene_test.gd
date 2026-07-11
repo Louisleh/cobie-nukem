@@ -25,6 +25,7 @@ func _initialize() -> void:
 	_check_level_select_contract()
 	_check_responsive_title_contract()
 	_check_responsive_main_menu_contract()
+	_check_cobie_portrait_contract()
 	if failures.is_empty():
 		print("UI SCENE TESTS: PASS")
 		quit(0)
@@ -96,3 +97,26 @@ func _check_responsive_main_menu_contract() -> void:
 	elif menu.anchor_left < 0.4 or menu.anchor_right != 1.0:
 		failures.append("Main menu interaction column must use responsive anchors")
 	instance.free()
+
+
+func _check_cobie_portrait_contract() -> void:
+	for path in [
+		"res://assets/ui/portraits/cobie_healthy.png",
+		"res://assets/ui/portraits/cobie_hurt.png",
+		"res://assets/ui/portraits/cobie_critical.png",
+	]:
+		var texture := load(path) as Texture2D
+		if texture == null or texture.get_width() != 256 or texture.get_height() != 256:
+			failures.append("Cobie HUD portrait must be a loadable 256x256 texture: " + path)
+	var portrait := CobiePortrait.new()
+	portrait.health_ratio = 1.0
+	if portrait.portrait_state() != CobiePortrait.State.HEALTHY: failures.append("70-100% health must use healthy Cobie portrait")
+	portrait.health_ratio = 0.7
+	if portrait.portrait_state() != CobiePortrait.State.HEALTHY: failures.append("70% boundary must remain healthy")
+	portrait.health_ratio = 0.69
+	if portrait.portrait_state() != CobiePortrait.State.HURT: failures.append("30-70% health must use hurt Cobie portrait")
+	portrait.health_ratio = 0.3
+	if portrait.portrait_state() != CobiePortrait.State.HURT: failures.append("30% boundary must remain hurt")
+	portrait.health_ratio = 0.29
+	if portrait.portrait_state() != CobiePortrait.State.CRITICAL: failures.append("0-30% health must use critical Cobie portrait")
+	portrait.free()
