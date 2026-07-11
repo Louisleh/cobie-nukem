@@ -67,6 +67,7 @@ func _update_phase() -> void:
 	var fraction := health_fraction()
 	if fraction <= 0.15:
 		health = maxf(health, definition.max_health * 0.1)
+		_update_health_bar()
 		_set_boss_phase(BossPhase.GOLDEN_BALL)
 	elif fraction <= 0.45:
 		_set_boss_phase(BossPhase.CHARGE)

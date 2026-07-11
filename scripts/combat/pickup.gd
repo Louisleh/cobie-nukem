@@ -8,18 +8,35 @@ signal collected(pickup: CombatPickup, collector: Node, message: String)
 @export var bob_height := 0.12
 @export var bob_speed := 2.4
 
-var _origin_y := 0.0
+var _anchor := Vector3.ZERO
 var _time := 0.0
 var _available := true
 
 func _ready() -> void:
-	_origin_y = position.y
+	_anchor = position
+	# All current level floors meet at y=0. Keep a readable minimum even if an
+	# authored spawn was accidentally placed inside the floor.
+	_anchor.y = maxf(_anchor.y, 0.72)
+	position = _anchor
+	monitoring = true
 	body_entered.connect(_on_body_entered)
 
 func _process(delta: float) -> void:
 	_time += delta
 	rotate_y(spin_speed * delta)
-	position.y = _origin_y + sin(_time * bob_speed) * bob_height
+	position = _anchor + Vector3.UP * sin(_time * bob_speed) * bob_height
+
+func _physics_process(_delta: float) -> void:
+	if not _available:
+		return
+	# Polling makes collection reliable when an Area begins overlapped, a frame is
+	# dropped, or the player crosses the edge between body-enter notifications.
+	for body in get_overlapping_bodies():
+		if try_collect(body):
+			return
+	var player := get_tree().get_first_node_in_group(&"player") as Node3D
+	if player != null and global_position.distance_to(player.global_position) <= 1.35:
+		try_collect(player)
 
 func try_collect(collector: Node) -> bool:
 	if not _available or definition == null:
@@ -27,13 +44,21 @@ func try_collect(collector: Node) -> bool:
 	var applied := false
 	match definition.kind:
 		PickupDefinition.Kind.HEALTH:
-			applied = collector.has_method("heal") and collector.heal(definition.amount) > 0.0
+			if collector.has_method("heal"):
+				collector.heal(definition.amount)
+				applied = true
 		PickupDefinition.Kind.ARMOR:
-			applied = collector.has_method("add_armor") and collector.add_armor(definition.amount) > 0.0
+			if collector.has_method("add_armor"):
+				collector.add_armor(definition.amount)
+				applied = true
 		PickupDefinition.Kind.AMMO:
-			applied = collector.has_method("add_ammo") and collector.add_ammo(definition.ammo_type, int(definition.amount)) > 0
+			if collector.has_method("add_ammo"):
+				collector.add_ammo(definition.ammo_type, int(definition.amount))
+				applied = true
 		PickupDefinition.Kind.WEAPON:
-			applied = collector.has_method("unlock_weapon") and collector.unlock_weapon(definition.ammo_type)
+			if collector.has_method("unlock_weapon"):
+				collector.unlock_weapon(definition.ammo_type)
+				applied = true
 		PickupDefinition.Kind.FULL_RESTORE:
 			if collector.has_method("restore_full"):
 				collector.restore_full()

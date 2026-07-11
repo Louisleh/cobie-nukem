@@ -3,6 +3,7 @@ extends CharacterBody3D
 
 signal exploded(position: Vector3)
 signal recalled(projectile: FetchProjectile)
+signal shot_resolved(kind: StringName, position: Vector3)
 
 @export var speed := 18.0
 @export var fuse_seconds := 2.5
@@ -10,7 +11,7 @@ signal recalled(projectile: FetchProjectile)
 @export var blast_radius := 4.0
 @export var recall_damage := 32.0
 @export var max_bounces := 8
-@export var collision_mask_for_blast := 1
+@export var collision_mask_for_blast := 4
 
 var instigator: Node3D
 var direction := Vector3.FORWARD
@@ -18,6 +19,7 @@ var recalling := false
 var bounces := 0
 var _age := 0.0
 var _damaged_on_recall: Dictionary = {}
+var _damaged_on_bounce: Dictionary = {}
 
 func launch(origin: Vector3, launch_direction: Vector3, owner_node: Node3D) -> void:
 	global_position = origin
@@ -52,12 +54,27 @@ func _handle_collision(collision: KinematicCollision3D) -> void:
 	var receiver := _find_damage_receiver(collision.get_collider())
 	if receiver != null and receiver != instigator:
 		if recalling:
-			_damage_receiver(receiver, recall_damage)
+			if not _damaged_on_recall.has(receiver):
+				_damaged_on_recall[receiver] = true
+				_damage_receiver(receiver, recall_damage)
+				shot_resolved.emit(&"enemy", global_position)
+			global_position += direction * 0.24
 		else:
-			explode()
+			_bounce_off_enemy(receiver, collision.get_normal())
 		return
+	_bounce(collision.get_normal())
+
+func _bounce_off_enemy(receiver: Node, normal: Vector3) -> void:
+	if not _damaged_on_bounce.has(receiver):
+		_damaged_on_bounce[receiver] = true
+		_damage_receiver(receiver, damage)
+		shot_resolved.emit(&"enemy", global_position)
+	_bounce(normal, 0.9)
+
+func _bounce(normal: Vector3, retention := 0.82) -> void:
 	bounces += 1
-	velocity = velocity.bounce(collision.get_normal()) * 0.82
+	velocity = velocity.bounce(normal) * retention
+	velocity.y = maxf(velocity.y, 2.4)
 	direction = velocity.normalized()
 	if bounces >= max_bounces and not recalling:
 		explode()
@@ -72,13 +89,16 @@ func explode() -> void:
 	query.transform = Transform3D(Basis.IDENTITY, global_position)
 	query.collision_mask = collision_mask_for_blast
 	query.exclude = [get_rid()]
+	var hit_enemy := false
 	for result in get_world_3d().direct_space_state.intersect_shape(query, 32):
 		var receiver := _find_damage_receiver(result.get("collider"))
 		if receiver == null or receiver == instigator:
 			continue
+		hit_enemy = true
 		var receiver_position: Vector3 = receiver.global_position if receiver is Node3D else global_position
 		var falloff := 1.0 - clampf(global_position.distance_to(receiver_position) / blast_radius, 0.0, 0.8)
 		_damage_receiver(receiver, damage * falloff)
+	shot_resolved.emit(&"enemy" if hit_enemy else (&"world" if bounces > 0 else &"miss"), global_position)
 	exploded.emit(global_position)
 	queue_free()
 
@@ -88,6 +108,7 @@ func _damage_recall_overlaps() -> void:
 		if receiver != null and receiver != instigator and not _damaged_on_recall.has(receiver):
 			_damaged_on_recall[receiver] = true
 			_damage_receiver(receiver, recall_damage)
+			shot_resolved.emit(&"enemy", global_position)
 
 func _damage_receiver(receiver: Node, amount: float) -> void:
 	if receiver.has_method("apply_damage"):

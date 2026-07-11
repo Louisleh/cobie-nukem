@@ -14,6 +14,7 @@ var times_read := 0
 
 
 func _ready() -> void:
+	add_to_group(&"interactables")
 	if get_child_count() == 0: _build_visual()
 
 

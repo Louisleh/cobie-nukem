@@ -13,5 +13,4 @@ primary_cooldown = 0.22
 secondary_cooldown = 0.48
 range = 90.0
 spread_degrees = 0.35
-knockback = 1.5
-
+knockback = 3.0

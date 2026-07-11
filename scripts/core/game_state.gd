@@ -10,6 +10,7 @@ enum Phase { BOOT, MENU, PLAYING, PAUSED, VICTORY, GAME_OVER, DIAGNOSTICS }
 var phase: Phase = Phase.BOOT
 var current_level_id: StringName = &""
 var run_stats: Dictionary = {}
+var continue_requested := false
 
 func begin_boot() -> void:
 	_set_phase(Phase.BOOT)
@@ -50,4 +51,3 @@ func _set_phase(next_phase: Phase) -> void:
 	var previous := phase
 	phase = next_phase
 	phase_changed.emit(previous, phase)
-

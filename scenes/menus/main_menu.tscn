@@ -50,9 +50,9 @@ mouse_filter = 2
 [node name="MenuPanel" type="Panel" parent="."]
 layout_mode = 0
 offset_left = 139.0
-offset_top = 8.0
+offset_top = 5.0
 offset_right = 312.0
-offset_bottom = 172.0
+offset_bottom = 175.0
 
 [node name="Margin" type="MarginContainer" parent="MenuPanel"]
 layout_mode = 1
@@ -60,30 +60,30 @@ anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 offset_left = 8.0
-offset_top = 6.0
+offset_top = 8.0
 offset_right = -8.0
-offset_bottom = -6.0
+offset_bottom = -7.0
 
 [node name="VBox" type="VBoxContainer" parent="MenuPanel/Margin"]
 layout_mode = 2
-theme_override_constants/separation = 3
+theme_override_constants/separation = 1
 
 [node name="Eyebrow" type="Label" parent="MenuPanel/Margin/VBox"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.57, 0.68, 0.62, 1)
-theme_override_font_sizes/font_size = 7
+theme_override_font_sizes/font_size = 6
 text = "EPISODE 1 // SALMON CREEK"
 
 [node name="Title" type="Label" parent="MenuPanel/Margin/VBox"]
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.73, 0.19, 1)
-theme_override_font_sizes/font_size = 16
+theme_override_font_sizes/font_size = 14
 text = "COBIE NUKEM"
 
 [node name="Subtitle" type="Label" parent="MenuPanel/Margin/VBox"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.86, 0.89, 0.77, 1)
-theme_override_font_sizes/font_size = 8
+theme_override_font_sizes/font_size = 7
 text = "RETRO MAYHEM 3D"
 
 [node name="Rule" type="HSeparator" parent="MenuPanel/Margin/VBox"]
@@ -118,7 +118,7 @@ unique_name_in_owner = true
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.36, 0.22, 1)
 theme_override_font_sizes/font_size = 7
-text = "SIGN SEEMS OPTIONAL."
+text = ""
 
 [node name="ProceduralAudio" type="Node" parent="."]
 unique_name_in_owner = true
@@ -133,4 +133,3 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 mouse_filter = 2
 script = ExtResource("5")
-

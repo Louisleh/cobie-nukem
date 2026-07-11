@@ -7,7 +7,7 @@ script = ExtResource("1")
 id = &"squirrel_trooper"
 display_name = "SQUIRREL TROOPER"
 warning_text = "ACORN ORDNANCE ARMED."
-max_health = 26.0
+max_health = 30.0
 move_speed = 5.8
 acceleration = 30.0
 detection_range = 25.0
@@ -17,4 +17,3 @@ attack_cooldown = 1.8
 telegraph_seconds = 0.62
 threat_weight = 0.9
 score_value = 140
-

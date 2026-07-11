@@ -11,7 +11,7 @@ An original, macOS-first retro FPS vertical slice starring Cobie, an aviator-wea
 - Python 3 for serving a local Web export
 - Godot 4.7 export templates for export commands
 
-The project deliberately uses GDScript and the Compatibility renderer so it can export to the Web. Internal rendering defaults to 320×180 and scales to the display with nearest-neighbor filtering.
+The project deliberately uses GDScript and the Compatibility renderer so it can export to the Web. The retro UI is authored on a 320×180 canvas, while the 3D world renders at the output resolution for cleaner geometry and illustrated enemy sprites.
 
 ## Quick start
 
@@ -51,7 +51,7 @@ Open `http://localhost:8060`. Browser joystick support is experimental; keyboard
 
 ## Default controls
 
-Keyboard/mouse defaults use WASD, mouse look, left/right mouse fire, E interact, Space jump, Shift run, mouse wheel weapon cycle, and Escape pause. Flight-stick Classic 1996, Hybrid, remapping, and calibration are implemented through the input subsystem and remain subject to physical hardware verification.
+Keyboard/mouse defaults use WASD, mouse look, left/right mouse fire, E interact, Space jump, Shift run, Up/Down weapon cycle (or 1/2/3 direct selection), and Escape pause. Flight-stick Classic 1996, Hybrid, remapping, and calibration are implemented through the input subsystem and remain subject to physical hardware verification.
 
 The target Thrustmaster USB Joystick model 2960623 is **not verified on macOS** until it passes the physical checklist in the PRD. An M4 Mac mini requires a USB-A-to-USB-C adapter or hub.
 

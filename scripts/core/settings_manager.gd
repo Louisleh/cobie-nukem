@@ -8,8 +8,8 @@ const SETTINGS_PATH := "user://settings.cfg"
 const DEFAULTS := {
 	"audio": {"master": 1.0, "music": 0.8, "sfx": 0.9},
 	"video": {"fov": 90.0, "render_scale": "320x180", "reduced_flashes": false},
-	"accessibility": {"camera_shake": 1.0, "head_bob": 1.0, "gore": "cartoon", "auto_aim": "classic"},
-	"gameplay": {"run_mode": "hold"},
+	"accessibility": {"camera_shake": 1.0, "head_bob": 1.0, "gore": "cartoon", "auto_aim": "classic", "subtitles": true},
+	"gameplay": {"run_mode": "hold", "mouse_sensitivity": 1.0},
 }
 
 var _config := ConfigFile.new()
@@ -53,4 +53,3 @@ func _apply_defaults() -> void:
 		for key: String in values:
 			if not _config.has_section_key(section, key):
 				_config.set_value(section, key, values[key])
-

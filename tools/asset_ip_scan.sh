@@ -14,14 +14,30 @@ while IFS= read -r path; do
   esac
 done < <(find assets scenes scripts resources -type f -not -name '*.uid' -not -name '*.import' | sort)
 
-if rg -I -n -i 'duke[ _-]?nukem|hail to the king|come get some|damn, i.m good' assets scenes scripts resources; then
+search_runtime() {
+  if command -v rg >/dev/null 2>&1; then
+    rg -I -n -i "$1" assets scenes scripts resources
+  else
+    grep -RInE --exclude='*.uid' --exclude='*.import' "$1" assets scenes scripts resources
+  fi
+}
+
+manifest_has() {
+  if command -v rg >/dev/null 2>&1; then
+    rg -F -q "\`$1\`" docs/ASSET_MANIFEST.md
+  else
+    grep -Fq "\`$1\`" docs/ASSET_MANIFEST.md
+  fi
+}
+
+if search_runtime 'duke[ _-]?nukem|hail to the king|come get some|damn, i.m good'; then
   echo "ERROR protected-source indicator found in runtime content"
   failures=$((failures + 1))
 fi
 
 echo "Asset/IP scan: manifest coverage"
 while IFS= read -r asset; do
-  if ! rg -F -q "\`$asset\`" docs/ASSET_MANIFEST.md; then
+  if ! manifest_has "$asset"; then
     echo "ERROR asset missing manifest entry: $asset"
     failures=$((failures + 1))
   fi

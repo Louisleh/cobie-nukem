@@ -4,5 +4,5 @@ builds/*
 !builds/.gitkeep
 *.tmp
 *.log
+tmp/
 export_credentials.cfg
-

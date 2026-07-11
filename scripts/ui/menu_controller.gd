@@ -12,6 +12,7 @@ extends Control
 @onready var music: AudioStreamPlayer = %Music
 
 func _ready() -> void:
+	modulate.a = 0.0
 	GameState._set_phase(GameState.Phase.MENU)
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 	_wire_button(%NewGameButton, _new_game)
@@ -22,9 +23,16 @@ func _ready() -> void:
 	_wire_button(%QuitButton, _quit)
 	%QuitButton.visible = not OS.has_feature("web")
 	continue_button.disabled = SaveManager.load_slot(&"checkpoint").is_empty()
+	continue_button.focus_mode = Control.FOCUS_NONE if continue_button.disabled else Control.FOCUS_ALL
 	%NewGameButton.grab_focus()
 	music.stream = sounds.create_menu_music()
 	music.play()
+	_reveal_after_layout()
+
+func _reveal_after_layout() -> void:
+	await get_tree().process_frame
+	await get_tree().process_frame
+	modulate.a = 1.0
 
 func _wire_button(button: Button, callback: Callable) -> void:
 	button.pressed.connect(func() -> void:
@@ -35,11 +43,14 @@ func _wire_button(button: Button, callback: Callable) -> void:
 	button.mouse_entered.connect(button.grab_focus)
 
 func _new_game() -> void:
+	GameState.continue_requested = false
+	SaveManager.delete_slot(&"checkpoint")
 	GameState.begin_run(&"no_dogs_allowed")
 	_route(level_scene_path)
 
 func _continue_game() -> void:
 	var checkpoint := SaveManager.load_slot(&"checkpoint")
+	GameState.continue_requested = true
 	var scene_path := String(checkpoint.get("scene_path", level_scene_path))
 	GameState.begin_run(StringName(checkpoint.get("level_id", "no_dogs_allowed")))
 	_route(scene_path)
@@ -47,6 +58,7 @@ func _continue_game() -> void:
 func _route(path: String) -> void:
 	var result := SceneRouter.go_to(path)
 	if result != OK:
+		status_label.visible = true
 		status_label.text = "ROUTE OFFLINE // %s" % path.get_file()
 		sounds.play(ProceduralAudio.Cue.ERROR)
 

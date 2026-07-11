@@ -19,6 +19,19 @@ func _initialize() -> void:
 	check(level.get_node_or_null("Geometry") != null, "Procedural geometry missing")
 	check(level.get_node_or_null("Actors") != null, "Actor container missing")
 	check(level.get_node_or_null("Interactables") != null, "Interactable container missing")
+	var bridge := level.get_node_or_null("Geometry/SecretDogParkBridge") as CSGBox3D
+	check(bridge != null and bridge.size.x >= 2.0 and bridge.size.z >= 5.0, "Secret dog park has no continuous floor bridge")
+	check(level.get_node_or_null("Geometry/LabEastBoundaryRear") != null, "Rear lab boundary segment missing")
+	check(level.get_node_or_null("Geometry/LabEastBoundaryFront") != null, "Front lab boundary segment missing")
+	var hover_origins_ok := true
+	var drone_origins_ok := true
+	for actor in level.get_node("Actors").get_children():
+		if actor is CombatPickup:
+			hover_origins_ok = hover_origins_ok and actor._anchor.y > 0.6
+		elif actor is LeashEnforcementDrone:
+			drone_origins_ok = drone_origins_ok and actor._base_height > 1.5 and not actor.uses_gravity
+	check(hover_origins_ok, "Pickup hover origins were captured before spawn placement")
+	check(drone_origins_ok, "Drone hover height was captured before spawn placement")
 	var doors := 0; var signs := 0; var checkpoints := 0; var finale := 0
 	for child in level.get_node("Interactables").get_children():
 		if child is LevelDoor: doors += 1
@@ -34,9 +47,41 @@ func _initialize() -> void:
 	level._discover_secret(&"ball_return", "AUTHORIZED FETCHING")
 	level._discover_secret(&"ball_return", "AUTHORIZED FETCHING")
 	check(level.secrets.size() == 3, "Secrets must be unique and total three")
-	for zone in [&"equipment_shed", &"maintenance_tunnels", &"compliance_lab", &"walker_arena"]:
+	var player := preload("res://scenes/player/cobie_player.tscn").instantiate() as CobiePlayer
+	root.add_child(player)
+	await process_frame
+	check(player.is_in_group(&"player"), "Player identity group missing; zone progression cannot trigger")
+	check(player.is_in_group(&"damageable_player"), "Player damageable identity group missing")
+	var compliance_trigger: LevelZoneTrigger
+	for child in level.get_node("Interactables").get_children():
+		if child is LevelZoneTrigger and child.zone_id == &"compliance_lab":
+			compliance_trigger = child
+			break
+	check(compliance_trigger != null, "Compliance Lab trigger missing")
+	if compliance_trigger != null:
+		check(compliance_trigger.collision_mask == 2, "Progression trigger does not detect the player physics layer")
+		level.player = player
+		player.global_position.z = -90.0
+		level._physics_process(0.0)
+		check(level.spawned_zones.has(&"equipment_shed"), "Spatial fallback missed Equipment Shed progression")
+		check(level.spawned_zones.has(&"maintenance_tunnels"), "Spatial fallback missed Maintenance Tunnels progression")
+		check(level.spawned_zones.has(&"compliance_lab"), "Spatial fallback missed Compliance Lab progression")
+		compliance_trigger._on_body_entered(player)
+	for zone in [&"walker_arena"]:
 		level._enter_zone(zone, String(zone), null)
+	var fetch_guard := level.get_node_or_null("Actors/FetchGuard") as ComplianceHound
+	check(fetch_guard != null, "Compliance Lab did not spawn the Fetch Guard")
+	if fetch_guard != null:
+		check(fetch_guard.global_position.z > -112.0, "Fetch Guard spawned too far behind the launcher encounter")
 	check(level.spawned_zones.has(&"walker_arena"), "Boss encounter does not arm")
+	check(level.enemies_total == 12, "Complete route must spawn all 12 encounter enemies")
+	player.global_position.y = player.out_of_bounds_y - 1.0
+	check(player._check_out_of_bounds(), "Player crossing the kill plane triggers out-of-bounds death")
+	check(player.is_dead and player.health_armor.is_dead, "Out-of-bounds fall uses the normal death state")
+	level.player = null
+	for actor in level.get_node("Actors").get_children():
+		actor.process_mode = Node.PROCESS_MODE_DISABLED
+	player.free()
 	var summary := level.get_level_summary()
 	check(summary.secrets_total == 3, "Summary secret total incorrect")
 	check(summary.level_id == &"episode_1_level_1", "Summary level id incorrect")

@@ -1,4 +1,4 @@
-[gd_scene load_steps=6 format=3]
+[gd_scene load_steps=8 format=3]
 
 [ext_resource type="Script" path="res://scripts/combat/barkshot.gd" id="1"]
 [ext_resource type="Resource" path="res://resources/weapons/barkshot.tres" id="2"]
@@ -17,6 +17,16 @@ material = SubResource("Dark")
 top_radius = 0.07
 bottom_radius = 0.07
 height = 0.85
+[sub_resource type="StandardMaterial3D" id="FlashMat"]
+shading_mode = 0
+albedo_color = Color(1, 0.68, 0.12, 1)
+emission_enabled = true
+emission = Color(1, 0.18, 0.01, 1)
+emission_energy_multiplier = 7.0
+[sub_resource type="SphereMesh" id="FlashMesh"]
+material = SubResource("FlashMat")
+radius = 0.18
+height = 0.38
 
 [node name="Barkshot" type="Node3D" node_paths=PackedStringArray("muzzle_flash")]
 script = ExtResource("1")
@@ -36,5 +46,11 @@ mesh = SubResource("Barrel")
 [node name="MuzzleFlash" type="OmniLight3D" parent="."]
 position = Vector3(0.22, -0.16, -1.1)
 light_color = Color(1, 0.48, 0.1, 1)
-light_energy = 5.5
+light_energy = 8.0
 omni_range = 4.0
+[node name="MuzzleBurst" type="MeshInstance3D" parent="."]
+visible = false
+position = Vector3(0.22, -0.16, -1.14)
+scale = Vector3(1.2, 0.9, 1.5)
+mesh = SubResource("FlashMesh")
+cast_shadow = 0

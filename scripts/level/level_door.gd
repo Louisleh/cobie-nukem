@@ -19,6 +19,7 @@ var _closed_position: Vector3
 
 
 func _ready() -> void:
+	add_to_group(&"interactables")
 	is_locked = starts_locked
 	_closed_position = position
 	if get_child_count() == 0: _build_visual()
@@ -52,11 +53,13 @@ func open(actor: Node = null) -> void:
 	set_collision_layer_value(1, false)
 	var tween := create_tween().set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN_OUT)
 	tween.tween_property(self, "position", _closed_position + Vector3.UP * open_height, open_seconds)
+	tween.tween_callback(func() -> void: visible = false)
 	opened.emit(self, actor)
 
 
 func reset_door() -> void:
 	is_open = false
+	visible = true
 	position = _closed_position
 	set_collision_layer_value(1, true)
 

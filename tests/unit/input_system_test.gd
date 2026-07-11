@@ -40,12 +40,19 @@ func check_profile_round_trip() -> void:
 
 
 func check_default_profiles() -> void:
-	for preset in ["classic_1996", "hybrid", "generic_gamepad"]:
+	for preset in ["keyboard_mouse", "classic_1996", "hybrid", "generic_gamepad"]:
 		var profile := InputProfileScript.new()
 		profile.preset = preset
 		profile.ensure_defaults()
 		if profile.bindings_for(&"fire_primary").is_empty(): failures.append("%s lacks primary fire" % preset)
 		if profile.bindings_for(&"menu_back").is_empty(): failures.append("%s lacks menu back" % preset)
+	var keyboard := InputProfileScript.new()
+	keyboard.preset = "keyboard_mouse"
+	keyboard.ensure_defaults()
+	if int(keyboard.bindings_for(&"move_forward")[0].index) != KEY_W: failures.append("Keyboard forward must display W")
+	if int(keyboard.bindings_for(&"fire_primary")[0].index) != MOUSE_BUTTON_LEFT: failures.append("Keyboard primary fire must display LMB")
+	if int(keyboard.bindings_for(&"weapon_previous")[0].index) != KEY_UP: failures.append("Previous weapon must display Up")
+	if int(keyboard.bindings_for(&"weapon_next")[0].index) != KEY_DOWN: failures.append("Next weapon must display Down")
 	var classic := InputProfileScript.new()
 	classic.preset = "classic_1996"
 	classic.ensure_defaults()

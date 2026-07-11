@@ -188,6 +188,16 @@ static func default_axis_settings_for(profile_preset: String) -> Dictionary:
 
 static func default_bindings_for(profile_preset: String) -> Dictionary:
 	match profile_preset:
+		"keyboard_mouse":
+			return {
+				"move_forward": [_key(KEY_W)], "move_backward": [_key(KEY_S)],
+				"strafe_left": [_key(KEY_A)], "strafe_right": [_key(KEY_D)],
+				"fire_primary": [_mouse(MOUSE_BUTTON_LEFT)], "fire_secondary": [_mouse(MOUSE_BUTTON_RIGHT)],
+				"use": [_key(KEY_E)], "jump": [_key(KEY_SPACE)], "run": [_key(KEY_SHIFT)],
+				"weapon_previous": [_key(KEY_UP)],
+				"weapon_next": [_key(KEY_DOWN)],
+				"pause": [_key(KEY_ESCAPE)], "menu_accept": [_key(KEY_ENTER)], "menu_back": [_key(KEY_ESCAPE)],
+			}
 		"classic_1996":
 			return {
 				"look_left": [_axis(0, -1)], "look_right": [_axis(0, 1)],
@@ -228,3 +238,11 @@ static func _axis(index: int, direction: int, axis_range := "directional") -> Di
 
 static func _button(index: int) -> Dictionary:
 	return {"type": "button", "index": index, "direction": 1.0, "range": "directional"}
+
+
+static func _key(keycode: Key) -> Dictionary:
+	return {"type": "key", "index": int(keycode), "direction": 1.0, "range": "directional"}
+
+
+static func _mouse(button_index: MouseButton) -> Dictionary:
+	return {"type": "mouse_button", "index": int(button_index), "direction": 1.0, "range": "directional"}

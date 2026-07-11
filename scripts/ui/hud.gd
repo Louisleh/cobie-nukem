@@ -20,6 +20,11 @@ func bind_player(player: Node) -> void:
 		player.interaction_available.connect(_on_interaction_available)
 	if player.has_signal("pickup_message"):
 		player.pickup_message.connect(show_notification)
+	if player.has_signal("shot_resolved"):
+		player.shot_resolved.connect(func(kind: StringName, _position: Vector3) -> void: crosshair.show_shot_result(kind))
+	if player.has_signal("access_item_changed"):
+		player.access_item_changed.connect(set_access_item)
+	set_access_item("ACCESS COLLAR" if player.is_in_group(&"has_access_collar") else "NO ACCESS COLLAR")
 	var health_component := player.get_node_or_null("HealthArmor")
 	if health_component != null:
 		health_component.health_changed.connect(_on_health_changed)
@@ -61,4 +66,3 @@ func _on_weapon_changed(display_name: String, ammo: int, maximum_ammo: int) -> v
 func _on_interaction_available(label: String) -> void:
 	interaction_label.visible = not label.is_empty()
 	interaction_label.text = "[E] %s" % label.to_upper()
-

@@ -18,5 +18,4 @@ secondary_cooldown = 1.0
 range = 28.0
 pellets = 8
 spread_degrees = 5.5
-knockback = 7.0
-
+knockback = 0.55

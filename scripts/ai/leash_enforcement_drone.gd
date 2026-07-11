@@ -6,6 +6,7 @@ var _hover_time := 0.0
 var _base_height := 0.0
 
 func _ready() -> void:
+	uses_gravity = false
 	super._ready()
 	attack_kind = &"compliance_bolt"
 	_base_height = global_position.y
@@ -15,6 +16,7 @@ func _physics_process(delta: float) -> void:
 	super._physics_process(delta)
 	if not is_dead and state != State.HURT:
 		global_position.y = _base_height + sin(_hover_time * 2.2) * 0.18
+		velocity.y = 0.0
 
 func _move_for_combat(distance: float, delta: float) -> void:
 	if distance < definition.attack_range * 0.62:
@@ -28,4 +30,3 @@ func _move_for_combat(distance: float, delta: float) -> void:
 
 func _perform_attack() -> void:
 	_spawn_projectile(BOLT, 10.5)
-

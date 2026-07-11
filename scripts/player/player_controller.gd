@@ -8,6 +8,8 @@ signal interacted(target: Node)
 signal weapon_changed(display_name: String, ammo: int, maximum_ammo: int)
 signal pickup_message(message: String)
 signal temporary_effect_started(effect: StringName, duration: float)
+signal shot_resolved(kind: StringName, position: Vector3)
+signal access_item_changed(label: String)
 
 @export_category("Movement")
 @export var walk_speed := 6.0
@@ -21,6 +23,7 @@ signal temporary_effect_started(effect: StringName, duration: float)
 @export var max_look_degrees := 86.0
 @export var head_bob_amount := 0.035
 @export var head_bob_speed := 10.5
+@export var out_of_bounds_y := -8.0
 
 @export_category("Interaction")
 @export var interaction_range := 3.0
@@ -36,43 +39,98 @@ signal temporary_effect_started(effect: StringName, duration: float)
 
 var weapons: Array[WeaponBase] = []
 var current_weapon_index := 0
+var _weapon_selection_initialized := false
 var is_dead := false
 var _head_bob_time := 0.0
 var _head_base_position := Vector3.ZERO
 var _zoomies_remaining := 0.0
+var _wheel_switch_time_ms := -1000
+var _run_toggled := false
 
 func _ready() -> void:
+	# Level zones key progression off this stable identity. Keeping it in code
+	# prevents a scene metadata omission from silently disabling every later wave.
+	add_to_group(&"player")
+	add_to_group(&"damageable_player")
 	_head_base_position = head.position
+	var settings := get_node_or_null("/root/SettingsManager")
+	if settings != null and settings.has_method("get_value"):
+		mouse_sensitivity *= clampf(float(settings.call("get_value", &"gameplay", &"mouse_sensitivity", 1.0)), 0.25, 3.0)
+		camera.fov = clampf(float(settings.call("get_value", &"video", &"fov", 90.0)), 70.0, 110.0)
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 	health_armor.died.connect(_on_died)
 	health_armor.damaged.connect(_on_damaged)
 	for child in weapon_mount.get_children():
 		if child is WeaponBase:
-			weapons.append(child)
-			child.configure(camera, auto_aim, feedback)
+			var weapon := child as WeaponBase
+			weapons.append(weapon)
+			weapon.configure(camera, auto_aim, feedback)
+			weapon.ammo_changed.connect(_on_weapon_ammo_changed.bind(weapon))
+			weapon.shot_resolved.connect(_on_shot_resolved)
 	if not weapons.is_empty():
 		select_weapon(0)
+
+
+func _input(event: InputEvent) -> void:
+	if is_dead or get_tree().paused:
+		return
+	# Arrow keys replace momentum-heavy trackpad scrolling. Ignore key repeat so
+	# one physical press always produces exactly one visible weapon change.
+	if event is InputEventKey and event.pressed and not event.echo:
+		match event.physical_keycode:
+			KEY_UP:
+				select_weapon(current_weapon_index - 1)
+				get_viewport().set_input_as_handled()
+			KEY_DOWN:
+				select_weapon(current_weapon_index + 1)
+				get_viewport().set_input_as_handled()
+			KEY_1:
+				select_weapon_slot(0)
+				get_viewport().set_input_as_handled()
+			KEY_2:
+				select_weapon_slot(1)
+				get_viewport().set_input_as_handled()
+			KEY_3:
+				select_weapon_slot(2)
+				get_viewport().set_input_as_handled()
+	elif event is InputEventMouseButton and event.pressed and event.button_index in [MOUSE_BUTTON_WHEEL_UP, MOUSE_BUTTON_WHEEL_DOWN]:
+		var now := Time.get_ticks_msec()
+		if now - _wheel_switch_time_ms >= 180:
+			select_weapon(current_weapon_index - 1 if event.button_index == MOUSE_BUTTON_WHEEL_UP else current_weapon_index + 1)
+			_wheel_switch_time_ms = now
+		get_viewport().set_input_as_handled()
+	elif event.is_action_pressed("weapon_next"):
+		select_weapon(current_weapon_index + 1)
+		get_viewport().set_input_as_handled()
+	elif event.is_action_pressed("weapon_previous"):
+		select_weapon(current_weapon_index - 1)
+		get_viewport().set_input_as_handled()
 
 func _unhandled_input(event: InputEvent) -> void:
 	if is_dead:
 		if event.is_action_pressed("fire_primary") or event.is_action_pressed("jump") or event.is_action_pressed("use"):
 			restart_requested.emit()
 		return
+	# Browsers can release pointer lock when focus changes. A fresh click is the
+	# user gesture required to reacquire it; consume that click so it cannot fire.
+	if event is InputEventMouseButton and event.pressed and Input.mouse_mode != Input.MOUSE_MODE_CAPTURED:
+		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+		get_viewport().set_input_as_handled()
+		return
 	if event is InputEventMouseMotion and Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
-		rotate_y(-event.relative.x * mouse_sensitivity)
-		head.rotation.x = clampf(head.rotation.x - event.relative.y * mouse_sensitivity, deg_to_rad(-max_look_degrees), deg_to_rad(max_look_degrees))
+		var relative: Vector2 = event.relative.limit_length(180.0)
+		rotate_y(-relative.x * mouse_sensitivity)
+		head.rotation.x = clampf(head.rotation.x - relative.y * mouse_sensitivity, deg_to_rad(-max_look_degrees), deg_to_rad(max_look_degrees))
 	if event.is_action_pressed("fire_primary"):
 		_current_weapon_fire(false)
 	elif event.is_action_pressed("fire_secondary"):
 		_current_weapon_fire(true)
-	elif event.is_action_pressed("weapon_next"):
-		select_weapon(current_weapon_index + 1)
-	elif event.is_action_pressed("weapon_previous"):
-		select_weapon(current_weapon_index - 1)
 	elif event.is_action_pressed("use"):
 		_try_interact()
 
 func _physics_process(delta: float) -> void:
+	if _check_out_of_bounds():
+		return
 	if is_dead:
 		velocity = velocity.move_toward(Vector3.ZERO, ground_deceleration * delta)
 		move_and_slide()
@@ -84,7 +142,13 @@ func _physics_process(delta: float) -> void:
 		velocity.y = jump_velocity
 	var input := Input.get_vector("strafe_left", "strafe_right", "move_forward", "move_backward")
 	var wish_direction := (global_basis * Vector3(input.x, 0.0, input.y)).normalized()
-	var running := Input.is_action_pressed("run")
+	var run_mode := "hold"
+	var settings := get_node_or_null("/root/SettingsManager")
+	if settings != null and settings.has_method("get_value"):
+		run_mode = String(settings.call("get_value", &"gameplay", &"run_mode", "hold"))
+	if run_mode == "toggle" and Input.is_action_just_pressed("run"):
+		_run_toggled = not _run_toggled
+	var running := _run_toggled if run_mode == "toggle" else Input.is_action_pressed("run")
 	var target_speed := run_speed if running else walk_speed
 	if _zoomies_remaining > 0.0:
 		target_speed *= 1.35
@@ -96,6 +160,15 @@ func _physics_process(delta: float) -> void:
 	move_and_slide()
 	_update_head_bob(delta, input.length())
 	_update_interaction_prompt()
+
+
+func _check_out_of_bounds() -> bool:
+	if is_dead or global_position.y >= out_of_bounds_y:
+		return false
+	# Route through the normal damage/death signals so the existing death screen,
+	# quip, input release, and checkpoint retry behavior all remain consistent.
+	health_armor.apply_damage(health_armor.max_health + health_armor.max_armor + 1000.0, self)
+	return true
 
 func apply_damage(amount: float, source: Node = null, _hit_position := Vector3.ZERO) -> float:
 	return health_armor.apply_damage(amount, source)
@@ -141,6 +214,7 @@ func receive_pickup_effect(kind: PickupDefinition.Kind, amount: float) -> bool:
 			return true
 		PickupDefinition.Kind.ACCESS_COLLAR:
 			add_to_group(&"has_access_collar")
+			access_item_changed.emit("ACCESS COLLAR")
 			pickup_message.emit("ACCESS COLLAR ACQUIRED.")
 			return true
 	return false
@@ -154,11 +228,25 @@ func select_weapon(index: int) -> void:
 		if weapons[candidate].unlocked:
 			break
 		candidate = posmod(candidate + direction, weapons.size())
+	if _weapon_selection_initialized and candidate == current_weapon_index:
+		return
+	if _weapon_selection_initialized:
+		weapons[current_weapon_index].enabled = false
+	else:
+		for weapon in weapons:
+			weapon.enabled = false
 	current_weapon_index = candidate
-	for weapon_index in weapons.size():
-		weapons[weapon_index].enabled = weapon_index == current_weapon_index
+	weapons[current_weapon_index].enabled = true
+	_weapon_selection_initialized = true
 	var current := weapons[current_weapon_index]
 	weapon_changed.emit(current.definition.display_name, current.ammo, current.definition.magazine_size)
+
+
+func select_weapon_slot(index: int) -> bool:
+	if index < 0 or index >= weapons.size() or not weapons[index].unlocked:
+		return false
+	select_weapon(index)
+	return true
 
 func unlock_weapon(display_name: String) -> bool:
 	for index in weapons.size():
@@ -196,9 +284,30 @@ func _interaction_hit() -> Dictionary:
 	query.exclude = [get_rid()]
 	return get_world_3d().direct_space_state.intersect_ray(query)
 
+func _nearby_interactable() -> Node:
+	var best: Node
+	var best_score := INF
+	for node in get_tree().get_nodes_in_group(&"interactables"):
+		if not node is Node3D or not node.has_method("interact"):
+			continue
+		var offset := (node as Node3D).global_position - camera.global_position
+		var distance := offset.length()
+		if distance > interaction_range + 0.8:
+			continue
+		var facing := (-camera.global_basis.z).dot(offset.normalized())
+		if facing < 0.45:
+			continue
+		var score := distance - facing
+		if score < best_score:
+			best = node
+			best_score = score
+	return best
+
 func _update_interaction_prompt() -> void:
 	var hit := _interaction_hit()
 	var target := hit.get("collider") as Node
+	if target == null or not target.has_method("get_interaction_label"):
+		target = _nearby_interactable()
 	if target != null and target.has_method("get_interaction_label"):
 		interaction_available.emit(target.get_interaction_label())
 	else:
@@ -207,12 +316,22 @@ func _update_interaction_prompt() -> void:
 func _try_interact() -> void:
 	var hit := _interaction_hit()
 	var target := hit.get("collider") as Node
+	if target == null or not target.has_method("interact"):
+		target = _nearby_interactable()
 	if target != null and target.has_method("interact"):
 		target.interact(self)
 		interacted.emit(target)
 
 func _on_damaged(_amount: float, _health_damage: float, _armor_damage: float, _source: Node) -> void:
 	feedback.kick(0.35, 0.22, 0.46, 0.12)
+
+func _on_weapon_ammo_changed(current: int, maximum: int, weapon: WeaponBase) -> void:
+	if weapons.is_empty() or weapon != weapons[current_weapon_index]:
+		return
+	weapon_changed.emit(weapon.definition.display_name, current, maximum)
+
+func _on_shot_resolved(kind: StringName, position_value: Vector3) -> void:
+	shot_resolved.emit(kind, position_value)
 
 func _on_died(source: Node) -> void:
 	is_dead = true

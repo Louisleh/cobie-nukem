@@ -1,7 +1,8 @@
-[gd_scene load_steps=11 format=3]
+[gd_scene load_steps=12 format=3]
 
 [ext_resource type="Script" path="res://scripts/ai/mutant_groundskeeper.gd" id="1"]
 [ext_resource type="Resource" path="res://resources/enemies/mutant_groundskeeper.tres" id="2"]
+[ext_resource type="Texture2D" path="res://assets/sprites/enemies/mutant_groundskeeper.png" id="3_sprite"]
 [sub_resource type="CapsuleShape3D" id="Shape"]
 radius = 0.52
 height = 1.85
@@ -47,19 +48,28 @@ position = Vector3(0, 0.92, 0)
 shape = SubResource("Shape")
 [node name="Visual" type="Node3D" parent="."]
 [node name="Body" type="MeshInstance3D" parent="Visual"]
+visible = false
 position = Vector3(0, 0.95, 0)
 mesh = SubResource("BodyMesh")
 [node name="Head" type="MeshInstance3D" parent="Visual"]
+visible = false
 position = Vector3(0, 1.8, -0.04)
 mesh = SubResource("HeadMesh")
 [node name="MowerBlade" type="MeshInstance3D" parent="Visual"]
+visible = false
 position = Vector3(0, 0.36, -0.72)
 rotation = Vector3(1.5708, 0, 0)
 mesh = SubResource("BladeMesh")
+[node name="DetailedSprite" type="Sprite3D" parent="Visual"]
+position = Vector3(0, 1.1, 0)
+texture = ExtResource("3_sprite")
+pixel_size = 0.00155
+billboard = 1
+texture_filter = 1
+alpha_cut = 1
 [node name="AutoAimTarget" type="Marker3D" parent="."]
 position = Vector3(0, 1.35, 0)
 [node name="Telegraph" type="MeshInstance3D" parent="."]
 position = Vector3(0, 0.04, -1.05)
 mesh = SubResource("TelegraphMesh")
 visible = false
-

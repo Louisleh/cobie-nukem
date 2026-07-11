@@ -20,6 +20,8 @@ func _run() -> void:
 	_test_profile_round_trip_and_math()
 	await _test_auto_aim_filtering()
 	await _test_enemy_transition()
+	await _test_shot_feedback()
+	await _test_paused_options_return()
 	await _test_secret_counting_and_exit()
 	_test_level_metadata()
 	if failures.is_empty():
@@ -157,6 +159,55 @@ func _test_enemy_transition() -> void:
 	_expect(not enemy.is_in_group(&"auto_aim_targets"), "dead enemy leaves auto-aim group")
 	enemy.free()
 	target.free()
+
+func _test_shot_feedback() -> void:
+	var world := Node3D.new()
+	root.add_child(world)
+	var camera := Camera3D.new()
+	world.add_child(camera)
+	var surface := StaticBody3D.new()
+	surface.position = Vector3(0.0, 0.0, -3.0)
+	var collision := CollisionShape3D.new()
+	var shape := BoxShape3D.new()
+	shape.size = Vector3(2.0, 2.0, 0.2)
+	collision.shape = shape
+	surface.add_child(collision)
+	world.add_child(surface)
+	var definition := WeaponDefinition.new()
+	definition.range = 10.0
+	var weapon := WeaponBase.new()
+	weapon.definition = definition
+	weapon.camera = camera
+	weapon.enabled = true
+	world.add_child(weapon)
+	var result_kind := [&""]
+	weapon.shot_resolved.connect(func(kind: StringName, _position: Vector3) -> void: result_kind[0] = kind)
+	await physics_frame
+	var hit := weapon._hitscan(1.0, 10.0, 0.0, 0.0)
+	_expect(not hit.is_empty(), "hitscan reports a world impact")
+	_expect(result_kind[0] == &"world", "world impact is distinguished from enemy hits and misses")
+	var marker := root.find_child("SurfaceImpact", true, false)
+	_expect(marker != null, "world impact creates a visible marker")
+	if marker != null:
+		marker.free()
+	world.free()
+
+func _test_paused_options_return() -> void:
+	var pause_menu := preload("res://scenes/ui/pause_menu.tscn").instantiate() as PauseMenu
+	root.add_child(pause_menu)
+	await process_frame
+	pause_menu.open()
+	pause_menu._open_options()
+	_expect(paused, "opening in-game options keeps the run paused")
+	_expect(is_instance_valid(pause_menu._options_overlay) and pause_menu._options_overlay.embedded, "pause options open as an embedded overlay")
+	pause_menu._close_options()
+	_expect(paused and pause_menu.visible, "back from options returns to the pause menu")
+	pause_menu.close_for_death()
+	_expect(not paused and not pause_menu.visible, "death forcibly closes pause/options without stacking modals")
+	pause_menu.open()
+	pause_menu.resume()
+	_expect(not paused, "resume remains available after closing options")
+	pause_menu.free()
 
 func _test_secret_counting_and_exit() -> void:
 	var found: Dictionary = {}

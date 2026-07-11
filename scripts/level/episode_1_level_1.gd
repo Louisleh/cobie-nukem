@@ -25,6 +25,12 @@ const PauseScene = preload("res://scenes/ui/pause_menu.tscn")
 const DeathScene = preload("res://scenes/ui/death_screen.tscn")
 const VictoryScene = preload("res://scenes/ui/victory_screen.tscn")
 const CombatAudioScene = preload("res://scenes/ui/combat_audio_bridge.tscn")
+const ROUTE_PROGRESS := [
+	[-22.0, &"equipment_shed", "EQUIPMENT SHED"],
+	[-47.0, &"maintenance_tunnels", "MAINTENANCE TUNNELS"],
+	[-87.0, &"compliance_lab", "ANIMAL COMPLIANCE LAB"],
+	[-127.0, &"walker_arena", "ANIMAL CONTROL WALKER"],
+]
 
 @export var metadata: LevelMetadata = preload("res://resources/level/episode_1_level_1.tres")
 @export var spawn_player := true
@@ -49,35 +55,38 @@ var _pause_menu: PauseMenu
 var _death_screen: DeathScreen
 var _victory_screen: VictoryScreen
 var _combat_audio: CombatAudioBridge
+var _opening_enemies: Array[Node] = []
+var _opening_encounter_active := false
 
 var waves := {
 	&"forbidden_field": [
 		["res://scenes/enemies/leash_enforcement_drone.tscn", Vector3(-5, 2, -4)],
 		["res://scenes/enemies/leash_enforcement_drone.tscn", Vector3(5, 2, -9)],
-		["res://scenes/enemies/mutant_groundskeeper.tscn", Vector3(0, 1, -14)],
+		["res://scenes/enemies/mutant_groundskeeper.tscn", Vector3(0, 0, -14)],
 	],
 	&"equipment_shed": [
-		["res://scenes/enemies/mutant_groundskeeper.tscn", Vector3(-3, 1, -31)],
+		["res://scenes/enemies/mutant_groundskeeper.tscn", Vector3(-3, 0, -31)],
 		["res://scenes/enemies/leash_enforcement_drone.tscn", Vector3(3, 2, -37)],
 	],
 	&"maintenance_tunnels": [
-		["res://scenes/enemies/squirrel_trooper.tscn", Vector3(-2, 1, -53)],
-		["res://scenes/enemies/squirrel_trooper.tscn", Vector3(2, 1, -64)],
-		["res://scenes/enemies/mutant_groundskeeper.tscn", Vector3(0, 1, -74)],
+		["res://scenes/enemies/squirrel_trooper.tscn", Vector3(-2, 0, -53)],
+		["res://scenes/enemies/squirrel_trooper.tscn", Vector3(2, 0, -64)],
+		["res://scenes/enemies/mutant_groundskeeper.tscn", Vector3(0, 0, -74)],
 	],
 	&"compliance_lab": [
 		["res://scenes/enemies/leash_enforcement_drone.tscn", Vector3(-7, 2, -94)],
 		["res://scenes/enemies/leash_enforcement_drone.tscn", Vector3(7, 2, -103)],
-		["res://scenes/enemies/compliance_hound.tscn", Vector3(0, 1, -114)],
+		["res://scenes/enemies/compliance_hound.tscn", Vector3(0, 0, -109)],
 	],
 	&"walker_arena": [
-		["res://scenes/enemies/animal_control_walker.tscn", Vector3(0, 1, -150)],
+		["res://scenes/enemies/animal_control_walker.tscn", Vector3(0, 0, -150)],
 	],
 }
 
 
 func _ready() -> void:
 	_run_started_ms = Time.get_ticks_msec()
+	_apply_requested_checkpoint()
 	_build_level()
 	if spawn_player: _spawn_player()
 	_setup_presentation()
@@ -88,6 +97,29 @@ func _ready() -> void:
 	level_ready.emit(player)
 	# Ensure the opening encounter exists even when body-enter events settle before connections.
 	_enter_zone(&"forbidden_field", "FORBIDDEN FIELD", player)
+
+
+func _apply_requested_checkpoint() -> void:
+	var game_state := get_node_or_null("/root/GameState")
+	if game_state == null or not bool(game_state.get("continue_requested")):
+		return
+	var save_manager := get_node_or_null("/root/SaveManager")
+	var saved: Dictionary = save_manager.load_slot(&"checkpoint") if save_manager != null else {}
+	var position_values: Array = saved.get("position", [])
+	if position_values.size() == 3:
+		checkpoint_position = Vector3(float(position_values[0]), float(position_values[1]), float(position_values[2]))
+	game_state.continue_requested = false
+
+
+func _physics_process(_delta: float) -> void:
+	if not is_instance_valid(player):
+		return
+	# Spatial fallback keeps the linear route playable even if a browser drops an
+	# Area3D transition while compiling physics or recovering pointer focus.
+	for milestone in ROUTE_PROGRESS:
+		var zone_id := StringName(milestone[1])
+		if player.global_position.z <= float(milestone[0]) and not spawned_zones.has(zone_id):
+			_enter_zone(zone_id, String(milestone[2]), player)
 
 
 func _build_level() -> void:
@@ -103,7 +135,9 @@ func _build_level() -> void:
 
 func _build_lighting() -> void:
 	var environment := WorldEnvironment.new()
-	var env := Environment.new(); env.background_mode = Environment.BG_COLOR; env.background_color = Color("25343b"); env.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR; env.ambient_light_color = Color("8da399"); env.ambient_light_energy = 0.48; env.fog_enabled = true; env.fog_light_color = Color("667a78"); env.fog_density = 0.008; env.fog_aerial_perspective = 0.55
+	var sky_material := ProceduralSkyMaterial.new(); sky_material.sky_top_color = Color("101c29"); sky_material.sky_horizon_color = Color("52666d"); sky_material.ground_bottom_color = Color("111b1d"); sky_material.ground_horizon_color = Color("46595a"); sky_material.sun_angle_max = 8.0
+	var sky := Sky.new(); sky.sky_material = sky_material
+	var env := Environment.new(); env.background_mode = Environment.BG_SKY; env.sky = sky; env.ambient_light_source = Environment.AMBIENT_SOURCE_SKY; env.ambient_light_color = Color("8da399"); env.ambient_light_energy = 0.55; env.fog_enabled = true; env.fog_light_color = Color("667a78"); env.fog_density = 0.012; env.fog_aerial_perspective = 0.7
 	environment.environment = env; add_child(environment)
 	var moon := DirectionalLight3D.new(); moon.rotation_degrees = Vector3(-58, -25, 0); moon.light_color = Color("a9c5d6"); moon.light_energy = 1.1; moon.shadow_enabled = true; add_child(moon)
 
@@ -115,24 +149,50 @@ func _build_route_geometry() -> void:
 	_box("TunnelFloor", Vector3(0, -0.5, -64), Vector3(10, 1, 39), Color("37474f"))
 	_box("LabFloor", Vector3(0, -0.5, -103), Vector3(24, 1, 38), Color("56636a"))
 	_box("DogParkFloor", Vector3(22, -0.5, -103), Vector3(18, 1, 22), Color("3d6b45"))
+	_box("SecretDogParkBridge", Vector3(12.5, -0.5, -103), Vector3(2, 1, 6), Color("46634f"))
 	_box("ArenaFloor", Vector3(0, -0.5, -147), Vector3(36, 1, 40), Color("514444"))
 	_box("ConnectorA", Vector3(0, -0.5, -20), Vector3(8, 1, 5), Color("555b60"))
 	_box("ConnectorB", Vector3(0, -0.5, -45), Vector3(8, 1, 4), Color("414b50"))
 	_box("ConnectorC", Vector3(0, -0.5, -84), Vector3(8, 1, 4), Color("4b575d"))
 	_box("ConnectorD", Vector3(0, -0.5, -124), Vector3(10, 1, 5), Color("564949"))
 	# Side boundaries leave the main route readable while stopping accidental skips.
-	_wall_pair(13, 0, 36); _wall_pair(7.5, -32, 25); _wall_pair(5, -64, 39); _wall_pair(12, -103, 38); _wall_pair(18, -147, 40)
+	_wall_pair(13, 0, 36); _wall_pair(7.5, -32, 25); _wall_pair(5, -64, 39)
+	# Split the lab's east wall around the breakable panel. The previous full
+	# boundary left invisible collision behind after the panel disappeared.
+	_box("LabWestBoundary", Vector3(-12, 2, -103), Vector3(0.6, 4, 38), Color("34434a"))
+	_box("LabEastBoundaryRear", Vector3(12, 2, -113.75), Vector3(0.6, 4, 16.5), Color("34434a"))
+	_box("LabEastBoundaryFront", Vector3(12, 2, -92.25), Vector3(0.6, 4, 15.5), Color("34434a"))
+	_wall_pair(18, -147, 40)
 	# Tunnels and lab receive low ceilings; exterior zones remain storm-open.
 	_box("TunnelCeiling", Vector3(0, 4.2, -64), Vector3(10, 0.5, 39), Color("29353a"))
 	_box("LabCeiling", Vector3(0, 5.0, -103), Vector3(24, 0.5, 38), Color("39464c"))
+	_box("ShedRoof", Vector3(0, 4.5, -32), Vector3(15, 0.45, 25), Color("293338"))
+	_build_field_dressing()
 	# Arena cover makes the boss readable under flight-stick auto-aim.
 	for pos in [Vector3(-10, 1, -140), Vector3(10, 1, -140), Vector3(-10, 1, -156), Vector3(10, 1, -156)]:
 		_box("ArenaCover", pos, Vector3(3, 2, 3), Color("70584d"))
 
 
+func _build_field_dressing() -> void:
+	# Bold markings and silhouettes give the opening field immediate scale and
+	# navigation cues even at the low internal render resolution.
+	for z in [-12.0, -4.0, 4.0, 12.0]:
+		_prop_box("FieldStripe", Vector3(0, 0.025, z), Vector3(23, 0.035, 0.10), Color("b7c9aa"))
+	for x in [-10.0, 10.0]:
+		_prop_box("Touchline", Vector3(x, 0.03, 0), Vector3(0.10, 0.04, 32), Color("b7c9aa"))
+	for x in [-5.0, 5.0]:
+		_prop_box("GoalPost", Vector3(x, 1.4, -15.5), Vector3(0.14, 2.8, 0.14), Color("d9ddd0"))
+	_prop_box("GoalBar", Vector3(0, 2.75, -15.5), Vector3(10.1, 0.14, 0.14), Color("d9ddd0"))
+	for index in 5:
+		var x := -9.0 + index * 1.15
+		_prop_box("SafetyCone", Vector3(x, 0.28, 7.5), Vector3(0.28, 0.56, 0.28), Color("e67924"))
+	for row in 3:
+		_prop_box("Bleacher", Vector3(9.8, 0.35 + row * 0.38, 6.5 + row * 0.55), Vector3(4.2, 0.18, 0.65), Color("68777a"))
+
+
 func _build_story_objects() -> void:
 	var opening_sign := SignScene.instantiate() as NarrativeSign
-	opening_sign.sign_id = &"no_animals"; opening_sign.sign_text = "NO ANIMALS\nON SPORTS FIELD"; opening_sign.secret_after_reads = 3; opening_sign.secret_id = &"optional_sign"; opening_sign.secret_title = "SIGN SEEMS OPTIONAL"; opening_sign.position = Vector3(-6, 1.4, 9); opening_sign.rotation_degrees.y = 180
+	opening_sign.sign_id = &"no_animals"; opening_sign.sign_text = "NO ANIMALS\nON SPORTS FIELD"; opening_sign.secret_after_reads = 3; opening_sign.secret_id = &"optional_sign"; opening_sign.secret_title = "SIGN SEEMS OPTIONAL"; opening_sign.position = Vector3(-5, 1.4, 5.5); opening_sign.rotation_degrees.y = 0
 	opening_sign.read.connect(_on_sign_read); opening_sign.secret_requested.connect(_discover_secret); _interactables.add_child(opening_sign)
 	_sign("MUTANT-FREE ZONE\n(Inspection Pending)", Vector3(5, 1.5, -27), 180)
 	_sign("LEASH LENGTH SUBJECT TO\nALGORITHMIC REVIEW", Vector3(-4, 1.5, -58), 180)
@@ -192,15 +252,12 @@ func _spawn_wave(zone_id: StringName) -> void:
 	for entry in waves.get(zone_id, []):
 		var enemy := _spawn_scene(entry[0], entry[1])
 		if enemy:
+			if enemy is ComplianceHound:
+				enemy.name = "FetchGuard"
 			enemies_total += 1
 			if zone_id == &"forbidden_field":
 				enemy.process_mode = Node.PROCESS_MODE_DISABLED
-				var delayed_enemy := enemy
-				get_tree().create_timer(3.5).timeout.connect(func():
-					if is_instance_valid(delayed_enemy):
-						delayed_enemy.process_mode = Node.PROCESS_MODE_INHERIT
-						if delayed_enemy.has_method("set_target") and player: delayed_enemy.set_target(player)
-				)
+				_opening_enemies.append(enemy)
 			elif enemy.has_method("set_target") and player:
 				enemy.set_target(player)
 			if enemy.has_signal("died"): enemy.died.connect(func(dead_enemy, _source): _on_enemy_died(dead_enemy, zone_id))
@@ -210,6 +267,19 @@ func _spawn_wave(zone_id: StringName) -> void:
 		# Development fallback: a missing boss scene must not trap QA in the level.
 		_golden_ball.enable_for_boss(null)
 		narrative_message.emit("BOSS ASSET MISSING — GOLDEN BALL QA FALLBACK ENABLED.", 4.0)
+	if zone_id == &"forbidden_field":
+		get_tree().create_timer(12.0).timeout.connect(_activate_opening_encounter)
+
+
+func _activate_opening_encounter(_weapon: WeaponBase = null, _secondary := false) -> void:
+	if _opening_encounter_active:
+		return
+	_opening_encounter_active = true
+	for enemy in _opening_enemies:
+		if is_instance_valid(enemy):
+			enemy.process_mode = Node.PROCESS_MODE_INHERIT
+			if enemy.has_method("set_target") and player:
+				enemy.set_target(player)
 
 
 func _bind_walker(walker: Node) -> void:
@@ -281,6 +351,9 @@ func get_level_summary() -> Dictionary:
 func _spawn_player() -> void:
 	player = _spawn_scene("res://scenes/player/cobie_player.tscn", checkpoint_position) as Node3D
 	if player:
+		_add_weather_to_player()
+		for weapon in player.weapons:
+			weapon.fired.connect(_activate_opening_encounter)
 		if player.has_signal("died"): player.died.connect(func(_source): narrative_message.emit("GOOD DOG DOWN. PRESS FIRE TO RESTART.", 3.0))
 		if player.has_signal("restart_requested"): player.restart_requested.connect(restart_from_checkpoint)
 
@@ -300,7 +373,7 @@ func _setup_presentation() -> void:
 		_hud.bind_player(player)
 		_combat_audio.bind_player(player)
 		if player.has_signal("died"):
-			player.died.connect(func(_source): _death_screen.show_death())
+			player.died.connect(_on_player_died_for_ui)
 	_pause_menu.restart_requested.connect(restart_from_checkpoint)
 	_death_screen.retry_requested.connect(restart_from_checkpoint)
 	narrative_message.connect(func(text: String, _duration: float): _hud.show_notification(text))
@@ -325,6 +398,12 @@ func _setup_presentation() -> void:
 		, CONNECT_ONE_SHOT)
 
 
+func _on_player_died_for_ui(_source: Node) -> void:
+	if _pause_menu != null:
+		_pause_menu.close_for_death()
+	_death_screen.show_death()
+
+
 func _spawn_pickup(path: String, position_value: Vector3) -> Node:
 	var pickup := _spawn_scene(path, position_value)
 	if pickup and pickup.has_signal("collected"):
@@ -337,8 +416,11 @@ func _spawn_scene(path: String, position_value: Vector3) -> Node:
 		push_warning("Optional level dependency missing: " + path); return null
 	var packed := load(path) as PackedScene
 	if packed == null: return null
-	var instance := packed.instantiate(); _actors.add_child(instance)
-	if instance is Node3D: instance.global_position = position_value
+	var instance := packed.instantiate()
+	# Place actors before _ready() runs so hover origins, drone flight heights,
+	# and physics interpolation all begin at the intended world transform.
+	if instance is Node3D: instance.position = position_value
+	_actors.add_child(instance)
 	return instance
 
 
@@ -359,3 +441,19 @@ func _box(node_name: String, center: Vector3, size: Vector3, color: Color) -> CS
 	var box := CSGBox3D.new(); box.name = node_name; box.position = center; box.size = size; box.use_collision = true
 	var material := StandardMaterial3D.new(); material.albedo_color = color; material.roughness = 0.95; box.material = material
 	_geometry.add_child(box); return box
+
+
+func _prop_box(node_name: String, center: Vector3, size: Vector3, color: Color) -> MeshInstance3D:
+	var prop := MeshInstance3D.new(); prop.name = node_name; prop.position = center
+	var mesh := BoxMesh.new(); mesh.size = size; prop.mesh = mesh
+	var material := StandardMaterial3D.new(); material.albedo_color = color; material.roughness = 0.88; mesh.material = material
+	_geometry.add_child(prop)
+	return prop
+
+
+func _add_weather_to_player() -> void:
+	var rain := GPUParticles3D.new(); rain.name = "StormRain"; rain.position.y = 8.0; rain.amount = 420; rain.lifetime = 1.25; rain.visibility_aabb = AABB(Vector3(-16, -12, -16), Vector3(32, 24, 32))
+	var process := ParticleProcessMaterial.new(); process.emission_shape = ParticleProcessMaterial.EMISSION_SHAPE_BOX; process.emission_box_extents = Vector3(14, 1, 14); process.direction = Vector3(0.12, -1, 0.05); process.spread = 4.0; process.initial_velocity_min = 15.0; process.initial_velocity_max = 20.0; rain.process_material = process
+	var drop := QuadMesh.new(); drop.size = Vector2(0.018, 0.48)
+	var drop_material := StandardMaterial3D.new(); drop_material.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA; drop_material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED; drop_material.billboard_mode = BaseMaterial3D.BILLBOARD_ENABLED; drop_material.albedo_color = Color(0.58, 0.76, 0.86, 0.5); drop.material = drop_material; rain.draw_pass_1 = drop
+	player.add_child(rain)

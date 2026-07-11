@@ -11,6 +11,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 theme = ExtResource("2")
+theme_override_font_sizes/font_size = 7
 script = ExtResource("1")
 [node name="Background" type="ColorRect" parent="."]
 layout_mode = 1
@@ -20,79 +21,124 @@ anchor_bottom = 1.0
 color = Color(0.015, 0.028, 0.032, 1)
 [node name="Panel" type="Panel" parent="."]
 layout_mode = 0
-offset_left = 35.0
-offset_top = 8.0
-offset_right = 285.0
-offset_bottom = 172.0
+offset_left = 8.0
+offset_top = 5.0
+offset_right = 312.0
+offset_bottom = 175.0
 [node name="VBox" type="VBoxContainer" parent="Panel"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 10.0
-offset_top = 6.0
-offset_right = -10.0
-offset_bottom = -6.0
-theme_override_constants/separation = 2
+offset_left = 8.0
+offset_top = 7.0
+offset_right = -8.0
+offset_bottom = -7.0
+theme_override_constants/separation = 1
 [node name="Title" type="Label" parent="Panel/VBox"]
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.73, 0.19, 1)
-theme_override_font_sizes/font_size = 14
+theme_override_font_sizes/font_size = 10
 text = "OPTIONS // ACCESSIBILITY"
-[node name="Grid" type="GridContainer" parent="Panel/VBox"]
+[node name="Scroll" type="ScrollContainer" parent="Panel/VBox"]
+unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 3
+horizontal_scroll_mode = 0
+follow_focus = true
+clip_contents = true
+[node name="Grid" type="GridContainer" parent="Panel/VBox/Scroll"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/h_separation = 4
+theme_override_constants/v_separation = 0
 columns = 2
-[node name="MasterLabel" type="Label" parent="Panel/VBox/Grid"]
+[node name="MouseSensitivityLabel" type="Label" parent="Panel/VBox/Scroll/Grid"]
+layout_mode = 2
+text = "LOOK SPEED"
+[node name="MouseSensitivitySlider" type="HSlider" parent="Panel/VBox/Scroll/Grid"]
+unique_name_in_owner = true
+layout_mode = 2
+custom_minimum_size = Vector2(130, 0)
+min_value = 25.0
+max_value = 300.0
+step = 5.0
+value = 100.0
+tooltip_text = "Mouse / trackpad look sensitivity"
+[node name="FovLabel" type="Label" parent="Panel/VBox/Scroll/Grid"]
+layout_mode = 2
+text = "FIELD OF VIEW"
+[node name="FovSlider" type="HSlider" parent="Panel/VBox/Scroll/Grid"]
+unique_name_in_owner = true
+layout_mode = 2
+min_value = 70.0
+max_value = 110.0
+step = 1.0
+value = 90.0
+tooltip_text = "Horizontal awareness / perspective"
+[node name="MasterLabel" type="Label" parent="Panel/VBox/Scroll/Grid"]
 layout_mode = 2
 text = "MASTER"
-[node name="MasterSlider" type="HSlider" parent="Panel/VBox/Grid"]
+[node name="MasterSlider" type="HSlider" parent="Panel/VBox/Scroll/Grid"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(130, 0)
 layout_mode = 2
-[node name="MusicLabel" type="Label" parent="Panel/VBox/Grid"]
+[node name="MusicLabel" type="Label" parent="Panel/VBox/Scroll/Grid"]
 layout_mode = 2
 text = "MUSIC"
-[node name="MusicSlider" type="HSlider" parent="Panel/VBox/Grid"]
+[node name="MusicSlider" type="HSlider" parent="Panel/VBox/Scroll/Grid"]
 unique_name_in_owner = true
 layout_mode = 2
-[node name="SfxLabel" type="Label" parent="Panel/VBox/Grid"]
+[node name="SfxLabel" type="Label" parent="Panel/VBox/Scroll/Grid"]
 layout_mode = 2
 text = "SFX"
-[node name="SfxSlider" type="HSlider" parent="Panel/VBox/Grid"]
+[node name="SfxSlider" type="HSlider" parent="Panel/VBox/Scroll/Grid"]
 unique_name_in_owner = true
 layout_mode = 2
-[node name="ShakeLabel" type="Label" parent="Panel/VBox/Grid"]
+[node name="ShakeLabel" type="Label" parent="Panel/VBox/Scroll/Grid"]
 layout_mode = 2
 text = "CAMERA SHAKE"
-[node name="ShakeSlider" type="HSlider" parent="Panel/VBox/Grid"]
+[node name="ShakeSlider" type="HSlider" parent="Panel/VBox/Scroll/Grid"]
 unique_name_in_owner = true
 layout_mode = 2
-[node name="BobLabel" type="Label" parent="Panel/VBox/Grid"]
+[node name="BobLabel" type="Label" parent="Panel/VBox/Scroll/Grid"]
 layout_mode = 2
 text = "HEAD BOB"
-[node name="BobSlider" type="HSlider" parent="Panel/VBox/Grid"]
+[node name="BobSlider" type="HSlider" parent="Panel/VBox/Scroll/Grid"]
 unique_name_in_owner = true
 layout_mode = 2
-[node name="FlashLabel" type="Label" parent="Panel/VBox/Grid"]
+[node name="FlashLabel" type="Label" parent="Panel/VBox/Scroll/Grid"]
 layout_mode = 2
 text = "REDUCED FLASHES"
-[node name="ReducedFlashes" type="CheckButton" parent="Panel/VBox/Grid"]
+[node name="ReducedFlashes" type="CheckButton" parent="Panel/VBox/Scroll/Grid"]
 unique_name_in_owner = true
 layout_mode = 2
 text = "ON"
-[node name="AimLabel" type="Label" parent="Panel/VBox/Grid"]
+[node name="AimLabel" type="Label" parent="Panel/VBox/Scroll/Grid"]
 layout_mode = 2
 text = "AUTO-AIM"
-[node name="AutoAimChoice" type="OptionButton" parent="Panel/VBox/Grid"]
+[node name="AutoAimChoice" type="OptionButton" parent="Panel/VBox/Scroll/Grid"]
 unique_name_in_owner = true
 layout_mode = 2
-[node name="GoreLabel" type="Label" parent="Panel/VBox/Grid"]
+[node name="GoreLabel" type="Label" parent="Panel/VBox/Scroll/Grid"]
 layout_mode = 2
 text = "DEBRIS"
-[node name="GoreChoice" type="OptionButton" parent="Panel/VBox/Grid"]
+[node name="GoreChoice" type="OptionButton" parent="Panel/VBox/Scroll/Grid"]
 unique_name_in_owner = true
 layout_mode = 2
+[node name="RunModeLabel" type="Label" parent="Panel/VBox/Scroll/Grid"]
+layout_mode = 2
+text = "RUN MODE"
+[node name="RunModeChoice" type="OptionButton" parent="Panel/VBox/Scroll/Grid"]
+unique_name_in_owner = true
+layout_mode = 2
+[node name="SubtitlesLabel" type="Label" parent="Panel/VBox/Scroll/Grid"]
+layout_mode = 2
+text = "SUBTITLES"
+[node name="Subtitles" type="CheckButton" parent="Panel/VBox/Scroll/Grid"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "ON"
 [node name="Buttons" type="HBoxContainer" parent="Panel/VBox"]
 layout_mode = 2
 alignment = 2
@@ -107,4 +153,3 @@ text = "BACK"
 [node name="ProceduralAudio" type="Node" parent="."]
 unique_name_in_owner = true
 script = ExtResource("3")
-

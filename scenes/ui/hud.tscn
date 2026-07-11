@@ -164,5 +164,4 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 mouse_filter = 2
 script = ExtResource("6")
-scanline_opacity = 0.06
-
+scanline_opacity = 0.025

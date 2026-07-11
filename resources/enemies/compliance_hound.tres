@@ -7,7 +7,7 @@ script = ExtResource("1")
 id = &"compliance_hound"
 display_name = "COMPLIANCE HOUND"
 warning_text = "GOOD DOG STATUS: REVOKED."
-max_health = 210.0
+max_health = 220.0
 move_speed = 5.0
 acceleration = 32.0
 detection_range = 28.0
@@ -18,4 +18,3 @@ telegraph_seconds = 0.7
 threat_weight = 1.4
 score_value = 600
 drop_id = &"leather_padding"
-

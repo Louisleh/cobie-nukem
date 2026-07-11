@@ -459,7 +459,7 @@ Implement an `InputProfile` resource with per-device bindings, dead zones, sensi
 - E: use.
 - Space: jump.
 - Shift: run.
-- Mouse wheel / number keys: weapons.
+- Up/Down arrow keys cycle weapons; number keys select weapons directly.
 - Escape: pause.
 
 ## 10.3 Flight-stick “Classic 1996” default

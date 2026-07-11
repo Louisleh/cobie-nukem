@@ -14,6 +14,7 @@ func fire_primary() -> bool:
 	projectile.speed = definition.projectile_speed
 	projectile.fuse_seconds = definition.projectile_fuse
 	projectile.damage = definition.primary_damage
+	projectile.shot_resolved.connect(_on_projectile_resolved)
 	projectile.launch(camera.global_position + _aim_direction(definition.range) * 0.7, _aim_direction(definition.range), owner_node)
 	latest_projectile = projectile
 	if feedback != null:
@@ -36,3 +37,8 @@ func _find_player() -> Node3D:
 			return node
 		node = node.get_parent()
 	return null
+
+func _on_projectile_resolved(kind: StringName, position_value: Vector3) -> void:
+	shot_resolved.emit(kind, position_value)
+	if kind == &"enemy" or kind == &"world":
+		_spawn_impact_marker(position_value, Vector3.UP, kind)
