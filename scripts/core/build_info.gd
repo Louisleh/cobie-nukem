@@ -1,9 +1,9 @@
 class_name BuildInfo
 extends RefCounted
 
-const VERSION := "0.5.0-rc1"
-const REVISION := "f505679"
-const BUILD_ID := "2026-07-12-phase12-public-rc"
+const VERSION := "0.6.0-alpha.1"
+const REVISION := "575d84e"
+const BUILD_ID := "2026-07-12-twin-stick-alpha"
 
 static func label() -> String:
 	return "v%s • %s • %s" % [VERSION, REVISION, BUILD_ID]

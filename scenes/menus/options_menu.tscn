@@ -68,10 +68,10 @@ max_value = 300.0
 step = 5.0
 value = 100.0
 tooltip_text = "Mouse / trackpad look sensitivity"
-[node name="TouchSensitivityLabel" type="Label" parent="Panel/VBox/Scroll/Grid"]
+[node name="TouchHorizontalSensitivityLabel" type="Label" parent="Panel/VBox/Scroll/Grid"]
 layout_mode = 2
-text = "TOUCH LOOK SPEED"
-[node name="TouchSensitivitySlider" type="HSlider" parent="Panel/VBox/Scroll/Grid"]
+text = "TOUCH AIM HORIZONTAL"
+[node name="TouchHorizontalSensitivitySlider" type="HSlider" parent="Panel/VBox/Scroll/Grid"]
 unique_name_in_owner = true
 layout_mode = 2
 custom_minimum_size = Vector2(130, 0)
@@ -80,6 +80,37 @@ max_value = 300.0
 step = 5.0
 value = 100.0
 tooltip_text = "Right-thumb aiming sensitivity on touch devices"
+[node name="TouchVerticalSensitivityLabel" type="Label" parent="Panel/VBox/Scroll/Grid"]
+layout_mode = 2
+text = "TOUCH AIM VERTICAL"
+[node name="TouchVerticalSensitivitySlider" type="HSlider" parent="Panel/VBox/Scroll/Grid"]
+unique_name_in_owner = true
+layout_mode = 2
+custom_minimum_size = Vector2(130, 0)
+min_value = 25.0
+max_value = 300.0
+step = 5.0
+value = 100.0
+tooltip_text = "Right-stick vertical aiming speed"
+[node name="TouchInvertYLabel" type="Label" parent="Panel/VBox/Scroll/Grid"]
+layout_mode = 2
+text = "INVERT TOUCH Y"
+[node name="TouchInvertY" type="CheckButton" parent="Panel/VBox/Scroll/Grid"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "ON"
+[node name="TouchStickSizeLabel" type="Label" parent="Panel/VBox/Scroll/Grid"]
+layout_mode = 2
+text = "STICK SIZE"
+[node name="TouchStickSizeChoice" type="OptionButton" parent="Panel/VBox/Scroll/Grid"]
+unique_name_in_owner = true
+layout_mode = 2
+[node name="TouchStickPositionLabel" type="Label" parent="Panel/VBox/Scroll/Grid"]
+layout_mode = 2
+text = "STICK POSITION"
+[node name="TouchStickPositionChoice" type="OptionButton" parent="Panel/VBox/Scroll/Grid"]
+unique_name_in_owner = true
+layout_mode = 2
 [node name="ControlOpacityLabel" type="Label" parent="Panel/VBox/Scroll/Grid"]
 layout_mode = 2
 text = "TOUCH OPACITY"

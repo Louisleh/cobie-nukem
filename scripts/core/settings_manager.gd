@@ -9,7 +9,7 @@ const DEFAULTS := {
 	"audio": {"master": 1.0, "music": 0.8, "sfx": 0.9},
 	"video": {"fov": 90.0, "render_scale": "640x360", "quality": "auto", "reduced_flashes": false, "particle_density": 1.0},
 	"accessibility": {"camera_shake": 1.0, "head_bob": 1.0, "gore": "cartoon", "auto_aim": "classic", "subtitles": true, "text_scale": 1.0, "high_contrast": false, "reduced_motion": false},
-	"gameplay": {"run_mode": "hold", "mouse_sensitivity": 1.0, "touch_sensitivity": 1.0, "horizontal_sensitivity": 1.0, "vertical_sensitivity": 1.0, "control_opacity": 0.75, "left_handed_touch": false},
+	"gameplay": {"run_mode": "hold", "mouse_sensitivity": 1.0, "touch_sensitivity": 1.0, "touch_horizontal_sensitivity": 1.0, "touch_vertical_sensitivity": 1.0, "touch_invert_y": false, "touch_stick_size": "medium", "touch_stick_position": "standard", "horizontal_sensitivity": 1.0, "vertical_sensitivity": 1.0, "control_opacity": 0.75, "left_handed_touch": false},
 }
 
 var _config := ConfigFile.new()
@@ -48,6 +48,13 @@ func reset_to_defaults() -> Error:
 	return save_settings()
 
 func _apply_defaults() -> void:
+	# Existing 0.5 settings stored one swipe-look speed. Preserve that preference
+	# when the 0.6 twin-stick axes are introduced instead of silently resetting it.
+	var legacy_touch := float(_config.get_value("gameplay", "touch_sensitivity", 1.0))
+	if not _config.has_section_key("gameplay", "touch_horizontal_sensitivity"):
+		_config.set_value("gameplay", "touch_horizontal_sensitivity", legacy_touch)
+	if not _config.has_section_key("gameplay", "touch_vertical_sensitivity"):
+		_config.set_value("gameplay", "touch_vertical_sensitivity", legacy_touch)
 	for section: String in DEFAULTS:
 		var values: Dictionary = DEFAULTS[section]
 		for key: String in values:

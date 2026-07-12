@@ -6,6 +6,8 @@ All notable changes are recorded here. This project follows a lightweight form o
 
 ### Added
 
+- Fixed twin-stick iPad controls: left movement, right rate-based aiming, simultaneous fire/actions, independent aim speeds, inversion, stick size/position presets, left-handed mirroring, and touch onboarding.
+- Deterministic touch-aim and three-finger ownership coverage, with the soak gate expanded to 100 cancellation cycles, 100 checkpoint cycles, and 500 weapon transitions.
 - Touch-first iPad/Web controls with independent movement and look fingers, on-screen fire/use/jump/reload/weapon/pause buttons, touch sensitivity, landscape scaling, and pointer-lock-free aiming.
 - Behavioral checkpoint-respawn, mobile multi-touch, encounter failure, objective idempotence, JSON snapshot, validator-negative, and content-contract tests.
 - Phase 1–2 production foundation: typed objective chains, data-driven encounter runner, three multidimensional difficulty profiles, enemy tactical archetypes, versioned level content manifests, and a headless content validator.

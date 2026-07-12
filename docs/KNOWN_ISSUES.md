@@ -10,7 +10,7 @@ This file distinguishes confirmed product limitations from unperformed validatio
 
 ## Input and browser limitations
 
-- Keyboard/mouse is the supported Web baseline. Browser joystick identity and mappings remain experimental and vary by browser.
+- Keyboard/mouse and the fixed twin-stick touch layout are supported Web input paths. Browser hardware-joystick identity and mappings remain experimental and vary by browser.
 - The Thrustmaster USB Joystick model 2960623 has not been physically verified on the target Mac and adapter/hub. Software diagnostics are not hardware evidence.
 - Browser audio and pointer lock require a user gesture. The landing/game copy must remain explicit about the first click.
 
@@ -24,7 +24,7 @@ This file distinguishes confirmed product limitations from unperformed validatio
 
 ## World-class vertical-slice open gates
 
-- The 640×360 desktop, 1024×768 tablet, touch-forced options, and touch-forced in-game HUD have visual automation evidence, but revised target sizing, opacity, and left-handed reach still require physical iPad comfort validation.
+- The 640×360 desktop and 1024×768 tablet layouts have visual automation evidence. Fixed twin-stick rendering, target sizing, onboarding, settings, and left-handed transforms are automated, but physical iPad comfort, reach, simultaneous real-touch behavior, Safari focus recovery, and thermal validation remain open.
 - `AudioCueSet` and bounded sample playback are implemented, but production still falls back to synthesized cues until original/licensed weapon, enemy, footstep, ambience, and music assets are authored and manifested.
 - Enemy state motion, hit/stagger/death reactions, attack tokens, group alert, and weak-point contracts are implemented; directional sprite atlases and production navigation meshes remain open content gates.
 - Headless performance smoke is green. Native GPU frame time, Web/iPad thermal behavior, draw calls, memory, download size, and audio-voice saturation are not yet measured release evidence.
