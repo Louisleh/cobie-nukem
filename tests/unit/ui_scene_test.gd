@@ -23,6 +23,7 @@ func _initialize() -> void:
 	]:
 		_check_scene(path)
 	_check_level_select_contract()
+	await _check_difficulty_selector_contract()
 	_check_responsive_title_contract()
 	_check_responsive_main_menu_contract()
 	_check_cobie_portrait_contract()
@@ -68,6 +69,66 @@ func _check_level_select_contract() -> void:
 	if scroll == null or scroll.horizontal_scroll_mode == ScrollContainer.SCROLL_MODE_DISABLED:
 		failures.append("Level cards must remain reachable in narrow viewports")
 	instance.free()
+
+func _check_difficulty_selector_contract() -> void:
+	var packed := load("res://scenes/menus/level_select.tscn") as PackedScene
+	var game_state := root.get_node_or_null("GameState")
+	var save_manager := root.get_node_or_null("SaveManager")
+	if packed == null or game_state == null:
+		failures.append("Difficulty selector contract needs level_select and GameState")
+		return
+	game_state.select_difficulty(&"classic")
+	if save_manager != null:
+		save_manager.save_slot(&"qa_difficulty_guard", {"marker": true})
+	var instance := packed.instantiate()
+	root.add_child(instance)
+	await process_frame
+	var sounds := instance.get_node_or_null("ProceduralAudio")
+	if sounds != null:
+		# Headless runs never release started WAV playbacks before quit(); keep
+		# this contract check silent so the leaked-instance gate stays meaningful.
+		sounds.set("_player", null)
+	var row := instance.get_node_or_null("SafeArea/Main/DifficultySection/DifficultyRow")
+	if row == null:
+		failures.append("Level select is missing the difficulty row")
+		instance.queue_free()
+		return
+	var buttons: Array[Button] = []
+	for child in row.get_children():
+		if child is Button and child.toggle_mode:
+			buttons.append(child)
+	var options: Array = game_state.difficulty_options()
+	if buttons.size() != 3:
+		failures.append("Difficulty selector must offer exactly three profiles, found %d" % buttons.size())
+	else:
+		for index in 3:
+			if buttons[index].text != options[index].display_name:
+				failures.append("Difficulty button label must come from the profile resource: %s" % options[index].id)
+		if not buttons[1].button_pressed:
+			failures.append("Classic must be the default pressed difficulty")
+		if buttons[0].button_pressed or buttons[2].button_pressed:
+			failures.append("Only the selected difficulty may appear pressed")
+		for button in buttons:
+			if button.focus_mode != Control.FOCUS_ALL:
+				failures.append("Difficulty buttons must be keyboard/controller focusable")
+		buttons[0].emit_signal("pressed")
+		if game_state.difficulty_id != &"story":
+			failures.append("Pressing a difficulty button must update GameState")
+		buttons[2].emit_signal("pressed")
+		if game_state.difficulty_id != &"mayhem":
+			failures.append("Difficulty selection must be re-selectable")
+		var blurb := instance.get_node_or_null("SafeArea/Main/DifficultySection/DifficultyBlurb") as Label
+		if blurb == null or blurb.text.is_empty():
+			failures.append("Difficulty selector must describe the selected profile")
+	if save_manager != null:
+		var guard: Dictionary = save_manager.load_slot(&"qa_difficulty_guard")
+		if not bool(guard.get("marker", false)):
+			failures.append("Opening or using the difficulty selector must not delete saved runs")
+		save_manager.delete_slot(&"qa_difficulty_guard")
+	game_state.select_difficulty(&"classic")
+	instance.free()
+	await process_frame
+
 
 func _check_responsive_title_contract() -> void:
 	var packed := load("res://scenes/menus/title_screen.tscn") as PackedScene

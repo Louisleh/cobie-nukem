@@ -48,11 +48,22 @@ func select_difficulty(value: StringName) -> bool:
 
 
 func get_difficulty_profile() -> DifficultyProfile:
-	if _difficulty_cache.has(difficulty_id): return _difficulty_cache[difficulty_id]
-	var path := String(DIFFICULTY_PATHS.get(difficulty_id, DIFFICULTY_PATHS[&"classic"]))
-	var profile := load(path) as DifficultyProfile
-	_difficulty_cache[difficulty_id] = profile
-	return profile
+	return _profile_for(difficulty_id)
+
+
+func difficulty_options() -> Array[DifficultyProfile]:
+	# DIFFICULTY_PATHS preserves declaration order: story, classic, mayhem.
+	var options: Array[DifficultyProfile] = []
+	for id: StringName in DIFFICULTY_PATHS:
+		options.append(_profile_for(id))
+	return options
+
+
+func _profile_for(id: StringName) -> DifficultyProfile:
+	if not DIFFICULTY_PATHS.has(id): id = &"classic"
+	if not _difficulty_cache.has(id):
+		_difficulty_cache[id] = load(String(DIFFICULTY_PATHS[id])) as DifficultyProfile
+	return _difficulty_cache[id]
 
 func finish_run(extra_summary: Dictionary = {}) -> Dictionary:
 	var summary := run_stats.duplicate(true)
