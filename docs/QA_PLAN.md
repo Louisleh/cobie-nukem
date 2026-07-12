@@ -16,7 +16,9 @@ Run from the repository root with Godot 4.7 stable:
 /opt/homebrew/bin/godot --headless --path . --script res://tests/unit/input_system_test.gd
 /opt/homebrew/bin/godot --headless --path . --script res://tests/unit/combat_test_runner.gd
 /opt/homebrew/bin/godot --headless --path . --script res://tests/unit/enemy_contract_tests.gd
+/opt/homebrew/bin/godot --headless --path . --script res://tests/unit/save_schema_test.gd
 /opt/homebrew/bin/godot --headless --path . --script res://tests/integration/integration_test_runner.gd
+/opt/homebrew/bin/godot --headless --path . --script res://tests/integration/adversarial_state_test.gd
 /opt/homebrew/bin/godot --headless --path . --script res://tests/smoke/smoke_test_runner.gd
 /opt/homebrew/bin/godot --headless --path . --script res://tests/smoke/performance_smoke.gd
 bash tools/asset_ip_scan.sh
@@ -33,6 +35,9 @@ bash tools/asset_ip_scan.sh
 | Damage/armor, ammo, cooldown, weapon scenes | `tests/unit/combat_test_runner.gd` |
 | Five enemy scenes, damage hooks, shield, boss phases | `tests/unit/enemy_contract_tests.gd` |
 | Save/load, profile JSON, auto-aim filtering, FSM, secrets, finale | `tests/integration/integration_test_runner.gd` |
+| Save-schema versioning, migrations, corrupt/legacy/future payload recovery | `tests/unit/save_schema_test.gd` |
+| Difficulty selector contract, resource-driven labels, Classic default | `tests/unit/ui_scene_test.gd` |
+| Grace-timer lifecycle, restart pressure, pause suppression, stuck touch input, reload interruption, double level lifecycle, enemy drops | `tests/integration/adversarial_state_test.gd` |
 | Every scene loads/instantiates; boot/diagnostics survive entry | `tests/smoke/smoke_test_runner.gd` |
 | Catastrophic main-loop stalls | `tests/smoke/performance_smoke.gd` |
 | Asset manifest coverage and obvious protected-source indicators | `tools/asset_ip_scan.sh` |
