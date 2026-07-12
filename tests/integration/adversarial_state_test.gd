@@ -25,6 +25,7 @@ func _run() -> void:
 	await _test_weapon_switch_spam_during_reload()
 	await _test_pause_freezes_reload_and_grace()
 	await _test_level_lifecycle_twice_in_one_process()
+	await _test_enemy_drop_contract()
 	if failures.is_empty():
 		print("ADVERSARIAL STATE TESTS: PASS")
 		quit(0)
@@ -235,6 +236,28 @@ func _test_level_lifecycle_twice_in_one_process() -> void:
 		_expect(game_state.phase == game_state.Phase.VICTORY, "lifecycle %d reaches victory" % lifecycle)
 		level.free()
 		await process_frame
+
+
+func _test_enemy_drop_contract() -> void:
+	var level := _make_level()
+	await process_frame
+	level._enter_zone(&"compliance_lab", "ANIMAL COMPLIANCE LAB", null)
+	var fetch_guard := level.get_node_or_null("Actors/FetchGuard") as ComplianceHound
+	_expect(fetch_guard != null, "compliance lab spawns the fetch guard")
+	if fetch_guard != null:
+		var pickups_before := _count_pickups(level)
+		fetch_guard.apply_damage(1000000.0)
+		_expect(fetch_guard.is_dead, "fetch guard dies to overwhelming damage")
+		_expect(_count_pickups(level) == pickups_before + 1, "authored drop_id spawns its pickup on death")
+	level.free()
+	await process_frame
+
+
+func _count_pickups(level: EpisodeOneLevel) -> int:
+	var count := 0
+	for actor in level.get_node("Actors").get_children():
+		if actor is CombatPickup: count += 1
+	return count
 
 
 func _expect(condition: bool, label: String) -> void:

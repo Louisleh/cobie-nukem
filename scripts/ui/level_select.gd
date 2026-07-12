@@ -143,9 +143,6 @@ func _select(index: int) -> void:
 	play_button.text = "START MISSION" if data.unlocked else "LOCKED"
 	status_label.text = "READY" if data.unlocked else "LOCKED // FINISH SALMON CREEK"
 
-func _difficulty_paws(value: int) -> String:
-	return "%d / 5 PAWS" % clampi(value, 1, 5)
-
 func _activate_selected() -> void:
 	_activate(_selected)
 

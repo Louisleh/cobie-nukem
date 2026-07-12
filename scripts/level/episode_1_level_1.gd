@@ -282,6 +282,7 @@ func _spawn_wave(zone_id: StringName) -> void:
 
 func _on_encounter_actor_spawned(enemy: Node, definition: EncounterDefinition) -> void:
 	if enemy is ComplianceHound: enemy.name = "FetchGuard"
+	if enemy.has_signal("drop_requested"): enemy.drop_requested.connect(_spawn_enemy_drop)
 	if not _resetting_encounter: enemies_total += 1
 	if definition.zone_id == &"forbidden_field":
 		enemy.process_mode = Node.PROCESS_MODE_DISABLED
@@ -468,6 +469,16 @@ func _on_player_died_for_ui(_source: Node) -> void:
 	if _pause_menu != null:
 		_pause_menu.close_for_death()
 	_death_screen.show_death()
+
+
+func _spawn_enemy_drop(drop_id: StringName, position_value: Vector3) -> Node:
+	# Enemy definitions authored a drop_id contract that previously had no
+	# listener, so drops silently never appeared.
+	var path := "res://scenes/pickups/%s.tscn" % drop_id
+	if not ResourceLoader.exists(path, "PackedScene"):
+		push_warning("Enemy drop has no pickup scene: %s" % drop_id)
+		return null
+	return _spawn_pickup(path, Vector3(position_value.x, 0.8, position_value.z))
 
 
 func _spawn_pickup(path: String, position_value: Vector3) -> Node:
