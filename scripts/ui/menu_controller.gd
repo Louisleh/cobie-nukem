@@ -23,7 +23,7 @@ func _ready() -> void:
 	_wire_button(%CreditsButton, func() -> void: _route(credits_scene_path))
 	_wire_button(%QuitButton, _quit)
 	%QuitButton.visible = not OS.has_feature("web")
-	continue_button.disabled = SaveManager.load_slot(&"checkpoint").is_empty()
+	continue_button.disabled = CheckpointPayload.sanitize(SaveManager.load_slot(&"checkpoint")).is_empty()
 	continue_button.focus_mode = Control.FOCUS_NONE if continue_button.disabled else Control.FOCUS_ALL
 	%NewGameButton.grab_focus()
 	music.stream = sounds.create_menu_music()
@@ -48,11 +48,18 @@ func _new_game() -> void:
 	_route(level_select_scene_path)
 
 func _continue_game() -> void:
-	var checkpoint := SaveManager.load_slot(&"checkpoint")
+	var checkpoint := CheckpointPayload.sanitize(SaveManager.load_slot(&"checkpoint"))
+	if checkpoint.is_empty():
+		continue_button.disabled = true
+		continue_button.focus_mode = Control.FOCUS_NONE
+		status_label.visible = true
+		status_label.text = "CHECKPOINT UNREADABLE // START A NEW RUN"
+		sounds.play(ProceduralAudio.Cue.ERROR)
+		return
+	GameState.select_difficulty(StringName(String(checkpoint.difficulty_id)))
 	GameState.continue_requested = true
-	var scene_path := String(checkpoint.get("scene_path", level_scene_path))
-	GameState.begin_run(StringName(checkpoint.get("level_id", "no_dogs_allowed")))
-	_route(scene_path)
+	GameState.begin_run(StringName(String(checkpoint.level_id)))
+	_route(String(checkpoint.scene_path))
 
 func _route(path: String) -> void:
 	var result := SceneRouter.go_to(path)

@@ -105,7 +105,7 @@ func _apply_requested_checkpoint() -> void:
 	if game_state == null or not bool(game_state.get("continue_requested")):
 		return
 	var save_manager := get_node_or_null("/root/SaveManager")
-	var saved: Dictionary = save_manager.load_slot(&"checkpoint") if save_manager != null else {}
+	var saved := CheckpointPayload.sanitize(save_manager.load_slot(&"checkpoint")) if save_manager != null else {}
 	var position_values: Array = saved.get("position", [])
 	if position_values.size() == 3:
 		checkpoint_position = Vector3(float(position_values[0]), float(position_values[1]), float(position_values[2]))
@@ -412,11 +412,13 @@ func _setup_presentation() -> void:
 	checkpoint_activated.connect(func(id: StringName, position_value: Vector3):
 		var save_manager := get_node_or_null("/root/SaveManager")
 		if save_manager:
+			var difficulty_state := get_node_or_null("/root/GameState")
 			save_manager.save_slot(&"checkpoint", {
 				"scene_path": "res://scenes/levels/episode_1_level_1.tscn",
 				"level_id": String(metadata.level_id),
 				"checkpoint_id": String(id),
 				"position": [position_value.x, position_value.y, position_value.z],
+				"difficulty_id": String(difficulty_state.difficulty_id) if difficulty_state != null else CheckpointPayload.DEFAULT_DIFFICULTY,
 			})
 	)
 	var game_state := get_node_or_null("/root/GameState")
