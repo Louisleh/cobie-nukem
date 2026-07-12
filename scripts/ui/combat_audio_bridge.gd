@@ -2,6 +2,7 @@ class_name CombatAudioBridge
 extends Node
 
 @onready var sounds: ProceduralAudio = $ProceduralAudio
+@onready var samples: SampleAudioEmitter = get_node_or_null("SampleAudioEmitter") as SampleAudioEmitter
 
 func bind_player(player: Node) -> void:
 	var mount := player.get_node_or_null("Head/Camera/WeaponMount")
@@ -27,6 +28,8 @@ func bind_player(player: Node) -> void:
 
 func _on_weapon_fired(weapon: Node, _secondary: bool) -> void:
 	var weapon_name := String(weapon.definition.display_name).to_lower() if weapon.get("definition") != null else ""
+	var cue_id: StringName = weapon.definition.id if weapon.get("definition") != null else &""
+	if samples != null and samples.play(cue_id): return
 	if "barkshot" in weapon_name:
 		sounds.play(ProceduralAudio.Cue.BARKSHOT)
 	elif "fetch" in weapon_name:

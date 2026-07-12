@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="PlayerFeelProfile" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/player/player_feel_profile.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+walk_speed = 6.0
+run_speed = 9.0
+ground_acceleration = 38.0
+ground_deceleration = 44.0
+air_acceleration = 8.0
+jump_velocity = 5.2
+coyote_seconds = 0.1
+floor_snap = 0.35
+constant_slope_speed = true
+mouse_sensitivity = 0.0022
+touch_sensitivity_scale = 1.35
+max_look_degrees = 86.0
+head_bob_amount = 0.035
+head_bob_speed = 10.5
+landing_response = 0.35
+damage_response = 0.45

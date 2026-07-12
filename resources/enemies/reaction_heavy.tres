@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="DamageReactionProfile" load_steps=2 format=3]
+[ext_resource type="Script" path="res://scripts/combat/damage_reaction_profile.gd" id="1"]
+[resource]
+script = ExtResource("1")
+flinch_threshold = 8.0
+stagger_threshold = 70.0
+stagger_resistance = 0.35
+directional_reactions = true
+death_response = &"heavy"

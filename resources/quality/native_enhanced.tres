@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="QualityProfile" load_steps=2 format=3]
+[ext_resource type="Script" path="res://scripts/core/quality_profile.gd" id="1"]
+[resource]
+script = ExtResource("1")
+id = &"native"
+display_name = "NATIVE ENHANCED"
+render_scale = 1.0
+particle_budget = 1200
+decal_budget = 96
+audio_voice_budget = 32
+visibility_distance = 90.0
+dynamic_light_budget = 5
+maximum_attackers = 4
+distant_animation_hz = 20.0
+target_fps = 60

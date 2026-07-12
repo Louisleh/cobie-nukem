@@ -8,6 +8,7 @@ These rules apply to the entire repository.
 2. Use Godot 4.7 stable, standard GDScript, and the Compatibility renderer.
 3. Do not add copyrighted Duke Nukem assets, dialogue, code, map data, branding, or imitations. Record all asset provenance in `docs/ASSET_MANIFEST.md`.
 4. Never describe joystick hardware as verified without a recorded physical test.
+5. Read `docs/design/README.md` for the contract of any subsystem you touch.
 
 ## Shared-file ownership
 
@@ -32,6 +33,8 @@ When a change crosses an ownership boundary, keep it small and explain its contr
 - Use collision-layer names from `project.godot`; do not hard-code unexplained masks.
 - User state belongs under `user://`; no telemetry, accounts, or network dependency.
 - Treat warnings as work to resolve, not noise to suppress globally.
+- Register nearby interactables and aim targets through `WorldRegistry`; do not add per-frame global group scans.
+- Temporary combat nodes must have a bounded lifetime or return to a pool.
 
 ## Quality gate
 
@@ -43,4 +46,3 @@ godot --headless --path . --script res://tests/run_tests.gd
 ```
 
 For export-affecting changes, also build Web and macOS using the commands in `docs/BUILD_AND_RELEASE.md`. Report commands, results, and anything not run. Do not claim a manual playthrough or physical-device result that did not happen.
-

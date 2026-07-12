@@ -54,6 +54,10 @@ func show_notification(message: String, cue := ProceduralAudio.Cue.PICKUP) -> vo
 func show_secret(message := "SECRET FOUND. GOOD SNIFFING.") -> void:
 	show_notification(message, ProceduralAudio.Cue.SECRET)
 
+func show_objective(message: String) -> void:
+	%ObjectiveLabel.text = "OBJECTIVE // " + message.to_upper()
+	%ObjectiveLabel.visible = not message.is_empty()
+
 func set_access_item(label: String) -> void:
 	%AccessLabel.text = label
 

@@ -12,6 +12,7 @@ var current_level_id: StringName = &""
 var run_stats: Dictionary = {}
 var continue_requested := false
 var difficulty_id: StringName = &"classic"
+var local_metrics: Dictionary = {}
 
 const DIFFICULTY_PATHS := {
 	&"story": "res://resources/difficulty/story.tres",
@@ -37,8 +38,72 @@ func begin_run(level_id: StringName) -> void:
 		"checkpoint_id": "start",
 		"difficulty_id": String(difficulty_id),
 	}
+	local_metrics = {
+		"frame_time_buckets": {"under_16_7": 0, "under_33_3": 0, "under_100": 0, "over_100": 0},
+		"weapon_usage": {}, "hit_results": {}, "damage_sources": {},
+		"pickups_collected": 0, "navigation_recoveries": 0,
+	}
 	_set_phase(Phase.PLAYING)
 	run_started.emit()
+
+
+func _process(delta: float) -> void:
+	if phase != Phase.PLAYING or local_metrics.is_empty(): return
+	var bucket := "under_16_7" if delta <= 0.0167 else ("under_33_3" if delta <= 0.0333 else ("under_100" if delta <= 0.1 else "over_100"))
+	local_metrics.frame_time_buckets[bucket] = int(local_metrics.frame_time_buckets.get(bucket, 0)) + 1
+
+
+func record_shot(weapon_id: StringName) -> void:
+	if run_stats.is_empty(): return
+	_ensure_local_metrics()
+	run_stats.shots_fired = int(run_stats.get("shots_fired", 0)) + 1
+	var key := String(weapon_id)
+	var usage: Dictionary = local_metrics.get("weapon_usage", {})
+	usage[key] = int(usage.get(key, 0)) + 1
+	local_metrics["weapon_usage"] = usage
+
+
+func record_combat_result(event: CombatFeedbackEvent) -> void:
+	if run_stats.is_empty(): return
+	_ensure_local_metrics()
+	var key := String(event.legacy_kind())
+	var results: Dictionary = local_metrics.get("hit_results", {})
+	results[key] = int(results.get(key, 0)) + 1
+	local_metrics["hit_results"] = results
+	if event.hit_type == CombatFeedbackEvent.HitType.ENEMY or event.hit_type == CombatFeedbackEvent.HitType.DESTRUCTIBLE:
+		run_stats.shots_hit = int(run_stats.get("shots_hit", 0)) + 1
+
+
+func record_damage(amount: float, source: Node) -> void:
+	if run_stats.is_empty(): return
+	_ensure_local_metrics()
+	run_stats.damage_taken = float(run_stats.get("damage_taken", 0.0)) + maxf(amount, 0.0)
+	var key := "environment" if source == null else String(source.name)
+	var sources: Dictionary = local_metrics.get("damage_sources", {})
+	sources[key] = float(sources.get(key, 0.0)) + maxf(amount, 0.0)
+	local_metrics["damage_sources"] = sources
+
+
+func record_pickup() -> void:
+	_ensure_local_metrics()
+	local_metrics["pickups_collected"] = int(local_metrics.get("pickups_collected", 0)) + 1
+
+
+func _ensure_local_metrics() -> void:
+	if not local_metrics.is_empty(): return
+	local_metrics = {
+		"frame_time_buckets": {"under_16_7": 0, "under_33_3": 0, "under_100": 0, "over_100": 0},
+		"weapon_usage": {}, "hit_results": {}, "damage_sources": {},
+		"pickups_collected": 0, "navigation_recoveries": 0,
+	}
+
+
+func export_local_playtest_report(path := "user://playtest/latest.json") -> Error:
+	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(path.get_base_dir()))
+	var file := FileAccess.open(path, FileAccess.WRITE)
+	if file == null: return FileAccess.get_open_error()
+	file.store_string(JSON.stringify({"build": BuildInfo.label(), "run": run_stats, "metrics": local_metrics}, "\t"))
+	return OK
 
 
 func select_difficulty(value: StringName) -> bool:
@@ -71,6 +136,7 @@ func finish_run(extra_summary: Dictionary = {}) -> Dictionary:
 	summary["finished_at_msec"] = Time.get_ticks_msec()
 	summary["duration_msec"] = summary.finished_at_msec - summary.get("started_at_msec", summary.finished_at_msec)
 	summary["completed"] = true
+	summary["local_metrics"] = local_metrics.duplicate(true)
 	_set_phase(Phase.VICTORY)
 	run_ended.emit(summary)
 	return summary

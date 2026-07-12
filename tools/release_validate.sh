@@ -54,6 +54,7 @@ run_godot_test res://tests/integration/adversarial_state_test.gd
 run_godot_test res://tests/smoke/smoke_test_runner.gd
 run_godot_test res://tests/smoke/performance_smoke.gd
 bash tools/asset_ip_scan.sh
+bash tools/architecture_check.sh
 run_godot_test res://tools/validate_content.gd
 
 required_release_paths=(

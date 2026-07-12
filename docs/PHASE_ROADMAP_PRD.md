@@ -1,12 +1,14 @@
 # Cobie Nukem — Multi-Phase Production PRD
 
-**Status:** Active production source of truth; Phase 1–2 foundations and the public iPad browser release are complete; Phases 3–6 content work not started
+**Status:** Active production source of truth; world-class Salmon Creek vertical-slice pass in progress on `codex/world-class-vertical-slice`
 
 **Created:** 2026-07-11
 
-**Last status review:** 2026-07-11
+**Last status review:** 2026-07-12
 
-**Current development baseline:** `0.5.0-rc1` (`f505679` gameplay/UI revision; difficulty selection, save-schema v2, state hardening, and Mission 2 pipeline proof)
+**Current public baseline:** `0.5.0-rc1` (`f505679` gameplay/UI revision)
+
+**Unreleased development baseline:** world-class vertical-slice integration branch from `9c54c56`; build identity intentionally remains `0.5.0-rc1` until the `0.6.0-alpha` release gate
 
 **Last playtest RC:** `0.5.0-rc1` (`f505679`) — live at <https://www.louislehmann.fyi/games/cobie-nukem/>
 
@@ -19,11 +21,11 @@ This section is the first place a new Codex or external-auditor run should read.
 
 | Phase | Status | Completed | Explicitly remaining |
 | --- | --- | --- | --- |
-| 1. Gameplay systems foundation | **FOUNDATION COMPLETE** | Typed objectives/tracker, encounter definitions/runner, three difficulty Resources, selected difficulty in run state, player-facing Story/Classic/Mayhem selector on level select, all six DifficultyProfile multipliers consumed at runtime (health, damage, speed, aggression, pickups, aim assist), enemy archetypes and spacing behavior, Salmon Creek migration, focused tests | Multi-wave director; persistent objective snapshots; group tactics/support actions |
+| 1. Gameplay systems foundation | **VERTICAL-SLICE FOUNDATION IMPLEMENTED — IN REVIEW** | Previous foundation plus `PlayerFeelProfile`, `WeaponFeelProfile`, terminal combat feedback events, damage reactions, pressure/attack tokens, group alert, weak-point metadata, multi-wave encounter schema v2, mission runtime/spawn registry extraction, event-driven interaction/aim registries | Full navigation-mesh production pass, authored directional animation atlases, final feel/balance |
 | 2. Content-production pipeline | **FOUNDATION COMPLETE** | Versioned manifest, Salmon Creek content data, headless validator, release-gate integration, authoring guide, manifest template, critical-path rules, Mission 2 (Vancouver Waterfront) manifest/objective/encounter skeleton validating in CI with a locked card and non-public graybox | Visual editor tooling; spawn volumes/patrol paths; richer pickup/prop/zone schemas; automated nav/reachability analysis; Mission 2 full production |
 | 3. World and episode structure | **NOT STARTED — BRIEFS ONLY** | Vancouver Waterfront, Mount Hood, and Moon design briefs and personal-detail/legal notes are documented | No new level scenes, geometry, props, mission Resources, encounters, enemies, or assets have been built |
-| 4. Combat and presentation expansion | **NOT STARTED** | Requirements captured only | Weak points, hazards, richer reactions/animations, music state system, voice, comic-panel sequences, Mission 2 demonstration |
-| 5. Accessibility, persistence, observability | **STARTED — SAVE SCHEMA ONLY** | Save envelopes are versioned (v2) with deterministic migrations, a canonical sanitized checkpoint payload (including selected difficulty), and safe recovery from unversioned/legacy/corrupt/future files | Multiple save profiles, objective persistence, expanded assists, telemetry-free metrics, soak and compatibility matrices |
+| 4. Combat and presentation expansion | **STARTED — SYSTEM CONTRACTS** | High-resolution 640×360 presentation baseline, surface-aware combat events, muzzle/impact/death feedback, enemy state motion, numeric elite/boss identity, imported-sample audio contract and expanded bus/limiter layout | Original sample library, directional sprite atlases, adaptive music, environmental kit/interaction density, final boss spectacle |
+| 5. Accessibility, persistence, observability | **IMPLEMENTED FOUNDATION — IN REVIEW** | Save schema v3 with v2 migration and objective/encounter/secret persistence; local-only frame/combat/damage/pickup metrics; objective HUD; reduced-flash integration; quality profiles | Complete settings UI for every assist, captions beyond current narrative text, visual regression gallery, 100-route/50-cycle expanded soak, physical devices |
 | 6. Alpha, beta, release | **NOT STARTED** | Existing development packaging and CI are available | Episode content completion, full human/device/browser matrices, signing/notarization, legal review, store readiness |
 
 ### Immediate next gate
@@ -31,6 +33,31 @@ This section is the first place a new Codex or external-auditor run should read.
 **Gate passed 2026-07-11.** Accepted critical Fable findings are addressed, the stamped build is public through the owner website, and the touch-first iPad browser path has automated and tablet-viewport regression evidence. The remaining hardware gate is a real iPad Safari feel/thermal/network pass.
 
 **2026-07-12 implementation pass (source repo, not yet released):** the accessible Story/Classic/Mayhem selector is live on level select with all six difficulty multipliers consumed at runtime; save payloads are versioned and migrated; state-transition hardening plus adversarial regression coverage landed; and the Mission 2 content skeleton validates in CI. Next priorities are controlled family playtesting (including difficulty feel), the physical-iPad hardware pass, and Mission 2 production geometry. Do not treat missing Phase 3–6 content as a current defect unless a current contract falsely claims to support it.
+
+**2026-07-12 world-class vertical-slice pass (unreleased):** milestone and issue inventory created; baseline Mac release validation captured; event-driven registries replace per-frame group scans; the Salmon Creek controller has begun extraction into reusable mission runtime/spawn ownership; movement, combat, damage-reaction, pressure, quality, audio-sample, encounter-v2, save-v3, and local-metric contracts are implemented; the render baseline is upgraded from 320×180 nearest filtering to 640×360 linear filtering; fixed-coordinate HUD/menus were normalized and visually checked at desktop and 1024×768 tablet viewports. The non-export release matrix is green. This is an integration checkpoint, not the `0.6.0-alpha` claim.
+
+### World-class vertical-slice delivery boundary
+
+Completed in the current integration checkpoint:
+
+- mechanical architecture, engine-error, generated-export, script-size, and asset-provenance gates;
+- mission runtime/spawn registry extraction and event-driven interaction/aim indexing;
+- profile-driven player feel, combat feedback, damage reactions, pressure tokens, group alert, weak points, and encounter schema v2;
+- save schema v3 with deterministic migration and checkpoint restoration of objective/encounter/secret state;
+- automatic Web/iPad vs native quality profiles and privacy-preserving local metrics;
+- 640×360 render/UI normalization, current-objective HUD, reduced-flash effects, expanded audio buses/limiter, and an imported-sample playback pipeline with bounded polyphony;
+- desktop and 4:3 tablet browser captures plus the complete headless regression matrix.
+
+Critical before `0.6.0-alpha`:
+
+- production navigation and unreachable-actor recovery evidence;
+- original directional enemy animation and imported weapon/enemy/footstep sample packs with manifest provenance;
+- Salmon Creek encounter-v2 pacing authoring and Walker spectacle/balance playthrough;
+- remaining accessibility controls surfaced and verified (text scale, contrast, captions, control opacity/layout);
+- native/Web export matrix, profiler evidence, seeded route/soak expansion, and target-Mac playthrough;
+- physical iPad Safari touch comfort/thermal/focus validation and human photosensitivity/difficulty review.
+
+Future nice-to-have, explicitly non-blocking for the vertical slice: comic-panel sequences, optional gib variants, advanced support/flank tactics, drag-anywhere touch-editor polish, and native iOS packaging.
 
 ### Independent Fable audit disposition — 2026-07-11
 

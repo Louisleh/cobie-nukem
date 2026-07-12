@@ -38,6 +38,9 @@ var _damage_scale := 1.0
 var _speed_scale := 1.0
 var _max_health := 1.0
 var _aggression_scale := 1.0
+var _stagger_accumulator := 0.0
+var _visual_base_position := Vector3.ZERO
+var _presentation_tween: Tween
 
 func _ready() -> void:
 	floor_snap_length = 0.45
@@ -52,11 +55,14 @@ func _ready() -> void:
 	auto_aim_threat = definition.threat_weight
 	target = initial_target
 	_build_health_bar()
+	var visual := get_node_or_null("Visual") as Node3D
+	if visual != null: _visual_base_position = visual.position
 
 func _physics_process(delta: float) -> void:
 	if definition == null or is_dead:
 		return
 	_stabilize_ground_height()
+	_update_locomotion_presentation()
 	_update_health_bar_presentation()
 	_state_time += delta
 	_cooldown = maxf(0.0, _cooldown - delta)
@@ -107,6 +113,8 @@ func _physics_process(delta: float) -> void:
 				_perform_attack()
 				attack_fired.emit(attack_kind)
 			if _state_time >= definition.telegraph_seconds + 0.2:
+				var pressure := get_node_or_null("/root/CombatPressure")
+				if pressure != null: pressure.release_attack(self)
 				_cooldown = definition.attack_cooldown / maxf(_aggression_scale, 0.1)
 				_set_state(State.CHASE)
 
@@ -114,6 +122,13 @@ func set_target(value: Node3D) -> void:
 	target = value
 	if _target_valid() and state == State.IDLE:
 		_set_state(State.ALERT)
+		get_tree().call_group(&"enemies", &"receive_alert", value, global_position, 12.0)
+
+
+func receive_alert(value: Node3D, source_position: Vector3, radius: float) -> void:
+	if is_dead or not is_instance_valid(value) or global_position.distance_to(source_position) > radius: return
+	target = value
+	if state == State.IDLE: _set_state(State.ALERT)
 
 
 func apply_difficulty(profile: DifficultyProfile) -> void:
@@ -134,6 +149,7 @@ func apply_damage(amount: float, source: Node = null, hit_position := Vector3.ZE
 		set_target(actor)
 	damaged.emit(applied, source, hit_position)
 	_on_damaged(applied, hit_position)
+	_apply_reaction(applied)
 	if health <= 0.0:
 		_die(source)
 	else:
@@ -239,7 +255,8 @@ func _update_health_bar() -> void:
 	var fraction := clampf(health_fraction(), 0.0, 1.0)
 	_health_bar_fill_mesh.size.x = maxf(0.001, _health_bar_width * fraction)
 	if _health_label != null:
-		_health_label.text = "%d / %d HP" % [ceili(maxf(health, 0.0)), ceili(_max_health)]
+		var points := "%d / %d HP" % [ceili(maxf(health, 0.0)), ceili(_max_health)]
+		_health_label.text = "%s // %s" % [points, definition.display_name] if definition.max_health >= 200.0 else points
 	if fraction > 0.55:
 		_health_bar_fill_material.albedo_color = Color("65d36e")
 	elif fraction > 0.25:
@@ -285,6 +302,11 @@ func _face_target(delta: float) -> void:
 	rotation.y = lerp_angle(rotation.y, atan2(-direction.x, -direction.z), minf(1.0, delta * 12.0))
 
 func _begin_attack() -> void:
+	var pressure := get_node_or_null("/root/CombatPressure")
+	var priority := 10 if definition.archetype == EnemyDefinition.Archetype.BOSS else definition.threat_value
+	if pressure != null and not pressure.request_attack(self, priority):
+		_cooldown = 0.15
+		return
 	_attack_committed = false
 	_set_state(State.ATTACK)
 	telegraph_started.emit(attack_kind, definition.telegraph_seconds)
@@ -300,7 +322,8 @@ func _spawn_projectile(scene: PackedScene, speed: float, splash_radius := 0.0) -
 	if not _target_valid() or scene == null:
 		return null
 	var projectile := scene.instantiate() as Node3D
-	get_tree().current_scene.add_child(projectile)
+	var projectile_parent := get_tree().current_scene if get_tree().current_scene != null else get_tree().root
+	projectile_parent.add_child(projectile)
 	var origin := get_auto_aim_position()
 	var direction := origin.direction_to(target.global_position + Vector3.UP * 0.8)
 	projectile.global_position = origin
@@ -308,8 +331,9 @@ func _spawn_projectile(scene: PackedScene, speed: float, splash_radius := 0.0) -
 		projectile.launch(direction, self, definition.attack_damage * _damage_scale, speed, splash_radius)
 	return projectile
 
-func _damage_multiplier(_hit_position: Vector3) -> float:
-	return 1.0
+func _damage_multiplier(hit_position: Vector3) -> float:
+	if definition.weak_point_multiplier <= 1.0 or hit_position == Vector3.ZERO: return 1.0
+	return definition.weak_point_multiplier if hit_position.y >= global_position.y + target_height * 0.82 else 1.0
 
 func _on_damaged(_amount: float, _hit_position: Vector3) -> void:
 	pass
@@ -329,9 +353,41 @@ func _set_state(next: State) -> void:
 	if state == next:
 		return
 	var previous := state
+	if previous == State.ATTACK and next != State.ATTACK:
+		var pressure := get_node_or_null("/root/CombatPressure")
+		if pressure != null: pressure.release_attack(self)
 	state = next
 	_state_time = 0.0
 	state_changed.emit(previous, state)
+	_animate_state(previous, next)
+
+
+func _update_locomotion_presentation() -> void:
+	var visual := get_node_or_null("Visual") as Node3D
+	if visual == null or state == State.DEAD or _presentation_tween != null and _presentation_tween.is_running(): return
+	var moving := Vector2(velocity.x, velocity.z).length() > 0.25
+	visual.position.y = _visual_base_position.y + (sin(Time.get_ticks_msec() * 0.012) * 0.035 if moving else 0.0)
+
+
+func _animate_state(_previous: State, next: State) -> void:
+	var visual := get_node_or_null("Visual") as Node3D
+	if visual == null or next == State.DEAD: return
+	if _presentation_tween != null: _presentation_tween.kill()
+	visual.scale = Vector3.ONE
+	visual.position = _visual_base_position
+	_presentation_tween = visual.create_tween()
+	match next:
+		State.ALERT:
+			_presentation_tween.tween_property(visual, "scale", Vector3(1.1, 1.1, 1.1), 0.08)
+			_presentation_tween.tween_property(visual, "scale", Vector3.ONE, 0.12)
+		State.ATTACK:
+			_presentation_tween.tween_property(visual, "position", _visual_base_position + Vector3(0.0, 0.08, -0.12), maxf(0.08, definition.telegraph_seconds * 0.75))
+			_presentation_tween.tween_property(visual, "position", _visual_base_position, 0.12)
+		State.HURT, State.STUNNED:
+			_presentation_tween.tween_property(visual, "scale", Vector3(1.12, 0.86, 1.0), 0.05)
+			_presentation_tween.tween_property(visual, "scale", Vector3.ONE, 0.14)
+		_:
+			_presentation_tween.tween_interval(0.01)
 
 func _die(source: Node) -> void:
 	is_dead = true
@@ -340,6 +396,8 @@ func _die(source: Node) -> void:
 	if _health_bar != null:
 		_health_bar.visible = false
 	remove_from_group(&"auto_aim_targets")
+	var pressure := get_node_or_null("/root/CombatPressure")
+	if pressure != null: pressure.release_attack(self)
 	_set_state(State.DEAD)
 	for child in get_children():
 		if child is CollisionShape3D:
@@ -354,6 +412,15 @@ func _die(source: Node) -> void:
 	# A bound-method connection is dropped automatically when the enemy is freed
 	# by a scene change, unlike resuming an await on a freed instance.
 	get_tree().create_timer(death_linger_seconds).timeout.connect(queue_free)
+
+
+func _apply_reaction(amount: float) -> void:
+	var profile := definition.reaction_profile
+	if profile == null: return
+	_stagger_accumulator += amount * (1.0 - profile.stagger_resistance)
+	if _stagger_accumulator >= profile.stagger_threshold:
+		_stagger_accumulator = 0.0
+		stun(0.7)
 
 
 func _play_death_animation(visual: Node3D) -> void:

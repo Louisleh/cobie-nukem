@@ -9,28 +9,62 @@ enum CompletionPolicy { ALL_DEFEATED, BOSS_DEFEATED, FIRE_AND_FORGET }
 @export var completion_policy: CompletionPolicy = CompletionPolicy.ALL_DEFEATED
 @export_range(0.0, 30.0, 0.1) var activation_delay := 0.0
 @export_range(0.0, 30.0, 0.1) var opening_grace_seconds := 0.0
-@export var spawns: Array[Dictionary] = []
+@export var spawns: Array[Dictionary] = [] # v1 compatibility
+@export var schema_version := 2
+@export var waves: Array[Dictionary] = []
+@export_range(1, 100, 1) var enemy_budget := 12
+@export_range(1, 8, 1) var maximum_simultaneous_attackers := 3
+@export var spawn_tags: Array[StringName] = []
+@export var entry_lock_id: StringName = &""
+@export var exit_lock_id: StringName = &""
+@export var recovery_policy: StringName = &"restart_wave"
+@export_range(0.0, 1.0, 0.05) var music_intensity := 0.5
+@export var reward_policy: StringName = &"authored"
+
+
+func effective_waves() -> Array[Dictionary]:
+	if not waves.is_empty(): return waves
+	var result: Array[Dictionary] = []
+	if not spawns.is_empty(): result.append({"delay_seconds": activation_delay, "spawns": spawns})
+	return result
 
 
 func validate() -> PackedStringArray:
 	var errors := PackedStringArray()
 	if id == &"": errors.append("encounter id is empty")
 	if zone_id == &"": errors.append("encounter %s has no zone_id" % id)
-	if spawns.is_empty(): errors.append("encounter %s has no spawns" % id)
-	for index in spawns.size():
-		var spawn: Dictionary = spawns[index]
-		var path := String(spawn.get("scene", ""))
-		if path.is_empty(): errors.append("encounter %s spawn %d has no scene" % [id, index])
-		elif not ResourceLoader.exists(path): errors.append("encounter %s spawn %d scene missing: %s" % [id, index, path])
+	var all_waves: Array[Dictionary] = effective_waves()
+	if all_waves.is_empty(): errors.append("encounter %s has no waves or spawns" % id)
+	var authored_count := 0
+	for wave_index in all_waves.size():
+		var wave: Dictionary = all_waves[wave_index]
+		var wave_spawns: Variant = wave.get("spawns", [])
+		if wave_spawns is not Array or wave_spawns.is_empty():
+			errors.append("encounter %s wave %d has no spawns" % [id, wave_index])
+			continue
+		for index in wave_spawns.size():
+			authored_count += 1
+			errors.append_array(_validate_spawn(wave_spawns[index], wave_index, index))
+	if authored_count > enemy_budget:
+		errors.append("encounter %s authors %d enemies above budget %d" % [id, authored_count, enemy_budget])
+	return errors
+
+
+func _validate_spawn(spawn: Dictionary, wave_index: int, index: int) -> PackedStringArray:
+	var errors := PackedStringArray()
+	var path := String(spawn.get("scene", ""))
+	if path.is_empty(): errors.append("encounter %s wave %d spawn %d has no scene" % [id, wave_index, index])
+	elif not ResourceLoader.exists(path): errors.append("encounter %s wave %d spawn %d scene missing: %s" % [id, wave_index, index, path])
+	else:
+		var packed := load(path) as PackedScene
+		if packed == null:
+			errors.append("encounter %s wave %d spawn %d is not a PackedScene: %s" % [id, wave_index, index, path])
 		else:
-			var packed := load(path) as PackedScene
-			if packed == null:
-				errors.append("encounter %s spawn %d is not a PackedScene: %s" % [id, index, path])
-			else:
-				var instance := packed.instantiate()
-				if not instance.has_method("set_target") or not instance.has_signal("died"):
-					errors.append("encounter %s spawn %d lacks enemy contract set_target+died: %s" % [id, index, path])
-				instance.free()
-		var position = spawn.get("position")
-		if not position is Vector3 or not position.is_finite(): errors.append("encounter %s spawn %d has invalid finite Vector3 position" % [id, index])
+			var instance := packed.instantiate()
+			if not instance.has_method("set_target") or not instance.has_signal("died"):
+				errors.append("encounter %s wave %d spawn %d lacks enemy contract set_target+died: %s" % [id, wave_index, index, path])
+			instance.free()
+	var position: Variant = spawn.get("position")
+	if not position is Vector3 or not position.is_finite():
+		errors.append("encounter %s wave %d spawn %d has invalid finite Vector3 position" % [id, wave_index, index])
 	return errors

@@ -32,7 +32,9 @@ func get_aim_direction(camera: Camera3D, range_limit := -1.0) -> Vector3:
 func _find_best_target(camera: Camera3D, effective_range: float) -> Node3D:
 	var best: Node3D
 	var best_score := INF
-	for candidate in get_tree().get_nodes_in_group(target_group):
+	var registry := get_node_or_null("/root/WorldRegistry")
+	var candidates: Array[Node] = registry.targets() if registry != null else []
+	for candidate in candidates:
 		if candidate is not Node3D or not _candidate_valid(camera, candidate, effective_range):
 			continue
 		var offset: Vector3 = _target_position(candidate) - camera.global_position

@@ -1,6 +1,8 @@
 class_name WeaponDefinition
 extends Resource
 
+@export var id := &"weapon"
+@export var feel: WeaponFeelProfile
 @export var display_name := "Weapon"
 @export_multiline var pickup_message := "ACQUIRED."
 @export var ammo_type := "none"
