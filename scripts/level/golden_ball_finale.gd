@@ -18,6 +18,10 @@ func _ready() -> void:
 
 func enable_for_boss(target: Node) -> void:
 	walker = target; enabled = true; visible = true; collision_layer = 1
+	# Joining the proximity-interaction group only once claimable keeps the
+	# hidden ball from answering the use key before the boss releases it.
+	if not is_in_group(&"interactables"):
+		add_to_group(&"interactables")
 
 
 func get_interaction_label() -> String:

@@ -97,9 +97,14 @@ func _consume() -> void:
 	visible = false
 	monitoring = false
 	if definition.respawns:
-		await get_tree().create_timer(definition.respawn_seconds).timeout
-		_available = true
-		visible = true
-		monitoring = true
+		# Bound method rather than resuming an await: the connection is dropped
+		# automatically if a scene change frees the pickup before it respawns.
+		get_tree().create_timer(definition.respawn_seconds).timeout.connect(_respawn)
 	else:
 		queue_free()
+
+
+func _respawn() -> void:
+	_available = true
+	visible = true
+	monitoring = true

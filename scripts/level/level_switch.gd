@@ -11,6 +11,9 @@ var is_active := false
 
 
 func _ready() -> void:
+	# Group membership keeps switches reachable through the proximity-interaction
+	# fallback that touch players rely on when precise aiming is hard.
+	add_to_group(&"interactables")
 	if get_child_count() == 0: _build_visual()
 
 

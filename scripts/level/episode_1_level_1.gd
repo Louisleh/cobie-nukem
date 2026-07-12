@@ -65,6 +65,8 @@ var _objective_tracker: ObjectiveTracker
 var _encounter_runner: EncounterRunner
 var _last_combat_zone: StringName = &""
 var _resetting_encounter := false
+var _opening_grace_timer: Timer
+var _completion_timer: Timer
 
 func _ready() -> void:
 	_run_started_ms = Time.get_ticks_msec()
@@ -98,6 +100,22 @@ func _setup_gameplay_systems() -> void:
 		_on_enemy_died(enemy, definition.zone_id)
 	)
 	_encounter_runner.configure(content_manifest.encounters if content_manifest != null else [], _spawn_scene)
+	# Level-owned timers die with the scene, so a pending opening-grace or
+	# completion callback can never fire into a freed level, and restarting the
+	# opening encounter replaces the pending grace window instead of stacking a
+	# second, earlier activation.
+	_opening_grace_timer = Timer.new()
+	_opening_grace_timer.name = "OpeningGraceTimer"
+	_opening_grace_timer.one_shot = true
+	_opening_grace_timer.wait_time = 12.0
+	_opening_grace_timer.timeout.connect(_activate_opening_encounter)
+	add_child(_opening_grace_timer)
+	_completion_timer = Timer.new()
+	_completion_timer.name = "CompletionTimer"
+	_completion_timer.one_shot = true
+	_completion_timer.wait_time = 1.2
+	_completion_timer.timeout.connect(_finalize_level_completion)
+	add_child(_completion_timer)
 
 
 func _apply_requested_checkpoint() -> void:
@@ -259,7 +277,7 @@ func _spawn_wave(zone_id: StringName) -> void:
 		_golden_ball.enable_for_boss(null)
 		narrative_message.emit("BOSS ASSET MISSING — GOLDEN BALL QA FALLBACK ENABLED.", 4.0)
 	if zone_id == &"forbidden_field":
-		get_tree().create_timer(12.0).timeout.connect(_activate_opening_encounter)
+		_opening_grace_timer.start()
 
 
 func _on_encounter_actor_spawned(enemy: Node, definition: EncounterDefinition) -> void:
@@ -333,6 +351,8 @@ func restart_from_checkpoint() -> void:
 			if "velocity" in player: player.velocity = Vector3.ZERO
 	if _death_screen:
 		_death_screen.visible = false
+	if _pause_menu:
+		_pause_menu.set_suppressed(false)
 
 
 func _reset_active_encounter_for_checkpoint() -> void:
@@ -343,7 +363,13 @@ func _reset_active_encounter_for_checkpoint() -> void:
 	if zone_id == &"forbidden_field":
 		_opening_enemies.clear()
 		_opening_encounter_active = false
-	if zone_id == &"walker_arena": _walker = null
+	if zone_id == &"walker_arena":
+		_walker = null
+		# The walker's summoned drones live outside the encounter runner's actor
+		# list; leaving them alive would greet the respawned player with stale
+		# pressure the reset just promised to remove.
+		for summon in get_tree().get_nodes_in_group(&"boss_summons"):
+			summon.queue_free()
 	_resetting_encounter = true
 	_spawn_wave(zone_id)
 	_resetting_encounter = false
@@ -354,7 +380,13 @@ func _on_golden_ball_claimed(_actor: Node) -> void:
 	completion_started = true
 	_objective_tracker.record(ObjectiveDefinition.Kind.COLLECT_ITEM, &"golden_tennis_ball")
 	narrative_message.emit("THEY SAID NO ANIMALS. THEY SHOULD HAVE SAID PLEASE.", 5.0)
-	await get_tree().create_timer(1.2).timeout
+	# A finished run must not offer a stale mid-level Continue from the menu.
+	var save_manager := get_node_or_null("/root/SaveManager")
+	if save_manager: save_manager.delete_slot(&"checkpoint")
+	_completion_timer.start()
+
+
+func _finalize_level_completion() -> void:
 	var summary := get_level_summary(); level_completed.emit(summary)
 	var game_state := get_node_or_null("/root/GameState")
 	if game_state: game_state.finish_run(summary)
@@ -425,6 +457,7 @@ func _setup_presentation() -> void:
 	if game_state:
 		game_state.run_ended.connect(func(summary: Dictionary):
 			_hud.visible = false
+			_pause_menu.set_suppressed(true)
 			_pause_menu.visible = false
 			_victory_screen.show_summary(summary)
 		, CONNECT_ONE_SHOT)

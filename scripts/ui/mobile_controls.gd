@@ -57,6 +57,11 @@ static func touchscreen_expected() -> bool:
 
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_RESIZED: queue_redraw()
+	# Synthetic InputEventAction presses live in the global Input singleton, so
+	# a finger held across a scene change or an app switch would otherwise keep
+	# firing/moving forever. Release everything whenever ownership can be lost.
+	if what == NOTIFICATION_EXIT_TREE or what == NOTIFICATION_APPLICATION_FOCUS_OUT:
+		release_all()
 
 
 func _input(event: InputEvent) -> void:

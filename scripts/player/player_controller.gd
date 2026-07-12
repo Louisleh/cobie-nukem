@@ -179,6 +179,9 @@ func _check_out_of_bounds() -> bool:
 		return false
 	# Route through the normal damage/death signals so the existing death screen,
 	# quip, input release, and checkpoint retry behavior all remain consistent.
+	# The kill plane is not combat damage: respawn protection must not leave the
+	# player falling through the void until the invulnerability window expires.
+	health_armor.invulnerable_remaining = 0.0
 	health_armor.apply_damage(health_armor.max_health + health_armor.max_armor + 1000.0, self)
 	return true
 
