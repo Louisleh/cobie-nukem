@@ -1,4 +1,30 @@
-# Release Notes — 0.2.0-rc1 Family Playtest RC
+# Release Notes — 0.6.0-alpha.1 Twin-Stick Vertical Slice
+
+Built on 2026-07-12 with Godot `4.7.stable.official.5b4e0cb0f` and matching official export templates. Feature revision: `575d84e`.
+
+## Included
+
+- Fixed left movement and right rate-aim joysticks with independent multi-touch ownership and simultaneous fire/actions.
+- Deterministic physics-tick aiming with center precision, independent horizontal/vertical speed, inversion, size/placement presets, opacity, and full left-handed mirroring.
+- Legacy touch-speed migration, landscape onboarding, portrait rotation guard, focus/orientation cancellation, and Web scroll/zoom/callout suppression.
+- Existing 0.5 vertical-slice foundation: normalized menus, three weapons, calibrated enemy HP/health bars, impact feedback, grounded pickups/enemies, Walker phases, save schema v3, accessibility controls, platform quality profiles, and local playtest metrics.
+- Expanded release soak: 100 deterministic routes, 100 checkpoint cycles, 100 twin-stick cancellation cycles, 500 weapon transitions, and 100 temporary effects.
+
+## Validation
+
+- `QA_EXPORTS=1 bash tools/release_validate.sh` passed on macOS with Godot 4.7, including Web and unsigned Universal macOS exports.
+- Tablet browser inspection passed at 1024×768 across title, main menu, level select, gameplay, pause, and expanded touch options with zero captured console warnings/errors.
+- Portrait viewport inspection showed the input-blocking `ROTATE IPAD TO LANDSCAPE` guard.
+- Physical iPad Safari comfort, true multi-touch, thermal behavior, and a human full playthrough remain explicitly unverified alpha gates.
+
+## Artifacts
+
+- `cobie-nukem-0.6.0-alpha.1-itch.zip` — 17,972,102 bytes; SHA-256 `0b459500a4f9521a5a08fcd224fbd002c6383866896f96c80b6a36dffe1ec35d`.
+- `cobie-nukem-0.6.0-alpha.1-macos-unsigned.zip` — 67,336,124 bytes; SHA-256 `ede455d76e362ad70d402f9f244efe2058de2f7c68dd3cb952268bb8dcb1aa26`.
+
+---
+
+# Previous Release — 0.2.0-rc1 Family Playtest RC
 
 Built on 2026-07-11 with Godot `4.7.stable.official.5b4e0cb0f` and matching official export templates.
 

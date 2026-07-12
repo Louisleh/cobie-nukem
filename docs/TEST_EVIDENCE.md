@@ -2,6 +2,34 @@
 
 This is a durable evidence template, not a claim that every listed check has run against the current working tree. Add one section per candidate; never overwrite older evidence.
 
+## Candidate 0.6.0-alpha.1 — 2026-07-12
+
+| Field | Value |
+| --- | --- |
+| Version | `0.6.0-alpha.1` / build `2026-07-12-twin-stick-alpha` |
+| Feature revision | `575d84e` (`Add deterministic twin-stick iPad controls`) |
+| Godot | `4.7.stable.official.5b4e0cb0f` |
+| Platform | macOS host plus locally served Web export; no physical-device claim |
+
+### Gates
+
+| Check | Result | Evidence |
+| --- | --- | --- |
+| Complete automated suite | Pass | `QA_EXPORTS=1 bash tools/release_validate.sh`, exit 0 |
+| Expanded vertical-slice soak | Pass | 100 routes, 100 checkpoints, 100 twin-stick cancellations, 500 weapon transitions, 100 effects |
+| Web and unsigned Universal macOS exports | Pass | Godot 4.7 release exporters |
+| 1024×768 tablet browser | Pass | Title, menu, selector, gameplay, pause, options; no captured console warnings/errors |
+| Portrait behavior | Pass | Rotation guard visible and gameplay touch input suppressed |
+| True iPad multi-touch/comfort/thermal | Not run | Requires physical iPad Safari testing |
+| Human full playthrough and feel | Not run | Automated route evidence is not represented as human evidence |
+
+### Artifacts
+
+| Artifact | Bytes | SHA-256 |
+| --- | ---: | --- |
+| `cobie-nukem-0.6.0-alpha.1-itch.zip` | 17,972,102 | `0b459500a4f9521a5a08fcd224fbd002c6383866896f96c80b6a36dffe1ec35d` |
+| `cobie-nukem-0.6.0-alpha.1-macos-unsigned.zip` | 67,336,124 | `ede455d76e362ad70d402f9f244efe2058de2f7c68dd3cb952268bb8dcb1aa26` |
+
 ## Candidate 0.2.0-rc1 — 2026-07-11
 
 | Field | Value |
