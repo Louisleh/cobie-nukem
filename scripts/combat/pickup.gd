@@ -87,6 +87,11 @@ func _scaled_ammo() -> int:
 
 
 func _difficulty_profile() -> DifficultyProfile:
+	# Unit-authored and editor-preview pickups can be queried before entering a
+	# SceneTree. Absolute autoload lookup is invalid in that state, so preserve
+	# the authored amount until the pickup belongs to a live run.
+	if not is_inside_tree():
+		return null
 	var game_state := get_node_or_null("/root/GameState")
 	if game_state != null and game_state.has_method("get_difficulty_profile"):
 		return game_state.get_difficulty_profile()
