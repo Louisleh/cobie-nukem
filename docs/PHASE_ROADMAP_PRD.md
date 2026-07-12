@@ -38,6 +38,8 @@ This section is the first place a new Codex or external-auditor run should read.
 
 **Accessibility/performance checkpoint (unreleased):** options now expose text scale, high contrast, reduced motion, touch opacity, left-handed touch, and automatic/Web/native quality selection. Camera shake uses projection offsets so it cannot perturb authoritative weapon aim. Touch controls mirror input and rendering safely, critical enemy telegraphs have optional captions, HUD damage direction is spatial, footsteps report authored surface identity, and temporary combat effects obey the active quality budget. Browser evidence covers the full options screen and a touch-forced Salmon Creek HUD at 1280×720; physical iPad ergonomics remain open.
 
+**Autonomous soak checkpoint (unreleased):** the release gate now runs 100 deterministic Salmon Creek mission-contract routes, 50 schema-v3 checkpoint JSON cycles, 50 focus-loss/touch-cancellation cycles, 300 weapon selection/reload transitions, and a 100-effect budget saturation pass. This supplements—not replaces—the existing scene route, adversarial lifecycle, export, and human/device gates.
+
 ### World-class vertical-slice delivery boundary
 
 Completed in the current integration checkpoint:
@@ -56,7 +58,7 @@ Critical before `0.6.0-alpha`:
 - original directional enemy animation and imported weapon/enemy/footstep sample packs with manifest provenance;
 - Salmon Creek encounter-v2 pacing authoring and Walker spectacle/balance playthrough;
 - physical-device verification of the surfaced accessibility controls (text scale, contrast, captions, control opacity/layout);
-- native/Web export matrix, profiler evidence, seeded route/soak expansion, and target-Mac playthrough;
+- profiler evidence and target-Mac human playthrough (native/Web exports and the first seeded soak expansion are automated);
 - physical iPad Safari touch comfort/thermal/focus validation and human photosensitivity/difficulty review.
 
 Future nice-to-have, explicitly non-blocking for the vertical slice: comic-panel sequences, optional gib variants, advanced support/flank tactics, drag-anywhere touch-editor polish, and native iOS packaging.
