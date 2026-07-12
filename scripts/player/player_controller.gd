@@ -52,6 +52,10 @@ var _zoomies_remaining := 0.0
 var _wheel_switch_time_ms := -1000
 var _run_toggled := false
 var _touch_move := Vector2.ZERO
+var _touch_look := Vector2.ZERO
+var _touch_horizontal_sensitivity := 1.0
+var _touch_vertical_sensitivity := 1.0
+var _touch_invert_y := false
 var _step_distance := 0.0
 var _last_step_position := Vector3.ZERO
 var _coyote_remaining := 0.0
@@ -71,6 +75,10 @@ func _ready() -> void:
 		camera.fov = clampf(float(settings.call("get_value", &"video", &"fov", 90.0)), 70.0, 110.0)
 		head_bob_amount *= clampf(float(settings.call("get_value", &"accessibility", &"head_bob", 1.0)), 0.0, 1.0)
 		if bool(settings.call("get_value", &"accessibility", &"reduced_motion", false)): head_bob_amount = 0.0
+		_touch_horizontal_sensitivity = clampf(float(settings.call("get_value", &"gameplay", &"touch_horizontal_sensitivity", settings.call("get_value", &"gameplay", &"touch_sensitivity", 1.0))), 0.25, 3.0)
+		_touch_vertical_sensitivity = clampf(float(settings.call("get_value", &"gameplay", &"touch_vertical_sensitivity", settings.call("get_value", &"gameplay", &"touch_sensitivity", 1.0))), 0.25, 3.0)
+		_touch_invert_y = bool(settings.call("get_value", &"gameplay", &"touch_invert_y", false))
+		if settings.has_signal("setting_changed"): settings.setting_changed.connect(_on_setting_changed)
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE if MobileControls.touchscreen_expected() else Input.MOUSE_MODE_CAPTURED
 	health_armor.died.connect(_on_died)
 	health_armor.damaged.connect(_on_damaged)
@@ -194,6 +202,7 @@ func _physics_process(delta: float) -> void:
 	velocity.x = move_toward(velocity.x, target_velocity.x, acceleration * delta)
 	velocity.z = move_toward(velocity.z, target_velocity.z, acceleration * delta)
 	_apply_keyboard_look(delta)
+	_apply_touch_stick_look(delta)
 	move_and_slide()
 	_update_footsteps(running)
 	_update_head_bob(delta, input.length())
@@ -218,8 +227,32 @@ func apply_damage(amount: float, source: Node = null, _hit_position := Vector3.Z
 func set_touch_move(value: Vector2) -> void:
 	_touch_move = value.limit_length(1.0)
 
+func set_touch_look(value: Vector2) -> void:
+	_touch_look = value.limit_length(1.0)
+
+func clear_touch_input() -> void:
+	_touch_move = Vector2.ZERO
+	_touch_look = Vector2.ZERO
+
+func _apply_touch_stick_look(delta: float) -> void:
+	if is_dead or _touch_look.length_squared() <= 0.0001: return
+	const YAW_SPEED := deg_to_rad(210.0)
+	const PITCH_SPEED := deg_to_rad(150.0)
+	rotate_y(-_touch_look.x * YAW_SPEED * _touch_horizontal_sensitivity * delta)
+	var pitch_direction := -1.0 if not _touch_invert_y else 1.0
+	head.rotation.x = clampf(head.rotation.x + _touch_look.y * PITCH_SPEED * _touch_vertical_sensitivity * pitch_direction * delta, deg_to_rad(-max_look_degrees), deg_to_rad(max_look_degrees))
+
+func _on_setting_changed(section: StringName, key: StringName, value: Variant) -> void:
+	if section != &"gameplay": return
+	match key:
+		&"touch_horizontal_sensitivity": _touch_horizontal_sensitivity = clampf(float(value), 0.25, 3.0)
+		&"touch_vertical_sensitivity": _touch_vertical_sensitivity = clampf(float(value), 0.25, 3.0)
+		&"touch_invert_y": _touch_invert_y = bool(value)
+
 
 func apply_touch_look(relative: Vector2) -> void:
+	# Compatibility shim. Gameplay touch controls use set_touch_look() so aiming
+	# advances in physics ticks instead of depending on drag-event frequency.
 	if is_dead: return
 	rotate_y(-relative.x * mouse_sensitivity * _touch_look_scale)
 	head.rotation.x = clampf(head.rotation.x - relative.y * mouse_sensitivity * _touch_look_scale, deg_to_rad(-max_look_degrees), deg_to_rad(max_look_degrees))
@@ -238,6 +271,7 @@ func respawn(at_position: Vector3, protection_seconds := 1.5) -> void:
 	reset_physics_interpolation()
 	velocity = Vector3.ZERO
 	_touch_move = Vector2.ZERO
+	_touch_look = Vector2.ZERO
 	is_dead = false
 	health_armor.restore_full()
 	health_armor.grant_invulnerability(protection_seconds)

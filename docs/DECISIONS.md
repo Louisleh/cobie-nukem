@@ -1,5 +1,16 @@
 # Decisions
 
+## D-008 — iPad uses fixed twin-stick rate aiming
+
+**Status:** accepted from owner direction on 2026-07-12.
+
+The Web/iPad control model uses a left movement stick and a right aiming stick,
+with action buttons retaining independent finger ownership. Right-side swipe look
+is removed because a fixed rate stick is more discoverable, repeatable, and
+compatible with simultaneous fire. Defaults are adjustable through size and
+position presets and mirror completely for left-handed play. Aim advances during
+physics ticks, making it independent of browser touch-event frequency.
+
 ## D-001 — Standard Godot 4.7 and Compatibility renderer
 
 **Status:** accepted by PRD.

@@ -146,17 +146,21 @@ func _test_mobile_input_release_on_exit_and_focus_loss() -> void:
 	root.add_child(controls)
 	controls.bind_player(player)
 	await process_frame
-	var fire_down := InputEventScreenTouch.new(); fire_down.index = 3; fire_down.position = Vector2(291, 122); fire_down.pressed = true
+	var fire_down := InputEventScreenTouch.new(); fire_down.index = 3; fire_down.position = Vector2(292, 111); fire_down.pressed = true
 	controls._handle_touch(fire_down)
-	var move_down := InputEventScreenTouch.new(); move_down.index = 4; move_down.position = Vector2(48, 84); move_down.pressed = true
+	var move_down := InputEventScreenTouch.new(); move_down.index = 4; move_down.position = Vector2(48, 80); move_down.pressed = true
 	controls._handle_touch(move_down)
+	var look_down := InputEventScreenTouch.new(); look_down.index = 5; look_down.position = Vector2(245, 105); look_down.pressed = true
+	controls._handle_touch(look_down)
 	Input.flush_buffered_events()
 	_expect(Input.is_action_pressed(&"fire_primary"), "touch fire press reaches the input singleton")
 	_expect(player._touch_move.length() > 0.5, "touch move press drives the player")
+	_expect(player._touch_look.length() > 0.5, "touch aim press drives the player")
 	controls.notification(Node.NOTIFICATION_APPLICATION_FOCUS_OUT)
 	Input.flush_buffered_events()
 	_expect(not Input.is_action_pressed(&"fire_primary"), "focus loss releases held synthetic fire")
 	_expect(player._touch_move == Vector2.ZERO, "focus loss releases touch movement")
+	_expect(player._touch_look == Vector2.ZERO, "focus loss releases touch aiming")
 	controls._handle_touch(fire_down)
 	Input.flush_buffered_events()
 	root.remove_child(controls)

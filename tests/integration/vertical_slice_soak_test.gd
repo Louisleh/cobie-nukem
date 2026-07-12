@@ -19,12 +19,12 @@ func _initialize() -> void:
 
 func _run() -> void:
 	_test_seeded_routes(100)
-	_test_checkpoint_cycles(50)
-	await _test_touch_cancellation_cycles(50)
-	await _test_weapon_state_fuzz(300)
+	_test_checkpoint_cycles(100)
+	await _test_touch_cancellation_cycles(100)
+	await _test_weapon_state_fuzz(500)
 	_test_temporary_effect_budget(100)
 	if failures.is_empty():
-		print("VERTICAL SLICE SOAK: PASS (100 routes, 50 checkpoints, 50 touch cancellations, 300 weapon transitions, 100 effects)")
+		print("VERTICAL SLICE SOAK: PASS (100 routes, 100 checkpoints, 100 twin-stick cancellations, 500 weapon transitions, 100 effects)")
 		quit(0)
 	else:
 		for failure in failures: push_error("SOAK: " + failure)
@@ -74,11 +74,12 @@ func _test_touch_cancellation_cycles(count: int) -> void:
 	var controls := CONTROLS.instantiate() as MobileControls; controls.force_visible = true; controls.set_anchors_preset(Control.PRESET_TOP_LEFT); controls.size = Vector2(640, 360); root.add_child(controls); controls.bind_player(player)
 	await process_frame
 	for cycle in count:
-		var fire := InputEventScreenTouch.new(); fire.index = cycle * 2; fire.position = controls._from_design(Vector2(291, 122)); fire.pressed = true
-		var move := InputEventScreenTouch.new(); move.index = cycle * 2 + 1; move.position = controls._from_design(Vector2(48, 84)); move.pressed = true
-		controls._handle_touch(fire); controls._handle_touch(move); Input.flush_buffered_events()
+		var fire := InputEventScreenTouch.new(); fire.index = cycle * 3; fire.position = controls._from_design(Vector2(292, 111)); fire.pressed = true
+		var move := InputEventScreenTouch.new(); move.index = cycle * 3 + 1; move.position = controls._from_design(Vector2(48, 80)); move.pressed = true
+		var look := InputEventScreenTouch.new(); look.index = cycle * 3 + 2; look.position = controls._from_design(Vector2(245, 105)); look.pressed = true
+		controls._handle_touch(fire); controls._handle_touch(move); controls._handle_touch(look); Input.flush_buffered_events()
 		controls.notification(Node.NOTIFICATION_APPLICATION_FOCUS_OUT); Input.flush_buffered_events()
-		_expect(not Input.is_action_pressed(&"fire_primary") and player._touch_move == Vector2.ZERO, "touch cancellation cycle %d leaves input latched" % cycle)
+		_expect(not Input.is_action_pressed(&"fire_primary") and player._touch_move == Vector2.ZERO and player._touch_look == Vector2.ZERO, "touch cancellation cycle %d leaves input latched" % cycle)
 	controls.free(); player.free()
 
 

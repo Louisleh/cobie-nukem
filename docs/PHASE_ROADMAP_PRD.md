@@ -38,7 +38,9 @@ This section is the first place a new Codex or external-auditor run should read.
 
 **Accessibility/performance checkpoint (unreleased):** options now expose text scale, high contrast, reduced motion, touch opacity, left-handed touch, and automatic/Web/native quality selection. Camera shake uses projection offsets so it cannot perturb authoritative weapon aim. Touch controls mirror input and rendering safely, critical enemy telegraphs have optional captions, HUD damage direction is spatial, footsteps report authored surface identity, and temporary combat effects obey the active quality budget. Browser evidence covers the full options screen and a touch-forced Salmon Creek HUD at 1280×720; physical iPad ergonomics remain open.
 
-**Autonomous soak checkpoint (unreleased):** the release gate now runs 100 deterministic Salmon Creek mission-contract routes, 50 schema-v3 checkpoint JSON cycles, 50 focus-loss/touch-cancellation cycles, 300 weapon selection/reload transitions, and a 100-effect budget saturation pass. This supplements—not replaces—the existing scene route, adversarial lifecycle, export, and human/device gates.
+**Autonomous soak checkpoint (unreleased):** the release gate now runs 100 deterministic Salmon Creek mission-contract routes, 100 schema-v3 checkpoint JSON cycles, 100 focus-loss/twin-stick-cancellation cycles, 500 weapon selection/reload transitions, and a 100-effect budget saturation pass. This supplements—not replaces—the existing scene route, adversarial lifecycle, export, and human/device gates.
+
+**Twin-stick iPad checkpoint (0.6 alpha candidate):** right-side swipe look has been replaced by a fixed aiming joystick consumed in physics ticks. The left movement stick, right aim stick, and action buttons use exclusive multi-touch finger ownership. Options expose independent horizontal/vertical aim speed, Y inversion, stick size and placement presets, opacity, and complete left-handed mirroring. The legacy touch-speed setting migrates to both axes. Automated evidence covers dead zones, full response, three simultaneous fingers, 30/120 FPS aim equivalence, focus cancellation, tablet coordinate scaling, and expanded soak cycles; physical iPad Safari remains a named human gate.
 
 ### World-class vertical-slice delivery boundary
 
@@ -88,9 +90,9 @@ FA-08 (save migration framework) and FA-12 (difficulty selector) were delivered 
 
 - The game is accessible from the owner’s public website over HTTPS with a stable, shareable URL.
 - iPad Safari is a first-class browser target, not an experimental afterthought.
-- Touch UI provides simultaneous left-thumb movement and right-thumb look with multi-touch-safe finger ownership.
+- Touch UI provides simultaneous left-thumb movement and right-thumb fixed-stick aiming with multi-touch-safe finger ownership.
 - Primary fire, use, jump, reload, weapon previous/next, and pause are reachable without a keyboard.
-- Right-side aiming supports smooth drag, sensitivity scaling, pitch clamping, and no accidental firing while looking.
+- Right-side aiming uses a visible rate-based joystick with center precision, independent axis sensitivity, pitch clamping, optional inversion, and no accidental firing while aiming. General right-side swipe gestures do not aim.
 - Touch controls respect safe-area insets, landscape orientation, common iPad aspect ratios, and browser chrome changes.
 - HUD, menus, mission cards, options, death, pause, and victory remain readable and tappable at mobile sizes.
 - Pointer-lock instructions are hidden or replaced on touch devices; keyboard/mouse behavior remains unchanged.

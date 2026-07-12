@@ -16,7 +16,8 @@ func _ready() -> void:
 	_bind_slider(%ShakeSlider, &"accessibility", &"camera_shake")
 	_bind_slider(%BobSlider, &"accessibility", &"head_bob")
 	_bind_slider(%MouseSensitivitySlider, &"gameplay", &"mouse_sensitivity")
-	_bind_slider(%TouchSensitivitySlider, &"gameplay", &"touch_sensitivity")
+	_bind_slider(%TouchHorizontalSensitivitySlider, &"gameplay", &"touch_horizontal_sensitivity")
+	_bind_slider(%TouchVerticalSensitivitySlider, &"gameplay", &"touch_vertical_sensitivity")
 	_bind_slider(%ControlOpacitySlider, &"gameplay", &"control_opacity")
 	_bind_slider(%TextScaleSlider, &"accessibility", &"text_scale")
 	%FovSlider.value = float(_setting_value(&"video", &"fov", 90.0))
@@ -34,6 +35,10 @@ func _ready() -> void:
 	%ReducedMotion.toggled.connect(func(value: bool) -> void: _set_setting(&"accessibility", &"reduced_motion", value))
 	%LeftHandedTouch.button_pressed = bool(_setting_value(&"gameplay", &"left_handed_touch", false))
 	%LeftHandedTouch.toggled.connect(func(value: bool) -> void: _set_setting(&"gameplay", &"left_handed_touch", value))
+	%TouchInvertY.button_pressed = bool(_setting_value(&"gameplay", &"touch_invert_y", false))
+	%TouchInvertY.toggled.connect(func(value: bool) -> void: _set_setting(&"gameplay", &"touch_invert_y", value))
+	_setup_choice(%TouchStickSizeChoice, ["SMALL", "MEDIUM", "LARGE"], String(_setting_value(&"gameplay", &"touch_stick_size", "medium")).to_upper(), func(text: String) -> void: _set_setting(&"gameplay", &"touch_stick_size", text.to_lower()))
+	_setup_choice(%TouchStickPositionChoice, ["COMPACT", "STANDARD", "WIDE"], String(_setting_value(&"gameplay", &"touch_stick_position", "standard")).to_upper(), func(text: String) -> void: _set_setting(&"gameplay", &"touch_stick_position", text.to_lower()))
 	_setup_choice(%QualityChoice, ["AUTO", "WEB", "NATIVE"], String(_setting_value(&"video", &"quality", "auto")).to_upper(), func(text: String) -> void:
 		_set_setting(&"video", &"quality", text.to_lower())
 		var quality := get_node_or_null("/root/QualityManager")
@@ -99,7 +104,8 @@ func _refresh_values() -> void:
 	%ShakeSlider.value = float(_setting_value(&"accessibility", &"camera_shake", 1.0)) * 100.0
 	%BobSlider.value = float(_setting_value(&"accessibility", &"head_bob", 1.0)) * 100.0
 	%MouseSensitivitySlider.value = float(_setting_value(&"gameplay", &"mouse_sensitivity", 1.0)) * 100.0
-	%TouchSensitivitySlider.value = float(_setting_value(&"gameplay", &"touch_sensitivity", 1.0)) * 100.0
+	%TouchHorizontalSensitivitySlider.value = float(_setting_value(&"gameplay", &"touch_horizontal_sensitivity", _setting_value(&"gameplay", &"touch_sensitivity", 1.0))) * 100.0
+	%TouchVerticalSensitivitySlider.value = float(_setting_value(&"gameplay", &"touch_vertical_sensitivity", _setting_value(&"gameplay", &"touch_sensitivity", 1.0))) * 100.0
 	%ControlOpacitySlider.value = float(_setting_value(&"gameplay", &"control_opacity", 0.75)) * 100.0
 	%TextScaleSlider.value = float(_setting_value(&"accessibility", &"text_scale", 1.0)) * 100.0
 	%FovSlider.value = float(_setting_value(&"video", &"fov", 90.0))
@@ -111,6 +117,9 @@ func _refresh_values() -> void:
 	%HighContrast.button_pressed = bool(_setting_value(&"accessibility", &"high_contrast", false))
 	%ReducedMotion.button_pressed = bool(_setting_value(&"accessibility", &"reduced_motion", false))
 	%LeftHandedTouch.button_pressed = bool(_setting_value(&"gameplay", &"left_handed_touch", false))
+	%TouchInvertY.button_pressed = bool(_setting_value(&"gameplay", &"touch_invert_y", false))
+	_select_choice(%TouchStickSizeChoice, String(_setting_value(&"gameplay", &"touch_stick_size", "medium")).to_upper())
+	_select_choice(%TouchStickPositionChoice, String(_setting_value(&"gameplay", &"touch_stick_position", "standard")).to_upper())
 	_select_choice(%QualityChoice, String(_setting_value(&"video", &"quality", "auto")).to_upper())
 
 func _select_choice(choice: OptionButton, selected: String) -> void:
