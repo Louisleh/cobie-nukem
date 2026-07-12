@@ -76,10 +76,19 @@ func _has_line_of_sight(camera: Camera3D, candidate: Node3D) -> bool:
 func _corrected_direction(camera: Camera3D, target: Node3D, forward: Vector3) -> Vector3:
 	var desired := (_target_position(target) - camera.global_position).normalized()
 	var angle := forward.angle_to(desired)
-	var max_angle := deg_to_rad(tuning.maximum_correction_degrees) * tuning.strength()
+	var max_angle := deg_to_rad(tuning.maximum_correction_degrees) * tuning.strength() * _difficulty_aim_scale()
 	if angle <= max_angle:
 		return desired
 	return forward.slerp(desired, max_angle / maxf(angle, 0.0001)).normalized()
+
+
+func _difficulty_aim_scale() -> float:
+	var game_state := get_node_or_null("/root/GameState")
+	if game_state != null and game_state.has_method("get_difficulty_profile"):
+		var profile: DifficultyProfile = game_state.get_difficulty_profile()
+		if profile != null:
+			return profile.aim_assist_scale()
+	return 1.0
 
 func _target_position(target: Node3D) -> Vector3:
 	if target.has_method("get_auto_aim_position"):
