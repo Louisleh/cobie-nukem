@@ -290,6 +290,8 @@ func _spawn_impact_marker(position_value: Vector3, normal: Vector3, kind: String
 	marker.material_override = material
 	var parent := get_tree().current_scene if get_tree().current_scene != null else get_tree().root
 	parent.add_child(marker)
+	var quality := get_node_or_null("/root/QualityManager") if is_inside_tree() else null
+	if quality != null: quality.claim_temporary_effect(marker)
 	marker.global_position = position_value + normal * 0.035
 	if kind == &"enemy":
 		_spawn_enemy_hit_pop(position_value, normal, parent)
@@ -303,6 +305,8 @@ func _spawn_enemy_hit_pop(position_value: Vector3, normal: Vector3, parent: Node
 	var pop := Node3D.new()
 	pop.name = "EnemyHitPop"
 	parent.add_child(pop)
+	var quality := get_node_or_null("/root/QualityManager") if is_inside_tree() else null
+	if quality != null: quality.claim_temporary_effect(pop)
 	if pop.is_inside_tree():
 		pop.global_position = position_value + normal * 0.055
 	else:

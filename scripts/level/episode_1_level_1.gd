@@ -189,8 +189,8 @@ func _build_lighting() -> void:
 
 func _build_route_geometry() -> void:
 	# Continuous route: field → shed → tunnels → lab → walker arena.
-	_box("WetSportsField", Vector3(0, -0.5, 0), Vector3(26, 1, 36), Color("315448"))
-	_box("ShedFloor", Vector3(0, -0.5, -32), Vector3(15, 1, 25), Color("495057"))
+	_box("WetSportsField", Vector3(0, -0.5, 0), Vector3(26, 1, 36), Color("315448"), &"soil")
+	_box("ShedFloor", Vector3(0, -0.5, -32), Vector3(15, 1, 25), Color("495057"), &"wood")
 	_box("TunnelFloor", Vector3(0, -0.5, -64), Vector3(10, 1, 39), Color("37474f"))
 	_box("LabFloor", Vector3(0, -0.5, -103), Vector3(24, 1, 38), Color("56636a"))
 	_box("DogParkFloor", Vector3(22, -0.5, -103), Vector3(18, 1, 22), Color("3d6b45"))
@@ -313,7 +313,16 @@ func _on_encounter_actor_spawned(enemy: Node, definition: EncounterDefinition) -
 		enemy.process_mode = Node.PROCESS_MODE_DISABLED
 		_opening_enemies.append(enemy)
 	enemy_spawned.emit(enemy, definition.zone_id)
+	_bind_enemy_captions(enemy)
 	if enemy is AnimalControlWalker: _bind_walker(enemy)
+
+
+func _bind_enemy_captions(enemy: Node) -> void:
+	if _hud == null or not enemy.has_signal("telegraph_started") or enemy.has_meta(&"caption_bound"): return
+	enemy.set_meta(&"caption_bound", true)
+	enemy.telegraph_started.connect(func(kind: StringName, _duration: float) -> void:
+		_hud.show_caption("%s WARNING" % String(kind).replace("_", " "))
+	)
 
 
 func _activate_opening_encounter(_weapon: WeaponBase = null, _secondary := false) -> void:
@@ -462,6 +471,7 @@ func _setup_presentation() -> void:
 		_mobile_controls.bind_player(player)
 		if player.has_signal("died"):
 			player.died.connect(_on_player_died_for_ui)
+	for actor in _actors.get_children(): _bind_enemy_captions(actor)
 	_pause_menu.restart_requested.connect(restart_from_checkpoint)
 	_death_screen.retry_requested.connect(restart_from_checkpoint)
 	narrative_message.connect(func(text: String, _duration: float): _hud.show_notification(text))
@@ -551,8 +561,9 @@ func _wall_pair(x: float, z: float, length: float) -> void:
 	_box("Boundary", Vector3(x, 2, z), Vector3(0.6, 4, length), Color("34434a"))
 
 
-func _box(node_name: String, center: Vector3, size: Vector3, color: Color) -> CSGBox3D:
+func _box(node_name: String, center: Vector3, size: Vector3, color: Color, surface_type: StringName = &"concrete") -> CSGBox3D:
 	var box := CSGBox3D.new(); box.name = node_name; box.position = center; box.size = size; box.use_collision = true
+	box.set_meta(&"surface_type", surface_type)
 	var material := StandardMaterial3D.new(); material.albedo_color = color; material.roughness = 0.95; box.material = material
 	_geometry.add_child(box); return box
 

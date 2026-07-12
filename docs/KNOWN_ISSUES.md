@@ -24,7 +24,7 @@ This file distinguishes confirmed product limitations from unperformed validatio
 
 ## World-class vertical-slice open gates
 
-- The 640×360 desktop and 1024×768 tablet browser layouts have visual automation evidence, but the revised touch-target sizing still requires physical iPad reach/comfort validation.
+- The 640×360 desktop, 1024×768 tablet, touch-forced options, and touch-forced in-game HUD have visual automation evidence, but revised target sizing, opacity, and left-handed reach still require physical iPad comfort validation.
 - `AudioCueSet` and bounded sample playback are implemented, but production still falls back to synthesized cues until original/licensed weapon, enemy, footstep, ambience, and music assets are authored and manifested.
 - Enemy state motion, hit/stagger/death reactions, attack tokens, group alert, and weak-point contracts are implemented; directional sprite atlases and production navigation meshes remain open content gates.
 - Headless performance smoke is green. Native GPU frame time, Web/iPad thermal behavior, draw calls, memory, download size, and audio-voice saturation are not yet measured release evidence.

@@ -17,6 +17,8 @@ func _ready() -> void:
 	_bind_slider(%BobSlider, &"accessibility", &"head_bob")
 	_bind_slider(%MouseSensitivitySlider, &"gameplay", &"mouse_sensitivity")
 	_bind_slider(%TouchSensitivitySlider, &"gameplay", &"touch_sensitivity")
+	_bind_slider(%ControlOpacitySlider, &"gameplay", &"control_opacity")
+	_bind_slider(%TextScaleSlider, &"accessibility", &"text_scale")
 	%FovSlider.value = float(_setting_value(&"video", &"fov", 90.0))
 	%FovSlider.value_changed.connect(func(value: float) -> void: _set_setting(&"video", &"fov", value))
 	%ReducedFlashes.button_pressed = bool(_setting_value(&"video", &"reduced_flashes", false))
@@ -26,6 +28,17 @@ func _ready() -> void:
 	_setup_choice(%RunModeChoice, ["HOLD", "TOGGLE"], String(_setting_value(&"gameplay", &"run_mode", "hold")).to_upper(), func(text: String) -> void: _set_setting(&"gameplay", &"run_mode", text.to_lower()))
 	%Subtitles.button_pressed = bool(_setting_value(&"accessibility", &"subtitles", true))
 	%Subtitles.toggled.connect(func(value: bool) -> void: _set_setting(&"accessibility", &"subtitles", value))
+	%HighContrast.button_pressed = bool(_setting_value(&"accessibility", &"high_contrast", false))
+	%HighContrast.toggled.connect(func(value: bool) -> void: _set_setting(&"accessibility", &"high_contrast", value))
+	%ReducedMotion.button_pressed = bool(_setting_value(&"accessibility", &"reduced_motion", false))
+	%ReducedMotion.toggled.connect(func(value: bool) -> void: _set_setting(&"accessibility", &"reduced_motion", value))
+	%LeftHandedTouch.button_pressed = bool(_setting_value(&"gameplay", &"left_handed_touch", false))
+	%LeftHandedTouch.toggled.connect(func(value: bool) -> void: _set_setting(&"gameplay", &"left_handed_touch", value))
+	_setup_choice(%QualityChoice, ["AUTO", "WEB", "NATIVE"], String(_setting_value(&"video", &"quality", "auto")).to_upper(), func(text: String) -> void:
+		_set_setting(&"video", &"quality", text.to_lower())
+		var quality := get_node_or_null("/root/QualityManager")
+		if quality != null: quality.apply_auto_profile()
+	)
 	for control in %Scroll.find_children("*", "Control", true, false):
 		if control.focus_mode != Control.FOCUS_NONE:
 			control.focus_entered.connect(func() -> void: %Scroll.ensure_control_visible(control))
@@ -87,12 +100,18 @@ func _refresh_values() -> void:
 	%BobSlider.value = float(_setting_value(&"accessibility", &"head_bob", 1.0)) * 100.0
 	%MouseSensitivitySlider.value = float(_setting_value(&"gameplay", &"mouse_sensitivity", 1.0)) * 100.0
 	%TouchSensitivitySlider.value = float(_setting_value(&"gameplay", &"touch_sensitivity", 1.0)) * 100.0
+	%ControlOpacitySlider.value = float(_setting_value(&"gameplay", &"control_opacity", 0.75)) * 100.0
+	%TextScaleSlider.value = float(_setting_value(&"accessibility", &"text_scale", 1.0)) * 100.0
 	%FovSlider.value = float(_setting_value(&"video", &"fov", 90.0))
 	%ReducedFlashes.button_pressed = bool(_setting_value(&"video", &"reduced_flashes", false))
 	_select_choice(%AutoAimChoice, String(_setting_value(&"accessibility", &"auto_aim", "classic")).to_upper())
 	_select_choice(%GoreChoice, String(_setting_value(&"accessibility", &"gore", "cartoon")).to_upper())
 	_select_choice(%RunModeChoice, String(_setting_value(&"gameplay", &"run_mode", "hold")).to_upper())
 	%Subtitles.button_pressed = bool(_setting_value(&"accessibility", &"subtitles", true))
+	%HighContrast.button_pressed = bool(_setting_value(&"accessibility", &"high_contrast", false))
+	%ReducedMotion.button_pressed = bool(_setting_value(&"accessibility", &"reduced_motion", false))
+	%LeftHandedTouch.button_pressed = bool(_setting_value(&"gameplay", &"left_handed_touch", false))
+	_select_choice(%QualityChoice, String(_setting_value(&"video", &"quality", "auto")).to_upper())
 
 func _select_choice(choice: OptionButton, selected: String) -> void:
 	for index in choice.item_count:

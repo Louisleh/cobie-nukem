@@ -20,6 +20,7 @@ func _initialize() -> void:
 	_test_encounter_failures_and_reset()
 	_test_manifest()
 	_test_respawn_protection()
+	_test_quality_profiles()
 	if failures.is_empty():
 		print("GAMEPLAY FOUNDATION TESTS: PASS")
 		quit(0)
@@ -162,6 +163,18 @@ func _test_respawn_protection() -> void:
 	health.invulnerable_remaining = 0.0
 	_expect(health.apply_damage(10.0) > 0.0, "damage resumes after respawn protection")
 	health.queue_free()
+
+
+func _test_quality_profiles() -> void:
+	var quality := get_root().get_node_or_null("QualityManager")
+	var pressure := get_root().get_node_or_null("CombatPressure")
+	_expect(quality != null and pressure != null, "quality and pressure services are available")
+	if quality == null or pressure == null: return
+	quality.apply_profile(quality.WEB)
+	_expect(quality.current.id == &"web" and pressure.maximum_attackers == quality.WEB.maximum_attackers, "Web quality applies its pressure budget")
+	_expect(Engine.max_fps == quality.WEB.target_fps, "Web quality applies its frame cap")
+	quality.apply_profile(quality.NATIVE)
+	_expect(quality.current.id == &"native" and pressure.maximum_attackers == quality.NATIVE.maximum_attackers, "native quality applies its enhanced budget")
 
 
 func _spawn_fake(_path: String, _position: Vector3) -> Node:

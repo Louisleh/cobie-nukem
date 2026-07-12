@@ -29,6 +29,9 @@ func _initialize() -> void:
 	controls.size = Vector2(1024, 768)
 	var design_point := controls._to_design(Vector2(512, 384))
 	_expect(design_point.is_equal_approx(Vector2(160, 90)), "touch coordinates scale across tablet viewport")
+	controls.left_handed = true
+	_expect(controls._to_design(Vector2(92.8, 520.5)).x > 280.0, "left-handed layout mirrors physical touch coordinates")
+	_expect(controls._from_design(Vector2(291, 122)).x < controls.size.x * 0.15, "left-handed layout draws fire on the left edge")
 	controls.free(); player.free()
 	if failures.is_empty():
 		print("MOBILE CONTROLS TESTS: PASS")

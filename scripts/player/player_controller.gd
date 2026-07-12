@@ -13,6 +13,7 @@ signal shot_resolved(kind: StringName, position: Vector3)
 signal combat_feedback(event: CombatFeedbackEvent)
 signal access_item_changed(label: String)
 signal footstep(running: bool)
+signal surface_footstep(surface: StringName, running: bool)
 
 @export_category("Movement")
 @export var feel_profile: PlayerFeelProfile = preload("res://resources/player/classic_feel.tres")
@@ -69,6 +70,7 @@ func _ready() -> void:
 		mouse_sensitivity *= clampf(float(settings.call("get_value", &"gameplay", &"mouse_sensitivity", 1.0)), 0.25, 3.0)
 		camera.fov = clampf(float(settings.call("get_value", &"video", &"fov", 90.0)), 70.0, 110.0)
 		head_bob_amount *= clampf(float(settings.call("get_value", &"accessibility", &"head_bob", 1.0)), 0.0, 1.0)
+		if bool(settings.call("get_value", &"accessibility", &"reduced_motion", false)): head_bob_amount = 0.0
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE if MobileControls.touchscreen_expected() else Input.MOUSE_MODE_CAPTURED
 	health_armor.died.connect(_on_died)
 	health_armor.damaged.connect(_on_damaged)
@@ -335,6 +337,17 @@ func _update_footsteps(running: bool) -> void:
 	if _step_distance >= stride:
 		_step_distance = fmod(_step_distance, stride)
 		footstep.emit(running)
+		surface_footstep.emit(_ground_surface(), running)
+
+func _ground_surface() -> StringName:
+	var query := PhysicsRayQueryParameters3D.create(global_position + Vector3.UP * 0.2, global_position + Vector3.DOWN * 1.5, 1)
+	query.exclude = [get_rid()]
+	var hit := get_world_3d().direct_space_state.intersect_ray(query)
+	var node := hit.get("collider") as Node
+	while node != null:
+		if node.has_meta(&"surface_type"): return StringName(node.get_meta(&"surface_type"))
+		node = node.get_parent()
+	return &"concrete"
 
 static func should_play_footsteps(grounded: bool, horizontal_speed: float, dead: bool, paused: bool) -> bool:
 	return grounded and horizontal_speed >= 0.8 and not dead and not paused

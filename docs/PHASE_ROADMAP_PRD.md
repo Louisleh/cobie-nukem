@@ -36,6 +36,8 @@ This section is the first place a new Codex or external-auditor run should read.
 
 **2026-07-12 world-class vertical-slice pass (unreleased):** milestone and issue inventory created; baseline Mac release validation captured; event-driven registries replace per-frame group scans; the Salmon Creek controller has begun extraction into reusable mission runtime/spawn ownership; movement, combat, damage-reaction, pressure, quality, audio-sample, encounter-v2, save-v3, and local-metric contracts are implemented; the render baseline is upgraded from 320×180 nearest filtering to 640×360 linear filtering; fixed-coordinate HUD/menus were normalized and visually checked at desktop and 1024×768 tablet viewports. The non-export release matrix is green. This is an integration checkpoint, not the `0.6.0-alpha` claim.
 
+**Accessibility/performance checkpoint (unreleased):** options now expose text scale, high contrast, reduced motion, touch opacity, left-handed touch, and automatic/Web/native quality selection. Camera shake uses projection offsets so it cannot perturb authoritative weapon aim. Touch controls mirror input and rendering safely, critical enemy telegraphs have optional captions, HUD damage direction is spatial, footsteps report authored surface identity, and temporary combat effects obey the active quality budget. Browser evidence covers the full options screen and a touch-forced Salmon Creek HUD at 1280×720; physical iPad ergonomics remain open.
+
 ### World-class vertical-slice delivery boundary
 
 Completed in the current integration checkpoint:
@@ -53,7 +55,7 @@ Critical before `0.6.0-alpha`:
 - production navigation and unreachable-actor recovery evidence;
 - original directional enemy animation and imported weapon/enemy/footstep sample packs with manifest provenance;
 - Salmon Creek encounter-v2 pacing authoring and Walker spectacle/balance playthrough;
-- remaining accessibility controls surfaced and verified (text scale, contrast, captions, control opacity/layout);
+- physical-device verification of the surfaced accessibility controls (text scale, contrast, captions, control opacity/layout);
 - native/Web export matrix, profiler evidence, seeded route/soak expansion, and target-Mac playthrough;
 - physical iPad Safari touch comfort/thermal/focus validation and human photosensitivity/difficulty review.
 

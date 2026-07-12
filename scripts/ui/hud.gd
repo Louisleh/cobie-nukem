@@ -12,6 +12,19 @@ extends CanvasLayer
 @onready var sounds: ProceduralAudio = %ProceduralAudio
 
 var _notification_tween: Tween
+var _caption_tween: Tween
+
+func _ready() -> void:
+	var settings := get_node_or_null("/root/SettingsManager")
+	if settings == null: return
+	var text_scale := clampf(float(settings.get_value(&"accessibility", &"text_scale", 1.0)), 0.75, 1.5)
+	for label in $Root.find_children("*", "Label", true, false):
+		label.add_theme_font_size_override("font_size", maxi(7, roundi(label.get_theme_font_size("font_size") * text_scale)))
+	var contrast := bool(settings.get_value(&"accessibility", &"high_contrast", false))
+	if contrast:
+		%ObjectiveLabel.add_theme_color_override("font_color", Color.WHITE)
+		notification_label.add_theme_color_override("font_color", Color("ffff00"))
+		crosshair.high_contrast = true
 
 func bind_player(player: Node) -> void:
 	if player.has_signal("weapon_changed"):
@@ -34,7 +47,10 @@ func bind_player(player: Node) -> void:
 	if health_component != null:
 		health_component.health_changed.connect(_on_health_changed)
 		health_component.armor_changed.connect(_on_armor_changed)
-		health_component.damaged.connect(func(_a: float, _h: float, _r: float, _s: Node) -> void: sounds.play(ProceduralAudio.Cue.HURT))
+		health_component.damaged.connect(func(_a: float, _h: float, _r: float, source: Node) -> void:
+			sounds.play(ProceduralAudio.Cue.HURT)
+			%DamageDirection.show_damage(player, source)
+		)
 		_on_health_changed(health_component.health, health_component.max_health)
 		_on_armor_changed(health_component.armor, health_component.max_armor)
 	var aim := player.get_node_or_null("AutoAim")
@@ -57,6 +73,16 @@ func show_secret(message := "SECRET FOUND. GOOD SNIFFING.") -> void:
 func show_objective(message: String) -> void:
 	%ObjectiveLabel.text = "OBJECTIVE // " + message.to_upper()
 	%ObjectiveLabel.visible = not message.is_empty()
+
+func show_caption(message: String) -> void:
+	var settings := get_node_or_null("/root/SettingsManager")
+	if settings != null and not bool(settings.get_value(&"accessibility", &"subtitles", true)): return
+	%CaptionLabel.text = "[ " + message.to_upper() + " ]"
+	%CaptionLabel.visible = true
+	if _caption_tween != null: _caption_tween.kill()
+	_caption_tween = create_tween()
+	_caption_tween.tween_interval(1.15)
+	_caption_tween.tween_callback(func() -> void: %CaptionLabel.visible = false)
 
 func set_access_item(label: String) -> void:
 	%AccessLabel.text = label
