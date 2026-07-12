@@ -21,7 +21,11 @@ done < <(find scripts -type f -name '*.gd' | sort)
 # derived and intentionally excluded.
 while IFS= read -r asset; do
   [[ "$asset" == *.import ]] && continue
-  rg -Fq "\`$asset\`" docs/ASSET_MANIFEST.md || fail "unmanifested asset: $asset"
+  if command -v rg >/dev/null 2>&1; then
+    rg -Fq "\`$asset\`" docs/ASSET_MANIFEST.md || fail "unmanifested asset: $asset"
+  else
+    grep -Fq "\`$asset\`" docs/ASSET_MANIFEST.md || fail "unmanifested asset: $asset"
+  fi
 done < <(git ls-files 'assets/**')
 
 # A release source tree may contain package instructions, but never a stale
