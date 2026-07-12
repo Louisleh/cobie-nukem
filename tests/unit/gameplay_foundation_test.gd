@@ -125,6 +125,14 @@ func _test_manifest() -> void:
 		_expect(manifest.validate().is_empty(), "Salmon Creek manifest validates: %s" % manifest.validate())
 		_expect(manifest.encounters.size() == 5, "Salmon Creek has five data encounters")
 		_expect(manifest.objectives.size() == 4, "Salmon Creek has four production objectives")
+	var mission_2 := load("res://resources/content/vancouver_waterfront_manifest.tres") as ContentManifest
+	_expect(mission_2 != null, "Mission 2 manifest skeleton loads")
+	if mission_2 != null:
+		_expect(mission_2.validate().is_empty(), "Mission 2 manifest validates: %s" % mission_2.validate())
+		_expect(mission_2.level_id == &"episode_1_vancouver_waterfront", "Mission 2 manifest uses the documented level id")
+		_expect(mission_2.objectives.size() == 4 and mission_2.encounters.size() == 5, "Mission 2 skeleton covers four objectives and five zones")
+	var mission_2_card := load("res://resources/level/rain_city_card.tres") as LevelCardData
+	_expect(mission_2_card != null and not mission_2_card.unlocked and mission_2_card.scene_path.is_empty(), "Mission 2 card stays locked and unroutable until production")
 	var cycle_a := ObjectiveDefinition.new(); cycle_a.id = &"a"; cycle_a.title = "A"; cycle_a.target_id = &"a"; cycle_a.prerequisite_ids = [&"b"]
 	var cycle_b := ObjectiveDefinition.new(); cycle_b.id = &"b"; cycle_b.title = "B"; cycle_b.target_id = &"b"; cycle_b.prerequisite_ids = [&"a"]
 	var invalid := ContentManifest.new(); invalid.level_id = &"invalid"; invalid.level_scene = "res://scenes/levels/episode_1_level_1.tscn"; invalid.objectives = [cycle_a, cycle_b]
