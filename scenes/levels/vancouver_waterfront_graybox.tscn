@@ -1,0 +1,39 @@
+[gd_scene format=3]
+
+[node name="VancouverWaterfrontGraybox" type="Node3D"]
+
+[node name="Sun" type="DirectionalLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.573576, 0.819152, 0, -0.819152, 0.573576, 0, 12, 0)
+light_energy = 0.9
+
+[node name="DowntownAlleyFloor" type="CSGBox3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
+size = Vector3(14, 1, 28)
+use_collision = true
+
+[node name="RuseBlockFloor" type="CSGBox3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, -32)
+size = Vector3(20, 1, 30)
+use_collision = true
+
+[node name="WaterfrontSeawallFloor" type="CSGBox3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, -66)
+size = Vector3(30, 1, 32)
+use_collision = true
+
+[node name="TerminalServiceFloor" type="CSGBox3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, -100)
+size = Vector3(16, 1, 30)
+use_collision = true
+
+[node name="HarbourPierFloor" type="CSGBox3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, -134)
+size = Vector3(26, 1, 34)
+use_collision = true
+
+[node name="RouteNote" type="Label3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, -4)
+text = "MISSION 2 GRAYBOX — NOT PUBLIC
+alley → ruse block → seawall → terminal → pier"
+font_size = 64
+pixel_size = 0.01

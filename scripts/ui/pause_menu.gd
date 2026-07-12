@@ -8,6 +8,9 @@ const FeedbackScene := preload("res://scenes/ui/playtest_report.tscn")
 
 var _options_overlay: OptionsMenu
 var _feedback_overlay: PlaytestReport
+# While the death or victory screen owns the UI, the pause menu must not open
+# on top of it — neither from the pause action nor from browser focus loss.
+var _suppressed := false
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
@@ -33,11 +36,15 @@ func _input(event: InputEvent) -> void:
 			_close_feedback()
 		elif visible:
 			resume()
-		else:
+		elif not _suppressed:
 			open()
 		get_viewport().set_input_as_handled()
 
+func set_suppressed(value: bool) -> void:
+	_suppressed = value
+
 func close_for_death() -> void:
+	_suppressed = true
 	if is_instance_valid(_options_overlay):
 		_options_overlay.queue_free()
 		_options_overlay = null
@@ -48,8 +55,15 @@ func close_for_death() -> void:
 	_set_paused(false)
 
 func _notification(what: int) -> void:
-	if what == NOTIFICATION_APPLICATION_FOCUS_OUT and not visible and get_tree() != null and not get_tree().paused:
+	if what == NOTIFICATION_APPLICATION_FOCUS_OUT and not visible and not _suppressed \
+			and get_tree() != null and not get_tree().paused and _gameplay_active():
 		open()
+
+func _gameplay_active() -> bool:
+	var game_state := get_node_or_null("/root/GameState")
+	if game_state == null:
+		return true
+	return game_state.phase == game_state.Phase.PLAYING
 
 func open() -> void:
 	get_tree().call_group(&"mobile_controls", &"release_all")

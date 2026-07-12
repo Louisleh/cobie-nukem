@@ -48,10 +48,9 @@ func _perform_attack() -> void:
 				_spawn_drone()
 		BossPhase.EXPOSED_CORE:
 			_spawn_projectile(BOLT, 14.0, 1.5)
-			get_tree().create_timer(0.15).timeout.connect(func() -> void:
-				if not is_dead:
-					_spawn_projectile(BOLT, 14.0, 1.5)
-			)
+			# Bound method rather than a lambda: the connection dies with the
+			# walker instead of firing into a freed instance after a reset.
+			get_tree().create_timer(0.15).timeout.connect(_fire_followup_bolt)
 		BossPhase.CHARGE:
 			if _target_valid():
 				var direction := global_position.direction_to(target.global_position)
@@ -100,10 +99,17 @@ func _set_boss_phase(next: BossPhase) -> void:
 			walker_defeated.emit()
 	boss_phase_changed.emit(previous, boss_phase)
 
+func _fire_followup_bolt() -> void:
+	if not is_dead:
+		_spawn_projectile(BOLT, 14.0, 1.5)
+
 func _spawn_drone() -> void:
 	if not is_inside_tree():
 		return
 	var drone := DRONE.instantiate() as EnemyAgent
+	# Summons live outside the encounter runner's actor list; the group lets a
+	# checkpoint reset clear them together with the walker.
+	drone.add_to_group(&"boss_summons")
 	get_tree().current_scene.add_child(drone)
 	drone.global_position = global_position + global_basis.x * (2.5 if _attack_count % 2 == 0 else -2.5) + Vector3.UP * 1.0
 	drone.set_target(target)

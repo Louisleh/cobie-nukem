@@ -351,8 +351,9 @@ func _die(source: Node) -> void:
 	if visual != null:
 		_play_death_animation(visual)
 	_spawn_death_pop()
-	await get_tree().create_timer(death_linger_seconds).timeout
-	queue_free()
+	# A bound-method connection is dropped automatically when the enemy is freed
+	# by a scene change, unlike resuming an await on a freed instance.
+	get_tree().create_timer(death_linger_seconds).timeout.connect(queue_free)
 
 
 func _play_death_animation(visual: Node3D) -> void:

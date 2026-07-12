@@ -50,13 +50,26 @@ Enemy definitions contain base balance. `DifficultyProfile` applies independent 
 - Every secret is optional and cannot consume a required item.
 - New props and references are recorded in `docs/ASSET_MANIFEST.md`.
 
-## Mission 2 template
+## Mission 2 production proof (authored, locked)
 
-Use these initial IDs for Vancouver Waterfront:
+The Mission 2 skeleton now exists as real content and validates in CI without any change to shared gameplay code — the Phase 2 scaling proof:
 
-- Level: `episode_1_vancouver_waterfront`
-- Zones: `downtown_alley`, `ruse_block`, `waterfront_seawall`, `terminal_service`, `harbour_pier`
-- Objectives: `reach_waterfront`, `restore_terminal`, `stop_citation_convoy`, `complete_harbour_pier`
-- Encounters: one Resource per zone, with the convoy set piece split into explicit waves only after the runner gains multi-wave schema support.
+- Manifest: `resources/content/vancouver_waterfront_manifest.tres` (`episode_1_vancouver_waterfront`)
+- Level scene: `scenes/levels/vancouver_waterfront_graybox.tscn` — a non-public graybox of the five-zone route; it is not routed by any card and must stay that way until production
+- Objectives: `resources/objectives/vancouver_*.tres` — `reach_waterfront` → `restore_terminal` → `stop_citation_convoy` → `complete_harbour_pier`
+- Encounters: `resources/encounters/vancouver_*.tres` — one per zone (`downtown_alley`, `ruse_block`, `waterfront_seawall`, `terminal_service`, `harbour_pier`) with placeholder spawn groups drawn from existing enemy scenes
+- Level card: `resources/level/rain_city_card.tres` stays locked with an empty `scene_path`; `ui_scene_test` enforces exactly one unlocked card and `gameplay_foundation_test` enforces the manifest/card contract
+
+The harbour-pier encounter is a placeholder for the citation-convoy set piece; split it into explicit waves only after the runner gains multi-wave schema support.
+
+### Mission 2 asset and landmark list (all original art; no copied logos, trade dress, or map geometry)
+
+- Rain-soaked downtown service alley: dumpsters, fire escapes, puddle decals, steam vents, bike-lane markings
+- Ruse block: an affectionate original **Ruse Pizza** storefront — pizza boxes, "RUSE SLICE / DOGS NEGOTIABLE" poster, delivery scooter, optional health-secret slice; confirm naming permission before public commercial distribution
+- Waterfront seawall: railings, benches, gulls, umbrellas, stylized North Shore mountains and an original distant bridge silhouette skybox
+- Terminal service corridors: cargo containers, harbor cranes, floatplane/ferry silhouettes, emergency leash-protocol signage
+- Harbour pier finale: citation convoy vehicles, pier lighting, rain-slick neon reflections
+- Posters: "RAIN DELAYED DUE TO RAIN", "SEAWALL SPEED LIMIT: ZOOMIES", "NO FETCHING FROM THE HARBOUR"
+- New mechanic target: vertical combat across stairs/ramps/seawall levels; new enemy family target: umbrella shield unit or gull recon support
 
 The detailed location, prop, poster, Easter-egg, and legal notes live in `docs/PHASE_ROADMAP_PRD.md` section 6.

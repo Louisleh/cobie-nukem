@@ -19,16 +19,18 @@ This section is the first place a new Codex or external-auditor run should read.
 
 | Phase | Status | Completed | Explicitly remaining |
 | --- | --- | --- | --- |
-| 1. Gameplay systems foundation | **FOUNDATION COMPLETE** | Typed objectives/tracker, encounter definitions/runner, three difficulty Resources, selected difficulty in run state, enemy archetypes and spacing behavior, Salmon Creek migration, focused tests | Difficulty-selection UI; pickup and aim-assist multiplier consumption; multi-wave director; persistent objective snapshots; group tactics/support actions |
-| 2. Content-production pipeline | **FOUNDATION COMPLETE** | Versioned manifest, Salmon Creek content data, headless validator, release-gate integration, authoring guide, manifest template, critical-path rules | Visual editor tooling; spawn volumes/patrol paths; richer pickup/prop/zone schemas; automated nav/reachability analysis; Mission 2 production proof |
+| 1. Gameplay systems foundation | **FOUNDATION COMPLETE** | Typed objectives/tracker, encounter definitions/runner, three difficulty Resources, selected difficulty in run state, player-facing Story/Classic/Mayhem selector on level select, all six DifficultyProfile multipliers consumed at runtime (health, damage, speed, aggression, pickups, aim assist), enemy archetypes and spacing behavior, Salmon Creek migration, focused tests | Multi-wave director; persistent objective snapshots; group tactics/support actions |
+| 2. Content-production pipeline | **FOUNDATION COMPLETE** | Versioned manifest, Salmon Creek content data, headless validator, release-gate integration, authoring guide, manifest template, critical-path rules, Mission 2 (Vancouver Waterfront) manifest/objective/encounter skeleton validating in CI with a locked card and non-public graybox | Visual editor tooling; spawn volumes/patrol paths; richer pickup/prop/zone schemas; automated nav/reachability analysis; Mission 2 full production |
 | 3. World and episode structure | **NOT STARTED — BRIEFS ONLY** | Vancouver Waterfront, Mount Hood, and Moon design briefs and personal-detail/legal notes are documented | No new level scenes, geometry, props, mission Resources, encounters, enemies, or assets have been built |
 | 4. Combat and presentation expansion | **NOT STARTED** | Requirements captured only | Weak points, hazards, richer reactions/animations, music state system, voice, comic-panel sequences, Mission 2 demonstration |
-| 5. Accessibility, persistence, observability | **NOT STARTED** | Existing RC options/input/reporting remain; future requirements captured | Save migrations/profiles, objective persistence, expanded assists, telemetry-free metrics, soak and compatibility matrices |
+| 5. Accessibility, persistence, observability | **STARTED — SAVE SCHEMA ONLY** | Save envelopes are versioned (v2) with deterministic migrations, a canonical sanitized checkpoint payload (including selected difficulty), and safe recovery from unversioned/legacy/corrupt/future files | Multiple save profiles, objective persistence, expanded assists, telemetry-free metrics, soak and compatibility matrices |
 | 6. Alpha, beta, release | **NOT STARTED** | Existing development packaging and CI are available | Episode content completion, full human/device/browser matrices, signing/notarization, legal review, store readiness |
 
 ### Immediate next gate
 
-**Gate passed 2026-07-11.** Accepted critical Fable findings are addressed, the stamped build is public through the owner website, and the touch-first iPad browser path has automated and tablet-viewport regression evidence. The remaining hardware gate is a real iPad Safari feel/thermal/network pass. Next implementation priority is the accessible difficulty selector and controlled family playtesting before Mission 2 production. Do not treat missing Phase 3–6 content as a current defect unless a current contract falsely claims to support it.
+**Gate passed 2026-07-11.** Accepted critical Fable findings are addressed, the stamped build is public through the owner website, and the touch-first iPad browser path has automated and tablet-viewport regression evidence. The remaining hardware gate is a real iPad Safari feel/thermal/network pass.
+
+**2026-07-12 implementation pass (source repo, not yet released):** the accessible Story/Classic/Mayhem selector is live on level select with all six difficulty multipliers consumed at runtime; save payloads are versioned and migrated; state-transition hardening plus adversarial regression coverage landed; and the Mission 2 content skeleton validates in CI. Next priorities are controlled family playtesting (including difficulty feel), the physical-iPad hardware pass, and Mission 2 production geometry. Do not treat missing Phase 3–6 content as a current defect unless a current contract falsely claims to support it.
 
 ### Independent Fable audit disposition — 2026-07-11
 
@@ -48,6 +50,8 @@ This section is the first place a new Codex or external-auditor run should read.
 | FA-12 difficulty picker absent | **Accepted, already documented** | **Next player-facing phase** | Add accessible selector after mobile/public-release gate unless capacity remains |
 | FA-13 Web focus/pause timing recovery | **Accepted as mobile risk** | **Critical now** | Verify and harden touch/focus recovery during reload, encounter grace, pause, and death |
 | FA-14 validator misses difficulty uniqueness/enemy contract | **Accepted** | **Critical now** | Validate unique difficulty IDs, finite positions, and spawn scene contract with named errors |
+
+FA-08 (save migration framework) and FA-12 (difficulty selector) were delivered in the 2026-07-12 implementation pass; see `docs/FABLE_NEXT_PASS_HANDOFF.md`.
 
 ### Public Web and iPad critical-release requirements
 
@@ -400,11 +404,19 @@ Implemented in the first production-foundation pass:
 - Content-manifest validation for level paths, identities, prerequisites, cycles, encounter zones, spawn scenes, and spawn positions.
 - Authoring guide, template manifest, CI/release-gate integration, focused unit coverage, and full Salmon Creek route regression.
 
+Delivered by the 2026-07-12 implementation pass:
+
+- player-facing Story/Classic/Mayhem selection on level select, defaulting to Classic, driven entirely by the DifficultyProfile resources;
+- pickup_amount_multiplier consumption for health/armor/ammo pickups and aim_assist_strength consumption normalized against the Classic baseline — every DifficultyProfile field now affects gameplay;
+- save-schema v2 with deterministic migrations, a canonical sanitized checkpoint payload, and difficulty persistence across Continue;
+- Mission 2 (Rain City Run) manifest/objective/encounter skeleton with a locked card and non-public graybox.
+
 Intentionally deferred refinements that fit the established contracts:
 
-- difficulty-selection UI and full pickup/aim-assist multiplier consumption;
 - multi-wave/reinforcement encounter schema and combat director;
 - objective-list HUD instead of the current notification presentation;
-- checkpoint persistence of objective snapshots, gated on an explicit save-version migration;
+- checkpoint persistence of objective snapshots (now unblocked by save-schema v2);
 - editor plugin/visual encounter authoring;
-- coordinated group tactics, cover selection, and support actions.
+- coordinated group tactics, cover selection, and support actions;
+- difficulty scaling of temporary-effect durations (zoomies/squeaker) and FULL_RESTORE pickups — pickup_amount_multiplier deliberately covers only health/armor/ammo payloads;
+- persisting the last-selected difficulty across application restarts (selection currently lives for the session and in checkpoint saves).

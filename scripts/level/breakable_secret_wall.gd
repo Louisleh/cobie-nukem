@@ -11,6 +11,8 @@ var is_broken := false
 
 
 func _ready() -> void:
+	# Reachable through the proximity-interaction fallback used by touch players.
+	add_to_group(&"interactables")
 	if get_child_count() == 0: _build_visual()
 
 

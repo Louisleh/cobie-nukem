@@ -18,8 +18,24 @@ fi
 
 run_godot_test() {
   local script="$1"
+  local log_file
+  local status
+  log_file="$(mktemp)"
   echo "==> $script"
-  "$GODOT_BIN" --headless --path . --script "$script"
+  set +e
+  "$GODOT_BIN" --headless --path . --script "$script" 2>&1 | tee "$log_file"
+  status=${PIPESTATUS[0]}
+  set -e
+  if [[ $status -ne 0 ]]; then
+    rm -f "$log_file"
+    return "$status"
+  fi
+  if grep -q '^ERROR:' "$log_file"; then
+    echo "ERROR: engine errors were emitted by $script"
+    rm -f "$log_file"
+    return 1
+  fi
+  rm -f "$log_file"
 }
 
 echo "==> import/parser validation"
@@ -30,9 +46,11 @@ run_godot_test res://tests/unit/combat_test_runner.gd
 run_godot_test res://tests/unit/enemy_contract_tests.gd
 run_godot_test res://tests/unit/ui_scene_test.gd
 run_godot_test res://tests/unit/gameplay_foundation_test.gd
+run_godot_test res://tests/unit/save_schema_test.gd
 run_godot_test res://tests/unit/mobile_controls_test.gd
 run_godot_test res://tests/integration/integration_test_runner.gd
 run_godot_test res://tests/integration/test_episode_1_level.gd
+run_godot_test res://tests/integration/adversarial_state_test.gd
 run_godot_test res://tests/smoke/smoke_test_runner.gd
 run_godot_test res://tests/smoke/performance_smoke.gd
 bash tools/asset_ip_scan.sh

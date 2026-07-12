@@ -9,6 +9,9 @@ var activated := false
 
 
 func _ready() -> void:
+	# The use key cannot solve this puzzle, but group membership surfaces the
+	# explanatory prompt through the proximity-interaction fallback.
+	add_to_group(&"interactables")
 	body_entered.connect(_on_body_entered)
 	if get_child_count() == 0: _build_visual()
 

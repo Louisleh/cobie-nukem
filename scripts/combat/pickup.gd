@@ -45,15 +45,15 @@ func try_collect(collector: Node) -> bool:
 	match definition.kind:
 		PickupDefinition.Kind.HEALTH:
 			if collector.has_method("heal"):
-				collector.heal(definition.amount)
+				collector.heal(_scaled_amount())
 				applied = true
 		PickupDefinition.Kind.ARMOR:
 			if collector.has_method("add_armor"):
-				collector.add_armor(definition.amount)
+				collector.add_armor(_scaled_amount())
 				applied = true
 		PickupDefinition.Kind.AMMO:
 			if collector.has_method("add_ammo"):
-				collector.add_ammo(definition.ammo_type, int(definition.amount))
+				collector.add_ammo(definition.ammo_type, _scaled_ammo())
 				applied = true
 		PickupDefinition.Kind.WEAPON:
 			if collector.has_method("unlock_weapon"):
@@ -75,14 +75,41 @@ func try_collect(collector: Node) -> bool:
 func _on_body_entered(body: Node) -> void:
 	try_collect(body)
 
+
+func _scaled_amount() -> float:
+	var profile := _difficulty_profile()
+	return profile.scaled_pickup_amount(definition.amount) if profile != null else definition.amount
+
+
+func _scaled_ammo() -> int:
+	var profile := _difficulty_profile()
+	return profile.scaled_pickup_ammo(int(definition.amount)) if profile != null else int(definition.amount)
+
+
+func _difficulty_profile() -> DifficultyProfile:
+	# Unit-authored and editor-preview pickups can be queried before entering a
+	# SceneTree. Absolute autoload lookup is invalid in that state, so preserve
+	# the authored amount until the pickup belongs to a live run.
+	if not is_inside_tree():
+		return null
+	var game_state := get_node_or_null("/root/GameState")
+	if game_state != null and game_state.has_method("get_difficulty_profile"):
+		return game_state.get_difficulty_profile()
+	return null
+
 func _consume() -> void:
 	_available = false
 	visible = false
 	monitoring = false
 	if definition.respawns:
-		await get_tree().create_timer(definition.respawn_seconds).timeout
-		_available = true
-		visible = true
-		monitoring = true
+		# Bound method rather than resuming an await: the connection is dropped
+		# automatically if a scene change frees the pickup before it respawns.
+		get_tree().create_timer(definition.respawn_seconds).timeout.connect(_respawn)
 	else:
 		queue_free()
+
+
+func _respawn() -> void:
+	_available = true
+	visible = true
+	monitoring = true

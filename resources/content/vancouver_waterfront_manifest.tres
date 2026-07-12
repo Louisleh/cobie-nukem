@@ -1,0 +1,25 @@
+[gd_resource type="Resource" script_class="ContentManifest" load_steps=17 format=3]
+[ext_resource type="Script" path="res://scripts/gameplay/content_manifest.gd" id="1"]
+[ext_resource type="Resource" path="res://resources/difficulty/story.tres" id="2"]
+[ext_resource type="Resource" path="res://resources/difficulty/classic.tres" id="3"]
+[ext_resource type="Resource" path="res://resources/difficulty/mayhem.tres" id="4"]
+[ext_resource type="Resource" path="res://resources/objectives/vancouver_reach_waterfront.tres" id="5"]
+[ext_resource type="Resource" path="res://resources/objectives/vancouver_restore_terminal.tres" id="6"]
+[ext_resource type="Resource" path="res://resources/objectives/vancouver_stop_convoy.tres" id="7"]
+[ext_resource type="Resource" path="res://resources/objectives/vancouver_harbour_pier.tres" id="8"]
+[ext_resource type="Resource" path="res://resources/encounters/vancouver_downtown_alley.tres" id="9"]
+[ext_resource type="Resource" path="res://resources/encounters/vancouver_ruse_block.tres" id="10"]
+[ext_resource type="Resource" path="res://resources/encounters/vancouver_waterfront_seawall.tres" id="11"]
+[ext_resource type="Resource" path="res://resources/encounters/vancouver_terminal_service.tres" id="12"]
+[ext_resource type="Resource" path="res://resources/encounters/vancouver_harbour_pier.tres" id="13"]
+[ext_resource type="Script" path="res://scripts/gameplay/difficulty_profile.gd" id="14"]
+[ext_resource type="Script" path="res://scripts/gameplay/objective_definition.gd" id="15"]
+[ext_resource type="Script" path="res://scripts/gameplay/encounter_definition.gd" id="16"]
+[resource]
+script = ExtResource("1")
+content_version = 1
+level_id = &"episode_1_vancouver_waterfront"
+level_scene = "res://scenes/levels/vancouver_waterfront_graybox.tscn"
+difficulty_profiles = Array[ExtResource("14")]([ExtResource("2"), ExtResource("3"), ExtResource("4")])
+objectives = Array[ExtResource("15")]([ExtResource("5"), ExtResource("6"), ExtResource("7"), ExtResource("8")])
+encounters = Array[ExtResource("16")]([ExtResource("9"), ExtResource("10"), ExtResource("11"), ExtResource("12"), ExtResource("13")])

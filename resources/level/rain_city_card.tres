@@ -2,10 +2,10 @@
 [ext_resource type="Script" path="res://scripts/ui/level_card_data.gd" id="1"]
 [resource]
 script = ExtResource("1")
-level_id = &"rain_city_kennel"
-title = "RAIN CITY KENNEL"
-episode = "EPISODE 2 // CLASSIFIED"
-description = "A neon kennel district remains under Animal Control quarantine."
+level_id = &"episode_1_vancouver_waterfront"
+title = "RAIN CITY RUN"
+episode = "EPISODE 1 // VANCOUVER WATERFRONT"
+description = "A citation convoy is loose between the downtown blocks and the harbour. The seawall remains under emergency leash protocol."
 difficulty = 3
-expected_minutes = "CLASSIFIED"
-encounter = "LOCKED"
+expected_minutes = "15–22 MIN"
+encounter = "CITATION CONVOY"

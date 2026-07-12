@@ -1,0 +1,8 @@
+[gd_resource type="Resource" script_class="EncounterDefinition" load_steps=2 format=3]
+[ext_resource type="Script" path="res://scripts/gameplay/encounter_definition.gd" id="1"]
+[resource]
+script = ExtResource("1")
+id = &"vancouver_convoy_showdown"
+zone_id = &"harbour_pier"
+display_name = "CITATION CONVOY (PLACEHOLDER)"
+spawns = Array[Dictionary]([{"scene":"res://scenes/enemies/compliance_hound.tscn","position":Vector3(-4,0,-130)}, {"scene":"res://scenes/enemies/compliance_hound.tscn","position":Vector3(4,0,-136)}])
