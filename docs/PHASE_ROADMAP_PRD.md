@@ -6,9 +6,9 @@
 
 **Last status review:** 2026-07-11
 
-**Current development baseline:** `0.4.0-mobile-rc1` (`0dad139` gameplay/export revision; public evidence in `docs/MOBILE_RELEASE_EVIDENCE.md`)
+**Current development baseline:** `0.5.0-rc1` (`2daf1a4` gameplay revision; difficulty selection, save-schema v2, state hardening, and Mission 2 pipeline proof)
 
-**Last playtest RC:** `0.4.0-mobile-rc1` — live at <https://www.louislehmann.fyi/games/cobie-nukem/>
+**Last playtest RC:** `0.5.0-rc1` — public deployment in progress at <https://www.louislehmann.fyi/games/cobie-nukem/>
 
 **Engine:** Godot 4.7 stable, GDScript, Compatibility renderer
 **Purpose:** Turn the family-playtest vertical slice into a sustainable, original multi-level game without sacrificing responsiveness, humor, Web support, or unusual-controller accessibility.

@@ -34,7 +34,7 @@ Require both release exports and create distribution packages:
 
 ```bash
 QA_EXPORTS=1 bash tools/release_validate.sh
-SKIP_VALIDATION=1 VERSION=0.4.0-mobile-rc1 bash tools/package_release.sh
+SKIP_VALIDATION=1 VERSION=0.5.0-rc1 bash tools/package_release.sh
 python3 -m http.server 8060 --directory builds/pages
 ```
 
