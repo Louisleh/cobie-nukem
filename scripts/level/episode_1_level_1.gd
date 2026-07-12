@@ -67,6 +67,10 @@ var _last_combat_zone: StringName = &""
 var _resetting_encounter := false
 var _opening_grace_timer: Timer
 var _completion_timer: Timer
+var _route_recovery_timer: Timer
+var _restored_checkpoint: Dictionary = {}
+var _mission_runtime: MissionRuntime
+var _spawn_registry: MissionSpawnRegistry
 
 func _ready() -> void:
 	_run_started_ms = Time.get_ticks_msec()
@@ -85,21 +89,24 @@ func _ready() -> void:
 
 
 func _setup_gameplay_systems() -> void:
-	_objective_tracker = ObjectiveTracker.new()
-	_objective_tracker.name = "ObjectiveTracker"
-	add_child(_objective_tracker)
+	_spawn_registry = MissionSpawnRegistry.new()
+	_spawn_registry.name = "MissionSpawnRegistry"
+	add_child(_spawn_registry)
+	spawned_zones = _spawn_registry.completed_zones
+	_mission_runtime = MissionRuntime.new()
+	_mission_runtime.name = "MissionRuntime"
+	add_child(_mission_runtime)
+	_mission_runtime.configure(content_manifest, _spawn_scene)
+	_objective_tracker = _mission_runtime.objectives
 	_objective_tracker.objective_activated.connect(func(definition: ObjectiveDefinition) -> void:
 		objective_changed.emit(definition.title)
 	)
-	_objective_tracker.configure(content_manifest.objectives if content_manifest != null else [])
-	_encounter_runner = EncounterRunner.new()
-	_encounter_runner.name = "EncounterRunner"
-	add_child(_encounter_runner)
+	_encounter_runner = _mission_runtime.encounters
 	_encounter_runner.actor_spawned.connect(_on_encounter_actor_spawned)
 	_encounter_runner.actor_defeated.connect(func(enemy: Node, definition: EncounterDefinition) -> void:
 		_on_enemy_died(enemy, definition.zone_id)
 	)
-	_encounter_runner.configure(content_manifest.encounters if content_manifest != null else [], _spawn_scene)
+	_restore_mission_snapshot()
 	# Level-owned timers die with the scene, so a pending opening-grace or
 	# completion callback can never fire into a freed level, and restarting the
 	# opening encounter replaces the pending grace window instead of stacking a
@@ -116,6 +123,12 @@ func _setup_gameplay_systems() -> void:
 	_completion_timer.wait_time = 1.2
 	_completion_timer.timeout.connect(_finalize_level_completion)
 	add_child(_completion_timer)
+	_route_recovery_timer = Timer.new()
+	_route_recovery_timer.name = "RouteRecoveryTimer"
+	_route_recovery_timer.wait_time = 0.25
+	_route_recovery_timer.timeout.connect(_check_route_recovery)
+	add_child(_route_recovery_timer)
+	_route_recovery_timer.start()
 
 
 func _apply_requested_checkpoint() -> void:
@@ -124,17 +137,30 @@ func _apply_requested_checkpoint() -> void:
 		return
 	var save_manager := get_node_or_null("/root/SaveManager")
 	var saved := CheckpointPayload.sanitize(save_manager.load_slot(&"checkpoint")) if save_manager != null else {}
+	_restored_checkpoint = saved
 	var position_values: Array = saved.get("position", [])
 	if position_values.size() == 3:
 		checkpoint_position = Vector3(float(position_values[0]), float(position_values[1]), float(position_values[2]))
 	game_state.continue_requested = false
 
 
-func _physics_process(_delta: float) -> void:
+func _restore_mission_snapshot() -> void:
+	if _restored_checkpoint.is_empty():
+		return
+	_mission_runtime.restore(_restored_checkpoint)
+	secrets.clear()
+	for raw_id: Variant in _restored_checkpoint.get("secrets", {}):
+		secrets[StringName(raw_id)] = String(_restored_checkpoint.secrets[raw_id])
+	_spawn_registry.completed_zones.clear()
+	for zone_id: Variant in _encounter_runner.completed:
+		_spawn_registry.completed_zones[zone_id] = true
+
+
+func _check_route_recovery() -> void:
 	if not is_instance_valid(player):
 		return
-	# Spatial fallback keeps the linear route playable even if a browser drops an
-	# Area3D transition while compiling physics or recovering pointer focus.
+	# Low-frequency indexed recovery keeps the route playable if a browser drops
+	# an Area3D transition without spending every physics frame scanning progress.
 	for milestone in ROUTE_PROGRESS:
 		var zone_id := StringName(milestone[1])
 		if player.global_position.z <= float(milestone[0]) and not spawned_zones.has(zone_id):
@@ -268,8 +294,7 @@ func _enter_zone(zone_id: StringName, title: String, _actor: Node) -> void:
 
 
 func _spawn_wave(zone_id: StringName) -> void:
-	if spawned_zones.has(zone_id): return
-	spawned_zones[zone_id] = true
+	if not _spawn_registry.mark_zone_spawned(zone_id): return
 	if _encounter_runner.definitions.has(zone_id): _last_combat_zone = zone_id
 	_encounter_runner.activate_zone(zone_id, player)
 	if zone_id == &"walker_arena" and _walker == null:
@@ -360,7 +385,7 @@ func _reset_active_encounter_for_checkpoint() -> void:
 	if _encounter_runner == null or _last_combat_zone == &"" or not _encounter_runner.definitions.has(_last_combat_zone): return
 	var zone_id := _last_combat_zone
 	_encounter_runner.reset_zone(zone_id)
-	spawned_zones.erase(zone_id)
+	_spawn_registry.clear_zone(zone_id)
 	if zone_id == &"forbidden_field":
 		_opening_enemies.clear()
 		_opening_encounter_active = false
@@ -440,7 +465,11 @@ func _setup_presentation() -> void:
 	_pause_menu.restart_requested.connect(restart_from_checkpoint)
 	_death_screen.retry_requested.connect(restart_from_checkpoint)
 	narrative_message.connect(func(text: String, _duration: float): _hud.show_notification(text))
-	objective_changed.connect(func(text: String): _hud.show_notification("OBJECTIVE: " + text))
+	objective_changed.connect(func(text: String):
+		_hud.show_objective(text)
+		_hud.show_notification("OBJECTIVE: " + text)
+	)
+	_hud.show_objective(metadata.opening_objective)
 	secret_found.connect(func(_id: StringName, title: String, found: int, total: int): _hud.show_secret("SECRET: %s (%d/%d)" % [title, found, total]))
 	checkpoint_activated.connect(func(id: StringName, position_value: Vector3):
 		var save_manager := get_node_or_null("/root/SaveManager")
@@ -452,6 +481,9 @@ func _setup_presentation() -> void:
 				"checkpoint_id": String(id),
 				"position": [position_value.x, position_value.y, position_value.z],
 				"difficulty_id": String(difficulty_state.difficulty_id) if difficulty_state != null else CheckpointPayload.DEFAULT_DIFFICULTY,
+				"objective_snapshot": _mission_runtime.snapshot().objective_snapshot,
+				"encounter_snapshot": _mission_runtime.snapshot().encounter_snapshot,
+				"secrets": secrets.duplicate(true),
 			})
 	)
 	var game_state := get_node_or_null("/root/GameState")
@@ -484,7 +516,11 @@ func _spawn_enemy_drop(drop_id: StringName, position_value: Vector3) -> Node:
 func _spawn_pickup(path: String, position_value: Vector3) -> Node:
 	var pickup := _spawn_scene(path, position_value)
 	if pickup and pickup.has_signal("collected"):
-		pickup.collected.connect(func(_pickup, _collector, message): narrative_message.emit(message, 2.0))
+		pickup.collected.connect(func(_pickup, _collector, message):
+			narrative_message.emit(message, 2.0)
+			var game_state := get_node_or_null("/root/GameState")
+			if game_state != null: game_state.record_pickup()
+		)
 	return pickup
 
 
@@ -498,6 +534,7 @@ func _spawn_scene(path: String, position_value: Vector3) -> Node:
 	# and physics interpolation all begin at the intended world transform.
 	if instance is Node3D: instance.position = position_value
 	_actors.add_child(instance)
+	if _spawn_registry != null: _spawn_registry.register_actor(instance)
 	return instance
 
 
@@ -529,7 +566,9 @@ func _prop_box(node_name: String, center: Vector3, size: Vector3, color: Color) 
 
 
 func _add_weather_to_player() -> void:
-	var rain := GPUParticles3D.new(); rain.name = "StormRain"; rain.position.y = 8.0; rain.amount = 420; rain.lifetime = 1.25; rain.visibility_aabb = AABB(Vector3(-16, -12, -16), Vector3(32, 24, 32))
+	var quality := get_node_or_null("/root/QualityManager")
+	var rain_amount := 420 if quality == null or quality.current == null else mini(420, quality.current.particle_budget)
+	var rain := GPUParticles3D.new(); rain.name = "StormRain"; rain.position.y = 8.0; rain.amount = rain_amount; rain.lifetime = 1.25; rain.visibility_aabb = AABB(Vector3(-16, -12, -16), Vector3(32, 24, 32))
 	var process := ParticleProcessMaterial.new(); process.emission_shape = ParticleProcessMaterial.EMISSION_SHAPE_BOX; process.emission_box_extents = Vector3(14, 1, 14); process.direction = Vector3(0.12, -1, 0.05); process.spread = 4.0; process.initial_velocity_min = 15.0; process.initial_velocity_max = 20.0; rain.process_material = process
 	var drop := QuadMesh.new(); drop.size = Vector2(0.018, 0.48)
 	var drop_material := StandardMaterial3D.new(); drop_material.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA; drop_material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED; drop_material.billboard_mode = BaseMaterial3D.BILLBOARD_ENABLED; drop_material.albedo_color = Color(0.58, 0.76, 0.86, 0.5); drop.material = drop_material; rain.draw_pass_1 = drop

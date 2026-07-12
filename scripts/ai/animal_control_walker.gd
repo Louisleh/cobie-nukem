@@ -36,8 +36,9 @@ func strike_with_golden_ball(source: Node = null) -> void:
 	super.apply_damage(maxf(health, 1.0), source, get_auto_aim_position())
 	_finishing_with_ball = false
 
-func _damage_multiplier(_hit_position: Vector3) -> float:
-	return 0.62 if boss_phase == BossPhase.CANNONS else 1.0
+func _damage_multiplier(hit_position: Vector3) -> float:
+	var weak_point := super._damage_multiplier(hit_position)
+	return weak_point * (0.62 if boss_phase == BossPhase.CANNONS else 1.0)
 
 func _perform_attack() -> void:
 	_attack_count += 1

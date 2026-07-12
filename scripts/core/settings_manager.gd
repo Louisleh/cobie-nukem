@@ -7,9 +7,9 @@ signal settings_saved()
 const SETTINGS_PATH := "user://settings.cfg"
 const DEFAULTS := {
 	"audio": {"master": 1.0, "music": 0.8, "sfx": 0.9},
-	"video": {"fov": 90.0, "render_scale": "320x180", "reduced_flashes": false},
-	"accessibility": {"camera_shake": 1.0, "head_bob": 1.0, "gore": "cartoon", "auto_aim": "classic", "subtitles": true},
-	"gameplay": {"run_mode": "hold", "mouse_sensitivity": 1.0, "touch_sensitivity": 1.0},
+	"video": {"fov": 90.0, "render_scale": "640x360", "quality": "auto", "reduced_flashes": false, "particle_density": 1.0},
+	"accessibility": {"camera_shake": 1.0, "head_bob": 1.0, "gore": "cartoon", "auto_aim": "classic", "subtitles": true, "text_scale": 1.0, "high_contrast": false, "reduced_motion": false},
+	"gameplay": {"run_mode": "hold", "mouse_sensitivity": 1.0, "touch_sensitivity": 1.0, "horizontal_sensitivity": 1.0, "vertical_sensitivity": 1.0, "control_opacity": 0.75, "left_handed_touch": false},
 }
 
 var _config := ConfigFile.new()

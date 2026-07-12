@@ -10,10 +10,12 @@ signal weapon_ammo_state_changed(display_name: String, loaded: int, magazine_cap
 signal pickup_message(message: String)
 signal temporary_effect_started(effect: StringName, duration: float)
 signal shot_resolved(kind: StringName, position: Vector3)
+signal combat_feedback(event: CombatFeedbackEvent)
 signal access_item_changed(label: String)
 signal footstep(running: bool)
 
 @export_category("Movement")
+@export var feel_profile: PlayerFeelProfile = preload("res://resources/player/classic_feel.tres")
 @export var walk_speed := 6.0
 @export var run_speed := 9.0
 @export var ground_acceleration := 38.0
@@ -51,21 +53,29 @@ var _run_toggled := false
 var _touch_move := Vector2.ZERO
 var _step_distance := 0.0
 var _last_step_position := Vector3.ZERO
+var _coyote_remaining := 0.0
+var _touch_look_scale := 1.35
 
 func _ready() -> void:
 	# Level zones key progression off this stable identity. Keeping it in code
 	# prevents a scene metadata omission from silently disabling every later wave.
 	add_to_group(&"player")
 	add_to_group(&"damageable_player")
+	_apply_feel_profile()
 	_head_base_position = head.position
 	_last_step_position = global_position
 	var settings := get_node_or_null("/root/SettingsManager")
 	if settings != null and settings.has_method("get_value"):
 		mouse_sensitivity *= clampf(float(settings.call("get_value", &"gameplay", &"mouse_sensitivity", 1.0)), 0.25, 3.0)
 		camera.fov = clampf(float(settings.call("get_value", &"video", &"fov", 90.0)), 70.0, 110.0)
+		head_bob_amount *= clampf(float(settings.call("get_value", &"accessibility", &"head_bob", 1.0)), 0.0, 1.0)
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE if MobileControls.touchscreen_expected() else Input.MOUSE_MODE_CAPTURED
 	health_armor.died.connect(_on_died)
 	health_armor.damaged.connect(_on_damaged)
+	health_armor.damaged.connect(func(amount: float, _health_damage: float, _armor_damage: float, source: Node) -> void:
+		var game_state := get_node_or_null("/root/GameState")
+		if game_state != null: game_state.record_damage(amount, source)
+	)
 	for child in weapon_mount.get_children():
 		if child is WeaponBase:
 			var weapon := child as WeaponBase
@@ -74,6 +84,15 @@ func _ready() -> void:
 			weapon.ammo_changed.connect(_on_weapon_ammo_changed.bind(weapon))
 			weapon.ammo_state_changed.connect(_on_weapon_ammo_state_changed.bind(weapon))
 			weapon.shot_resolved.connect(_on_shot_resolved)
+			weapon.feedback_resolved.connect(func(event: CombatFeedbackEvent) -> void: combat_feedback.emit(event))
+			weapon.fired.connect(func(fired_weapon: WeaponBase, _secondary: bool) -> void:
+				var game_state := get_node_or_null("/root/GameState")
+				if game_state != null: game_state.record_shot(fired_weapon.definition.id)
+			)
+			weapon.feedback_resolved.connect(func(event: CombatFeedbackEvent) -> void:
+				var game_state := get_node_or_null("/root/GameState")
+				if game_state != null: game_state.record_combat_result(event)
+			)
 	if not weapons.is_empty():
 		select_weapon(0)
 
@@ -146,10 +165,15 @@ func _physics_process(delta: float) -> void:
 		move_and_slide()
 		return
 	_zoomies_remaining = maxf(0.0, _zoomies_remaining - delta)
+	if is_on_floor():
+		_coyote_remaining = feel_profile.coyote_seconds if feel_profile != null else 0.1
+	else:
+		_coyote_remaining = maxf(0.0, _coyote_remaining - delta)
 	if not is_on_floor():
 		velocity += get_gravity() * gravity_scale * delta
-	elif Input.is_action_just_pressed("jump"):
+	if Input.is_action_just_pressed("jump") and _coyote_remaining > 0.0:
 		velocity.y = jump_velocity
+		_coyote_remaining = 0.0
 	var input := Input.get_vector("strafe_left", "strafe_right", "move_forward", "move_backward")
 	if _touch_move.length_squared() > input.length_squared(): input = _touch_move
 	var wish_direction := (global_basis * Vector3(input.x, 0.0, input.y)).normalized()
@@ -195,8 +219,8 @@ func set_touch_move(value: Vector2) -> void:
 
 func apply_touch_look(relative: Vector2) -> void:
 	if is_dead: return
-	rotate_y(-relative.x * mouse_sensitivity * 1.35)
-	head.rotation.x = clampf(head.rotation.x - relative.y * mouse_sensitivity * 1.35, deg_to_rad(-max_look_degrees), deg_to_rad(max_look_degrees))
+	rotate_y(-relative.x * mouse_sensitivity * _touch_look_scale)
+	head.rotation.x = clampf(head.rotation.x - relative.y * mouse_sensitivity * _touch_look_scale, deg_to_rad(-max_look_degrees), deg_to_rad(max_look_degrees))
 
 func heal(amount: float) -> float:
 	return health_armor.heal(amount)
@@ -209,6 +233,7 @@ func restore_full() -> void:
 
 func respawn(at_position: Vector3, protection_seconds := 1.5) -> void:
 	global_position = at_position
+	reset_physics_interpolation()
 	velocity = Vector3.ZERO
 	_touch_move = Vector2.ZERO
 	is_dead = false
@@ -336,7 +361,9 @@ func _interaction_hit() -> Dictionary:
 func _nearby_interactable() -> Node:
 	var best: Node
 	var best_score := INF
-	for node in get_tree().get_nodes_in_group(&"interactables"):
+	var registry := get_node_or_null("/root/WorldRegistry")
+	var candidates: Array[Node] = registry.interactables() if registry != null else []
+	for node in candidates:
 		if not node is Node3D or not node.has_method("interact"):
 			continue
 		var offset := (node as Node3D).global_position - camera.global_position
@@ -392,3 +419,20 @@ func _on_died(source: Node) -> void:
 	collision_shape.disabled = true
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 	died.emit(source)
+
+
+func _apply_feel_profile() -> void:
+	if feel_profile == null: return
+	walk_speed = feel_profile.walk_speed
+	run_speed = feel_profile.run_speed
+	ground_acceleration = feel_profile.ground_acceleration
+	ground_deceleration = feel_profile.ground_deceleration
+	air_acceleration = feel_profile.air_acceleration
+	jump_velocity = feel_profile.jump_velocity
+	mouse_sensitivity = feel_profile.mouse_sensitivity
+	_touch_look_scale = feel_profile.touch_sensitivity_scale
+	max_look_degrees = feel_profile.max_look_degrees
+	head_bob_amount = feel_profile.head_bob_amount
+	head_bob_speed = feel_profile.head_bob_speed
+	floor_snap_length = feel_profile.floor_snap
+	floor_constant_speed = feel_profile.constant_slope_speed

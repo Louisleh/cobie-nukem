@@ -10,10 +10,10 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 color = Color(0.18, 0.015, 0.01, 0.88)
 [node name="Panel" type="Panel" parent="."]
-offset_left = 64.0
-offset_top = 45.0
-offset_right = 256.0
-offset_bottom = 140.0
+offset_left = 128.0
+offset_top = 90.0
+offset_right = 512.0
+offset_bottom = 280.0
 theme = ExtResource("2")
 [node name="VBox" type="VBoxContainer" parent="Panel"]
 layout_mode = 1
@@ -48,4 +48,3 @@ text = "RETRY"
 unique_name_in_owner = true
 layout_mode = 2
 text = "MENU"
-

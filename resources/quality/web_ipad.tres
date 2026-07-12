@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="QualityProfile" load_steps=2 format=3]
+[ext_resource type="Script" path="res://scripts/core/quality_profile.gd" id="1"]
+[resource]
+script = ExtResource("1")
+id = &"web"
+display_name = "WEB / IPAD"
+render_scale = 1.0
+particle_budget = 480
+decal_budget = 32
+audio_voice_budget = 16
+visibility_distance = 48.0
+dynamic_light_budget = 2
+maximum_attackers = 3
+distant_animation_hz = 10.0
+target_fps = 30

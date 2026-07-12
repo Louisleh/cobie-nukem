@@ -21,6 +21,7 @@ func _initialize() -> void:
 	_test_current_version_round_trip()
 	_test_unversioned_legacy_payload()
 	_test_v1_schema_migration()
+	_test_v2_schema_migration()
 	_test_missing_fields()
 	_test_wrong_field_types()
 	_test_invalid_difficulty()
@@ -50,7 +51,7 @@ func _test_current_version_round_trip() -> void:
 	var payload := _checkpoint_payload()
 	save_manager.save_slot(SLOT, payload)
 	var loaded: Dictionary = save_manager.load_slot(SLOT)
-	_expect(loaded == payload, "current-version payload round trips unchanged")
+	_expect(CheckpointPayload.sanitize(loaded) == CheckpointPayload.sanitize(payload), "current-version payload round trips semantically unchanged")
 	var sanitized := CheckpointPayload.sanitize(loaded)
 	_expect(sanitized.get("difficulty_id") == "mayhem", "round trip preserves a valid selected difficulty")
 	_expect(sanitized.get("position") == [1.0, 2.0, 3.0], "round trip preserves the respawn position")
@@ -76,6 +77,18 @@ func _test_v1_schema_migration() -> void:
 	var non_checkpoint := {"best_time_msec": 742000.0}
 	_write_raw(JSON.stringify({"version": 1, "payload": non_checkpoint}))
 	_expect(save_manager.load_slot(SLOT) == non_checkpoint, "migration does not fabricate fields on non-checkpoint payloads")
+
+
+func _test_v2_schema_migration() -> void:
+	var v2_payload := _checkpoint_payload()
+	v2_payload.erase("objective_snapshot")
+	v2_payload.erase("encounter_snapshot")
+	v2_payload.erase("secrets")
+	_write_raw(JSON.stringify({"version": 2, "payload": v2_payload}))
+	var loaded: Dictionary = save_manager.load_slot(SLOT)
+	_expect(loaded.get("objective_snapshot") == {"progress": {}, "completed": []}, "v2 gains an empty objective snapshot")
+	_expect(loaded.get("encounter_snapshot") == {"completed": []}, "v2 gains an empty encounter snapshot")
+	_expect(loaded.get("secrets") == {}, "v2 gains an empty secret snapshot")
 
 
 func _test_missing_fields() -> void:
@@ -135,7 +148,7 @@ func _test_sanitize_canonical_shape() -> void:
 	noisy["telemetry"] = {"clicks": 9000}
 	noisy["cloud_id"] = "nope"
 	var sanitized := CheckpointPayload.sanitize(noisy)
-	var expected_keys := ["scene_path", "level_id", "checkpoint_id", "difficulty_id", "position"]
+	var expected_keys := ["scene_path", "level_id", "checkpoint_id", "difficulty_id", "position", "objective_snapshot", "encounter_snapshot", "secrets"]
 	for key: String in sanitized:
 		_expect(key in expected_keys, "sanitize drops unknown key: %s" % key)
 	var missing_scene := _checkpoint_payload()
@@ -150,6 +163,9 @@ func _checkpoint_payload() -> Dictionary:
 		"checkpoint_id": "lab_entry",
 		"position": [1.0, 2.0, 3.0],
 		"difficulty_id": "mayhem",
+		"objective_snapshot": {"progress": {"reach_lab": 1}, "completed": ["reach_lab"]},
+		"encounter_snapshot": {"completed": ["forbidden_field"]},
+		"secrets": {"optional_sign": "SIGN SEEMS OPTIONAL"},
 	}
 
 

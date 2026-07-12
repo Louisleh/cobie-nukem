@@ -22,6 +22,8 @@ func enable_for_boss(target: Node) -> void:
 	# hidden ball from answering the use key before the boss releases it.
 	if not is_in_group(&"interactables"):
 		add_to_group(&"interactables")
+	var registry := get_node_or_null("/root/WorldRegistry")
+	if registry != null: registry.register_interactable(self)
 
 
 func get_interaction_label() -> String:

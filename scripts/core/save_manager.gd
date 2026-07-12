@@ -9,9 +9,10 @@ signal load_completed(slot: StringName, data: Dictionary)
 #       hand-edited or pre-release files cannot break boot.
 #   1 — envelope {version, saved_at, payload}; checkpoint payloads carried
 #       scene_path/level_id/checkpoint_id/position and no difficulty.
-#   2 — current. Envelope unchanged; checkpoint payloads additionally record
-#       difficulty_id (see CheckpointPayload for the canonical shape).
-const SAVE_VERSION := 2
+#   2 — checkpoint payloads additionally record difficulty_id.
+#   3 — current. Checkpoints persist objective, completed-encounter, and secret
+#       snapshots. Active actors are intentionally rebuilt by the mission.
+const SAVE_VERSION := 3
 const SAVE_DIRECTORY := "user://saves"
 
 func save_slot(slot: StringName, payload: Dictionary) -> Error:
@@ -82,6 +83,14 @@ func _migrate(version: int, payload: Dictionary) -> Dictionary:
 				# Only checkpoint-shaped payloads receive the safe default.
 				if migrated.has("scene_path") and not migrated.has("difficulty_id"):
 					migrated["difficulty_id"] = "classic"
+			2:
+				if migrated.has("scene_path"):
+					if not migrated.has("objective_snapshot"):
+						migrated["objective_snapshot"] = {"progress": {}, "completed": []}
+					if not migrated.has("encounter_snapshot"):
+						migrated["encounter_snapshot"] = {"completed": []}
+					if not migrated.has("secrets"):
+						migrated["secrets"] = {}
 	return migrated
 
 func _slot_path(slot: StringName) -> String:

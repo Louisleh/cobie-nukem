@@ -1,6 +1,7 @@
-[gd_resource type="Resource" script_class="EnemyDefinition" load_steps=2 format=3]
+[gd_resource type="Resource" script_class="EnemyDefinition" load_steps=3 format=3]
 
 [ext_resource type="Script" path="res://scripts/ai/enemy_definition.gd" id="1"]
+[ext_resource type="Resource" path="res://resources/enemies/reaction_heavy.tres" id="2"]
 
 [resource]
 script = ExtResource("1")
@@ -17,5 +18,8 @@ attack_damage = 28.0
 attack_cooldown = 2.25
 telegraph_seconds = 0.7
 threat_weight = 1.4
+threat_value = 4
+navigation_radius = 0.65
+reaction_profile = ExtResource("2")
 score_value = 600
 drop_id = &"leather_padding"

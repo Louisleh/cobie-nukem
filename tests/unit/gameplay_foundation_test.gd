@@ -97,6 +97,17 @@ func _test_encounter() -> void:
 	(actors[0] as FakeEnemy).died.emit(actors[0], null)
 	_expect(runner.completed.has(&"arena"), "encounter completes after all actors die")
 	runner.queue_free(); target.queue_free()
+	var multi := EncounterDefinition.new(); multi.id = &"multi"; multi.zone_id = &"multi"; multi.enemy_budget = 2
+	multi.waves = [
+		{"spawns": [{"scene": "res://scenes/enemies/squirrel_trooper.tscn", "position": Vector3.ZERO}]},
+		{"delay_seconds": 0.0, "spawns": [{"scene": "res://scenes/enemies/squirrel_trooper.tscn", "position": Vector3.ONE}]},
+	]
+	var wave_runner := EncounterRunner.new(); get_root().add_child(wave_runner); wave_runner.configure([multi], _spawn_fake)
+	var first_wave := wave_runner.activate_zone(&"multi")
+	_expect(first_wave.size() == 1, "multi-wave encounter starts only its first wave")
+	(first_wave[0] as FakeEnemy).died.emit(first_wave[0], null)
+	_expect(wave_runner.active.has(&"multi") and wave_runner.active[&"multi"].actors.size() == 1, "defeating a wave advances to the next authored wave")
+	wave_runner.queue_free()
 
 
 func _test_encounter_failures_and_reset() -> void:

@@ -11,6 +11,9 @@ signal reload_finished(weapon: WeaponBase)
 signal reload_cancelled(weapon: WeaponBase)
 signal hit_confirmed(target: Node, damage: float)
 signal shot_resolved(kind: StringName, position: Vector3)
+signal feedback_resolved(event: CombatFeedbackEvent)
+
+enum LifecycleState { HOLSTERED, RAISING, READY, FIRING, RECOVERING, RELOADING, LOWERING }
 
 @export var definition: WeaponDefinition
 @export var camera: Camera3D
@@ -26,10 +29,16 @@ var enabled := false:
 	set(value):
 		enabled = value
 		visible = value
+		if value:
+			lifecycle_state = LifecycleState.READY
+		elif lifecycle_state != LifecycleState.HOLSTERED:
+			lifecycle_state = LifecycleState.HOLSTERED
 var _cooldown_remaining := 0.0
 var _muzzle_flash_generation := 0
 var _reload_remaining := 0.0
 var _reload_origin := Vector3.ZERO
+var lifecycle_state := LifecycleState.HOLSTERED
+var _shot_sequence := 0
 
 func _ready() -> void:
 	if definition != null:
@@ -42,9 +51,14 @@ func _ready() -> void:
 	if burst != null:
 		burst.visible = false
 	visible = enabled
+	lifecycle_state = LifecycleState.READY if enabled else LifecycleState.HOLSTERED
 
 func _process(delta: float) -> void:
 	_cooldown_remaining = maxf(0.0, _cooldown_remaining - delta)
+	if lifecycle_state == LifecycleState.FIRING:
+		lifecycle_state = LifecycleState.RECOVERING
+	elif lifecycle_state == LifecycleState.RECOVERING and _cooldown_remaining <= 0.0:
+		lifecycle_state = LifecycleState.READY
 	if is_reloading:
 		_reload_remaining -= delta
 		var duration := maxf(definition.reload_seconds, 0.01)
@@ -90,6 +104,7 @@ func request_reload() -> bool:
 	if not definition.infinite_reserve and reserve_ammo <= 0:
 		return false
 	is_reloading = true
+	lifecycle_state = LifecycleState.RELOADING
 	_reload_remaining = definition.reload_seconds
 	_reload_origin = position
 	reload_started.emit(self, definition.reload_seconds)
@@ -99,6 +114,7 @@ func cancel_reload() -> bool:
 	if not is_reloading:
 		return false
 	is_reloading = false
+	lifecycle_state = LifecycleState.READY if enabled else LifecycleState.HOLSTERED
 	_reload_remaining = 0.0
 	position = _reload_origin
 	reload_cancelled.emit(self)
@@ -118,6 +134,7 @@ func _complete_reload_step() -> void:
 		_reload_remaining = definition.reload_seconds
 		return
 	is_reloading = false
+	lifecycle_state = LifecycleState.READY if enabled else LifecycleState.HOLSTERED
 	position = _reload_origin
 	reload_finished.emit(self)
 
@@ -133,6 +150,7 @@ func _begin_fire(secondary: bool) -> bool:
 		ammo -= cost
 		_emit_ammo_state()
 	_cooldown_remaining = definition.secondary_cooldown if secondary else definition.primary_cooldown
+	lifecycle_state = LifecycleState.FIRING
 	fired.emit(self, secondary)
 	_flash_muzzle()
 	return true
@@ -157,26 +175,56 @@ func _hitscan(damage: float, range_limit: float, spread_degrees: float, knockbac
 	var query := PhysicsRayQueryParameters3D.create(from, from + direction * range_limit)
 	query.exclude = [_find_player_rid()]
 	var hit := camera.get_world_3d().direct_space_state.intersect_ray(query)
+	_shot_sequence += 1
+	var event := CombatFeedbackEvent.new()
+	event.shot_id = _shot_sequence
+	event.weapon_id = definition.id
+	event.origin = from
+	event.damage = damage
 	if hit.is_empty():
-		shot_resolved.emit(&"miss", from + direction * range_limit)
+		event.destination = from + direction * range_limit
+		event.hit_type = CombatFeedbackEvent.HitType.MISS
+		_emit_feedback(event)
 		return hit
 	var impact_position: Vector3 = hit.get("position", from + direction * range_limit)
 	var impact_normal: Vector3 = hit.get("normal", -direction)
 	var target := _find_damage_receiver(hit.get("collider"))
+	event.destination = impact_position
+	event.surface_type = _surface_type(hit.get("collider"))
+	event.target = target
 	if target != null:
+		var destructible := not target.is_in_group(&"enemies") and target.get("is_dead") == null
 		if target.has_method("apply_damage"):
 			target.apply_damage(damage, get_parent(), hit.get("position", Vector3.ZERO))
 		elif target.has_method("damage"):
 			target.damage(damage)
 		hit_confirmed.emit(target, damage)
-		shot_resolved.emit(&"enemy", impact_position)
-		_spawn_impact_marker(impact_position, impact_normal, &"enemy")
+		event.hit_type = CombatFeedbackEvent.HitType.DESTRUCTIBLE if destructible else CombatFeedbackEvent.HitType.ENEMY
+		event.killed = target.get("is_dead") == true
+		_emit_feedback(event)
+		_spawn_impact_marker(impact_position, impact_normal, event.legacy_kind())
 		if knockback > 0.0 and target.has_method("apply_knockback"):
 			target.apply_knockback(direction * knockback)
 	else:
-		shot_resolved.emit(&"world", impact_position)
+		event.hit_type = CombatFeedbackEvent.HitType.WORLD
+		_emit_feedback(event)
 		_spawn_impact_marker(impact_position, impact_normal, &"world")
 	return hit
+
+
+func _emit_feedback(event: CombatFeedbackEvent) -> void:
+	feedback_resolved.emit(event)
+	shot_resolved.emit(event.legacy_kind(), event.destination)
+
+
+func _surface_type(collider: Variant) -> StringName:
+	var node := collider as Node
+	while node != null:
+		if node.has_meta(&"surface_type"): return StringName(String(node.get_meta(&"surface_type")))
+		for type in [&"metal", &"wood", &"glass", &"water", &"soil", &"concrete", &"shield"]:
+			if node.is_in_group(type): return type
+		node = node.get_parent()
+	return &"flesh" if collider is Node and (collider as Node).is_in_group(&"enemies") else &"concrete"
 
 func _spread_direction(forward: Vector3, spread_degrees: float) -> Vector3:
 	var cone := tan(deg_to_rad(spread_degrees))
@@ -206,7 +254,7 @@ func _flash_muzzle() -> void:
 		return
 	_muzzle_flash_generation += 1
 	var generation := _muzzle_flash_generation
-	if muzzle_flash != null:
+	if muzzle_flash != null and not _reduced_flashes():
 		muzzle_flash.visible = true
 	if burst != null:
 		burst.visible = true
@@ -275,7 +323,8 @@ func _spawn_enemy_hit_pop(position_value: Vector3, normal: Vector3, parent: Node
 		flash_tween.tween_property(flash, "scale", Vector3.ONE * 1.75, 0.045)
 		flash_tween.tween_property(flash, "scale", Vector3.ZERO, 0.14)
 
-	for index in 6:
+	var spark_count := 3 if _reduced_flashes() else 6
+	for index in spark_count:
 		var spark := MeshInstance3D.new()
 		spark.name = "Spark%02d" % index
 		spark.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
@@ -298,6 +347,12 @@ func _spawn_enemy_hit_pop(position_value: Vector3, normal: Vector3, parent: Node
 				pop.queue_free()
 		)
 	return pop
+
+
+func _reduced_flashes() -> bool:
+	if not is_inside_tree(): return false
+	var settings := get_node_or_null("/root/SettingsManager")
+	return settings != null and bool(settings.get_value(&"video", &"reduced_flashes", false))
 
 
 func _impact_pop_material(color: Color, energy: float) -> StandardMaterial3D:

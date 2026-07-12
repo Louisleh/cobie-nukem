@@ -73,7 +73,7 @@ func _initialize() -> void:
 	if compliance_trigger != null:
 		check(compliance_trigger.collision_mask == 2, "Progression trigger does not detect the player physics layer")
 		player.global_position.z = -90.0
-		level._physics_process(0.0)
+		level._check_route_recovery()
 		check(level.spawned_zones.has(&"equipment_shed"), "Spatial fallback missed Equipment Shed progression")
 		check(level.spawned_zones.has(&"maintenance_tunnels"), "Spatial fallback missed Maintenance Tunnels progression")
 		check(level.spawned_zones.has(&"compliance_lab"), "Spatial fallback missed Compliance Lab progression")

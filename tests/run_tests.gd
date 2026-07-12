@@ -26,10 +26,10 @@ func _check_project_contract() -> void:
 			failures.append("Missing input action: %s" % action)
 	if ProjectSettings.get_setting("rendering/renderer/rendering_method") != "gl_compatibility":
 		failures.append("Compatibility renderer is not configured")
-	if ProjectSettings.get_setting("display/window/size/viewport_width") != 320:
-		failures.append("Internal viewport width must be 320")
-	if ProjectSettings.get_setting("display/window/size/viewport_height") != 180:
-		failures.append("Internal viewport height must be 180")
+	if ProjectSettings.get_setting("display/window/size/viewport_width") != 640:
+		failures.append("Internal viewport width must be 640")
+	if ProjectSettings.get_setting("display/window/size/viewport_height") != 360:
+		failures.append("Internal viewport height must be 360")
 
 func _check_scene(path: String) -> void:
 	var packed := load(path) as PackedScene

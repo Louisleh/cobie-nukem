@@ -1,6 +1,7 @@
-[gd_resource type="Resource" script_class="EnemyDefinition" load_steps=2 format=3]
+[gd_resource type="Resource" script_class="EnemyDefinition" load_steps=3 format=3]
 
 [ext_resource type="Script" path="res://scripts/ai/enemy_definition.gd" id="1"]
+[ext_resource type="Resource" path="res://resources/enemies/reaction_boss.tres" id="2"]
 
 [resource]
 script = ExtResource("1")
@@ -17,4 +18,8 @@ attack_damage = 18.0
 attack_cooldown = 1.8
 telegraph_seconds = 0.65
 threat_weight = 2.0
+threat_value = 12
+navigation_radius = 1.4
+weak_point_multiplier = 2.0
+reaction_profile = ExtResource("2")
 score_value = 2500
