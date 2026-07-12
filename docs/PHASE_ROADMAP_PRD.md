@@ -6,7 +6,7 @@
 
 **Last status review:** 2026-07-11
 
-**Current development baseline:** `0.5.0-rc1` (`2daf1a4` gameplay revision; difficulty selection, save-schema v2, state hardening, and Mission 2 pipeline proof)
+**Current development baseline:** `0.5.0-rc1` (`f505679` gameplay/UI revision; difficulty selection, save-schema v2, state hardening, and Mission 2 pipeline proof)
 
 **Last playtest RC:** `0.5.0-rc1` — public deployment in progress at <https://www.louislehmann.fyi/games/cobie-nukem/>
 
