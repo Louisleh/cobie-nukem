@@ -9,11 +9,18 @@ signal vibration_requested(weak: float, strong: float, duration: float)
 
 var _trauma := 0.0
 var _time := 0.0
-var _base_rotation := Vector3.ZERO
+var _base_h_offset := 0.0
+var _base_v_offset := 0.0
 
 func _ready() -> void:
 	if camera != null:
-		_base_rotation = camera.rotation
+		_base_h_offset = camera.h_offset
+		_base_v_offset = camera.v_offset
+	var settings := get_node_or_null("/root/SettingsManager")
+	if settings != null:
+		shake_scale = clampf(float(settings.get_value(&"accessibility", &"camera_shake", 1.0)), 0.0, 1.0)
+		if bool(settings.get_value(&"accessibility", &"reduced_motion", false)): shake_scale = 0.0
+		reduced_flashes = bool(settings.get_value(&"video", &"reduced_flashes", false))
 
 func _process(delta: float) -> void:
 	if camera == null:
@@ -21,11 +28,10 @@ func _process(delta: float) -> void:
 	_time += delta
 	_trauma = maxf(0.0, _trauma - delta * 3.5)
 	var amount := _trauma * _trauma * shake_scale
-	camera.rotation = _base_rotation + Vector3(
-		sin(_time * 47.0) * amount * 0.018,
-		cos(_time * 41.0) * amount * 0.014,
-		sin(_time * 53.0) * amount * 0.008
-	)
+	# Projection offsets provide readable shake without rotating the authoritative
+	# camera basis used by weapon rays and auto aim.
+	camera.h_offset = _base_h_offset + sin(_time * 47.0) * amount * 0.04
+	camera.v_offset = _base_v_offset + cos(_time * 41.0) * amount * 0.035
 
 func kick(amount: float, weak_vibration := 0.0, strong_vibration := 0.0, duration := 0.08) -> void:
 	_trauma = clampf(_trauma + amount, 0.0, 1.0)

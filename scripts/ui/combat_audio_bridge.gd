@@ -23,8 +23,14 @@ func bind_player(player: Node) -> void:
 	var health := player.get_node_or_null("HealthArmor")
 	if health != null and health.has_signal("damaged"):
 		health.damaged.connect(func(_a: float, _h: float, _r: float, _s: Node) -> void: sounds.play(ProceduralAudio.Cue.HURT))
-	if player.has_signal("footstep"):
+	if player.has_signal("surface_footstep"):
+		player.surface_footstep.connect(_on_surface_footstep)
+	elif player.has_signal("footstep"):
 		player.footstep.connect(func(running: bool) -> void: sounds.play(ProceduralAudio.Cue.FOOTSTEP_RUN if running else ProceduralAudio.Cue.FOOTSTEP_WALK, -5.0))
+
+func _on_surface_footstep(surface: StringName, running: bool) -> void:
+	if samples != null and samples.play(StringName("footstep_" + String(surface))): return
+	sounds.play(ProceduralAudio.Cue.FOOTSTEP_RUN if running else ProceduralAudio.Cue.FOOTSTEP_WALK, -5.0)
 
 func _on_weapon_fired(weapon: Node, _secondary: bool) -> void:
 	var weapon_name := String(weapon.definition.display_name).to_lower() if weapon.get("definition") != null else ""

@@ -11,6 +11,8 @@ var _move_origin := Vector2.ZERO
 var _move_value := Vector2.ZERO
 var _button_fingers: Dictionary = {}
 var _touch_enabled := false
+var control_opacity := 0.75
+var left_handed := false
 
 const MOVE_RADIUS := 25.0
 const BUTTONS := {
@@ -33,9 +35,14 @@ func _ready() -> void:
 	var settings := get_node_or_null("/root/SettingsManager")
 	if settings != null and settings.has_method("get_value"):
 		look_sensitivity = clampf(float(settings.get_value(&"gameplay", &"touch_sensitivity", 1.0)), 0.25, 3.0)
+		control_opacity = clampf(float(settings.get_value(&"gameplay", &"control_opacity", 0.75)), 0.25, 1.0)
+		left_handed = bool(settings.get_value(&"gameplay", &"left_handed_touch", false))
 	if settings != null and settings.has_signal("setting_changed"):
 		settings.setting_changed.connect(func(section: StringName, key: StringName, value: Variant) -> void:
-			if section == &"gameplay" and key == &"touch_sensitivity": look_sensitivity = clampf(float(value), 0.25, 3.0)
+			if section != &"gameplay": return
+			if key == &"touch_sensitivity": look_sensitivity = clampf(float(value), 0.25, 3.0)
+			elif key == &"control_opacity": control_opacity = clampf(float(value), 0.25, 1.0); queue_redraw()
+			elif key == &"left_handed_touch": left_handed = bool(value); release_all()
 		)
 	queue_redraw()
 
@@ -146,11 +153,15 @@ func _button_at(position: Vector2) -> StringName:
 
 
 func _to_design(position: Vector2) -> Vector2:
-	return Vector2(position.x * 320.0 / maxf(size.x, 1.0), position.y * 180.0 / maxf(size.y, 1.0))
+	var result := Vector2(position.x * 320.0 / maxf(size.x, 1.0), position.y * 180.0 / maxf(size.y, 1.0))
+	if left_handed: result.x = 320.0 - result.x
+	return result
 
 
 func _from_design(position: Vector2) -> Vector2:
-	return Vector2(position.x * size.x / 320.0, position.y * size.y / 180.0)
+	var result := position
+	if left_handed: result.x = 320.0 - result.x
+	return Vector2(result.x * size.x / 320.0, result.y * size.y / 180.0)
 
 
 func _draw() -> void:
@@ -158,7 +169,7 @@ func _draw() -> void:
 	var scale_value := minf(size.x / 320.0, size.y / 180.0)
 	var font := ThemeDB.fallback_font
 	var move_center := _from_design(Vector2(48, 109))
-	draw_circle(move_center, MOVE_RADIUS * scale_value, Color(0.05, 0.08, 0.09, 0.38))
+	draw_circle(move_center, MOVE_RADIUS * scale_value, Color(0.05, 0.08, 0.09, 0.5 * control_opacity))
 	draw_arc(move_center, MOVE_RADIUS * scale_value, 0.0, TAU, 40, Color(0.78, 0.72, 0.42, 0.6), maxf(1.0, scale_value))
 	var knob := move_center + _move_value * MOVE_RADIUS * 0.55 * scale_value
 	draw_circle(knob, 10.0 * scale_value, Color(0.95, 0.7, 0.18, 0.7))
@@ -167,7 +178,7 @@ func _draw() -> void:
 		var center := _from_design(data.center)
 		var radius := float(data.radius) * scale_value
 		var active: bool = action in _button_fingers.values()
-		draw_circle(center, radius, Color(0.95, 0.45, 0.12, 0.72) if active else Color(0.05, 0.08, 0.09, 0.48))
+		draw_circle(center, radius, Color(0.95, 0.45, 0.12, control_opacity) if active else Color(0.05, 0.08, 0.09, 0.65 * control_opacity))
 		draw_arc(center, radius, 0.0, TAU, 32, Color(1.0, 0.75, 0.24, 0.75), maxf(1.0, scale_value))
 		var label := String(data.label)
 		var font_size := maxi(7, roundi(8.0 * scale_value))

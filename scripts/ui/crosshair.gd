@@ -5,6 +5,8 @@ extends Control
 	set(value):
 		target_locked = value
 		queue_redraw()
+@export var high_contrast := false:
+	set(value): high_contrast = value; queue_redraw()
 
 var _shot_result: StringName = &""
 var _shot_result_time := 0.0
@@ -31,7 +33,7 @@ func _process(delta: float) -> void:
 
 func _draw() -> void:
 	var center := size * 0.5
-	var color := Color("ffd34d") if target_locked else Color(1, 1, 1, 0.9)
+	var color := (Color("00ffff") if target_locked else Color("ffff00")) if high_contrast else (Color("ffd34d") if target_locked else Color(1, 1, 1, 0.9))
 	var gap := 3.0
 	var length := 4.0
 	draw_line(center + Vector2(-gap - length, 0), center + Vector2(-gap, 0), color, 1)

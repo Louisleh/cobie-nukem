@@ -80,6 +80,26 @@ max_value = 300.0
 step = 5.0
 value = 100.0
 tooltip_text = "Right-thumb aiming sensitivity on touch devices"
+[node name="ControlOpacityLabel" type="Label" parent="Panel/VBox/Scroll/Grid"]
+layout_mode = 2
+text = "TOUCH OPACITY"
+[node name="ControlOpacitySlider" type="HSlider" parent="Panel/VBox/Scroll/Grid"]
+unique_name_in_owner = true
+layout_mode = 2
+min_value = 25.0
+max_value = 100.0
+step = 5.0
+value = 75.0
+[node name="TextScaleLabel" type="Label" parent="Panel/VBox/Scroll/Grid"]
+layout_mode = 2
+text = "HUD TEXT SCALE"
+[node name="TextScaleSlider" type="HSlider" parent="Panel/VBox/Scroll/Grid"]
+unique_name_in_owner = true
+layout_mode = 2
+min_value = 75.0
+max_value = 150.0
+step = 5.0
+value = 100.0
 [node name="FovLabel" type="Label" parent="Panel/VBox/Scroll/Grid"]
 layout_mode = 2
 text = "FIELD OF VIEW"
@@ -154,6 +174,33 @@ text = "SUBTITLES"
 unique_name_in_owner = true
 layout_mode = 2
 text = "ON"
+[node name="HighContrastLabel" type="Label" parent="Panel/VBox/Scroll/Grid"]
+layout_mode = 2
+text = "HIGH CONTRAST"
+[node name="HighContrast" type="CheckButton" parent="Panel/VBox/Scroll/Grid"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "ON"
+[node name="ReducedMotionLabel" type="Label" parent="Panel/VBox/Scroll/Grid"]
+layout_mode = 2
+text = "REDUCED MOTION"
+[node name="ReducedMotion" type="CheckButton" parent="Panel/VBox/Scroll/Grid"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "ON"
+[node name="LeftHandedTouchLabel" type="Label" parent="Panel/VBox/Scroll/Grid"]
+layout_mode = 2
+text = "LEFT-HANDED TOUCH"
+[node name="LeftHandedTouch" type="CheckButton" parent="Panel/VBox/Scroll/Grid"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "ON"
+[node name="QualityLabel" type="Label" parent="Panel/VBox/Scroll/Grid"]
+layout_mode = 2
+text = "QUALITY PROFILE"
+[node name="QualityChoice" type="OptionButton" parent="Panel/VBox/Scroll/Grid"]
+unique_name_in_owner = true
+layout_mode = 2
 [node name="Buttons" type="HBoxContainer" parent="Panel/VBox"]
 layout_mode = 2
 alignment = 2

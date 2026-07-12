@@ -6,6 +6,7 @@ const WEB := preload("res://resources/quality/web_ipad.tres")
 const NATIVE := preload("res://resources/quality/native_enhanced.tres")
 
 var current: QualityProfile
+var _temporary_effects: Array[Node] = []
 
 func _ready() -> void:
 	apply_auto_profile()
@@ -20,6 +21,30 @@ func apply_auto_profile() -> void:
 
 func apply_profile(profile: QualityProfile) -> void:
 	current = profile
-	var pressure := get_node_or_null("/root/CombatPressure")
+	Engine.max_fps = profile.target_fps
+	var viewport := get_viewport()
+	if viewport != null: viewport.scaling_3d_scale = profile.render_scale
+	var pressure := get_parent().get_node_or_null("CombatPressure") if get_parent() != null else null
 	if pressure != null: pressure.maximum_attackers = profile.maximum_attackers
 	profile_changed.emit(profile)
+
+
+func claim_temporary_effect(effect: Node) -> void:
+	if not is_instance_valid(effect): return
+	_prune_effects()
+	var budget := current.decal_budget if current != null else 48
+	while _temporary_effects.size() >= budget and not _temporary_effects.is_empty():
+		var oldest: Node = _temporary_effects.pop_front()
+		if is_instance_valid(oldest): oldest.queue_free()
+	_temporary_effects.append(effect)
+	effect.tree_exiting.connect(func() -> void: _temporary_effects.erase(effect), CONNECT_ONE_SHOT)
+
+
+func temporary_effect_count() -> int:
+	_prune_effects()
+	return _temporary_effects.size()
+
+
+func _prune_effects() -> void:
+	for effect in _temporary_effects.duplicate():
+		if not is_instance_valid(effect): _temporary_effects.erase(effect)

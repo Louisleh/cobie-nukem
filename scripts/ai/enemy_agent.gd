@@ -442,6 +442,8 @@ func _spawn_death_pop() -> void:
 	if parent == null:
 		return
 	var pop := Node3D.new(); pop.name = "EnemyDeathPop"; parent.add_child(pop); pop.global_position = get_auto_aim_position()
+	var quality := get_node_or_null("/root/QualityManager")
+	if quality != null: quality.claim_temporary_effect(pop)
 	for index in 10:
 		var fragment := MeshInstance3D.new(); fragment.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		var mesh := BoxMesh.new(); mesh.size = Vector3.ONE * randf_range(0.05, 0.11); fragment.mesh = mesh
