@@ -67,13 +67,13 @@ anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 offset_left = 8.0
-offset_top = 5.0
+offset_top = 2.0
 offset_right = -8.0
-offset_bottom = -5.0
+offset_bottom = -2.0
 
 [node name="Main" type="VBoxContainer" parent="SafeArea"]
 layout_mode = 2
-theme_override_constants/separation = 3
+theme_override_constants/separation = 2
 
 [node name="Header" type="HBoxContainer" parent="SafeArea/Main"]
 layout_mode = 2
@@ -82,7 +82,7 @@ layout_mode = 2
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_colors/font_color = Color(1, 0.73, 0.19, 1)
-theme_override_font_sizes/font_size = 11
+theme_override_font_sizes/font_size = 9
 text = "CHOOSE YOUR MISSION"
 
 [node name="EpisodeBadge" type="Label" parent="SafeArea/Main/Header"]
@@ -103,7 +103,7 @@ vertical_alignment = 1
 visible = false
 
 [node name="MissionPanel" type="PanelContainer" parent="SafeArea/Main"]
-custom_minimum_size = Vector2(0, 64)
+custom_minimum_size = Vector2(0, 57)
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_styles/panel = SubResource("PanelStyle")
@@ -111,16 +111,16 @@ theme_override_styles/panel = SubResource("PanelStyle")
 [node name="MissionMargin" type="MarginContainer" parent="SafeArea/Main/MissionPanel"]
 layout_mode = 2
 theme_override_constants/margin_left = 5
-theme_override_constants/margin_top = 5
+theme_override_constants/margin_top = 3
 theme_override_constants/margin_right = 5
-theme_override_constants/margin_bottom = 5
+theme_override_constants/margin_bottom = 3
 
 [node name="Mission" type="HBoxContainer" parent="SafeArea/Main/MissionPanel/MissionMargin"]
 layout_mode = 2
 theme_override_constants/separation = 7
 
 [node name="PreviewFrame" type="PanelContainer" parent="SafeArea/Main/MissionPanel/MissionMargin/Mission"]
-custom_minimum_size = Vector2(78, 54)
+custom_minimum_size = Vector2(72, 48)
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_styles/panel = SubResource("PreviewStyle")
@@ -200,7 +200,7 @@ text = "DIFFICULTY DETAILS"
 autowrap_mode = 2
 
 [node name="CourseScroll" type="ScrollContainer" parent="SafeArea/Main"]
-custom_minimum_size = Vector2(0, 47)
+custom_minimum_size = Vector2(0, 40)
 layout_mode = 2
 horizontal_scroll_mode = 2
 vertical_scroll_mode = 0
@@ -215,7 +215,7 @@ layout_mode = 2
 
 [node name="StatusLabel" type="Label" parent="SafeArea/Main/Footer"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(150, 14)
+custom_minimum_size = Vector2(150, 12)
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_colors/font_color = Color(1, 0.54, 0.22, 1)

@@ -43,7 +43,7 @@ func _build_cards() -> void:
 	for index in levels.size():
 		var data := levels[index]
 		var card := Button.new()
-		card.custom_minimum_size = Vector2(88.0, 44.0)
+		card.custom_minimum_size = Vector2(88.0, 37.0)
 		card.add_theme_font_size_override("font_size", 6)
 		card.text = "%02d\n%s" % [index + 1, data.title if data.unlocked else "LOCKED // " + data.title]
 		card.tooltip_text = data.description
@@ -75,8 +75,8 @@ func _build_difficulty_selector() -> void:
 		button.text = profile.display_name
 		button.tooltip_text = profile.description
 		button.focus_mode = Control.FOCUS_ALL
-		button.custom_minimum_size = Vector2(58.0, 13.0)
-		button.add_theme_font_size_override("font_size", 6)
+		button.custom_minimum_size = Vector2(58.0, 11.0)
+		button.add_theme_font_size_override("font_size", 5)
 		button.set_pressed_no_signal(profile.id == GameState.difficulty_id)
 		button.pressed.connect(_on_difficulty_pressed.bind(profile))
 		button.mouse_entered.connect(button.grab_focus)
