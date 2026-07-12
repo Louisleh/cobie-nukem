@@ -34,6 +34,7 @@ run_godot_test res://tests/unit/save_schema_test.gd
 run_godot_test res://tests/unit/mobile_controls_test.gd
 run_godot_test res://tests/integration/integration_test_runner.gd
 run_godot_test res://tests/integration/test_episode_1_level.gd
+run_godot_test res://tests/integration/adversarial_state_test.gd
 run_godot_test res://tests/smoke/smoke_test_runner.gd
 run_godot_test res://tests/smoke/performance_smoke.gd
 bash tools/asset_ip_scan.sh
