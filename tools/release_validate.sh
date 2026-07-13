@@ -23,6 +23,11 @@ if [[ -e addons/godot_ai_bridge ]] \
   echo "ERROR: Godot AI bridge is enabled or present. Remove it before validation/export."
   exit 1
 fi
+if find tmp -type f \( -name '*.gd' -o -name '*.tscn' -o -name '*.tres' \) -print -quit 2>/dev/null | grep -q .; then
+  echo "ERROR: development Resources under tmp/ would be discovered by Godot and packed. Remove them before validation/export."
+  find tmp -type f \( -name '*.gd' -o -name '*.tscn' -o -name '*.tres' \) -print
+  exit 1
+fi
 
 run_godot_test() {
   local script="$1"

@@ -1,6 +1,6 @@
 # Cobie Nukem — Multi-Phase Production PRD
 
-**Status:** Active production source of truth; `0.6.0-alpha.2` stabilization and illustrated-roadmap checkpoint shipped
+**Status:** Active production source of truth; `0.6.0-alpha.3` agentic-production candidate under release validation
 
 **Created:** 2026-07-11
 
@@ -8,7 +8,7 @@
 
 **Current public baseline:** `0.6.0-alpha.2` (`e6b4700` gameplay/UI feature revision; source integration `5cc352b`)
 
-**Unreleased development baseline:** agentic game-development/toolchain and Salmon Creek production-asset checkpoint on `codex/agentic-gamedev-overhaul`; public remains `0.6.0-alpha.2` until the release matrix passes
+**Unreleased development baseline:** `0.6.0-alpha.3` candidate at feature revision `b8795dc`; public remains `0.6.0-alpha.2` until the release matrix passes and the matching artifact is deployed
 
 **Last playtest alpha:** `0.6.0-alpha.2` (`e6b4700`) — live at <https://www.louislehmann.fyi/games/cobie-nukem/>
 
