@@ -21,7 +21,7 @@ This is a durable evidence template, not a claim that every listed check has run
 | Projectile first-render profile | Pass | Runtime visual/audio warmup plus bounded pool; four rendered spawn frames stay below 50 ms |
 | Complete release/export matrix | Pending final stamped tree | `QA_EXPORTS=1 bash tools/release_validate.sh` required before merge |
 | Packaged Web desktop/tablet | PASS | Cache-keyed alpha.4 payload; loading/warming/ready, menu, mission select, gameplay, combat input, and 1024×768 twin-stick HUD verified in the in-app Chromium browser |
-| Public deployment | Pending | Verify the exact deployed hashes and uncached public route after merge |
+| Public deployment | PASS | Source merge `9539978`; website deploy `65863c8`; uncached public landing and 1024×768 twin-stick gameplay passed with no new console warnings/errors; downloaded public PCK hash matched the candidate |
 | Physical iPad and human playthrough | Not run | Explicit human-only gate |
 
 ### Artifacts
