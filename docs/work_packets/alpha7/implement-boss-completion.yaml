@@ -1,0 +1,38 @@
+work_id: alpha7-boss-completion-contract
+role: spark-gameplay-worker
+goal: Make EncounterDefinition.BOSS_DEFEATED an explicit, validated, deterministic runtime contract instead of an ignored enum value.
+baseline_revision: b1ae6c9
+dependencies:
+  - alpha7-audit-enemy-walker
+owned_paths:
+  - scripts/gameplay/encounter_definition.gd
+  - scripts/gameplay/encounter_runner.gd
+  - resources/encounters/salmon_walker.tres
+  - tests/unit/gameplay_foundation_test.gd
+read_only_context:
+  - resources/encounters
+  - scripts/ai/animal_control_walker.gd
+  - tests/integration/salmon_creek_encounter_pacing_test.gd
+forbidden_paths:
+  - scripts/core
+  - scripts/level
+  - project.godot
+  - export_presets.cfg
+  - docs/PHASE_ROADMAP_PRD.md
+  - scripts/core/build_info.gd
+behavioral_contract: A BOSS_DEFEATED encounter authors exactly one explicit completion target. Non-target actors may die and waves may advance normally; defeating the target completes once, cleans remaining runner-owned actors/timers, and emits no duplicate completion or rewards. Existing ALL_DEFEATED and FIRE_AND_FORGET behavior remains unchanged.
+acceptance_criteria:
+  - Encounter validation rejects missing or multiple boss completion targets and invalid marker types.
+  - Salmon Walker marks its sole Walker spawn as the completion target.
+  - Runtime tracks the authored target without class-name or scene-path hardcoding.
+  - Defeating a non-target does not complete; defeating the target completes exactly once and leaves no runner-owned actor/timer.
+  - Reset and restore remain deterministic.
+focused_tests:
+  - HOME=/tmp/cobie-alpha7-boss-home /opt/homebrew/bin/godot --headless --path . --script res://tests/unit/gameplay_foundation_test.gd
+evidence_required:
+  - One externally verifiable commit whose parent is the packet baseline.
+  - Complete focused-test output with no attributable ERROR, leak, or orphan.
+out_of_scope:
+  - Walker balance, presentation, phase timing, summons, or audio
+  - Architecture beyond the two encounter contracts
+time_limit_minutes: 30

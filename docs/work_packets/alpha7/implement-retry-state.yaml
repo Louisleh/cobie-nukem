@@ -1,0 +1,41 @@
+work_id: alpha7-retry-state-stabilization
+role: spark-gameplay-worker
+goal: Flush active gameplay audio on checkpoint retry and restore the persisted checkpoint identity into run statistics on Continue.
+baseline_revision: b1ae6c9
+dependencies:
+  - alpha7-audit-audio
+  - alpha7-audit-save-progression
+owned_paths:
+  - scripts/audio/sample_audio_emitter.gd
+  - scripts/ui/combat_audio_bridge.gd
+  - scripts/level/episode_1_level_1.gd
+  - tests/integration/test_episode_1_level.gd
+read_only_context:
+  - scripts/ui/procedural_audio.gd
+  - scripts/core/game_state.gd
+  - scripts/core/save_manager.gd
+  - tests/unit/save_schema_test.gd
+forbidden_paths:
+  - scripts/core
+  - scripts/gameplay
+  - project.godot
+  - export_presets.cfg
+  - docs/PHASE_ROADMAP_PRD.md
+  - scripts/core/build_info.gd
+behavioral_contract: Checkpoint retry stops currently playing gameplay sample/procedural voices without rebuilding cue registration or changing music ownership. Continue restoration sets run_stats.checkpoint_id to the sanitized persisted ID before gameplay resumes. Fresh runs remain start.
+acceptance_criteria:
+  - SampleAudioEmitter exposes a bounded stop-all operation that preserves pools/registration for reuse.
+  - CombatAudioBridge exposes reset_gameplay_audio and stops both imported and procedural gameplay voices safely.
+  - restart_from_checkpoint calls the bridge reset before encounter/player restart effects.
+  - Restored checkpoint initialization applies checkpoint_id to GameState.run_stats.
+  - Integration coverage asserts audio reset delegation and restored checkpoint identity.
+focused_tests:
+  - HOME=/tmp/cobie-alpha7-retry-home /opt/homebrew/bin/godot --headless --path . --script res://tests/integration/test_episode_1_level.gd
+evidence_required:
+  - One externally verifiable commit whose parent is the packet baseline.
+  - Complete focused-test output with no attributable ERROR, leak, or orphan.
+out_of_scope:
+  - Music/ambience policy
+  - Audio mix or asset creation
+  - Save schema changes
+time_limit_minutes: 30
