@@ -258,8 +258,10 @@ func _bake_navigation() -> void:
 		# Assign the completed resource to the server RID explicitly. Linux
 		# headless otherwise defers the node's resource-change notification beyond
 		# a physics-only test loop, while macOS applies it in the same turn.
+		var navigation_map := _navigation_region.get_navigation_map()
 		NavigationServer3D.region_set_navigation_mesh(_navigation_region.get_rid(), _navigation_region.navigation_mesh)
-		NavigationServer3D.map_force_update(_navigation_region.get_navigation_map())
+		NavigationServer3D.map_set_active(navigation_map, true)
+		NavigationServer3D.map_force_update(navigation_map)
 	for source in _navigation_sources:
 		if is_instance_valid(source):
 			source.queue_free()
