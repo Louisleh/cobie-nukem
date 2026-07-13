@@ -15,6 +15,9 @@ enum Kind {
 @export var prompt := "INTERACT"
 @export var enabled := true
 @export var persists_across_reset := false
+@export var visual_size := Vector3(1.1, 1.1, 1.1)
+@export var visual_color := Color("d18b35")
+@export var surface_type: StringName = &"metal"
 
 @export_multiline var description := ""
 
@@ -59,6 +62,10 @@ func validate() -> PackedStringArray:
 	var title_text := String(prompt).strip_edges()
 	if title_text.is_empty():
 		errors.append("interaction %s must define an interaction prompt" % id)
+	if not visual_size.is_finite() or visual_size.x <= 0.0 or visual_size.y <= 0.0 or visual_size.z <= 0.0:
+		errors.append("interaction %s requires a positive finite visual size" % id)
+	if surface_type == &"":
+		errors.append("interaction %s requires a surface type" % id)
 	match kind:
 		Kind.BREAKABLE_PROP:
 			if breakable_health <= 0.0:

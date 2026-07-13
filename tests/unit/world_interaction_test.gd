@@ -55,6 +55,9 @@ func _test_definition_validation() -> void:
 	breakable.id = &""
 	_expect(not breakable.validate().is_empty(), "empty id is rejected")
 	breakable.id = &"breakable"
+	breakable.visual_size = Vector3.ZERO
+	_expect(not breakable.validate().is_empty(), "non-positive interaction dimensions are rejected")
+	breakable.visual_size = Vector3.ONE
 	breakable.breakable_health = 0.0
 	_expect(not breakable.validate().is_empty(), "non-positive breakable health is rejected")
 

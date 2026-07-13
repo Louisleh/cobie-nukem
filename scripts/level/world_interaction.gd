@@ -162,6 +162,7 @@ func _apply_definition() -> void:
 		collision_layer = 0
 		return
 	_collision_shape_added = false
+	set_meta(&"surface_type", definition.surface_type)
 	_ensure_collision_shape()
 	_ensure_visual_if_empty()
 	_current_health = definition.starting_health() if definition.kind in [WorldInteractionDefinition.Kind.BREAKABLE_PROP, WorldInteractionDefinition.Kind.EXPLOSIVE_PROP] else 0.0
@@ -398,7 +399,7 @@ func _ensure_collision_shape() -> void:
 			return
 	var shape := CollisionShape3D.new()
 	shape.shape = BoxShape3D.new()
-	(shape.shape as BoxShape3D).size = Vector3(1.1, 1.1, 1.1)
+	(shape.shape as BoxShape3D).size = definition.visual_size
 	add_child(shape)
 	_collision_shape_added = true
 
@@ -415,7 +416,11 @@ func _ensure_visual_if_empty() -> void:
 	visual.mesh = BoxMesh.new()
 	visual.position = Vector3.ZERO
 	add_child(visual)
-	(visual.mesh as BoxMesh).size = Vector3(1.1, 1.1, 1.1)
+	(visual.mesh as BoxMesh).size = definition.visual_size
+	var material := StandardMaterial3D.new()
+	material.albedo_color = definition.visual_color
+	material.roughness = 0.72
+	visual.material_override = material
 
 
 func _spawn_temporary_effect() -> void:
