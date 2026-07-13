@@ -1,0 +1,47 @@
+work_id: alpha7-interaction-runtime
+role: spark-gameplay-worker
+goal: Add a reusable typed runtime foundation for breakable props, explosive props, hazards, loot containers, and persistent secret triggers.
+baseline_revision: 6ee68fc
+dependencies:
+  - alpha7-audit-performance-lifetimes
+owned_paths:
+  - scripts/gameplay/world_interaction_definition.gd
+  - scripts/level/world_interaction.gd
+  - scenes/interactables/world_interaction.tscn
+  - tests/unit/world_interaction_test.gd
+read_only_context:
+  - scripts/core/contracts/interactable.gd
+  - scripts/core/world_registry.gd
+  - scripts/core/quality_manager.gd
+  - scripts/combat/weapon_base.gd
+  - scripts/combat/pickup.gd
+  - scripts/level/breakable_secret_wall.gd
+  - scripts/level/episode_1_level_1.gd
+forbidden_paths:
+  - scripts/core
+  - scripts/level/episode_1_level_1.gd
+  - scripts/gameplay/content_manifest.gd
+  - project.godot
+  - export_presets.cfg
+  - tools/release_validate.sh
+  - docs/PHASE_ROADMAP_PRD.md
+behavioral_contract: One reusable component consumes a validated typed definition. Damage/activation is idempotent; chain reactions and drops are signal-driven and bounded; hazards use node-owned timing; reset and snapshot/restore are deterministic; persistent secrets expose stable IDs; temporary presentation is claimed through QualityManager. No new autoload or mission dependency.
+acceptance_criteria:
+  - All five interaction kinds validate and reject invalid IDs, values, scenes, or persistence contracts.
+  - Breakable and loot interactions activate exactly once and emit bounded drop requests.
+  - Explosives expose deterministic one-shot detonation and chain-reaction input without global per-frame scans.
+  - Hazards track overlapping damageable bodies and use one owned periodic Timer, cleaned on reset/exit.
+  - Secret triggers snapshot/restore completed state and never reward twice.
+  - Reset returns non-persistent interactions to authored state.
+  - Component adds itself to existing interaction indexing groups and exposes a clear use label where appropriate.
+focused_tests:
+  - HOME=/tmp/cobie-alpha7-interaction-home /opt/homebrew/bin/godot --headless --editor --path repo --quit
+  - HOME=/tmp/cobie-alpha7-interaction-home /opt/homebrew/bin/godot --headless --path repo --script res://tests/unit/world_interaction_test.gd
+evidence_required:
+  - One externally verifiable commit whose parent is the packet baseline.
+  - Full test output with no attributable ERROR, leak, orphan, or unbounded node.
+out_of_scope:
+  - Salmon Creek placement/content
+  - Save schema changes
+  - New art/audio assets
+time_limit_minutes: 40

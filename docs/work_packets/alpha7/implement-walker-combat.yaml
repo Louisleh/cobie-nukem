@@ -1,0 +1,44 @@
+work_id: alpha7-walker-combat-profile
+role: spark-gameplay-worker
+goal: Make Walker combat phases, weak-point windows, summon budget, and ordered threshold progression resource-driven and testable without mission-specific AI coupling.
+baseline_revision: 6ee68fc
+dependencies:
+  - alpha7-boss-completion-contract
+owned_paths:
+  - scripts/ai/walker_combat_profile.gd
+  - scripts/ai/animal_control_walker.gd
+  - resources/enemies/walker_combat_profile.tres
+  - scenes/enemies/animal_control_walker.tscn
+  - tests/integration/salmon_creek_encounter_pacing_test.gd
+read_only_context:
+  - scripts/ai/enemy_agent.gd
+  - scripts/ai/enemy_definition.gd
+  - scripts/level/salmon_creek_pacing_profile.gd
+  - scripts/level/episode_1_level_1.gd
+  - resources/encounters/salmon_walker_pacing.tres
+forbidden_paths:
+  - scripts/core
+  - scripts/gameplay
+  - scripts/level
+  - resources/encounters
+  - project.godot
+  - export_presets.cfg
+  - docs/PHASE_ROADMAP_PRD.md
+behavioral_contract: The Walker consumes a generic typed combat profile. A single damage event cannot skip authored phase order; each phase change emits exactly once. Cannon damage resistance/weak-point behavior, cooldown/range/telegraph tuning, summon cadence and live summon cap come from the profile. Golden-ball finish remains required. Reset is safe because all timers are Walker-owned and summons stay externally identifiable.
+acceptance_criteria:
+  - Profile validates ordered thresholds, matching tuning arrays, positive timings/ranges, and bounded summon fields.
+  - Walker scene assigns the profile and no longer hardcodes profile-owned combat numbers.
+  - Oversized damage advances only to the next authored threshold and cannot skip phase cues/recovery opportunities.
+  - Summons never exceed the authored live cap and can resume after a summon dies/frees.
+  - Existing sequential phase, pressure, Golden Ball, reset, and recovery contracts remain green.
+focused_tests:
+  - HOME=/tmp/cobie-alpha7-walker-home /opt/homebrew/bin/godot --headless --editor --path repo --quit
+  - HOME=/tmp/cobie-alpha7-walker-home /opt/homebrew/bin/godot --headless --path repo --script res://tests/integration/salmon_creek_encounter_pacing_test.gd
+evidence_required:
+  - One externally verifiable commit whose parent is the packet baseline.
+  - Complete focused-test output with no attributable ERROR, leak, or orphan.
+out_of_scope:
+  - Human boss balance or spectacle claims
+  - Mission recovery-drop placement/captions
+  - New Walker art or audio
+time_limit_minutes: 40
