@@ -7,7 +7,7 @@ This is a durable evidence template, not a claim that every listed check has run
 | Field | Value |
 | --- | --- |
 | Version | `0.6.0-alpha.4` / build `2026-07-13-agentic-overhaul-alpha` |
-| Feature revision | Pending coherent source commit; stamp before packaging |
+| Feature revision | `67a0ee4` (`Stabilize combat lifecycle and add rendered route profiling`) |
 | Godot | `4.7.stable.official.5b4e0cb0f` |
 | Platform | macOS M4 native Compatibility renderer plus packaged Web; no physical-device claim |
 
