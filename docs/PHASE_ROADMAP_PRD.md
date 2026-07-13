@@ -1,16 +1,16 @@
 # Cobie Nukem — Multi-Phase Production PRD
 
-**Status:** Active production source of truth; `0.6.0-alpha.2` stabilization and illustrated-roadmap pass in progress
+**Status:** Active production source of truth; `0.6.0-alpha.2` stabilization and illustrated-roadmap checkpoint shipped
 
 **Created:** 2026-07-11
 
 **Last status review:** 2026-07-12
 
-**Current public baseline:** `0.5.0-rc1` (`f505679` gameplay/UI revision)
+**Current public baseline:** `0.6.0-alpha.2` (`e6b4700` gameplay/UI feature revision; source integration `5cc352b`)
 
-**Unreleased development baseline:** world-class vertical-slice integration branch from `9c54c56`; build identity intentionally remains `0.5.0-rc1` until the `0.6.0-alpha` release gate
+**Unreleased development baseline:** none; `main` and the public release are synchronized after the `0.6.0-alpha.2` checkpoint
 
-**Last playtest RC:** `0.5.0-rc1` (`f505679`) — live at <https://www.louislehmann.fyi/games/cobie-nukem/>
+**Last playtest alpha:** `0.6.0-alpha.2` (`e6b4700`) — live at <https://www.louislehmann.fyi/games/cobie-nukem/>
 
 **Engine:** Godot 4.7 stable, GDScript, Compatibility renderer
 **Purpose:** Turn the family-playtest vertical slice into a sustainable, original multi-level game without sacrificing responsiveness, humor, Web support, or unusual-controller accessibility.
@@ -23,7 +23,7 @@ This section is the first place a new Codex or external-auditor run should read.
 | --- | --- | --- | --- |
 | 1. Gameplay systems foundation | **VERTICAL-SLICE FOUNDATION IMPLEMENTED — IN REVIEW** | Previous foundation plus `PlayerFeelProfile`, `WeaponFeelProfile`, terminal combat feedback events, damage reactions, pressure/attack tokens, group alert, weak-point metadata, multi-wave encounter schema v2, mission runtime/spawn registry extraction, event-driven interaction/aim registries | Full navigation-mesh production pass, authored directional animation atlases, final feel/balance |
 | 2. Content-production pipeline | **FOUNDATION COMPLETE** | Versioned manifest, Salmon Creek content data, headless validator, release-gate integration, authoring guide, manifest template, critical-path rules, Mission 2 (Vancouver Waterfront) manifest/objective/encounter skeleton validating in CI with a locked card and non-public graybox | Visual editor tooling; spawn volumes/patrol paths; richer pickup/prop/zone schemas; automated nav/reachability analysis; Mission 2 full production |
-| 3. World and episode structure | **NOT STARTED — BRIEFS ONLY** | Vancouver Waterfront, Mount Hood, and Moon design briefs and personal-detail/legal notes are documented | No new level scenes, geometry, props, mission Resources, encounters, enemies, or assets have been built |
+| 3. World and episode structure | **NOT STARTED — BRIEFS + TEASER ART ONLY** | Vancouver Waterfront, Mount Hood, Moon, and Ventura briefs/locked illustrated cards establish the campaign roadmap | No production geometry, mission routing, encounters, enemies, or playable level assets have been built |
 | 4. Combat and presentation expansion | **STARTED — SYSTEM CONTRACTS** | High-resolution 640×360 presentation baseline, surface-aware combat events, muzzle/impact/death feedback, enemy state motion, numeric elite/boss identity, imported-sample audio contract and expanded bus/limiter layout | Original sample library, directional sprite atlases, adaptive music, environmental kit/interaction density, final boss spectacle |
 | 5. Accessibility, persistence, observability | **IMPLEMENTED FOUNDATION — IN REVIEW** | Save schema v3 with v2 migration and objective/encounter/secret persistence; local-only frame/combat/damage/pickup metrics; objective HUD; reduced-flash integration; quality profiles | Complete settings UI for every assist, captions beyond current narrative text, visual regression gallery, 100-route/50-cycle expanded soak, physical devices |
 | 6. Alpha, beta, release | **NOT STARTED** | Existing development packaging and CI are available | Episode content completion, full human/device/browser matrices, signing/notarization, legal review, store readiness |
