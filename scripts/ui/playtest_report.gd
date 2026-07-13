@@ -74,7 +74,7 @@ Copy this report and text it to Louis with your answers.
 		String(summary.get("control_method", "keyboard_mouse")), String(summary.get("level_id", "no_dogs_allowed")),
 		"COMPLETE" if bool(summary.get("completed", false)) else "IN PROGRESS",
 		seconds / 60, seconds % 60, int(summary.get("deaths", 0)),
-		int(summary.get("enemies_defeated", 0)), int(summary.get("enemies_total", 12)),
+		int(summary.get("enemies_defeated", 0)), int(summary.get("enemies_total", 17)),
 		int(summary.get("secrets_found", 0)), int(summary.get("secrets_total", 3)),
 		String(summary.get("last_zone", "forbidden_field")), String(summary.get("checkpoint_id", "start")),
 	]

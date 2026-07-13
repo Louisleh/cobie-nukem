@@ -2,12 +2,15 @@
 
 This file distinguishes confirmed product limitations from unperformed validation. Update it for every release candidate; do not silently convert “not tested” into “passed.”
 
-## `0.6.0-alpha.5` shipped human gates
+## `0.6.0-alpha.6` candidate human gates
 
 - Right-stick profiles are automated for response, frame-rate stability, cancellation, and settings wiring, but final friction/boost strength and thumb comfort require physical iPad Safari testing.
 - The Web bootstrap and title preload are browser-tested; slow real-world mobile networks still need a physical first-load timing pass.
 - Vancouver Waterfront, Mount Hood, Moon, and Ventura are illustrated locked teasers only. Their art is not playable-level completion.
-- The new native 1080p zone profiler passes its p95/p99 gates. The navigation candidate improved the prior Walker outlier from 224 ms to 151.852 ms, while the tunnels produced a 33.929 ms p99 in one run. Static-AI profiling and projectile first-render warmup are contract-tested; continue profiler-driven combat-path work and confirm perceived pacing in the target-Mac human playthrough.
+- Three regular archetypes have directional/reaction atlases. Compliance Hound and Walker still use their canonical illustrations with deterministic motion, tint, telegraph, hit/stagger, phase, and death presentation; bespoke directional atlases are a future art upgrade, not claimed complete here.
+- The 60 imported primary-combat WAVs and their timing/routing are contract-tested, but loudness, tonal character, repetition, spatial mix, and perceived weapon/enemy weight require human listening. Ambience, adaptive music, and Cobie voice remain future authored-audio work.
+- Salmon Creek now contains 17 required actors across staged waves while limiting peak authored density to three. Encounter completion, reset, pressure distance, boss phases, summons, and recovery are automated; 12–20 minute route pacing, fairness by difficulty, and spectacle remain human gates.
+- The new native 1080p zone profiler passes its p95/p99 gates. The current candidate recorded p95 17.180–18.395 ms in gameplay zones, a 38.132 ms tunnel p99 with one 101.365 ms sample, and one isolated 155.964 ms Walker sample. These are preserved as profiler-driven optimization evidence rather than described as resolved ordinary-combat smoothness.
 
 ## Distribution and legal
 
@@ -23,6 +26,7 @@ This file distinguishes confirmed product limitations from unperformed validatio
 
 ## Validation still requiring real hardware
 
+- Packaged Web smoke passed at desktop and simulated 1024x768 tablet viewports on 2026-07-13: menu, level select, Salmon Creek launch, twin-stick HUD layout, and aim response rendered without game console warnings. This does not replace physical iPad Safari touch, thermal, or audio-mix validation.
 - A complete non-debug human playthrough remains required on the owner’s target Mac for every final candidate.
 - The new Story/Classic/Mayhem selector and difficulty-driven pickup/aim-assist scaling have automated contract coverage only; difficulty feel (especially Story for family players and Mayhem pressure) needs a human playtest pass, including on iPad touch.
 - Chrome and Safari each require a full keyboard/mouse playthrough of the packaged Web artifact, including reload/audio, options, death, and victory states.
@@ -32,8 +36,8 @@ This file distinguishes confirmed product limitations from unperformed validatio
 ## World-class vertical-slice open gates
 
 - The 640×360 desktop and 1024×768 tablet layouts have visual automation evidence. Fixed twin-stick rendering, target sizing, onboarding, settings, and left-handed transforms are automated, but physical iPad comfort, reach, simultaneous real-touch behavior, Safari focus recovery, and thermal validation remain open.
-- `AudioCueSet` and bounded sample playback are implemented, but production still falls back to synthesized cues until original/licensed weapon, enemy, footstep, ambience, and music assets are authored and manifested.
-- Enemy state motion, hit/stagger/death reactions, attack tokens, group alert, weak-point contracts, production navigation, and bounded stuck recovery are implemented. Directional sprite atlases and human combat-path feel remain open content gates.
+- Original, imported, bounded weapon lifecycle, enemy reaction/attack, and four-surface footstep samples are primary. Procedural audio remains an emergency fallback plus a source for still-unauthored UI/secondary cues; ambience, adaptive music, Cobie voice, and human mix review remain open.
+- Enemy state motion, hit/stagger/death reactions, attack tokens, group alert, weak-point contracts, production navigation, bounded stuck recovery, and three regular directional sprite atlases are implemented. Bespoke Hound/Walker atlases and human combat-path feel remain open.
 - Headless drift smoke and native 1080p Compatibility-renderer zone profiling are green, including draw calls, object/node counts, and static memory. Compatibility/OpenGL does not expose useful GPU task timing here; Web/iPad thermal behavior and audio-voice saturation remain unmeasured hardware evidence.
 - The Salmon Creek ball-return machine is the first validated Blender-authored prop and has automated import/collision/puzzle coverage. Its final scale, lighting readability, projectile feel, and placement still need a rendered human playthrough; the rest of the environment remains a mixed prototype/production kit.
 

@@ -5,4 +5,18 @@ script = ExtResource("1")
 id = &"salmon_tunnels"
 zone_id = &"maintenance_tunnels"
 display_name = "TUNNEL AMBUSH"
-spawns = Array[Dictionary]([{"scene":"res://scenes/enemies/squirrel_trooper.tscn","position":Vector3(-2,0,-53)}, {"scene":"res://scenes/enemies/squirrel_trooper.tscn","position":Vector3(2,0,-64)}, {"scene":"res://scenes/enemies/mutant_groundskeeper.tscn","position":Vector3(0,0,-74)}])
+schema_version = 2
+waves = Array[Dictionary]([{
+"delay_seconds": 0.0,
+"spawns": [{"scene":"res://scenes/enemies/squirrel_trooper.tscn","position":Vector3(-2,0,-53)}, {"scene":"res://scenes/enemies/squirrel_trooper.tscn","position":Vector3(2,0,-64)}, {"scene":"res://scenes/enemies/mutant_groundskeeper.tscn","position":Vector3(0,0,-74)}]
+}, {
+"delay_seconds": 0.45,
+"spawns": [{"scene":"res://scenes/enemies/leash_enforcement_drone.tscn","position":Vector3(-3,2,-68)}, {"scene":"res://scenes/enemies/squirrel_trooper.tscn","position":Vector3(3,0,-76)}]
+}])
+enemy_budget = 5
+maximum_simultaneous_attackers = 2
+spawn_tags = Array[StringName]([&"ambush", &"tunnel_crossfire"])
+entry_lock_id = &"tunnel_gate"
+exit_lock_id = &"lab_gate"
+music_intensity = 0.65
+reward_policy = &"authored_collar_recovery"

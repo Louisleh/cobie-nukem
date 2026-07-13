@@ -37,12 +37,24 @@ func _test_seeded_routes(count: int) -> void:
 		var tracker := ObjectiveTracker.new(); root.add_child(tracker); tracker.configure(MANIFEST.objectives)
 		var runner := EncounterRunner.new(); runner.log_failures = false; root.add_child(runner)
 		var spawned: Array[SoakEnemy] = []
-		runner.configure(MANIFEST.encounters, func(_path: String, _position: Vector3) -> Node:
+		var definitions := _zero_delay_encounters()
+		runner.configure(definitions, func(_path: String, _position: Vector3) -> Node:
 			var enemy := SoakEnemy.new(); root.add_child(enemy); spawned.append(enemy); return enemy
 		)
 		for zone_id in ROUTE:
-			var actors := runner.activate_zone(zone_id)
-			for actor in actors.duplicate(): (actor as SoakEnemy).died.emit(actor, null)
+			var pending: Array[SoakEnemy] = []
+			var collect_actor := func(actor: Node, definition: EncounterDefinition) -> void:
+				if definition.zone_id == zone_id:
+					pending.append(actor as SoakEnemy)
+			runner.actor_spawned.connect(collect_actor)
+			runner.activate_zone(zone_id)
+			var safety := 0
+			while not pending.is_empty() and safety < 64:
+				var actor: SoakEnemy = pending.pop_front()
+				actor.died.emit(actor, null)
+				safety += 1
+			runner.actor_spawned.disconnect(collect_actor)
+			_expect(safety < 64, "route %d zone %s exceeds the bounded wave budget" % [seed_value, zone_id])
 		tracker.record(ObjectiveDefinition.Kind.REACH_ZONE, &"compliance_lab")
 		tracker.record(ObjectiveDefinition.Kind.ACTIVATE, &"walker_release")
 		tracker.record(ObjectiveDefinition.Kind.DEFEAT, &"animal_control_walker")
@@ -52,6 +64,23 @@ func _test_seeded_routes(count: int) -> void:
 		for actor in spawned:
 			if is_instance_valid(actor): actor.free()
 		runner.free(); tracker.free()
+
+
+func _zero_delay_encounters() -> Array[EncounterDefinition]:
+	# The soak validates the complete public wave lifecycle and deadlock behavior,
+	# not authored pacing seconds. Duplicate Resources so 100 deterministic routes
+	# exercise every reinforcement synchronously without mutating production data.
+	var result: Array[EncounterDefinition] = []
+	for source in MANIFEST.encounters:
+		var definition := source.duplicate(true) as EncounterDefinition
+		var immediate_waves: Array[Dictionary] = []
+		for source_wave in definition.waves:
+			var wave := source_wave.duplicate(true) as Dictionary
+			wave["delay_seconds"] = 0.0
+			immediate_waves.append(wave)
+		definition.waves = immediate_waves
+		result.append(definition)
+	return result
 
 
 func _test_checkpoint_cycles(count: int) -> void:

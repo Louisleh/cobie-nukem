@@ -54,7 +54,7 @@ Record build/commit: __________  Godot: __________  OS/device: __________  Teste
 - [ ] Enemy labels show calibrated live HP (30/40/80/220/1000), and the Walker actively closes to approximately seven metres.
 - [ ] Golden Tennis Ball becomes available only in the final phase and finishes the boss once.
 - [ ] All six zones, gates, switches, keys, hazards, and final exit work from a clean run.
-- [ ] The full route spawns all 12 enemies: opening field (3), shed (2), tunnels (3), lab (3), and arena boss (1).
+- [ ] The full route spawns all 17 required actors: 12 initial-wave actors plus five delayed shed/tunnel/lab reinforcements, including the arena boss; peak authored active density remains three.
 - [ ] Sign read three times, cracked wall, and ball-return secrets each count once and reward the player.
 - [ ] Victory totals and rank reflect the run; enemies/secrets cannot exceed declared totals.
 

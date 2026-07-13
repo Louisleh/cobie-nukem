@@ -5,6 +5,13 @@ signal pressure_changed(active_attackers: int, maximum_attackers: int)
 var maximum_attackers := 3
 var _tokens: Dictionary = {}
 
+func configure_limit(value: int, clear_active := false) -> void:
+	_prune()
+	maximum_attackers = maxi(1, value)
+	if clear_active:
+		_tokens.clear()
+	pressure_changed.emit(_tokens.size(), maximum_attackers)
+
 func request_attack(actor: Node, priority := 0) -> bool:
 	_prune()
 	if not is_instance_valid(actor): return false

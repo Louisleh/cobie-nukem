@@ -6,4 +6,14 @@ id = &"salmon_opening"
 zone_id = &"forbidden_field"
 display_name = "FIELD ENFORCEMENT"
 opening_grace_seconds = 12.0
-spawns = Array[Dictionary]([{"scene":"res://scenes/enemies/leash_enforcement_drone.tscn","position":Vector3(-5,2,-4)}, {"scene":"res://scenes/enemies/leash_enforcement_drone.tscn","position":Vector3(5,2,-9)}, {"scene":"res://scenes/enemies/mutant_groundskeeper.tscn","position":Vector3(0,0,-14)}])
+schema_version = 2
+waves = Array[Dictionary]([{
+"delay_seconds": 0.0,
+"spawns": [{"scene":"res://scenes/enemies/leash_enforcement_drone.tscn","position":Vector3(-5,2,-4)}, {"scene":"res://scenes/enemies/leash_enforcement_drone.tscn","position":Vector3(5,2,-9)}, {"scene":"res://scenes/enemies/mutant_groundskeeper.tscn","position":Vector3(0,0,-14)}]
+}])
+enemy_budget = 3
+maximum_simultaneous_attackers = 1
+spawn_tags = Array[StringName]([&"tutorial", &"field"])
+exit_lock_id = &"shed_gate"
+music_intensity = 0.25
+reward_policy = &"opening_authored_pickups"

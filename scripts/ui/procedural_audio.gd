@@ -48,14 +48,12 @@ func prewarm(cue: Cue) -> void:
 
 
 func prewarm_runtime() -> void:
-	# Synthesis uses thousands of GDScript sample callbacks. Do it while the
-	# title explicitly says WARMING, then share the immutable WAVs across every
-	# HUD/menu bridge so the first hit, reload, footstep, or victory cannot hitch.
+	# Production weapon lifecycle, enemy, and surface-footstep cues are imported
+	# WAVs. Only prewarm the still-procedural secondary/UI cues; legacy gameplay
+	# synthesis remains an emergency fallback and is built lazily if an authored
+	# cue is ever missing.
 	for cue in [
-		Cue.PICKUP, Cue.SECRET, Cue.PAWSTOL, Cue.BARKSHOT, Cue.FETCH,
-		Cue.HIT, Cue.HURT, Cue.VICTORY, Cue.DRY_FIRE, Cue.RELOAD_START,
-		Cue.RELOAD_STEP, Cue.RELOAD_COMPLETE, Cue.FOOTSTEP_WALK,
-		Cue.FOOTSTEP_RUN,
+		Cue.PICKUP, Cue.SECRET, Cue.HIT, Cue.HURT, Cue.VICTORY,
 	]:
 		prewarm(cue)
 
