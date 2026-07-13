@@ -62,6 +62,7 @@ run_godot_test res://tests/run_tests.gd
 run_godot_test res://tests/unit/input_system_test.gd
 run_godot_test res://tests/unit/combat_test_runner.gd
 run_godot_test res://tests/unit/enemy_contract_tests.gd
+run_godot_test res://tests/unit/navigation_contract_test.gd
 run_godot_test res://tests/unit/ui_scene_test.gd
 run_godot_test res://tests/unit/asset_contract_test.gd
 run_godot_test res://tests/unit/gameplay_foundation_test.gd

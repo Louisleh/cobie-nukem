@@ -1,6 +1,6 @@
 # Cobie Nukem — Multi-Phase Production PRD
 
-**Status:** Active production source of truth; `0.6.0-alpha.4` agentic-overhaul checkpoint shipped publicly
+**Status:** Active production source of truth; `0.6.0-alpha.5` production-navigation candidate in validation
 
 **Created:** 2026-07-11
 
@@ -8,7 +8,7 @@
 
 **Current public baseline:** `0.6.0-alpha.4` (`67a0ee4` gameplay/runtime revision; source integration `9539978`; website deployment `65863c8`)
 
-**Unreleased development baseline:** none; `main` and the public artifact are synchronized at `0.6.0-alpha.4`
+**Unreleased development baseline:** `0.6.0-alpha.5` (`4059174` gameplay revision) adds production navigation; public remains `0.6.0-alpha.4` until deployment verification
 
 **Last playtest alpha:** `0.6.0-alpha.4` (`67a0ee4`) — live at <https://www.louislehmann.fyi/games/cobie-nukem/>
 
@@ -21,7 +21,7 @@ This section is the first place a new Codex or external-auditor run should read.
 
 | Phase | Status | Completed | Explicitly remaining |
 | --- | --- | --- | --- |
-| 1. Gameplay systems foundation | **VERTICAL-SLICE FOUNDATION IMPLEMENTED — IN REVIEW** | Previous foundation plus `PlayerFeelProfile`, `WeaponFeelProfile`, terminal combat feedback events, damage reactions, pressure/attack tokens, group alert, weak-point metadata, multi-wave encounter schema v2, mission runtime/spawn registry extraction, event-driven interaction/aim registries | Full navigation-mesh production pass, authored directional animation atlases, final feel/balance |
+| 1. Gameplay systems foundation | **VERTICAL-SLICE FOUNDATION IMPLEMENTED — IN REVIEW** | Previous foundation plus `PlayerFeelProfile`, `WeaponFeelProfile`, terminal combat feedback events, damage reactions, pressure/attack tokens, group alert, weak-point metadata, multi-wave encounter schema v2, mission runtime/spawn registry extraction, event-driven interaction/aim registries, production ground navigation and bounded stuck recovery | Authored directional animation atlases, final feel/balance |
 | 2. Content-production pipeline | **FOUNDATION COMPLETE** | Versioned manifest, Salmon Creek content data, headless validator, release-gate integration, authoring guide, manifest template, critical-path rules, Mission 2 (Vancouver Waterfront) manifest/objective/encounter skeleton validating in CI with a locked card and non-public graybox | Visual editor tooling; spawn volumes/patrol paths; richer pickup/prop/zone schemas; automated nav/reachability analysis; Mission 2 full production |
 | 3. World and episode structure | **NOT STARTED — BRIEFS + TEASER ART ONLY** | Vancouver Waterfront, Mount Hood, Moon, and Ventura briefs/locked illustrated cards establish the campaign roadmap | No production geometry, mission routing, encounters, enemies, or playable level assets have been built |
 | 4. Combat and presentation expansion | **STARTED — SYSTEM CONTRACTS** | High-resolution 640×360 presentation baseline, surface-aware combat events, muzzle/impact/death feedback, enemy state motion, numeric elite/boss identity, imported-sample audio contract and expanded bus/limiter layout | Original sample library, directional sprite atlases, adaptive music, environmental kit/interaction density, final boss spectacle |
@@ -50,6 +50,8 @@ This section is the first place a new Codex or external-auditor run should read.
 
 **Agentic durability follow-up (2026-07-13, post-release source evidence):** the selected Godot MCP is now an auditable project fork pinned at `87ece143e3fedb494dd13494c35f120d6fb0a8d7`. A reproducible 44-operation live bake-off covers the complete title/menu/mission route, raw and InputMap input, live player/enemy/pickup state, pause/resume, screenshots, and zero engine errors; a clean ephemeral Codex task independently discovered and followed the Cobie production skill. The FuncGodot pilot now includes measured collision-derived navigation and Compatibility Web export, but remains rejected as a production dependency because stable-ID normalization, Cobie FGD contracts, representative reachability, and tooling-free PCK export are unresolved. Performance profiling now records load/instantiate time and active enemy/physics/navigation/audio/particle/decal populations; current static mission profiles report zero navigation agents, keeping production navigation explicitly open. The shipped alpha is preserved at <https://github.com/Louisleh/cobie-nukem/releases/tag/v0.6.0-alpha.4> with verified artifacts.
 
+**Production-navigation checkpoint (`0.6.0-alpha.5` candidate, 2026-07-13):** Salmon Creek now bakes a Web-safe navigation map from temporary CPU-side collision sources before combat, then removes those sources. The bake contains 112 polygons/114 vertices and a deterministic 41-point route from the opening field through the Walker arena; a separate cover query proves lateral obstacle avoidance. Every grounded archetype receives a throttled `NavigationAgent3D`, flying drones retain authored flight steering, and three failed repaths produce one bounded, locally counted recovery. The pass also fixed a real half-metre Connector D seam that radius erosion exposed as a disconnected arena island. The release gate now runs this contract, the extended profiler reports seven agents at Walker density, and shared death VFX moved out of the 500-line enemy-controller boundary. Physical feel remains a human gate.
+
 ### World-class vertical-slice delivery boundary
 
 Completed in the current integration checkpoint:
@@ -64,7 +66,7 @@ Completed in the current integration checkpoint:
 
 Critical before `0.6.0-alpha`:
 
-- production navigation and unreachable-actor recovery evidence;
+- production navigation and unreachable-actor recovery evidence (**automated gate complete in the `0.6.0-alpha.5` candidate; human feel still required**);
 - original directional enemy animation and imported weapon/enemy/footstep sample packs with manifest provenance;
 - Salmon Creek encounter-v2 pacing authoring and Walker spectacle/balance playthrough;
 - physical-device verification of the surfaced accessibility controls (text scale, contrast, captions, control opacity/layout);

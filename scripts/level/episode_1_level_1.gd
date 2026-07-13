@@ -32,6 +32,7 @@ const ROUTE_PROGRESS := [
 	[-87.0, &"compliance_lab", "ANIMAL COMPLIANCE LAB"],
 	[-127.0, &"walker_arena", "ANIMAL CONTROL WALKER"],
 ]
+const NAVIGATION_SOURCE_LAYER := 1 << 19
 
 @export var metadata: LevelMetadata = preload("res://resources/level/episode_1_level_1.tres")
 @export var content_manifest: ContentManifest = preload("res://resources/content/salmon_creek_manifest.tres")
@@ -71,6 +72,8 @@ var _route_recovery_timer: Timer
 var _restored_checkpoint: Dictionary = {}
 var _mission_runtime: MissionRuntime
 var _spawn_registry: MissionSpawnRegistry
+var _navigation_region: NavigationRegion3D
+var _navigation_sources: Array[StaticBody3D] = []
 
 func _ready() -> void:
 	_run_started_ms = Time.get_ticks_msec()
@@ -174,6 +177,7 @@ func _build_level() -> void:
 	_interactables = Node3D.new(); _interactables.name = "Interactables"; add_child(_interactables)
 	_build_lighting()
 	_build_route_geometry()
+	_build_navigation()
 	_build_story_objects()
 	_build_pickups()
 	_build_zone_triggers()
@@ -200,7 +204,9 @@ func _build_route_geometry() -> void:
 	_box("ConnectorA", Vector3(0, -0.5, -20), Vector3(8, 1, 5), Color("555b60"))
 	_box("ConnectorB", Vector3(0, -0.5, -45), Vector3(8, 1, 4), Color("414b50"))
 	_box("ConnectorC", Vector3(0, -0.5, -84), Vector3(8, 1, 4), Color("4b575d"))
-	_box("ConnectorD", Vector3(0, -0.5, -124), Vector3(10, 1, 5), Color("564949"))
+	# Overlap the arena floor by more than one agent diameter. The previous
+	# half-metre visual seam became a disconnected island after radius erosion.
+	_box("ConnectorD", Vector3(0, -0.5, -124), Vector3(10, 1, 8), Color("564949"))
 	# Side boundaries leave the main route readable while stopping accidental skips.
 	_wall_pair(13, 0, 36); _wall_pair(7.5, -32, 25); _wall_pair(5, -64, 39)
 	# Split the lab's east wall around the breakable panel. The previous full
@@ -219,6 +225,48 @@ func _build_route_geometry() -> void:
 		_box("ArenaCover", pos, Vector3(3, 2, 3), Color("70584d"))
 
 
+func _build_navigation() -> void:
+	_navigation_region = NavigationRegion3D.new()
+	_navigation_region.name = "GroundNavigation"
+	var navigation_mesh := NavigationMesh.new()
+	navigation_mesh.agent_radius = 0.5
+	navigation_mesh.agent_height = 2.0
+	navigation_mesh.agent_max_climb = 0.5
+	navigation_mesh.agent_max_slope = 45.0
+	navigation_mesh.cell_size = 0.25
+	navigation_mesh.cell_height = 0.25
+	navigation_mesh.region_min_size = 1.0
+	navigation_mesh.geometry_parsed_geometry_type = NavigationMesh.PARSED_GEOMETRY_STATIC_COLLIDERS
+	navigation_mesh.geometry_collision_mask = NAVIGATION_SOURCE_LAYER
+	navigation_mesh.geometry_source_geometry_mode = NavigationMesh.SOURCE_GEOMETRY_GROUPS_EXPLICIT
+	navigation_mesh.geometry_source_group_name = &"salmon_navigation_source"
+	# Keep ceiling and roof tops out of the traversable set while covering every
+	# authored route zone and the secret dog-park bridge.
+	navigation_mesh.filter_baking_aabb = AABB(Vector3(-20.0, -1.1, -170.0), Vector3(40.0, 4.0, 190.0))
+	_navigation_region.navigation_mesh = navigation_mesh
+	add_child(_navigation_region)
+	# CSG collision/meshes finish synchronizing after this construction pass.
+	# Defer one turn, then bake synchronously so native and single-threaded Web
+	# builds share the same deterministic map. Enemies retain direct steering for
+	# that first turn and switch to paths as soon as the map iteration is ready.
+	call_deferred("_bake_navigation")
+
+
+func _bake_navigation() -> void:
+	if is_instance_valid(_navigation_region):
+		_navigation_region.bake_navigation_mesh(false)
+		# Assign the completed resource to the server RID explicitly. Linux
+		# headless otherwise defers the node's resource-change notification beyond
+		# a physics-only test loop, while macOS applies it in the same turn.
+		var navigation_map := _navigation_region.get_navigation_map()
+		NavigationServer3D.region_set_map(_navigation_region.get_rid(), navigation_map)
+		NavigationServer3D.region_set_navigation_mesh(_navigation_region.get_rid(), _navigation_region.navigation_mesh)
+		NavigationServer3D.map_set_active(navigation_map, true)
+		NavigationServer3D.map_force_update(navigation_map)
+	for source in _navigation_sources:
+		if is_instance_valid(source):
+			source.queue_free()
+	_navigation_sources.clear()
 func _build_field_dressing() -> void:
 	# Bold markings and silhouettes give the opening field immediate scale and
 	# navigation cues even at the low internal render resolution.
@@ -566,7 +614,24 @@ func _box(node_name: String, center: Vector3, size: Vector3, color: Color, surfa
 	var box := CSGBox3D.new(); box.name = node_name; box.position = center; box.size = size; box.use_collision = true
 	box.set_meta(&"surface_type", surface_type)
 	var material := StandardMaterial3D.new(); material.albedo_color = color; material.roughness = 0.95; box.material = material
-	_geometry.add_child(box); return box
+	_geometry.add_child(box)
+	# A temporary CPU-side collider avoids copying CSG render meshes back from
+	# the GPU during the runtime bake. It lives on a navigation-only layer and is
+	# removed immediately after the one-time bake.
+	var navigation_source := StaticBody3D.new()
+	navigation_source.name = "%sNavigationSource" % node_name
+	navigation_source.position = center
+	navigation_source.collision_layer = NAVIGATION_SOURCE_LAYER
+	navigation_source.collision_mask = 0
+	navigation_source.add_to_group(&"salmon_navigation_source")
+	var navigation_shape := CollisionShape3D.new()
+	var box_shape := BoxShape3D.new()
+	box_shape.size = size
+	navigation_shape.shape = box_shape
+	navigation_source.add_child(navigation_shape)
+	_geometry.add_child(navigation_source)
+	_navigation_sources.append(navigation_source)
+	return box
 
 
 func _prop_box(node_name: String, center: Vector3, size: Vector3, color: Color) -> MeshInstance3D:
