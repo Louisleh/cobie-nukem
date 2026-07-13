@@ -13,18 +13,51 @@ extends CanvasLayer
 
 var _notification_tween: Tween
 var _caption_tween: Tween
+var _caption_queue: Array[Dictionary] = []
+var _active_caption: Dictionary = {}
+var _caption_visible := false
+var _base_label_font_sizes: Dictionary[NodePath, int] = {}
+var _caption_viewport: Viewport
+
+enum CaptionCategory {
+	NARRATIVE,
+	OBJECTIVE,
+	ENEMY_WARNING,
+	BOSS_PHASE,
+	CHECKPOINT,
+	PA_CUE,
+}
+
+const CATEGORY_PRIORITY: Dictionary = {
+	CaptionCategory.NARRATIVE: 0,
+	CaptionCategory.OBJECTIVE: 1,
+	CaptionCategory.ENEMY_WARNING: 2,
+	CaptionCategory.BOSS_PHASE: 3,
+	CaptionCategory.CHECKPOINT: 4,
+	CaptionCategory.PA_CUE: 5,
+}
+const CAPTION_QUEUE_LIMIT := 4
+const CAPTION_DEFAULT_SECONDS := 1.15
 
 func _ready() -> void:
 	var settings := get_node_or_null("/root/SettingsManager")
 	if settings == null: return
 	var text_scale := clampf(float(settings.get_value(&"accessibility", &"text_scale", 1.0)), 0.75, 1.5)
 	for label in $Root.find_children("*", "Label", true, false):
+		var label_path: NodePath = label.get_path()
+		_base_label_font_sizes[label_path] = maxi(7, roundi(label.get_theme_font_size("font_size")))
 		label.add_theme_font_size_override("font_size", maxi(7, roundi(label.get_theme_font_size("font_size") * text_scale)))
 	var contrast := bool(settings.get_value(&"accessibility", &"high_contrast", false))
 	if contrast:
-		%ObjectiveLabel.add_theme_color_override("font_color", Color.WHITE)
-		notification_label.add_theme_color_override("font_color", Color("ffff00"))
+		_set_caption_high_contrast(Color.WHITE, true)
 		crosshair.high_contrast = true
+	if settings.has_signal("setting_changed"):
+		settings.setting_changed.connect(_on_setting_changed)
+	_caption_viewport = get_viewport()
+	if _caption_viewport != null:
+		_caption_viewport.size_changed.connect(_update_caption_layout)
+	_update_caption_layout()
+	_apply_caption_font_settings()
 
 func bind_player(player: Node) -> void:
 	if player.has_signal("weapon_changed"):
@@ -67,6 +100,60 @@ func show_notification(message: String, cue := ProceduralAudio.Cue.PICKUP) -> vo
 	_notification_tween.tween_interval(1.5)
 	_notification_tween.tween_property(notification_label, "modulate:a", 0.0, 0.45)
 
+func clear_captions() -> void:
+	if _caption_tween != null:
+		_caption_tween.kill()
+	_caption_tween = null
+	_active_caption.clear()
+	_caption_queue.clear()
+	_caption_visible = false
+	%CaptionLabel.visible = false
+
+func show_caption(message: String, category: int = CaptionCategory.NARRATIVE, seconds: float = CAPTION_DEFAULT_SECONDS, dedupe_key: String = "") -> void:
+	var settings := get_node_or_null("/root/SettingsManager")
+	if settings != null and not bool(settings.get_value(&"accessibility", &"subtitles", true)):
+		clear_captions()
+		return
+	var cleaned := message.strip_edges().to_upper()
+	if cleaned.is_empty():
+		return
+	var chosen_category := _sanitize_category(category, cleaned)
+	var payload := {
+		"message": cleaned,
+		"category": chosen_category,
+		"priority": CATEGORY_PRIORITY[chosen_category],
+		"seconds": clampf(seconds, 0.05, 3.0),
+		"key": dedupe_key if not dedupe_key.is_empty() else _dedupe_key(cleaned),
+	}
+	if _caption_matches(payload, _active_caption):
+		return
+	for queued in _caption_queue:
+		if _caption_matches(payload, queued):
+			return
+	if _caption_visible and payload["priority"] > get_active_caption_priority():
+		_queue_caption(_active_caption)
+		_active_caption = {}
+		_caption_visible = false
+		_display_caption_payload(payload)
+		return
+	_queue_caption(payload)
+	_display_next_caption()
+
+func show_objective_caption(message: String, seconds: float = CAPTION_DEFAULT_SECONDS) -> void:
+	show_caption(message, CaptionCategory.OBJECTIVE, seconds)
+
+func show_enemy_warning_caption(message: String, seconds: float = CAPTION_DEFAULT_SECONDS) -> void:
+	show_caption(message, CaptionCategory.ENEMY_WARNING, seconds)
+
+func show_boss_phase_caption(message: String, seconds: float = CAPTION_DEFAULT_SECONDS) -> void:
+	show_caption(message, CaptionCategory.BOSS_PHASE, seconds)
+
+func show_checkpoint_caption(message: String, seconds: float = CAPTION_DEFAULT_SECONDS) -> void:
+	show_caption(message, CaptionCategory.CHECKPOINT, seconds)
+
+func show_pa_cue_caption(message: String, seconds: float = CAPTION_DEFAULT_SECONDS) -> void:
+	show_caption(message, CaptionCategory.PA_CUE, seconds)
+
 func show_secret(message := "SECRET FOUND. GOOD SNIFFING.") -> void:
 	show_notification(message, ProceduralAudio.Cue.SECRET)
 
@@ -74,15 +161,95 @@ func show_objective(message: String) -> void:
 	%ObjectiveLabel.text = "OBJECTIVE // " + message.to_upper()
 	%ObjectiveLabel.visible = not message.is_empty()
 
-func show_caption(message: String) -> void:
-	var settings := get_node_or_null("/root/SettingsManager")
-	if settings != null and not bool(settings.get_value(&"accessibility", &"subtitles", true)): return
-	%CaptionLabel.text = "[ " + message.to_upper() + " ]"
+func _sanitize_category(category: int, message: String) -> int:
+	var normalized := category
+	if normalized < 0 or normalized > int(CaptionCategory.PA_CUE):
+		normalized = CaptionCategory.NARRATIVE
+	if normalized == CaptionCategory.NARRATIVE:
+		var check := message.to_lower()
+		if check.contains("warning"):
+			normalized = CaptionCategory.ENEMY_WARNING
+		elif check.contains("checkpoint"):
+			normalized = CaptionCategory.CHECKPOINT
+		elif check.contains("boss") or check.contains("phase"):
+			normalized = CaptionCategory.BOSS_PHASE
+		elif check.begins_with("pa ") or check.begins_with("PA "):
+			normalized = CaptionCategory.PA_CUE
+	return normalized
+
+func _dedupe_key(message: String) -> String:
+	return "caption:%s" % [message.to_lower()]
+
+func _caption_matches(payload: Dictionary, target: Dictionary) -> bool:
+	if target.is_empty():
+		return false
+	return target["key"] == payload["key"] or target["message"] == payload["message"]
+
+func _queue_caption(payload: Dictionary) -> void:
+	var insertion_index := _caption_queue.size()
+	for index in range(_caption_queue.size()):
+		if _caption_queue[index]["priority"] < payload["priority"]:
+			insertion_index = index
+			break
+	_caption_queue.insert(insertion_index, payload)
+	if _caption_queue.size() > CAPTION_QUEUE_LIMIT:
+		_caption_queue.resize(CAPTION_QUEUE_LIMIT)
+
+func _display_next_caption() -> void:
+	if _caption_visible:
+		return
+	if _caption_queue.is_empty():
+		return
+	var next: Dictionary = _caption_queue.pop_front()
+	_display_caption_payload(next)
+
+func _display_caption_payload(next: Dictionary) -> void:
+	_active_caption = next
+	_caption_visible = true
+	%CaptionLabel.text = "[ " + next["message"] + " ]"
 	%CaptionLabel.visible = true
-	if _caption_tween != null: _caption_tween.kill()
+	if _caption_tween != null:
+		_caption_tween.kill()
 	_caption_tween = create_tween()
-	_caption_tween.tween_interval(1.15)
-	_caption_tween.tween_callback(func() -> void: %CaptionLabel.visible = false)
+	_caption_tween.tween_interval(float(next.get("seconds", CAPTION_DEFAULT_SECONDS)))
+	_caption_tween.tween_callback(func() -> void:
+		_caption_visible = false
+		%CaptionLabel.visible = false
+		_active_caption = {}
+		_display_next_caption()
+	)
+
+func _apply_caption_font_settings() -> void:
+	var caption := %CaptionLabel
+	caption.autowrap_mode = TextServer.AUTOWRAP_WORD
+	caption.clip_text = true
+	_update_caption_layout()
+
+func _set_caption_high_contrast(font_color: Color, strong_contrast := false) -> void:
+	if strong_contrast:
+		%ObjectiveLabel.add_theme_color_override("font_color", font_color)
+		notification_label.add_theme_color_override("font_color", Color("ffff00"))
+	%CaptionLabel.add_theme_color_override("font_color", font_color)
+	%CaptionLabel.add_theme_color_override("font_outline_color", Color(0, 0, 0, 1))
+
+func _apply_caption_layout() -> void:
+	var caption := %CaptionLabel
+	var viewport_size := _caption_viewport.get_visible_rect().size if _caption_viewport != null else get_viewport().get_visible_rect().size
+	var viewport_width := maxf(320.0, viewport_size.x)
+	var viewport_height := maxf(360.0, viewport_size.y)
+	var target_width := clampf(viewport_width * 0.86, 240.0, 900.0)
+	var left_margin := maxf(12.0, (viewport_width - target_width) * 0.5)
+	caption.anchor_left = 0.0
+	caption.anchor_top = 1.0
+	caption.anchor_right = 0.0
+	caption.anchor_bottom = 1.0
+	caption.offset_left = left_margin
+	caption.offset_right = left_margin + target_width
+	caption.offset_top = -maxf(96.0, roundf(viewport_height * 0.072))
+	caption.offset_bottom = caption.offset_top + 36.0
+
+func _update_caption_layout() -> void:
+	_apply_caption_layout()
 
 func set_access_item(label: String) -> void:
 	%AccessLabel.text = label
@@ -105,3 +272,42 @@ func _on_weapon_ammo_state_changed(display_name: String, loaded: int, _capacity:
 func _on_interaction_available(label: String) -> void:
 	interaction_label.visible = not label.is_empty()
 	interaction_label.text = "[E] %s" % label.to_upper()
+
+func get_caption_queue_size() -> int:
+	return _caption_queue.size()
+
+func get_caption_text() -> String:
+	return %CaptionLabel.text
+
+func is_caption_visible() -> bool:
+	return %CaptionLabel.visible
+
+func get_active_caption_priority() -> int:
+	return _active_caption.get("priority", -1)
+
+func _on_setting_changed(section: StringName, key: StringName, value: Variant) -> void:
+	var settings := get_node_or_null("/root/SettingsManager")
+	if settings == null:
+		return
+	match section:
+		&"accessibility":
+			match key:
+				&"text_scale":
+					var text_scale = clampf(float(value), 0.75, 1.5)
+					for label in $Root.find_children("*", "Label", true, false):
+						var base_size = int(_base_label_font_sizes.get(label.get_path(), label.get_theme_font_size("font_size")))
+						label.add_theme_font_size_override("font_size", maxi(7, roundi(base_size * text_scale)))
+				&"high_contrast":
+					var enabled = bool(value)
+					_set_caption_high_contrast(Color.WHITE if enabled else Color(1, 1, 1, 1), enabled)
+				&"subtitles":
+					if not bool(value):
+						clear_captions()
+				_:
+					pass
+		_:
+			pass
+
+func _exit_tree() -> void:
+	if _caption_viewport != null and _caption_viewport.size_changed.is_connected(_update_caption_layout):
+		_caption_viewport.size_changed.disconnect(_update_caption_layout)

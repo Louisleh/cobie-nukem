@@ -28,6 +28,7 @@ func _initialize() -> void:
 	_check_responsive_main_menu_contract()
 	_check_cobie_portrait_contract()
 	await _check_death_screen_contract()
+	await _check_caption_contracts()
 	if failures.is_empty():
 		print("UI SCENE TESTS: PASS")
 		call_deferred("_quit_after_cleanup", 0)
@@ -196,18 +197,72 @@ func _check_cobie_portrait_contract() -> void:
 		var texture := load(path) as Texture2D
 		if texture == null or texture.get_width() != 256 or texture.get_height() != 256:
 			failures.append("Cobie HUD portrait must be a loadable 256x256 texture: " + path)
-	var portrait := CobiePortrait.new()
+	var portrait_script := load("res://scripts/ui/cobie_portrait.gd") as Script
+	if portrait_script == null:
+		failures.append("Cobie portrait script must load")
+		return
+	var portrait: Object = portrait_script.new()
 	portrait.health_ratio = 1.0
-	if portrait.portrait_state() != CobiePortrait.State.HEALTHY: failures.append("70-100% health must use healthy Cobie portrait")
+	if portrait.portrait_state() != portrait.State.HEALTHY: failures.append("70-100% health must use healthy Cobie portrait")
 	portrait.health_ratio = 0.7
-	if portrait.portrait_state() != CobiePortrait.State.HEALTHY: failures.append("70% boundary must remain healthy")
+	if portrait.portrait_state() != portrait.State.HEALTHY: failures.append("70% boundary must remain healthy")
 	portrait.health_ratio = 0.69
-	if portrait.portrait_state() != CobiePortrait.State.HURT: failures.append("30-70% health must use hurt Cobie portrait")
+	if portrait.portrait_state() != portrait.State.HURT: failures.append("30-70% health must use hurt Cobie portrait")
 	portrait.health_ratio = 0.3
-	if portrait.portrait_state() != CobiePortrait.State.HURT: failures.append("30% boundary must remain hurt")
+	if portrait.portrait_state() != portrait.State.HURT: failures.append("30% boundary must remain hurt")
 	portrait.health_ratio = 0.29
-	if portrait.portrait_state() != CobiePortrait.State.CRITICAL: failures.append("0-30% health must use critical Cobie portrait")
+	if portrait.portrait_state() != portrait.State.CRITICAL: failures.append("0-30% health must use critical Cobie portrait")
 	portrait.free()
+
+func _check_caption_contracts() -> void:
+	var packed := load("res://scenes/ui/hud.tscn") as PackedScene
+	if packed == null:
+		failures.append("HUD scene must load for caption contracts")
+		return
+	var settings := root.get_node_or_null("/root/SettingsManager")
+	if settings == null:
+		failures.append("SettingsManager autoload required for caption contract")
+		return
+	var old_subtitles := bool(settings.get_value("accessibility", "subtitles", true))
+	var old_text_scale := float(settings.get_value("accessibility", "text_scale", 1.0))
+	var hud := packed.instantiate()
+	root.add_child(hud)
+	await process_frame
+	hud.show_caption("storyline cue", 0, 0.05, "caption-story")
+	hud.show_caption("enemy telegraph warning", 2, 0.05, "caption-warning")
+	if not hud.get_caption_text().contains("ENEMY TELEGRAPH WARNING"):
+		failures.append("Higher-priority enemy warning should preempt narrative cue")
+	hud.show_caption("enemy telegraph warning", 2, 0.05, "caption-warning")
+	if hud.get_caption_queue_size() > 4 - 1:
+		failures.append("Duplicate dedupe key should not overfill caption queue")
+	for index in 6:
+		hud.show_caption("CAPTION SPAM %d" % index, 0, 0.05, "caption-spam-%d" % index)
+	if hud.get_caption_queue_size() > 4:
+		failures.append("Caption queue must remain within hard cap")
+	hud.clear_captions()
+	settings.set_value("accessibility", "subtitles", false, false)
+	hud.show_caption("subtitles disabled", 0, 0.05, "caption-disabled")
+	if hud.get_caption_queue_size() != 0 or hud.is_caption_visible():
+		failures.append("Captions should hide and stop when subtitles are disabled")
+	settings.set_value("accessibility", "subtitles", old_subtitles, false)
+	settings.set_value("accessibility", "text_scale", old_text_scale, false)
+	for viewport in [Vector2i(1280, 720), Vector2i(1680, 1050), Vector2i(1024, 768), Vector2i(3440, 1440)]:
+		root.size = viewport
+		hud.clear_captions()
+		await process_frame
+		hud.show_caption("VIEWPORT CAPTION BOUNDS CHECK", 0, 0.05, "caption-viewport-%s" % viewport)
+		await process_frame
+		var caption: Control = hud.get_node_or_null("Root/CaptionLabel")
+		if caption == null:
+			failures.append("HUD caption label should exist for bounds checks")
+			continue
+		var bounds: Rect2 = caption.get_global_rect()
+		var viewport_rect := Rect2(Vector2.ZERO, viewport)
+		if not viewport_rect.encloses(bounds):
+			failures.append("Caption label must stay within viewport in bounds %s: x=%s y=%s w=%s h=%s" % [viewport, bounds.position.x, bounds.position.y, bounds.size.x, bounds.size.y])
+	root.size = Vector2i(1280, 720)
+	hud.queue_free()
+	await process_frame
 
 
 func _check_death_screen_contract() -> void:
@@ -215,7 +270,7 @@ func _check_death_screen_contract() -> void:
 	if packed == null:
 		failures.append("Death screen scene must load")
 		return
-	var screen := packed.instantiate() as DeathScreen
+	var screen := packed.instantiate()
 	root.add_child(screen)
 	await process_frame
 	screen.show_death()
