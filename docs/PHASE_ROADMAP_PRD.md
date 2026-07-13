@@ -1,16 +1,16 @@
 # Cobie Nukem — Multi-Phase Production PRD
 
-**Status:** Active production source of truth; `0.6.0-alpha.5` public, `0.6.0-alpha.6` presentation/pacing candidate in validation
+**Status:** Active production source of truth; `0.6.0-alpha.6` presentation/pacing alpha public
 
 **Created:** 2026-07-11
 
 **Last status review:** 2026-07-13
 
-**Current public baseline:** `0.6.0-alpha.5` (`4059174` gameplay/runtime revision; source integration `499eab2`; website deployment `f9065c4`)
+**Current public baseline:** `0.6.0-alpha.6` (`52e8240` gameplay/runtime revision; source integration `e0827ae`; website deployment `7b31e74`; PCK SHA-256 `a4a4b5c7114203a3f1ccea506da9f5b09f05738f593ab55db9cef7fb24d595b4`)
 
-**Unreleased development baseline:** `52e8240` on `codex/alpha6-presentation-overhaul` — original enemy/audio production tranche plus encounter-v2 pacing; stamped release candidate pending GitHub and public deployment
+**Unreleased development baseline:** none; `main` is clean after the alpha.6 integration
 
-**Last playtest alpha:** `0.6.0-alpha.5` (`4059174`) — live at <https://www.louislehmann.fyi/games/cobie-nukem/>
+**Last playtest alpha:** `0.6.0-alpha.6` (`52e8240`) — live at <https://www.louislehmann.fyi/games/cobie-nukem/>
 
 **Engine:** Godot 4.7 stable, GDScript, Compatibility renderer
 **Purpose:** Turn the family-playtest vertical slice into a sustainable, original multi-level game without sacrificing responsiveness, humor, Web support, or unusual-controller accessibility.

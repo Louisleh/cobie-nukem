@@ -2,7 +2,7 @@
 
 This is a durable evidence template, not a claim that every listed check has run against the current working tree. Add one section per candidate; never overwrite older evidence.
 
-## Candidate 0.6.0-alpha.6 — 2026-07-13
+## Shipped 0.6.0-alpha.6 — 2026-07-13
 
 | Field | Value |
 | --- | --- |
@@ -22,7 +22,7 @@ This is a durable evidence template, not a claim that every listed check has run
 | Native 1080p zone profile | Pass with retained outliers | Gameplay-zone p95 17.180–18.395 ms; tunnel p99 38.132 ms with one 101.365 ms sample; one isolated Walker 155.964 ms sample tracked in Known Issues |
 | Complete release/export matrix | Pass | `QA_EXPORTS=1 bash tools/release_validate.sh`, exit 0; Web and unsigned Universal macOS exports |
 | Packaged Web desktop/tablet | Pass | Title, menu, five-card level selector, Salmon Creek launch, twin-stick HUD layout, and aim response at 1024×768; no game console warnings/errors |
-| Public deployment | Pending | Requires GitHub integration, final package, deployment, PCK hash match, and uncached public verification |
+| Public deployment | Pass | Source integration `e0827ae`; website deployment `7b31e74`; live desktop title and 1024×768 twin-stick gameplay verified without game console warnings/errors; downloaded PCK hash matched the release artifact |
 | Physical iPad and human playthrough/mix | Not run | Explicit human-only gates |
 
 ### Pre-stamp exports
@@ -33,6 +33,14 @@ This is a durable evidence template, not a claim that every listed check has run
 | Unsigned Universal macOS ZIP | 72 MB on disk | `5991fcc6f95286d4c5d81ba0723fb7464f33b7dba3e6f0de779ae9749a34444d` |
 
 Final stamped release-package sizes and hashes replace neither these pre-stamp values nor the public hash evidence; they will be added after packaging and deployment.
+
+### Release artifacts
+
+| Artifact | Bytes | SHA-256 |
+| --- | ---: | --- |
+| `cobie-nukem-0.6.0-alpha.6-itch.zip` | 26,134,303 | `430364957c5dbf1e5197be2c6dd83cd1e2fcceb484ec593ce50c6652cf02a460` |
+| `cobie-nukem-0.6.0-alpha.6-macos-unsigned.zip` | 75,498,382 | `4adc7107ca327454769919dd99413f14c89ce6896bf7f0336e3474e639c7d5e4` |
+| Web PCK | 16,258,752 | `a4a4b5c7114203a3f1ccea506da9f5b09f05738f593ab55db9cef7fb24d595b4` |
 
 ## Shipped 0.6.0-alpha.5 — 2026-07-13
 
