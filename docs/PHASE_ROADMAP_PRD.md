@@ -1,16 +1,16 @@
 # Cobie Nukem — Multi-Phase Production PRD
 
-**Status:** Active production source of truth; `0.6.0-alpha.7` candidate green and awaiting public integration
+**Status:** Active production source of truth; `0.6.0-alpha.7` Spark interaction alpha public
 
 **Created:** 2026-07-11
 
 **Last status review:** 2026-07-13
 
-**Current public baseline:** `0.6.0-alpha.6` (`52e8240` gameplay/runtime revision; source integration `e0827ae`; website deployment `7b31e74`; PCK SHA-256 `a4a4b5c7114203a3f1ccea506da9f5b09f05738f593ab55db9cef7fb24d595b4`)
+**Current public baseline:** `0.6.0-alpha.7` (`eb66cf8` gameplay/runtime revision; source integration `4161363`; website deployment `0854ef4`; PCK SHA-256 `f9f11d5e419519b2fde01b57d2f46c8c56c1fe0e8baddd02176d3ee2835d0af6`)
 
-**Unreleased development baseline:** `codex/alpha7-spark-vertical-slice`; alpha.7 integration and release evidence in progress
+**Unreleased development baseline:** none; alpha.7 integration and public identity evidence complete
 
-**Last playtest alpha:** `0.6.0-alpha.6` (`52e8240`) — live at <https://www.louislehmann.fyi/games/cobie-nukem/>
+**Last playtest alpha:** `0.6.0-alpha.7` (`eb66cf8`) — live at <https://www.louislehmann.fyi/games/cobie-nukem/>
 
 **Engine:** Godot 4.7 stable, GDScript, Compatibility renderer
 **Purpose:** Turn the family-playtest vertical slice into a sustainable, original multi-level game without sacrificing responsiveness, humor, Web support, or unusual-controller accessibility.
@@ -30,7 +30,7 @@ The alpha.7 phase uses a repo-committed GPT-5.6/Spark orchestration contract. GP
 | 4. Accessibility and presentation | Salmon Creek | **INTEGRATED — DEVICE GATES OPEN** | Bounded priority captions for narrative/objective/enemy/boss/checkpoint/PA; settings/aspect coverage; existing twin-stick focus/cancellation soaks remain green |
 | 5. Mission controller extraction | Salmon Creek | **INTEGRATED — FIRST RESPONSIBILITY SLICE** | `MissionInteractionRuntime` owns catalog validation, construction, stable identity, callbacks, restore, and reset; broader controller decomposition remains incremental technical work |
 | 6. Vancouver production foundation | Vancouver | **INTEGRATED — LOCKED/NON-PUBLIC** | Five-zone typed route, finite spawn volumes/patrols/surfaces/checkpoints/secrets, schema-v2 encounters, three-wave convoy, and deterministic route/reset simulation |
-| 7. Independent integration and release gate | Release | **CANDIDATE GREEN — PUBLIC INTEGRATION IN PROGRESS** | Independent Spark review found no unequivocal release blocker; Walker-lane obstruction fixed; full headless/soak/content/export matrix, native profile, packaged desktop and 1024×768 twin-stick browser checks green; merge/deploy/hash verification remain |
+| 7. Independent integration and release gate | Release | **COMPLETE — ALPHA.7 PUBLIC** | Independent review and full headless/soak/content/export matrix green; native and packaged/public 1024×768 twin-stick browser checks green; source `4161363`, website `0854ef4`, and public PCK hash verified |
 
 Human-only throughout: physical iPad Safari comfort/thermal/audio, family comprehension, boss and difficulty feel, mix, humor, and photosensitivity.
 

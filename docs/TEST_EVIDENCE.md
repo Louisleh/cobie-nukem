@@ -2,7 +2,7 @@
 
 This is a durable evidence template, not a claim that every listed check has run against the current working tree. Add one section per candidate; never overwrite older evidence.
 
-## Candidate 0.6.0-alpha.7 — 2026-07-13
+## Shipped 0.6.0-alpha.7 — 2026-07-13
 
 | Field | Value |
 | --- | --- |
@@ -25,7 +25,7 @@ This is a durable evidence template, not a claim that every listed check has run
 | Complete release/export matrix | Pass | `QA_EXPORTS=1 bash tools/release_validate.sh`, exit 0; Web and unsigned Universal macOS exports |
 | Native 1080p zone profile | Pass with retained outliers | Gameplay p95 17.175–19.581 ms; tunnel p99 38.401 ms with one 104.345 ms sample; one isolated 165.351 ms Walker sample tracked in Known Issues |
 | Packaged Web desktop/tablet | Pass | Stamped title, menu, five-card selector, Salmon Creek launch, complete 1024×768 twin-stick HUD, and live right-stick aim response; no Godot warning/error (generic Chromium automation-host `UnknownError` retained as host noise) |
-| Public deployment | Pending | Source merge, prerelease, website deployment, public identity, and downloaded PCK hash verification remain the release actions |
+| Public deployment | Pass | Source integration `4161363`; website deployment `0854ef4`; GitHub prerelease `v0.6.0-alpha.7`; uncached public landing, stamped title, and 1024×768 twin-stick gameplay verified without browser warnings/errors; downloaded PCK hash matched the release artifact |
 | Physical iPad and human playthrough/mix | Not run | Explicit human-only gates |
 
 ### Candidate artifacts
