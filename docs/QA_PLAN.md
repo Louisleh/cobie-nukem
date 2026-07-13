@@ -16,6 +16,7 @@ Run from the repository root with Godot 4.7 stable:
 /opt/homebrew/bin/godot --headless --path . --script res://tests/unit/input_system_test.gd
 /opt/homebrew/bin/godot --headless --path . --script res://tests/unit/combat_test_runner.gd
 /opt/homebrew/bin/godot --headless --path . --script res://tests/unit/enemy_contract_tests.gd
+/opt/homebrew/bin/godot --headless --path . --script res://tests/unit/navigation_contract_test.gd
 /opt/homebrew/bin/godot --headless --path . --script res://tests/unit/save_schema_test.gd
 /opt/homebrew/bin/godot --headless --path . --script res://tests/integration/integration_test_runner.gd
 /opt/homebrew/bin/godot --headless --path . --script res://tests/integration/adversarial_state_test.gd
@@ -34,6 +35,7 @@ bash tools/asset_ip_scan.sh
 | Dead zones, response curves, profiles, diagnostics | `tests/unit/input_system_test.gd` |
 | Damage/armor, ammo, cooldown, weapon scenes | `tests/unit/combat_test_runner.gd` |
 | Five enemy scenes, damage hooks, shield, boss phases | `tests/unit/enemy_contract_tests.gd` |
+| Multi-zone navmesh, ground/flying split, arena-cover routing, bounded stuck recovery | `tests/unit/navigation_contract_test.gd` |
 | Save/load, profile JSON, auto-aim filtering, FSM, secrets, finale | `tests/integration/integration_test_runner.gd` |
 | Save-schema versioning, migrations, corrupt/legacy/future payload recovery | `tests/unit/save_schema_test.gd` |
 | Difficulty selector contract, resource-driven labels, Classic default | `tests/unit/ui_scene_test.gd` |
@@ -90,4 +92,3 @@ Record tooling and sampling method; do not infer GPU performance from headless C
 - **Minor:** polish defect without meaningful progression, safety, or comprehension impact.
 
 No Blocker/Critical defect may ship. Major defects require explicit owner disposition in `docs/KNOWN_ISSUES.md`.
-
