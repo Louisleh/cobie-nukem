@@ -255,14 +255,20 @@ func _build_navigation() -> void:
 func _bake_navigation() -> void:
 	if is_instance_valid(_navigation_region):
 		_navigation_region.bake_navigation_mesh(false)
-		# The bake and the region assignment are queued server operations. Flush
-		# once at level construction so the very first enemy query sees the map;
-		# no force-update occurs during gameplay.
-		NavigationServer3D.map_force_update(_navigation_region.get_navigation_map())
+		# Region assignment is queued after the bake on Linux headless but may land
+		# in the same turn on macOS. Synchronize on a second deferred turn so both
+		# platforms expose the same ready map before normal combat steering.
+		call_deferred("_synchronize_navigation_map")
 	for source in _navigation_sources:
 		if is_instance_valid(source):
 			source.queue_free()
 	_navigation_sources.clear()
+
+
+func _synchronize_navigation_map() -> void:
+	if is_instance_valid(_navigation_region):
+		# This occurs exactly once at construction; never force-update per frame.
+		NavigationServer3D.map_force_update(_navigation_region.get_navigation_map())
 
 
 func _build_field_dressing() -> void:
