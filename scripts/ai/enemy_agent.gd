@@ -7,9 +7,11 @@ signal attack_fired(kind: StringName)
 signal damaged(amount: float, source: Node, hit_position: Vector3)
 signal died(enemy: EnemyAgent, source: Node)
 signal drop_requested(drop_id: StringName, position: Vector3)
+signal navigation_recovery_requested(enemy: EnemyAgent, reason: StringName)
 
 enum State { IDLE, ALERT, CHASE, ATTACK, HURT, STUNNED, DEAD }
 
+const EnemyDeathEffectScript := preload("res://scripts/ai/enemy_death_effect.gd")
 @export var definition: EnemyDefinition
 @export var initial_target: Node3D
 @export var target_height := 1.0
@@ -41,6 +43,7 @@ var _aggression_scale := 1.0
 var _stagger_accumulator := 0.0
 var _visual_base_position := Vector3.ZERO
 var _presentation_tween: Tween
+var _navigator: EnemyNavigator
 
 func _ready() -> void:
 	floor_snap_length = 0.45
@@ -57,6 +60,12 @@ func _ready() -> void:
 	_build_health_bar()
 	var visual := get_node_or_null("Visual") as Node3D
 	if visual != null: _visual_base_position = visual.position
+	if uses_gravity:
+		_navigator = EnemyNavigator.new()
+		_navigator.name = "EnemyNavigator"
+		add_child(_navigator)
+		_navigator.configure(self, definition.navigation_radius, maxf(target_height * 2.0, 1.0))
+		_navigator.recovery_requested.connect(_on_navigation_recovery)
 
 func _physics_process(delta: float) -> void:
 	if definition == null or is_dead:
@@ -117,19 +126,16 @@ func _physics_process(delta: float) -> void:
 				if pressure != null: pressure.release_attack(self)
 				_cooldown = definition.attack_cooldown / maxf(_aggression_scale, 0.1)
 				_set_state(State.CHASE)
-
 func set_target(value: Node3D) -> void:
 	target = value
 	if _target_valid() and state == State.IDLE:
 		_set_state(State.ALERT)
 		get_tree().call_group(&"enemies", &"receive_alert", value, global_position, 12.0)
 
-
 func receive_alert(value: Node3D, source_position: Vector3, radius: float) -> void:
 	if is_dead or not is_instance_valid(value) or global_position.distance_to(source_position) > radius: return
 	target = value
 	if state == State.IDLE: _set_state(State.ALERT)
-
 
 func apply_difficulty(profile: DifficultyProfile) -> void:
 	_damage_scale = profile.enemy_damage_multiplier if profile != null else 1.0
@@ -137,7 +143,6 @@ func apply_difficulty(profile: DifficultyProfile) -> void:
 	_aggression_scale = profile.enemy_aggression_multiplier if profile != null else 1.0
 	_max_health = profile.scaled_enemy_health(definition.max_health) if profile != null else definition.max_health
 	health = _max_health
-
 func apply_damage(amount: float, source: Node = null, hit_position := Vector3.ZERO) -> float:
 	if is_dead or amount <= 0.0:
 		return 0.0
@@ -182,7 +187,6 @@ func get_auto_aim_position() -> Vector3:
 
 func health_fraction() -> float:
 	return 0.0 if definition == null else health / maxf(_max_health, 0.001)
-
 
 func _build_health_bar() -> void:
 	_health_bar_width = 2.4 if definition.max_health >= 1000.0 else 1.4
@@ -276,7 +280,8 @@ func _move_for_combat(distance: float, delta: float) -> void:
 		_move_toward(target.global_position, definition.move_speed, delta)
 
 func _move_toward(destination: Vector3, speed: float, delta: float) -> void:
-	var flat_direction := global_position.direction_to(Vector3(destination.x, global_position.y, destination.z))
+	var steering_destination := _navigator.steering_destination(destination, delta) if _navigator != null else destination
+	var flat_direction := global_position.direction_to(Vector3(steering_destination.x, global_position.y, steering_destination.z))
 	var desired := flat_direction * speed * _speed_scale
 	velocity.x = move_toward(velocity.x, desired.x, definition.acceleration * delta)
 	velocity.z = move_toward(velocity.z, desired.z, definition.acceleration * delta)
@@ -288,12 +293,31 @@ func _move_toward(destination: Vector3, speed: float, delta: float) -> void:
 		rotation.y = lerp_angle(rotation.y, atan2(-flat_direction.x, -flat_direction.z), minf(1.0, delta * 9.0))
 	move_and_slide()
 	_stabilize_ground_height()
+	if _navigator != null:
+		_navigator.observe_motion(desired.length_squared() > 0.01, delta)
 
 func _stabilize_ground_height() -> void:
 	if not uses_gravity or global_position.y >= ground_height:
 		return
 	global_position.y = ground_height
 	velocity.y = 0.0
+	if _navigator != null:
+		_navigator.reset_after_teleport()
+
+
+func _on_navigation_recovery(reason: StringName, recovery_position: Vector3) -> void:
+	navigation_recovery_requested.emit(self, reason)
+	var game_state := get_node_or_null("/root/GameState")
+	if game_state != null and not game_state.local_metrics.is_empty():
+		game_state.local_metrics["navigation_recoveries"] = int(game_state.local_metrics.get("navigation_recoveries", 0)) + 1
+	if reason != &"stuck_on_navigation":
+		return
+	# Clamp the correction to the navmesh and preserve a small floor offset. This
+	# only runs after three failed repaths and never crosses a large gap.
+	global_position = recovery_position + Vector3.UP * 0.05
+	velocity = Vector3.ZERO
+	reset_physics_interpolation()
+	_navigator.reset_after_teleport()
 
 func _face_target(delta: float) -> void:
 	if not _target_valid():
@@ -415,7 +439,7 @@ func _die(source: Node) -> void:
 	var visual := get_node_or_null("Visual") as Node3D
 	if visual != null:
 		_play_death_animation(visual)
-	_spawn_death_pop()
+	EnemyDeathEffectScript.spawn(self)
 	var cleanup := Timer.new()
 	cleanup.name = "DeathCleanupTimer"
 	cleanup.one_shot = true
@@ -447,28 +471,6 @@ func _play_death_animation(visual: Node3D) -> void:
 	scale_tween.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
 	scale_tween.tween_property(visual, "scale", Vector3(0.22, 1.18, 0.22), 0.18)
 	scale_tween.tween_property(visual, "scale", Vector3.ZERO, 0.18)
-
-func _spawn_death_pop() -> void:
-	var parent := get_tree().current_scene
-	if parent == null:
-		return
-	var pop := Node3D.new(); pop.name = "EnemyDeathPop"; parent.add_child(pop); pop.global_position = get_auto_aim_position()
-	var quality := get_node_or_null("/root/QualityManager")
-	if quality != null: quality.claim_temporary_effect(pop)
-	for index in 10:
-		var fragment := MeshInstance3D.new(); fragment.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-		var mesh := BoxMesh.new(); mesh.size = Vector3.ONE * randf_range(0.05, 0.11); fragment.mesh = mesh
-		var material := StandardMaterial3D.new(); material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED; material.albedo_color = Color("ffb22e") if index % 2 == 0 else Color("e94b35"); material.emission_enabled = true; material.emission = material.albedo_color; material.emission_energy_multiplier = 3.0; fragment.material_override = material
-		pop.add_child(fragment)
-		var direction := Vector3(randf_range(-1.0, 1.0), randf_range(0.2, 1.3), randf_range(-1.0, 1.0)).normalized()
-		var tween := fragment.create_tween().set_parallel(); tween.tween_property(fragment, "position", direction * randf_range(0.45, 0.95), 0.38); tween.tween_property(fragment, "scale", Vector3.ZERO, 0.38)
-	var cleanup := Timer.new()
-	cleanup.name = "CleanupTimer"
-	cleanup.one_shot = true
-	cleanup.wait_time = 0.42
-	cleanup.timeout.connect(pop.queue_free)
-	pop.add_child(cleanup)
-	cleanup.start()
 
 func _target_valid() -> bool:
 	return is_instance_valid(target) and target is Node3D and target.is_inside_tree() and target.get("is_dead") != true
