@@ -414,7 +414,6 @@ func _bind_walker(walker: Node) -> void:
 	if encounter_pacing != null and walker is EnemyAgent and walker.definition != null:
 		walker.definition.preferred_distance = walker.definition.attack_range
 		walker.definition.retreat_distance = encounter_pacing.pressure_distance.x
-		walker.summon_attack_interval = encounter_pacing.summon_attack_interval
 		boss_state_changed.emit(encounter_pacing.phase_id(0), walker.health_fraction())
 		narrative_message.emit(encounter_pacing.phase_cue(0), 2.5)
 	if walker.has_signal("golden_ball_enabled"): walker.golden_ball_enabled.connect(func(target): _golden_ball.enable_for_boss(target); objective_changed.emit("FETCH THE GOLDEN TENNIS BALL"))
@@ -449,7 +448,8 @@ func _on_walker_attack_fired(_kind: StringName, walker: Node) -> void:
 	if walker != _walker or encounter_pacing == null or int(walker.boss_phase) != 0:
 		return
 	_walker_cannon_attacks += 1
-	if _walker_cannon_attacks % encounter_pacing.summon_attack_interval == 0:
+	var summon_interval := int(walker.summon_attack_interval)
+	if summon_interval > 0 and _walker_cannon_attacks % summon_interval == 0:
 		narrative_message.emit("DRONE REINFORCEMENT DEPLOYED", 2.0)
 
 

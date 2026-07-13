@@ -2,5 +2,7 @@
 
 [ext_resource type="Script" path="res://scripts/level/world_interaction.gd" id="1"]
 
-[node name="WorldInteraction" type="Area3D"]
+[node name="WorldInteraction" type="StaticBody3D"]
+collision_layer = 1
+collision_mask = 0
 script = ExtResource("1")

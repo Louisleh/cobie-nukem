@@ -4,6 +4,8 @@ class FakeDamageTarget extends StaticBody3D:
 	var damage_calls: Array[float] = []
 
 	func _init() -> void:
+		collision_layer = 2
+		collision_mask = 0
 		var collision_shape := CollisionShape3D.new()
 		collision_shape.shape = BoxShape3D.new()
 		collision_shape.shape.size = Vector3.ONE
@@ -23,6 +25,7 @@ func _initialize() -> void:
 
 func _run() -> void:
 	_test_definition_validation()
+	await _test_weapon_hit_and_effect_cleanup_contract()
 	await _test_breakable_and_loot_activation()
 	await _test_explosive_one_shot_chain_reactions()
 	await _test_hazard_ticks_with_one_timer()
@@ -63,6 +66,25 @@ func _test_definition_validation() -> void:
 	expect(not loot.validate().is_empty(), "missing loot scene is rejected")
 	secret.persistence_id = &""
 	expect(not secret.validate().is_empty(), "missing secret persistence id is rejected")
+
+
+func _test_weapon_hit_and_effect_cleanup_contract() -> void:
+	var definition := _make_definition(WorldInteractionDefinition.Kind.BREAKABLE_PROP)
+	definition.id = &"raycast_breakable"
+	definition.breakable_health = 5.0
+	var interaction := _spawn_interaction(definition)
+	interaction.position = Vector3(0.0, 0.0, -2.0)
+	await physics_frame
+	var query := PhysicsRayQueryParameters3D.create(Vector3(0.0, 0.0, 1.0), Vector3(0.0, 0.0, -4.0), 1)
+	var hit := interaction.get_world_3d().direct_space_state.intersect_ray(query)
+	_expect(hit.get("collider") == interaction, "world interaction is a body that normal weapon rays can hit")
+	var quality := get_root().get_node_or_null("QualityManager")
+	var effects_before := int(quality.temporary_effect_count()) if quality != null else 0
+	interaction.apply_damage(5.0, null, interaction.global_position)
+	_expect(interaction.is_active(), "raycast breakable activates from damage")
+	await create_timer(0.5).timeout
+	if quality != null:
+		_expect(quality.temporary_effect_count() == effects_before, "interaction presentation returns to the temporary-effect baseline")
 
 
 func _test_breakable_and_loot_activation() -> void:
@@ -122,19 +144,20 @@ func _test_explosive_one_shot_chain_reactions() -> void:
 	c.position = Vector3(3.5, 0.0, 0.0)
 	await process_frame
 
-	var events := 0
-	a.explosion_fired.connect(func(_origin: Vector3, _damage: float) -> void: events += 1)
-	b.explosion_fired.connect(func(_origin: Vector3, _damage: float) -> void: events += 1)
-	c.explosion_fired.connect(func(_origin: Vector3, _damage: float) -> void: events += 1)
+	var events := [0]
+	a.explosion_fired.connect(func(_origin: Vector3, _damage: float) -> void: events[0] += 1)
+	b.explosion_fired.connect(func(_origin: Vector3, _damage: float) -> void: events[0] += 1)
+	c.explosion_fired.connect(func(_origin: Vector3, _damage: float) -> void: events[0] += 1)
 	a.interact(root)
 	await process_frame
 	_expect(a.is_active(), "initial explosive activates")
 	_expect(b.is_active(), "chain-reactive explosive activates")
 	_expect(not c.is_active(), "chain reaction limit prevents third-order detonation")
-	var pre_events := events
+	_expect(events[0] == 2, "each bounded explosive emits exactly one detonation event")
+	var pre_events: int = events[0]
 	a.interact(root)
 	b.interact(root)
-	_expect(events == pre_events, "explosive activations are idempotent")
+	_expect(events[0] == pre_events, "explosive activations are idempotent")
 
 
 func _test_hazard_ticks_with_one_timer() -> void:

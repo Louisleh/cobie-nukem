@@ -26,8 +26,10 @@ func validate() -> PackedStringArray:
 	var expected := phase_ids.size()
 	if expected < 2:
 		errors.append("Walker phase profile must include at least CANNONS and GOLDEN_BALL")
-	if expected - 1 != phase_transition_fractions.size():
-		errors.append("Transition fractions must be one shorter than phase IDs")
+	# DEFEATED is reached only by the Golden Ball finisher, so health thresholds
+	# exist for the three normal combat transitions, not for death itself.
+	if expected - 2 != phase_transition_fractions.size():
+		errors.append("Transition fractions must cover combat phases but exclude the Golden Ball death transition")
 	for idx in expected:
 		if phase_attack_ranges.size() <= idx:
 			errors.append("Walker phase %d missing attack range" % idx)

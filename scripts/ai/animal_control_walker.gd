@@ -39,7 +39,15 @@ func _ready() -> void:
 func apply_damage(amount: float, source: Node = null, hit_position := Vector3.ZERO) -> float:
 	if boss_phase == BossPhase.GOLDEN_BALL and not _finishing_with_ball:
 		return 0.0
-	var applied := super.apply_damage(amount, source, hit_position)
+	# A normal weapon hit may reach the next phase boundary but cannot kill the
+	# Walker or consume several authored phases at once. This preserves each
+	# telegraph and recovery window even under extreme damage or difficulty mods.
+	var bounded_amount := amount
+	if not _finishing_with_ball and boss_phase < BossPhase.GOLDEN_BALL:
+		var floor_health := _max_health * combat_profile.phase_transition_fraction(boss_phase)
+		var multiplier := maxf(_damage_multiplier(hit_position), 0.001)
+		bounded_amount = minf(amount, maxf(0.0, health - floor_health) / multiplier)
+	var applied := super.apply_damage(bounded_amount, source, hit_position)
 	_update_phase()
 	return applied
 
@@ -50,11 +58,14 @@ func strike_with_golden_ball(source: Node = null) -> void:
 	_finishing_with_ball = true
 	super.apply_damage(maxf(health, 1.0), source, get_auto_aim_position())
 	_finishing_with_ball = false
+	if is_dead:
+		_set_boss_phase(BossPhase.DEFEATED)
 
 
 func _damage_multiplier(hit_position: Vector3) -> float:
 	var weak_point := super._damage_multiplier(hit_position)
-	return weak_point * combat_profile.phase_damage_multiplier(boss_phase) * combat_profile.phase_weak_point_multiplier(boss_phase)
+	var exposed_bonus := combat_profile.phase_weak_point_multiplier(boss_phase) if weak_point > 1.0 else 1.0
+	return weak_point * combat_profile.phase_damage_multiplier(boss_phase) * exposed_bonus
 
 
 func _perform_attack() -> void:
@@ -86,6 +97,9 @@ func _perform_attack() -> void:
 
 
 func _update_phase() -> void:
+	if is_dead:
+		_set_boss_phase(BossPhase.DEFEATED)
+		return
 	var fraction: float = health_fraction()
 	if boss_phase == BossPhase.GOLDEN_BALL:
 		return
@@ -137,13 +151,18 @@ func _spawn_drone() -> void:
 	# Summons live outside the encounter runner's actor list; the group lets a
 	# checkpoint reset clear them together with the walker.
 	drone.add_to_group(&"boss_summons")
+	drone.set_meta(&"walker_owner_id", get_instance_id())
 	get_tree().current_scene.add_child(drone)
 	drone.global_position = global_position + global_basis.x * (2.5 if _attack_count % 2 == 0 else -2.5) + Vector3.UP * 1.0
 	drone.set_target(target)
 
 
 func _can_spawn_summon() -> bool:
-	return get_tree().get_nodes_in_group(&"boss_summons").size() < combat_profile.max_live_summons
+	var owned := 0
+	for summon in get_tree().get_nodes_in_group(&"boss_summons"):
+		if summon.get_meta(&"walker_owner_id", 0) == get_instance_id():
+			owned += 1
+	return owned < combat_profile.max_live_summons
 
 
 func _apply_phase_tuning(phase: BossPhase) -> void:

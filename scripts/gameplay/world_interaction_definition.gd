@@ -31,6 +31,7 @@ enum Kind {
 @export_range(0.0, 2.0, 0.01) var detonation_delay := 0.02
 @export_range(0.0, 18.0, 0.1) var chain_reaction_radius := 3.5
 @export_range(0, 12, 1) var chain_reaction_limit := 3
+@export_flags_3d_physics var explosive_collision_mask := 0xFFFFFFFF
 
 # Hazard configuration
 @export_range(0.05, 3.0, 0.01) var hazard_tick_seconds := 0.6
@@ -77,6 +78,8 @@ func validate() -> PackedStringArray:
 				errors.append("explosive interaction %s has invalid chain reaction radius" % id)
 			if chain_reaction_limit < 0:
 				errors.append("explosive interaction %s has invalid chain reaction limit" % id)
+			if explosive_collision_mask == 0:
+				errors.append("explosive interaction %s requires a non-zero collision mask" % id)
 		Kind.HAZARD_ZONE:
 			if hazard_tick_seconds <= 0.0:
 				errors.append("hazard interaction %s requires hazard_tick_seconds > 0" % id)
@@ -106,5 +109,7 @@ func validate() -> PackedStringArray:
 	return errors
 
 
-func reset_health() -> float:
+func starting_health() -> float:
+	if kind == Kind.EXPLOSIVE_PROP:
+		return explosive_health
 	return breakable_reset_health if breakable_reset_health > 0.0 else breakable_health

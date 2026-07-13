@@ -1,4 +1,4 @@
-extends Area3D
+extends StaticBody3D
 class_name WorldInteraction
 
 signal interaction_activated(interaction: WorldInteraction)
@@ -15,18 +15,24 @@ var _validation_errors: PackedStringArray = PackedStringArray()
 var _activated := false
 var _current_health := 0.0
 var _hazard_timer: Timer
+var _detonation_timer: Timer
+var _hazard_area: Area3D
 var _hazard_targets: Dictionary = {}
 var _collision_shape_added := false
+var _authored_collision_layer := 1
 
 
 func _ready() -> void:
 	add_to_group(&"interactables")
+	_authored_collision_layer = collision_layer if collision_layer != 0 else 1
 	_apply_definition()
 
 
 func _exit_tree() -> void:
 	if _hazard_timer != null and is_instance_valid(_hazard_timer):
 		_hazard_timer.queue_free()
+	if _detonation_timer != null and is_instance_valid(_detonation_timer):
+		_detonation_timer.queue_free()
 	_hazard_bodies_clear()
 
 
@@ -76,10 +82,11 @@ func apply_damage(amount: float, source: Node = null, hit_position: Vector3 = Ve
 				_activate_breakable(source)
 			return applied
 		WorldInteractionDefinition.Kind.EXPLOSIVE_PROP:
-			_current_health -= amount
+			var applied := minf(_current_health, amount)
+			_current_health -= applied
 			if _current_health <= 0.0:
 				_activate_explosive(source, hit_position)
-			return amount
+			return applied
 		_:
 			return 0.0
 	return 0.0
@@ -119,7 +126,7 @@ func restore_state(payload: Dictionary) -> void:
 		_activated = bool(payload.get("activated", false))
 	else:
 		_activated = false
-	_current_health = definition.reset_health() if definition.kind in [WorldInteractionDefinition.Kind.BREAKABLE_PROP, WorldInteractionDefinition.Kind.EXPLOSIVE_PROP] else 0.0
+	_current_health = definition.starting_health() if definition.kind in [WorldInteractionDefinition.Kind.BREAKABLE_PROP, WorldInteractionDefinition.Kind.EXPLOSIVE_PROP] else 0.0
 	_apply_authoring_state()
 
 
@@ -128,7 +135,10 @@ func reset_interaction() -> void:
 		return
 	if definition.kind != WorldInteractionDefinition.Kind.SECRET_TRIGGER or not definition.persists_across_reset:
 		_activated = false
-	_current_health = definition.reset_health() if definition.kind in [WorldInteractionDefinition.Kind.BREAKABLE_PROP, WorldInteractionDefinition.Kind.EXPLOSIVE_PROP] else 0.0
+	_current_health = definition.starting_health() if definition.kind in [WorldInteractionDefinition.Kind.BREAKABLE_PROP, WorldInteractionDefinition.Kind.EXPLOSIVE_PROP] else 0.0
+	if _detonation_timer != null and is_instance_valid(_detonation_timer):
+		_detonation_timer.queue_free()
+		_detonation_timer = null
 	if definition.kind == WorldInteractionDefinition.Kind.HAZARD_ZONE:
 		_hazard_bodies_clear()
 		_setup_hazard_timer()
@@ -149,12 +159,12 @@ func _apply_definition() -> void:
 		for entry in _validation_errors:
 			push_warning("WorldInteraction validation failed: %s" % entry)
 		set_process(false)
-		monitoring = false
+		collision_layer = 0
 		return
 	_collision_shape_added = false
 	_ensure_collision_shape()
 	_ensure_visual_if_empty()
-	_current_health = definition.reset_health() if definition.kind in [WorldInteractionDefinition.Kind.BREAKABLE_PROP, WorldInteractionDefinition.Kind.EXPLOSIVE_PROP] else 0.0
+	_current_health = definition.starting_health() if definition.kind in [WorldInteractionDefinition.Kind.BREAKABLE_PROP, WorldInteractionDefinition.Kind.EXPLOSIVE_PROP] else 0.0
 	_activated = false
 	_apply_authoring_state()
 	if definition.kind == WorldInteractionDefinition.Kind.HAZARD_ZONE:
@@ -163,7 +173,7 @@ func _apply_definition() -> void:
 		if _hazard_timer != null and is_instance_valid(_hazard_timer):
 			_hazard_timer.queue_free()
 		_hazard_bodies_clear()
-		monitoring = true
+		_remove_hazard_area()
 
 
 func _activate_breakable(actor: Node) -> void:
@@ -184,11 +194,26 @@ func _activate_explosive(actor: Node, impact_position: Vector3, chain_budget: in
 	_activated = true
 	interaction_activated.emit(self)
 	interaction_completed.emit(definition.id, WorldInteractionDefinition.Kind.EXPLOSIVE_PROP)
+	_apply_authoring_state()
+	if definition.detonation_delay <= 0.0:
+		_finish_detonation(impact_position, chain_budget)
+		return
+	_detonation_timer = Timer.new()
+	_detonation_timer.name = "DetonationTimer"
+	_detonation_timer.one_shot = true
+	_detonation_timer.wait_time = definition.detonation_delay
+	_detonation_timer.timeout.connect(_finish_detonation.bind(impact_position, chain_budget))
+	_detonation_timer.timeout.connect(_detonation_timer.queue_free)
+	add_child(_detonation_timer)
+	_detonation_timer.start()
+
+
+func _finish_detonation(impact_position: Vector3, chain_budget: int) -> void:
+	_detonation_timer = null
 	_spawn_temporary_effect()
 	explosion_fired.emit(impact_position, definition.explosive_damage)
 	_perform_explosive_damage(impact_position)
 	_chain_reaction(impact_position, chain_budget)
-	_apply_authoring_state()
 
 
 func _activate_loot(actor: Node) -> void:
@@ -245,10 +270,7 @@ func _perform_explosive_damage(origin: Vector3) -> void:
 
 
 func _setup_hazard_mode() -> void:
-	if not is_connected(&"body_entered", Callable(self, "_on_hazard_body_entered")):
-		body_entered.connect(_on_hazard_body_entered)
-	if not is_connected(&"body_exited", Callable(self, "_on_hazard_body_exited")):
-		body_exited.connect(_on_hazard_body_exited)
+	_ensure_hazard_area()
 	_setup_hazard_timer()
 
 
@@ -264,7 +286,6 @@ func _setup_hazard_timer() -> void:
 	_hazard_timer.autostart = true
 	_hazard_timer.timeout.connect(_on_hazard_tick)
 	add_child(_hazard_timer)
-	_hazard_timer.start()
 
 
 func _on_hazard_body_entered(body: Node) -> void:
@@ -306,7 +327,7 @@ func _query_hits(origin: Vector3, radius: float) -> Array:
 	query.collide_with_areas = true
 	query.collide_with_bodies = true
 	query.exclude = [get_rid()]
-	query.collision_mask = collision_mask
+	query.collision_mask = definition.explosive_collision_mask
 	var raw_hits := world.direct_space_state.intersect_shape(query, 64)
 	var dedupe := Dictionary()
 	var result: Array = []
@@ -338,12 +359,16 @@ func _apply_authoring_state() -> void:
 	if definition == null:
 		return
 	if definition.kind == WorldInteractionDefinition.Kind.HAZARD_ZONE:
-		monitoring = true
+		visible = true
+		collision_layer = 0
+		if _hazard_area != null:
+			_hazard_area.set_deferred("monitoring", true)
 		return
-	if _activated:
-		monitoring = false
-	else:
-		monitoring = true
+	visible = not _activated
+	collision_layer = 0 if _activated else _authored_collision_layer
+	var shape := _root_collision_shape()
+	if shape != null:
+		shape.set_deferred("disabled", _activated)
 
 
 func _can_interact(_actor: Node) -> bool:
@@ -400,20 +425,46 @@ func _spawn_temporary_effect() -> void:
 	marker.mesh = SphereMesh.new()
 	(marker.mesh as SphereMesh).radius = 0.35
 	(marker.mesh as SphereMesh).height = 0.7
-	marker.position = Vector3.ZERO
-	add_child(marker)
+	var parent := get_tree().current_scene if get_tree().current_scene != null else get_tree().root
+	parent.add_child(marker)
+	marker.global_position = global_position
 	var quality := get_node_or_null("/root/QualityManager")
 	if quality != null:
 		quality.claim_temporary_effect(marker)
-	else:
-		var cleanup := Timer.new()
-		cleanup.name = "TemporaryEffectCleanup"
-		cleanup.one_shot = true
-		cleanup.wait_time = 0.45
-		cleanup.timeout.connect(marker.queue_free)
-		cleanup.timeout.connect(cleanup.queue_free)
-		add_child(cleanup)
-		cleanup.start()
+	var tween := marker.create_tween()
+	tween.tween_property(marker, "scale", Vector3.ONE * 1.8, 0.18)
+	tween.tween_property(marker, "scale", Vector3.ZERO, 0.22)
+	tween.tween_callback(marker.queue_free)
+
+
+func _root_collision_shape() -> CollisionShape3D:
+	for child in get_children():
+		if child is CollisionShape3D:
+			return child
+	return null
+
+
+func _ensure_hazard_area() -> void:
+	if is_instance_valid(_hazard_area):
+		return
+	_hazard_area = Area3D.new()
+	_hazard_area.name = "HazardArea"
+	_hazard_area.collision_layer = 0
+	_hazard_area.collision_mask = 2 | 4
+	var shape := CollisionShape3D.new()
+	var sphere := SphereShape3D.new()
+	sphere.radius = definition.hazard_radius
+	shape.shape = sphere
+	_hazard_area.add_child(shape)
+	add_child(_hazard_area)
+	_hazard_area.body_entered.connect(_on_hazard_body_entered)
+	_hazard_area.body_exited.connect(_on_hazard_body_exited)
+
+
+func _remove_hazard_area() -> void:
+	if is_instance_valid(_hazard_area):
+		_hazard_area.queue_free()
+	_hazard_area = null
 
 
 func _hazard_bodies_clear() -> void:

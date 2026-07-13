@@ -36,7 +36,7 @@ func _test_authored_pacing_contract() -> void:
 	var profile_errors: PackedStringArray = profile.validate()
 	for error in profile_errors:
 		_expect(false, "Walker profile validates: %s" % error)
-	_expect(profile.phase_transition_fractions.size() == profile.phase_ids.size() - 1, "Walker profile has one threshold per phase transition")
+	_expect(profile.phase_transition_fractions.size() == profile.phase_ids.size() - 2, "Walker profile has one threshold per normal combat phase transition")
 	for i in range(profile.phase_transition_fractions.size()):
 		_expect(profile.phase_transition_fractions[i] > 0.0, "Walker phase boundary %d keeps positive health fraction" % i)
 		_expect(profile.phase_transition_fractions[i] < 1.0, "Walker phase boundary %d stays under full health" % i)
@@ -71,7 +71,7 @@ func _test_authored_pacing_contract() -> void:
 	_expect(opening.opening_grace_seconds == 12.0, "Opening retains the family-safe 12-second grace window")
 	_expect(opening.maximum_simultaneous_attackers == 1, "Opening limits simultaneous pressure to one attacker")
 	_expect(Pacing.validate().is_empty(), "Walker phase pacing resource validates")
-	_expect(Pacing.summon_attack_interval == 3, "Walker telegraphs a reinforcement every third cannon attack")
+	_expect(WalkerProfile.summon_attack_interval == 3, "Walker combat profile authors a reinforcement every third cannon attack")
 
 
 func _test_complete_route_spawns_every_wave() -> void:
@@ -253,6 +253,18 @@ func _test_walker_phase_ordering_guardrail() -> void:
 	walker.apply_damage(walker.health * 0.9)
 	_expect(phase_events.size() == 1, "A single oversized hit advances at most one phase")
 	_expect(phase_events == [&"exposed_core"], "A single oversized hit advances exactly one phase in order")
+	_expect(is_equal_approx(walker.health_fraction(), profile.phase_transition_fractions[0]), "Oversized damage stops at the authored phase floor")
+	_expect(not walker.is_dead, "Normal weapon damage cannot bypass the Golden Ball finisher")
+	walker.apply_damage(100000.0)
+	walker.apply_damage(100000.0)
+	_expect(phase_events == [&"exposed_core", &"charge", &"golden_ball"], "Oversized follow-up hits still traverse every authored phase in order")
+	var defeated_events := [0]
+	walker.walker_defeated.connect(func() -> void: defeated_events[0] += 1)
+	walker.strike_with_golden_ball(target)
+	await process_frame
+	_expect(walker.is_dead and walker.boss_phase == AnimalControlWalker.BossPhase.DEFEATED, "Golden Ball strike reaches the explicit defeated phase")
+	_expect(defeated_events[0] == 1, "Walker defeated event emits exactly once")
+	_expect(level._encounter_runner.completed.has(&"walker_arena"), "Golden Ball defeat completes the authored boss encounter")
 	level.free()
 	await process_frame
 
