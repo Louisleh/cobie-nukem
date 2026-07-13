@@ -32,5 +32,7 @@ Built on 2026-07-13 with Godot `4.7.stable.official.5b4e0cb0f`. Runtime feature 
 
 ## Integration
 
-- Candidate source: `86ead74` on `codex/alpha7-spark-vertical-slice`.
-- Source merge, GitHub prerelease, website deployment, and public PCK verification are recorded after those operations complete.
+- Source integration: `4161363` through [PR #29](https://github.com/Louisleh/cobie-nukem/pull/29).
+- GitHub prerelease: [v0.6.0-alpha.7](https://github.com/Louisleh/cobie-nukem/releases/tag/v0.6.0-alpha.7).
+- Website deployment: `0854ef4` through `Louisleh/louislehmann-site` [PR #98](https://github.com/Louisleh/louislehmann-site/pull/98).
+- Live route: <https://www.louislehmann.fyi/games/cobie-nukem/>. The uncached public landing, stamped title, 1024×768 twin-stick gameplay, and downloaded PCK hash were verified after deployment with no browser warnings/errors.
