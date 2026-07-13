@@ -23,6 +23,14 @@ This is a durable evidence template, not a claim that every listed check has run
 | Packaged Web desktop/tablet/public | Pending final stamped artifact | Browser route required after packaging/deployment |
 | Physical iPad and human playthrough | Not run | Explicit human-only gate |
 
+### Artifacts
+
+| Artifact | Bytes | SHA-256 |
+| --- | ---: | --- |
+| `cobie-nukem-0.6.0-alpha.4-itch.zip` | 21,429,209 | `24f9468724b3396b843a67be793c6d2688728db0ff69e8b07eaac050e1c14430` |
+| `cobie-nukem-0.6.0-alpha.4-macos-unsigned.zip` | 70,793,257 | `b7395cc96379b891c5246675cb3301eb449a339774079c6e2288a277823297dc` |
+| Web PCK | 11,482,536 | `aaafdefdc9e649387a9bc070830dbb889eba13b66df96de1548e2779a2c2574d` |
+
 ## Candidate 0.6.0-alpha.3 — 2026-07-13
 
 | Field | Value |
