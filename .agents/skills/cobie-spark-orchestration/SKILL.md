@@ -13,14 +13,14 @@ Keep the root GPT-5.6 task responsible for requirements, architecture, task part
 2. Confirm a clean baseline, create one `codex/` integration branch, and run `scripts/verify_spark_setup.py` from this skill.
 3. Read [worker-contracts.md](references/worker-contracts.md) before drafting any task packet.
 4. Read [batch-playbook.md](references/batch-playbook.md) before starting workers, worktrees, integration, or release work.
-5. Verify the worker actually uses `gpt-5.3-codex-spark`. If in-app metadata cannot prove this, invoke `codex exec --model gpt-5.3-codex-spark` in an isolated worktree. Never count or silently substitute an unverified model.
+5. Verify the worker actually uses `gpt-5.3-codex-spark`. If in-app metadata cannot prove this, invoke `codex exec --model gpt-5.3-codex-spark` in an isolated checkout. Never count or silently substitute an unverified model.
 
 ## Delegate safely
 
 - Use the six project profiles under `.codex/agents`: gameplay, tests, content, performance, UI/accessibility, and independent review.
 - Give each worker one decision-complete packet, one ownership boundary, 1–8 files normally, explicit forbidden paths, focused tests, and a time limit.
 - Run at most four read-only workers or two non-overlapping writers concurrently.
-- Give every writer a `codex/spark/<work-id>` branch and isolated worktree. Require one cohesive commit and the structured result contract.
+- Give every writer a `codex/spark/<work-id>` branch and isolated checkout. Prefer a worktree when the worker can write its Git metadata; use a local full clone for CLI sandbox workers whose worktree metadata lives outside their writable root. Require one cohesive, externally verifiable commit and the structured result contract.
 - Keep workers at nesting depth one. Workers never merge, deploy, stamp releases, edit final PRD status, operate privileged Godot/Blender bridges, or claim human/device evidence.
 
 ## Integrate with GPT-5.6

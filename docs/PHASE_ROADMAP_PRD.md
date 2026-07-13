@@ -8,7 +8,7 @@
 
 **Current public baseline:** `0.6.0-alpha.6` (`52e8240` gameplay/runtime revision; source integration `e0827ae`; website deployment `7b31e74`; PCK SHA-256 `a4a4b5c7114203a3f1ccea506da9f5b09f05738f593ab55db9cef7fb24d595b4`)
 
-**Unreleased development baseline:** none; `main` is clean after the alpha.6 integration
+**Unreleased development baseline:** `codex/alpha7-spark-vertical-slice`; Spark orchestration bootstrap and pilot evidence under review
 
 **Last playtest alpha:** `0.6.0-alpha.6` (`52e8240`) — live at <https://www.louislehmann.fyi/games/cobie-nukem/>
 
@@ -23,7 +23,7 @@ The alpha.7 phase uses a repo-committed GPT-5.6/Spark orchestration contract. GP
 
 | Batch | Allocation | Status | Exit evidence |
 | --- | ---: | --- | --- |
-| 0. Orchestration skill, profiles, validator, pilots | Foundation | **IN PROGRESS** | Static validation plus verified read-only and isolated-writer Spark pilots |
+| 0. Orchestration skill, profiles, validator, pilots | Foundation | **REVIEWED — INTEGRATING PILOT** | Six profiles validate; explicit model inventory proves `gpt-5.3-codex-spark`; read-only sandbox stayed clean; writer edit and focused test passed; CLI checkout policy hardened after rejecting an unverifiable worktree commit hash |
 | 1. Stabilization audits | Salmon Creek | **QUEUED** | Consolidated reproducible Blocker/Critical/Major queue |
 | 2. Environmental interaction foundation | Salmon Creek | **QUEUED** | Typed components, authored arena interactions, persistence/reset tests |
 | 3. Walker production pass | Salmon Creek | **QUEUED** | Resource-driven phases/weak points/summons/recovery and reset stress |
@@ -33,6 +33,8 @@ The alpha.7 phase uses a repo-committed GPT-5.6/Spark orchestration contract. GP
 | 7. Independent integration and release gate | Release | **QUEUED** | Full QA/export/browser matrix; alpha.7 only if green |
 
 Human-only throughout: physical iPad Safari comfort/thermal/audio, family comprehension, boss and difficulty feel, mix, humor, and photosensitivity.
+
+Batch 0 evidence: setup commit `1b7f58e`; the read-only audit pilot reported structured evidence and no filesystem changes; the implementation pilot added a deterministic ten-pickup authoring assertion and passed `tests/integration/test_episode_1_level.gd`. Its first standard-worktree commit claim was rejected because CLI sandboxing could not update Git metadata outside the checkout. Subsequent CLI writers therefore use full local clones, and root review verifies every commit object, parent, owned path, and test independently before integration.
 
 This section is the first place a new Codex or external-auditor run should read. “Foundation complete” means the reusable contract exists, Salmon Creek exercises it, and automated regression passes; it does not mean every future extension listed in the phase is finished.
 

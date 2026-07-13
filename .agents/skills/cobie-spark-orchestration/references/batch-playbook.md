@@ -7,15 +7,18 @@
 3. Verify model identity from task metadata or explicit `codex exec --model gpt-5.3-codex-spark` output.
 4. Review the pilot diff, result packet, sandbox behavior, and commit isolation before scaling.
 
-## Worktrees
+## Isolated writer checkouts
 
 - Integration branch: `codex/<phase>`.
 - Worker branch: `codex/spark/<work-id>`.
-- Worktree root: a temporary sibling directory outside the source checkout.
-- Create worktrees only from the recorded integration baseline.
+- Checkout root: a temporary sibling directory outside the source checkout.
+- Create isolated checkouts only from the recorded integration baseline.
+- In-app workers may use standard Git worktrees when their sandbox can update the shared Git metadata.
+- Explicit CLI Spark writers should use a local full clone when a standard worktree stores `.git` metadata outside the writable sandbox. A source edit without a commit visible from the parent repository is incomplete; never accept an ephemeral or reported-only hash.
 - Never assign overlapping writer ownership concurrently.
-- A writer commits one cohesive change. The root reviews `git show --stat --check <commit>` and the full patch before cherry-picking.
-- Remove the temporary worktree and branch after integration or rejection.
+- A writer commits one cohesive change. The root imports the object from the isolated clone when needed, then reviews `git show --stat --check <commit>` and the full patch before cherry-picking.
+- The root independently verifies the named commit exists, its parent equals the packet baseline, and it changes only owned paths.
+- Remove the temporary checkout and branch after integration or rejection.
 
 ## Concurrency
 
@@ -38,7 +41,7 @@
 
 - Treat an explicit model-unavailable or usage-limit result as the stop signal; there is no assumed credit API.
 - Stop creating workers immediately.
-- Preserve worker logs and completed commits.
+- Preserve worker logs and externally verified completed commits.
 - Finish root review/integration, record queued work, and leave all branches/worktrees clean.
 - Never substitute another worker model without owner instruction.
 
