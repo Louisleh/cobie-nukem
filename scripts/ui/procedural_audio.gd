@@ -21,11 +21,15 @@ func _ready() -> void:
 
 
 func _exit_tree() -> void:
+	stop_all()
+	_voices.clear()
+
+
+func stop_all() -> void:
 	for voice in _voices:
 		if is_instance_valid(voice):
 			voice.stop()
 			voice.stream = null
-	_voices.clear()
 
 func play(cue: Cue, volume_db := 0.0) -> void:
 	if _player == null:

@@ -119,6 +119,9 @@ func _advance_or_complete(definition: EncounterDefinition) -> void:
 	var next_wave := int(active[definition.zone_id].wave) + 1
 	var waves := definition.effective_waves()
 	if next_wave >= waves.size():
+		if definition.completion_policy == EncounterDefinition.CompletionPolicy.BOSS_DEFEATED:
+			_fail(definition, "boss encounter exhausted its waves without defeating the completion target")
+			return
 		_complete(definition)
 		return
 	var delay := maxf(0.0, float(waves[next_wave].get("delay_seconds", 0.0)))
@@ -128,6 +131,7 @@ func _advance_or_complete(definition: EncounterDefinition) -> void:
 	var timer := Timer.new()
 	timer.one_shot = true
 	timer.wait_time = delay
+	timer.autostart = true
 	timer.timeout.connect(func() -> void:
 		if active.has(definition.zone_id):
 			_spawn_wave(definition, next_wave)
@@ -136,14 +140,13 @@ func _advance_or_complete(definition: EncounterDefinition) -> void:
 	)
 	add_child(timer)
 	active[definition.zone_id].timer = timer
-	timer.start()
 
 
 func _complete(definition: EncounterDefinition, clear_runner_actors: bool = false) -> void:
 	if completed.has(definition.zone_id): return
 	if clear_runner_actors:
 		_clear_active_zone(definition.zone_id)
-	elif active.has(definition.zone_id):
+	if active.has(definition.zone_id):
 		active.erase(definition.zone_id)
 	completed[definition.zone_id] = true
 	encounter_completed.emit(definition)

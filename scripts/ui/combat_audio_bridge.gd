@@ -16,10 +16,7 @@ func reset_gameplay_audio() -> void:
 	if samples != null:
 		samples.stop_all()
 	if sounds != null:
-		for voice in sounds.get_children():
-			if voice is AudioStreamPlayer:
-				voice.stop()
-				voice.stream = null
+		sounds.stop_all()
 
 func bind_player(player: Node) -> void:
 	_player = player

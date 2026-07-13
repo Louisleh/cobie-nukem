@@ -5,12 +5,12 @@ var failures: Array[String] = []
 
 func _initialize() -> void:
 	var packed := load("res://scenes/levels/episode_1_level_1.tscn") as PackedScene
-	var save_manager := root.get_node_or_null("/root/SaveManager")
-	var game_state := root.get_node_or_null("/root/GameState")
+	var save_manager := get_root().get_node_or_null("SaveManager")
+	var game_state := get_root().get_node_or_null("GameState")
 	if packed == null:
 		fail("Level scene does not load")
 		finish(); return
-	var level := packed.instantiate()
+	var level := packed.instantiate() as EpisodeOneLevel
 	level.spawn_player = false
 	level.start_run_automatically = false
 	level.setup_presentation = false
@@ -53,7 +53,7 @@ func _initialize() -> void:
 	level._discover_secret(&"ball_return", "AUTHORIZED FETCHING")
 	level._discover_secret(&"ball_return", "AUTHORIZED FETCHING")
 	check(level.secrets.size() == 3, "Secrets must be unique and total three")
-	var player := preload("res://scenes/player/cobie_player.tscn").instantiate()
+	var player := preload("res://scenes/player/cobie_player.tscn").instantiate() as CobiePlayer
 	root.add_child(player)
 	await process_frame
 	check(player.is_in_group(&"player"), "Player identity group missing; zone progression cannot trigger")
@@ -61,20 +61,20 @@ func _initialize() -> void:
 	level.player = player
 	player.health_armor.health = 1.0
 	level.restart_from_checkpoint()
-	var audio_level := packed.instantiate()
+	var audio_level := packed.instantiate() as EpisodeOneLevel
 	audio_level.spawn_player = false
 	audio_level.start_run_automatically = false
 	audio_level.setup_presentation = true
 	root.add_child(audio_level)
 	await process_frame
 	await process_frame
-	var audio_bridge := audio_level._combat_audio
+	var audio_bridge: CombatAudioBridge = audio_level._combat_audio
 	check(audio_bridge != null, "Episode level restores runtime audio bridge in presentation setup")
 	if audio_bridge != null:
 		audio_bridge.sounds.play(ProceduralAudio.Cue.PAWSTOL)
 		audio_bridge.sounds.play(ProceduralAudio.Cue.HURT)
 		if audio_bridge.samples != null:
-			check(audio_bridge.samples.play(&"enemy_hurt"), "Imported sample cue can be started for bridge reset coverage")
+			check(audio_bridge.samples.play(&"pawstol_shot"), "Imported sample cue can be started for bridge reset coverage")
 		await process_frame
 		check(_active_voice_count(audio_bridge.sounds) >= 1, "Checkpoint restart test has active procedural voices before reset")
 		if audio_bridge.samples != null:
@@ -138,7 +138,7 @@ func _initialize() -> void:
 			"encounter_snapshot": {"completed": []},
 			"secrets": {"optional_sign": "SIGN SEEMS OPTIONAL"},
 		})
-		var continue_level := packed.instantiate()
+		var continue_level := packed.instantiate() as EpisodeOneLevel
 		continue_level.spawn_player = false
 		continue_level.start_run_automatically = true
 		continue_level.setup_presentation = false
@@ -148,6 +148,7 @@ func _initialize() -> void:
 		check(not game_state.continue_requested, "Continue request flag is consumed during checkpoint restore")
 		check(game_state.run_stats.get("checkpoint_id", "") == "lab_entry", "Continue restore applies sanitized checkpoint identity to run stats")
 		continue_level.queue_free()
+		save_manager.delete_slot(&"checkpoint")
 	else:
 		check(false, "SaveManager and GameState are available for continue checkpoint identity coverage")
 	level.free()
