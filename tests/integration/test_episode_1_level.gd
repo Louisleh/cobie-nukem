@@ -26,6 +26,30 @@ func _initialize() -> void:
 	check(bridge != null and bridge.size.x >= 2.0 and bridge.size.z >= 5.0, "Secret dog park has no continuous floor bridge")
 	check(level.get_node_or_null("Geometry/LabEastBoundaryRear") != null, "Rear lab boundary segment missing")
 	check(level.get_node_or_null("Geometry/LabEastBoundaryFront") != null, "Front lab boundary segment missing")
+	var runtime := level._interaction_runtime
+	check(runtime != null, "Mission interaction runtime is initialized")
+	if runtime != null:
+		var catalog := load("res://resources/interactions/salmon_creek_interactions.tres") as InteractionCatalog
+		check(catalog != null, "Salmon interaction catalog loads for runtime validation")
+		if catalog != null:
+			var runtime_interactions := runtime.interaction_nodes()
+			check(runtime_interactions.size() == catalog.placements.size(), "One live interaction exists for every catalog placement")
+			var seen_ids: Dictionary = {}
+			var expected_by_id: Dictionary = {}
+			for placement in catalog.placements:
+				expected_by_id[String(placement.id)] = placement
+			for interaction in runtime_interactions:
+				var definition := interaction.definition
+				check(definition != null, "Catalog interactions are initialized with definitions")
+				if definition == null:
+					continue
+				var placement_id := String(definition.id)
+				check(not seen_ids.has(placement_id), "Duplicate runtime interaction id: %s" % placement_id)
+				seen_ids[placement_id] = true
+				check(expected_by_id.has(placement_id), "Runtime interaction id %s comes from catalog placement data" % placement_id)
+				var placement := expected_by_id[placement_id] as InteractionPlacement
+				if placement != null:
+					check(_transform_matches(interaction.transform, placement.transform), "Runtime interaction %s uses catalog transform" % placement_id)
 	var hover_origins_ok := true
 	var drone_origins_ok := true
 	var combat_pickup_count := 0
@@ -61,6 +85,30 @@ func _initialize() -> void:
 	level.player = player
 	player.health_armor.health = 1.0
 	level.restart_from_checkpoint()
+	var runtime_loot_interaction := _find_interaction_by_kind(level, WorldInteractionDefinition.Kind.LOOT_CONTAINER)
+	var actor_children_before := level.get_node("Actors").get_children()
+	if runtime_loot_interaction != null:
+		var actor_position := Vector3(2.1, 1.1, -11.2)
+		player.global_position = actor_position
+		runtime_loot_interaction.interact(player)
+		await process_frame
+		var actor_children_after := level.get_node("Actors").get_children()
+		var spawned_pickups: Array[Node3D] = []
+		for actor in actor_children_after:
+			if actor is CombatPickup and actor not in actor_children_before:
+				spawned_pickups.append(actor)
+		var expected_count := clampi(runtime_loot_interaction.definition.loot_drop_count, 1, 8)
+		check(spawned_pickups.size() == expected_count, "Loot interaction spawned expected bounded pickup count")
+		for pickup in spawned_pickups:
+			check(is_instance_valid(pickup), "Loot pickup remains alive after interaction frame")
+			var distance_to_source := pickup.global_position.distance_to(runtime_loot_interaction.global_position)
+			check(distance_to_source > 0.2, "Runtime loot spawn stays offset from its interaction source")
+	var secret_interaction := _find_interaction_by_kind(level, WorldInteractionDefinition.Kind.SECRET_TRIGGER)
+	if secret_interaction != null:
+		var before := level.secrets.size()
+		secret_interaction.interact(player)
+		secret_interaction.interact(player)
+		check(level.secrets.size() == before + 1, "Secret interactions call the level contract exactly once")
 	var audio_level := packed.instantiate() as EpisodeOneLevel
 	audio_level.spawn_player = false
 	audio_level.start_run_automatically = false
@@ -164,6 +212,20 @@ func _active_voice_count(node: Node) -> int:
 			if child.playing:
 				count += 1
 	return count
+
+
+func _find_interaction_by_kind(level: EpisodeOneLevel, kind: WorldInteractionDefinition.Kind) -> WorldInteraction:
+	if level._interaction_runtime == null:
+		return null
+	var runtime := level._interaction_runtime
+	for interaction in runtime.interaction_nodes():
+		if interaction.definition != null and interaction.definition.kind == kind:
+			return interaction
+	return null
+
+
+func _transform_matches(a: Transform3D, b: Transform3D) -> bool:
+	return a.origin.is_equal_approx(b.origin) and a.basis.x.is_equal_approx(b.basis.x) and a.basis.y.is_equal_approx(b.basis.y) and a.basis.z.is_equal_approx(b.basis.z)
 
 
 func check(condition: bool, message: String) -> void:
