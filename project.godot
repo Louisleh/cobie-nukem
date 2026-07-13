@@ -28,6 +28,7 @@ SceneRouter="*res://scripts/core/scene_router.gd"
 WorldRegistry="*res://scripts/core/world_registry.gd"
 CombatPressure="*res://scripts/gameplay/combat_pressure_director.gd"
 QualityManager="*res://scripts/core/quality_manager.gd"
+ProjectilePool="*res://scripts/core/projectile_pool.gd"
 
 [display]
 

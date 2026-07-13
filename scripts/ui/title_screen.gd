@@ -1,5 +1,7 @@
 extends Control
 
+const PipelinePrewarmer := preload("res://scripts/core/runtime_pipeline_prewarmer.gd")
+
 enum Readiness { WARMING, READY, FAILED, TRANSITIONING }
 
 @export_file("*.tscn") var menu_scene_path := "res://scenes/menus/main_menu.tscn"
@@ -13,6 +15,8 @@ var _stable_frames := 0
 var _prompt_tween: Tween
 var _preloaded_menu: PackedScene
 var _layout_frames_remaining := 2
+var _pipeline_warmup_started := false
+var _pipeline_prewarmer: Node
 
 
 func _ready() -> void:
@@ -30,6 +34,8 @@ func _ready() -> void:
 func _process(delta: float) -> void:
 	if readiness != Readiness.WARMING:
 		return
+	if _pipeline_warmup_started:
+		return
 	_warmup_elapsed += delta
 	var progress: Array = []
 	var status := ResourceLoader.load_threaded_get_status(menu_scene_path, progress)
@@ -41,7 +47,7 @@ func _process(delta: float) -> void:
 	elif status == ResourceLoader.THREAD_LOAD_LOADED and _warmup_elapsed >= minimum_warmup_seconds:
 		_stable_frames += 1
 		if _stable_frames >= 2:
-			_set_ready()
+			_start_pipeline_warmup()
 
 
 func _start_warmup() -> void:
@@ -49,6 +55,7 @@ func _start_warmup() -> void:
 	_accepting = false
 	_warmup_elapsed = 0.0
 	_stable_frames = 0
+	_pipeline_warmup_started = false
 	%LoadingBar.visible = true
 	%LoadingBar.value = 0.0
 	%Prompt.modulate.a = 1.0
@@ -58,13 +65,36 @@ func _start_warmup() -> void:
 		_set_failed()
 
 
-func _set_ready() -> void:
+func _start_pipeline_warmup() -> void:
 	# Finalize the threaded request. Polling LOADED without retrieving the
 	# Resource leaves its loader request alive through SceneTree teardown.
 	_preloaded_menu = ResourceLoader.load_threaded_get(menu_scene_path) as PackedScene
 	if _preloaded_menu == null:
 		_set_failed()
 		return
+	_pipeline_warmup_started = true
+	%LoadingBar.value = 96.0
+	%Prompt.text = "WARMING COMBAT SYSTEMS…"
+	%ProceduralAudio.prewarm_runtime()
+	_pipeline_prewarmer = PipelinePrewarmer.new()
+	_pipeline_prewarmer.name = "RuntimePipelinePrewarmer"
+	add_child(_pipeline_prewarmer)
+	_pipeline_prewarmer.completed.connect(_set_ready, CONNECT_ONE_SHOT)
+	_pipeline_prewarmer.warm(PackedStringArray([
+		"res://scenes/enemies/enemy_bolt.tscn",
+		"res://scenes/weapons/fetch_projectile.tscn",
+		"res://scenes/enemies/mutant_groundskeeper.tscn",
+		"res://scenes/enemies/leash_enforcement_drone.tscn",
+		"res://scenes/enemies/compliance_hound.tscn",
+		"res://scenes/enemies/squirrel_trooper.tscn",
+		"res://scenes/enemies/animal_control_walker.tscn",
+	]))
+
+
+func _set_ready() -> void:
+	if _pipeline_prewarmer != null:
+		_pipeline_prewarmer.queue_free()
+		_pipeline_prewarmer = null
 	readiness = Readiness.READY
 	%LoadingBar.visible = false
 	%Prompt.text = "TAP / PRESS A KEY TO DISOBEY" if OS.has_feature("web") else "PRESS ANY BUTTON TO DISOBEY"
@@ -107,6 +137,7 @@ func _exit_tree() -> void:
 	if _prompt_tween != null:
 		_prompt_tween.kill()
 	_preloaded_menu = null
+	_pipeline_prewarmer = null
 
 
 func _unhandled_input(event: InputEvent) -> void:

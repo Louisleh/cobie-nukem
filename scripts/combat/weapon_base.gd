@@ -39,8 +39,15 @@ var _reload_remaining := 0.0
 var _reload_origin := Vector3.ZERO
 var lifecycle_state := LifecycleState.HOLSTERED
 var _shot_sequence := 0
+var _muzzle_timer: Timer
 
 func _ready() -> void:
+	_muzzle_timer = Timer.new()
+	_muzzle_timer.name = "MuzzleTimer"
+	_muzzle_timer.one_shot = true
+	_muzzle_timer.wait_time = 0.09
+	_muzzle_timer.timeout.connect(_hide_muzzle_flash)
+	add_child(_muzzle_timer)
 	if definition != null:
 		ammo = definition.starting_ammo
 		reserve_ammo = definition.starting_reserve
@@ -253,23 +260,22 @@ func _flash_muzzle() -> void:
 	if muzzle_flash == null and burst == null:
 		return
 	_muzzle_flash_generation += 1
-	var generation := _muzzle_flash_generation
 	if muzzle_flash != null and not _reduced_flashes():
 		muzzle_flash.visible = true
 	if burst != null:
 		burst.visible = true
 		burst.scale = Vector3.ONE * randf_range(0.85, 1.2)
 		burst.rotation.z = randf_range(0.0, TAU)
-	if not is_inside_tree():
-		return
-	get_tree().create_timer(0.09).timeout.connect(func() -> void:
-		if generation != _muzzle_flash_generation:
-			return
-		if is_instance_valid(muzzle_flash):
-			muzzle_flash.visible = false
-		if is_instance_valid(burst):
-			burst.visible = false
-	)
+	if _muzzle_timer != null:
+		_muzzle_timer.start()
+
+
+func _hide_muzzle_flash() -> void:
+	if is_instance_valid(muzzle_flash):
+		muzzle_flash.visible = false
+	var burst := get_node_or_null("MuzzleBurst") as GeometryInstance3D
+	if burst != null:
+		burst.visible = false
 
 func _spawn_impact_marker(position_value: Vector3, normal: Vector3, kind: StringName) -> void:
 	if not is_inside_tree():
@@ -346,10 +352,13 @@ func _spawn_enemy_hit_pop(position_value: Vector3, normal: Vector3, parent: Node
 			spark_tween.tween_property(spark, "scale", Vector3.ZERO, 0.22)
 
 	if pop.is_inside_tree():
-		get_tree().create_timer(0.27).timeout.connect(func() -> void:
-			if is_instance_valid(pop):
-				pop.queue_free()
-		)
+		var cleanup := Timer.new()
+		cleanup.name = "CleanupTimer"
+		cleanup.one_shot = true
+		cleanup.wait_time = 0.27
+		cleanup.timeout.connect(pop.queue_free)
+		pop.add_child(cleanup)
+		cleanup.start()
 	return pop
 
 

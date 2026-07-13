@@ -2,11 +2,12 @@
 
 This file distinguishes confirmed product limitations from unperformed validation. Update it for every release candidate; do not silently convert “not tested” into “passed.”
 
-## `0.6.0-alpha.3` human gates
+## `0.6.0-alpha.4` candidate human gates
 
 - Right-stick profiles are automated for response, frame-rate stability, cancellation, and settings wiring, but final friction/boost strength and thumb comfort require physical iPad Safari testing.
 - The Web bootstrap and title preload are browser-tested; slow real-world mobile networks still need a physical first-load timing pass.
 - Vancouver Waterfront, Mount Hood, Moon, and Ventura are illustrated locked teasers only. Their art is not playable-level completion.
+- The new native 1080p zone profiler passes p95/p99 budgets, but one isolated 224 ms wall-time outlier was observed on the Walker's first active attack sample. Static-AI profiling is clean and projectile first-render warmup is contract-tested; continue profiler-driven combat-path work and confirm perceived pacing in the target-Mac human playthrough.
 
 ## Distribution and legal
 
@@ -33,7 +34,7 @@ This file distinguishes confirmed product limitations from unperformed validatio
 - The 640×360 desktop and 1024×768 tablet layouts have visual automation evidence. Fixed twin-stick rendering, target sizing, onboarding, settings, and left-handed transforms are automated, but physical iPad comfort, reach, simultaneous real-touch behavior, Safari focus recovery, and thermal validation remain open.
 - `AudioCueSet` and bounded sample playback are implemented, but production still falls back to synthesized cues until original/licensed weapon, enemy, footstep, ambience, and music assets are authored and manifested.
 - Enemy state motion, hit/stagger/death reactions, attack tokens, group alert, and weak-point contracts are implemented; directional sprite atlases and production navigation meshes remain open content gates.
-- Headless performance smoke is green. Native GPU frame time, Web/iPad thermal behavior, draw calls, memory, download size, and audio-voice saturation are not yet measured release evidence.
+- Headless drift smoke and native 1080p Compatibility-renderer zone profiling are green, including draw calls, object/node counts, and static memory. Compatibility/OpenGL does not expose useful GPU task timing here; Web/iPad thermal behavior and audio-voice saturation remain unmeasured hardware evidence.
 - The Salmon Creek ball-return machine is the first validated Blender-authored prop and has automated import/collision/puzzle coverage. Its final scale, lighting readability, projectile feel, and placement still need a rendered human playthrough; the rest of the environment remains a mixed prototype/production kit.
 
 ## Reporting policy

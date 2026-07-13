@@ -5,7 +5,7 @@ enum Cue { MOVE, ACCEPT, BACK, ERROR, PICKUP, SECRET, PAWSTOL, BARKSHOT, FETCH, 
 
 @export var bus := &"SFX"
 var _player: AudioStreamPlayer
-var _cache: Dictionary = {}
+static var _shared_cache: Dictionary = {}
 var _voices: Array[AudioStreamPlayer] = []
 
 func _ready() -> void:
@@ -26,22 +26,38 @@ func _exit_tree() -> void:
 			voice.stop()
 			voice.stream = null
 	_voices.clear()
-	_cache.clear()
 
 func play(cue: Cue, volume_db := 0.0) -> void:
 	if _player == null:
 		return
-	if not _cache.has(cue):
-		_cache[cue] = _build_cue(cue)
+	prewarm(cue)
 	var voice := _player
 	for candidate in _voices:
 		if not candidate.playing:
 			voice = candidate
 			break
-	voice.stream = _cache[cue]
+	voice.stream = _shared_cache[cue]
 	voice.volume_db = volume_db
 	voice.pitch_scale = randf_range(0.97, 1.03) if cue in [Cue.FOOTSTEP_WALK, Cue.FOOTSTEP_RUN, Cue.HIT] else 1.0
 	voice.play()
+
+
+func prewarm(cue: Cue) -> void:
+	if not _shared_cache.has(cue):
+		_shared_cache[cue] = _build_cue(cue)
+
+
+func prewarm_runtime() -> void:
+	# Synthesis uses thousands of GDScript sample callbacks. Do it while the
+	# title explicitly says WARMING, then share the immutable WAVs across every
+	# HUD/menu bridge so the first hit, reload, footstep, or victory cannot hitch.
+	for cue in [
+		Cue.PICKUP, Cue.SECRET, Cue.PAWSTOL, Cue.BARKSHOT, Cue.FETCH,
+		Cue.HIT, Cue.HURT, Cue.VICTORY, Cue.DRY_FIRE, Cue.RELOAD_START,
+		Cue.RELOAD_STEP, Cue.RELOAD_COMPLETE, Cue.FOOTSTEP_WALK,
+		Cue.FOOTSTEP_RUN,
+	]:
+		prewarm(cue)
 
 func create_menu_music() -> AudioStreamWAV:
 	var notes := [110.0, 110.0, 146.83, 164.81, 110.0, 196.0, 174.61, 146.83]

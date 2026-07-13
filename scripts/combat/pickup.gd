@@ -103,9 +103,14 @@ func _consume() -> void:
 	visible = false
 	monitoring = false
 	if definition.respawns:
-		# Bound method rather than resuming an await: the connection is dropped
-		# automatically if a scene change frees the pickup before it respawns.
-		get_tree().create_timer(definition.respawn_seconds).timeout.connect(_respawn)
+		var timer := Timer.new()
+		timer.name = "RespawnTimer"
+		timer.one_shot = true
+		timer.wait_time = maxf(definition.respawn_seconds, 0.001)
+		timer.timeout.connect(_respawn)
+		timer.timeout.connect(timer.queue_free)
+		add_child(timer)
+		timer.start()
 	else:
 		queue_free()
 

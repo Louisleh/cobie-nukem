@@ -321,9 +321,11 @@ func _perform_attack() -> void:
 func _spawn_projectile(scene: PackedScene, speed: float, splash_radius := 0.0) -> Node3D:
 	if not _target_valid() or scene == null:
 		return null
-	var projectile := scene.instantiate() as Node3D
-	var projectile_parent := get_tree().current_scene if get_tree().current_scene != null else get_tree().root
-	projectile_parent.add_child(projectile)
+	var pool := get_node_or_null("/root/ProjectilePool")
+	var projectile := pool.acquire(scene) as Node3D if pool != null else scene.instantiate() as Node3D
+	if projectile.get_parent() == null:
+		var projectile_parent := get_tree().current_scene if get_tree().current_scene != null else get_tree().root
+		projectile_parent.add_child(projectile)
 	var origin := get_auto_aim_position()
 	var direction := origin.direction_to(target.global_position + Vector3.UP * 0.8)
 	projectile.global_position = origin
@@ -344,10 +346,15 @@ func _set_telegraph_visual(active: bool) -> void:
 		indicator.visible = active
 	if not active:
 		return
-	get_tree().create_timer(definition.telegraph_seconds).timeout.connect(func() -> void:
-		if is_instance_valid(indicator):
-			indicator.visible = false
-	)
+	var timer := indicator.get_node_or_null("TelegraphTimer") as Timer
+	if timer == null:
+		timer = Timer.new()
+		timer.name = "TelegraphTimer"
+		timer.one_shot = true
+		timer.timeout.connect(indicator.hide)
+		indicator.add_child(timer)
+	timer.wait_time = maxf(definition.telegraph_seconds, 0.001)
+	timer.start()
 
 func _set_state(next: State) -> void:
 	if state == next:
@@ -409,9 +416,13 @@ func _die(source: Node) -> void:
 	if visual != null:
 		_play_death_animation(visual)
 	_spawn_death_pop()
-	# A bound-method connection is dropped automatically when the enemy is freed
-	# by a scene change, unlike resuming an await on a freed instance.
-	get_tree().create_timer(death_linger_seconds).timeout.connect(queue_free)
+	var cleanup := Timer.new()
+	cleanup.name = "DeathCleanupTimer"
+	cleanup.one_shot = true
+	cleanup.wait_time = maxf(death_linger_seconds, 0.001)
+	cleanup.timeout.connect(queue_free)
+	add_child(cleanup)
+	cleanup.start()
 
 
 func _apply_reaction(amount: float) -> void:
@@ -451,7 +462,13 @@ func _spawn_death_pop() -> void:
 		pop.add_child(fragment)
 		var direction := Vector3(randf_range(-1.0, 1.0), randf_range(0.2, 1.3), randf_range(-1.0, 1.0)).normalized()
 		var tween := fragment.create_tween().set_parallel(); tween.tween_property(fragment, "position", direction * randf_range(0.45, 0.95), 0.38); tween.tween_property(fragment, "scale", Vector3.ZERO, 0.38)
-	get_tree().create_timer(0.42).timeout.connect(func() -> void: if is_instance_valid(pop): pop.queue_free())
+	var cleanup := Timer.new()
+	cleanup.name = "CleanupTimer"
+	cleanup.one_shot = true
+	cleanup.wait_time = 0.42
+	cleanup.timeout.connect(pop.queue_free)
+	pop.add_child(cleanup)
+	cleanup.start()
 
 func _target_valid() -> bool:
 	return is_instance_valid(target) and target is Node3D and target.is_inside_tree() and target.get("is_dead") != true
