@@ -123,9 +123,15 @@ theme_override_colors/font_color = Color(1, 0.78, 0.25, 1)
 theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
 theme_override_constants/outline_size = 2
 theme_override_font_sizes/font_size = 9
-text = "PRESS ANY BUTTON TO DISOBEY"
+text = "PREPARING COBIE… 0%"
 horizontal_alignment = 1
 autowrap_mode = 2
+
+[node name="LoadingBar" type="ProgressBar" parent="BrandPanel/Margin/VBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 7)
+layout_mode = 2
+show_percentage = false
 
 [node name="BuildLabel" type="Label" parent="BrandPanel/Margin/VBox"]
 unique_name_in_owner = true

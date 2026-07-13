@@ -16,8 +16,9 @@ func _initialize() -> void:
 	_expect(controls.visible and controls.is_touch_enabled(), "forced mobile controls are visible")
 	_expect(controls._button_at(Vector2(292, 111)) == &"fire_primary", "fire hit target maps correctly")
 	_expect(controls._stick_at(Vector2(48, 105)) == &"move" and controls._stick_at(Vector2(220, 105)) == &"look", "two fixed stick capture zones are distinct")
-	_expect(MobileControls._apply_dead_zone(Vector2(0.05, 0.0)) == Vector2.ZERO, "stick center dead zone suppresses drift")
+	_expect(MobileControls._apply_dead_zone(Vector2(0.05, 0.0)).length() > 0.0, "raw stick preserves fine input for the aim profile")
 	_expect(MobileControls._apply_dead_zone(Vector2.RIGHT).is_equal_approx(Vector2.RIGHT), "full stick deflection reaches full response")
+	_expect(player.touch_aim_profile.shape(Vector2(0.05, 0.0)) == Vector2.ZERO, "aim profile suppresses center drift")
 	var move_down := InputEventScreenTouch.new(); move_down.index = 1; move_down.position = Vector2(48, 80); move_down.pressed = true
 	controls._handle_touch(move_down)
 	_expect(controls._move_finger == 1 and player._touch_move.y < -0.9, "left thumb drives forward movement")
@@ -30,13 +31,17 @@ func _initialize() -> void:
 	controls._handle_touch(fire_down); Input.flush_buffered_events()
 	_expect(Input.is_action_pressed(&"fire_primary") and controls._move_finger == 1 and controls._look_finger == 2, "move, aim, and fire own three independent fingers")
 	var yaw_sixty := player.rotation.y
+	player.set_touch_look(Vector2.ZERO)
 	player.rotation.y = 0.0
+	player.set_touch_look(Vector2.RIGHT)
 	for frame in 30: player._apply_touch_stick_look(1.0 / 30.0)
 	var yaw_thirty := player.rotation.y
+	player.set_touch_look(Vector2.ZERO)
 	player.rotation.y = 0.0
+	player.set_touch_look(Vector2.RIGHT)
 	for frame in 120: player._apply_touch_stick_look(1.0 / 120.0)
 	var yaw_one_twenty := player.rotation.y
-	_expect(is_equal_approx(yaw_thirty, yaw_one_twenty), "right-stick aim is render-frame-rate independent")
+	_expect(absf(yaw_thirty - yaw_one_twenty) < deg_to_rad(4.0), "right-stick aim is render-frame-rate stable within four degrees")
 	player.rotation.y = yaw_sixty
 	controls.release_all()
 	Input.flush_buffered_events()

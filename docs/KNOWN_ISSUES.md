@@ -2,6 +2,12 @@
 
 This file distinguishes confirmed product limitations from unperformed validation. Update it for every release candidate; do not silently convert “not tested” into “passed.”
 
+## `0.6.0-alpha.2` human gates
+
+- Right-stick profiles are automated for response, frame-rate stability, cancellation, and settings wiring, but final friction/boost strength and thumb comfort require physical iPad Safari testing.
+- The Web bootstrap and title preload are browser-tested; slow real-world mobile networks still need a physical first-load timing pass.
+- Vancouver Waterfront, Mount Hood, Moon, and Ventura are illustrated locked teasers only. Their art is not playable-level completion.
+
 ## Distribution and legal
 
 - The working title requires an IP/name review before public commercial distribution. The original generated cover does not resolve title clearance.

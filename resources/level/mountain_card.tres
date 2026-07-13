@@ -1,11 +1,13 @@
-[gd_resource type="Resource" script_class="LevelCardData" load_steps=2 format=3]
+[gd_resource type="Resource" script_class="LevelCardData" load_steps=3 format=3]
 [ext_resource type="Script" path="res://scripts/ui/level_card_data.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/level_previews/mount_hood.png" id="2"]
 [resource]
 script = ExtResource("1")
-level_id = &"mount_barkmore"
-title = "MOUNT BARKMORE"
-episode = "EPISODE 3 // CLASSIFIED"
-description = "High-altitude fetch operations are awaiting clearance."
+level_id = &"mount_hood_whiteout"
+title = "MOUNT HOOD WHITEOUT"
+episode = "EPISODE 3 // MOUNT HOOD"
+description = "A snowplow mech has buried the mountain road. Clear the lodge, the lifts, and every leash-law checkpoint."
 difficulty = 4
 expected_minutes = "CLASSIFIED"
 encounter = "LOCKED"
+preview = ExtResource("2")

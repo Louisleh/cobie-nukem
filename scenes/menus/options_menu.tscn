@@ -99,6 +99,25 @@ text = "INVERT TOUCH Y"
 unique_name_in_owner = true
 layout_mode = 2
 text = "ON"
+[node name="TouchAimPresetLabel" type="Label" parent="Panel/VBox/Scroll/Grid"]
+layout_mode = 2
+text = "AIM RESPONSE"
+[node name="TouchAimPresetChoice" type="OptionButton" parent="Panel/VBox/Scroll/Grid"]
+unique_name_in_owner = true
+layout_mode = 2
+[node name="TouchTurnBoostLabel" type="Label" parent="Panel/VBox/Scroll/Grid"]
+layout_mode = 2
+text = "OUTER TURN BOOST"
+[node name="TouchTurnBoost" type="CheckButton" parent="Panel/VBox/Scroll/Grid"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "ON"
+[node name="TouchAimFrictionLabel" type="Label" parent="Panel/VBox/Scroll/Grid"]
+layout_mode = 2
+text = "TARGET FRICTION"
+[node name="TouchAimFrictionChoice" type="OptionButton" parent="Panel/VBox/Scroll/Grid"]
+unique_name_in_owner = true
+layout_mode = 2
 [node name="TouchStickSizeLabel" type="Label" parent="Panel/VBox/Scroll/Grid"]
 layout_mode = 2
 text = "STICK SIZE"

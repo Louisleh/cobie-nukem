@@ -43,9 +43,11 @@ func _build_cards() -> void:
 	for index in levels.size():
 		var data := levels[index]
 		var card := Button.new()
-		card.custom_minimum_size = Vector2(88.0, 37.0)
+		card.custom_minimum_size = Vector2(105.0, 43.0)
 		card.add_theme_font_size_override("font_size", 6)
-		card.text = "%02d\n%s" % [index + 1, data.title if data.unlocked else "LOCKED // " + data.title]
+		card.text = "%02d  %s\n%s" % [index + 1, "ACTIVE" if data.unlocked else "LOCKED", data.title]
+		card.icon = data.preview
+		card.expand_icon = true
 		card.tooltip_text = data.description
 		card.focus_mode = Control.FOCUS_ALL
 		card.mouse_entered.connect(func() -> void:
@@ -141,7 +143,7 @@ func _select(index: int) -> void:
 	play_button.disabled = not data.unlocked
 	play_button.focus_mode = Control.FOCUS_NONE if play_button.disabled else Control.FOCUS_ALL
 	play_button.text = "START MISSION" if data.unlocked else "LOCKED"
-	status_label.text = "READY" if data.unlocked else "LOCKED // FINISH SALMON CREEK"
+	status_label.text = "READY" if data.unlocked else "COMING SOON // FUTURE MISSION"
 
 func _activate_selected() -> void:
 	_activate(_selected)

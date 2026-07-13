@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="TouchAimProfile" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/player/touch_aim_profile.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = &"precision"
+display_name = "PRECISION"
+dead_zone = 0.08
+response_exponent = 1.85
+smoothing_seconds = 0.05
+yaw_degrees_per_second = 175.0
+pitch_degrees_per_second = 125.0
+boost_threshold = 0.88
+boost_delay = 0.16
+boost_multiplier = 1.35

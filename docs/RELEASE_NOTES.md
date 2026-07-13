@@ -1,11 +1,13 @@
-# Release Notes — 0.6.0-alpha.1 Twin-Stick Vertical Slice
+# Release Notes — 0.6.0-alpha.2 Aim and Roadmap Stabilization
 
-Built on 2026-07-12 with Godot `4.7.stable.official.5b4e0cb0f` and matching official export templates. Feature revision: `575d84e`.
+Built on 2026-07-12 with Godot `4.7.stable.official.5b4e0cb0f` and matching official export templates. Feature revision: `e6b4700`.
 
 ## Included
 
-- Fixed left movement and right rate-aim joysticks with independent multi-touch ownership and simultaneous fire/actions.
-- Deterministic physics-tick aiming with center precision, independent horizontal/vertical speed, inversion, size/placement presets, opacity, and full left-handed mirroring.
+- Honest Web download progress and title-menu preload states; input and the continue prompt remain disabled until ready, with retry on preload failure.
+- Precision, Balanced, and Fast profile-driven right-stick response with smoothing, delayed outer turn boost, target friction, independent axes, inversion, and clean cancellation.
+- Five illustrated mission cards: playable Salmon Creek plus original locked teasers for Vancouver Waterfront, Mount Hood, the Moon, and Ventura Pier.
+- Fixed left movement and right rate-aim joysticks retain independent multi-touch ownership and simultaneous fire/actions.
 - Legacy touch-speed migration, landscape onboarding, portrait rotation guard, focus/orientation cancellation, and Web scroll/zoom/callout suppression.
 - Existing 0.5 vertical-slice foundation: normalized menus, three weapons, calibrated enemy HP/health bars, impact feedback, grounded pickups/enemies, Walker phases, save schema v3, accessibility controls, platform quality profiles, and local playtest metrics.
 - Expanded release soak: 100 deterministic routes, 100 checkpoint cycles, 100 twin-stick cancellation cycles, 500 weapon transitions, and 100 temporary effects.
@@ -13,14 +15,14 @@ Built on 2026-07-12 with Godot `4.7.stable.official.5b4e0cb0f` and matching offi
 ## Validation
 
 - `QA_EXPORTS=1 bash tools/release_validate.sh` passed on macOS with Godot 4.7, including Web and unsigned Universal macOS exports.
-- Tablet browser inspection passed at 1024×768 across title, main menu, level select, gameplay, pause, and expanded touch options with zero captured console warnings/errors.
+- Tablet browser inspection passed at 1024×768 across title, main menu, five-card level select, gameplay twin-stick HUD, and expanded aim options with zero captured console warnings/errors.
 - Portrait viewport inspection showed the input-blocking `ROTATE IPAD TO LANDSCAPE` guard.
 - Physical iPad Safari comfort, true multi-touch, thermal behavior, and a human full playthrough remain explicitly unverified alpha gates.
 
 ## Artifacts
 
-- `cobie-nukem-0.6.0-alpha.1-itch.zip` — 17,972,102 bytes; SHA-256 `0b459500a4f9521a5a08fcd224fbd002c6383866896f96c80b6a36dffe1ec35d`.
-- `cobie-nukem-0.6.0-alpha.1-macos-unsigned.zip` — 67,336,124 bytes; SHA-256 `ede455d76e362ad70d402f9f244efe2058de2f7c68dd3cb952268bb8dcb1aa26`.
+- `cobie-nukem-0.6.0-alpha.2-itch.zip` — 21,365,147 bytes; SHA-256 `1be13ee23464d28f2951bc04da14e5e53d25f2f25db5ca5150901b955cc42d16`.
+- `cobie-nukem-0.6.0-alpha.2-macos-unsigned.zip` — 70,729,118 bytes; SHA-256 `5161b04e8d1f0d7088437acbc80444927368b8d7fb356a860b008a66e7a4361c`.
 
 ---
 

@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="TouchAimProfile" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/player/touch_aim_profile.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = &"balanced"
+display_name = "BALANCED"
+dead_zone = 0.09
+response_exponent = 1.55
+smoothing_seconds = 0.04
+yaw_degrees_per_second = 210.0
+pitch_degrees_per_second = 150.0
+boost_threshold = 0.82
+boost_delay = 0.12
+boost_multiplier = 1.45
