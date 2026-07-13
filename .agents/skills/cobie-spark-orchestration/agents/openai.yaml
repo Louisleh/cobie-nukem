@@ -1,0 +1,4 @@
+interface:
+  display_name: "Cobie Spark Orchestration"
+  short_description: "Delegate Cobie work safely to Spark agents"
+  default_prompt: "Use $cobie-spark-orchestration to divide this Cobie Nukem phase into verified GPT-5.3-Codex-Spark work packets and integrate the results."

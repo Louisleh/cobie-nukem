@@ -17,6 +17,23 @@
 
 ## 0. Current status dashboard
 
+### Alpha.7 Spark acceleration ledger
+
+The alpha.7 phase uses a repo-committed GPT-5.6/Spark orchestration contract. GPT-5.6 owns architecture, review, integration, evidence, and release; explicitly pinned GPT-5.3-Codex-Spark profiles own bounded packets. Target allocation is 70% definitive Salmon Creek work and 30% locked Vancouver production foundation. Repository guidance and this PRD—not conversational memory—are authoritative.
+
+| Batch | Allocation | Status | Exit evidence |
+| --- | ---: | --- | --- |
+| 0. Orchestration skill, profiles, validator, pilots | Foundation | **IN PROGRESS** | Static validation plus verified read-only and isolated-writer Spark pilots |
+| 1. Stabilization audits | Salmon Creek | **QUEUED** | Consolidated reproducible Blocker/Critical/Major queue |
+| 2. Environmental interaction foundation | Salmon Creek | **QUEUED** | Typed components, authored arena interactions, persistence/reset tests |
+| 3. Walker production pass | Salmon Creek | **QUEUED** | Resource-driven phases/weak points/summons/recovery and reset stress |
+| 4. Accessibility and presentation | Salmon Creek | **QUEUED** | Caption/touch/focus/settings/aspect contracts and packaged visual evidence |
+| 5. Mission controller extraction | Salmon Creek | **QUEUED** | Test-protected responsibility reduction without observable behavior change |
+| 6. Vancouver production foundation | Vancouver | **QUEUED — MUST REMAIN LOCKED** | Validated zones, route, encounter/objective data, navigation/deadlock evidence |
+| 7. Independent integration and release gate | Release | **QUEUED** | Full QA/export/browser matrix; alpha.7 only if green |
+
+Human-only throughout: physical iPad Safari comfort/thermal/audio, family comprehension, boss and difficulty feel, mix, humor, and photosensitivity.
+
 This section is the first place a new Codex or external-auditor run should read. “Foundation complete” means the reusable contract exists, Salmon Creek exercises it, and automated regression passes; it does not mean every future extension listed in the phase is finished.
 
 | Phase | Status | Completed | Explicitly remaining |

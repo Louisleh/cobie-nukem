@@ -9,6 +9,10 @@ This is the repository-facing operating guide for autonomous Cobie work. The ins
 3. Confirm Godot reports `4.7.stable`, inspect `git status`, and work on a short-lived `codex/` branch.
 4. State the exact reproduction and a falsifiable acceptance condition before changing source.
 
+## Spark acceleration loop
+
+For multi-subsystem phases, invoke the repo-scoped `cobie-spark-orchestration` skill. GPT-5.6 owns architecture, task packets, review, integration, evidence, and release. Six project profiles pin bounded workers to `gpt-5.3-codex-spark`; verify model identity before counting credit usage. Use up to four read-only workers or two non-overlapping isolated-worktree writers, require structured result packets and one cohesive commit, and run a fresh read-only reviewer after each coherent batch. On an explicit Spark usage limit, stop new workers, finish integration of completed work, record the queue in the PRD, and never silently substitute another model.
+
 ## Native inspection loop
 
 The selected Codex server is `godot-cobie`, pinned and described in `docs/design/agentic-toolchain.md`.

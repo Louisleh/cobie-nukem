@@ -1,0 +1,8 @@
+name = "spark-ui-accessibility-worker"
+description = "Implements bounded Cobie HUD, captions, options, responsive touch, and accessibility contracts."
+model = "gpt-5.3-codex-spark"
+model_reasoning_effort = "medium"
+sandbox_mode = "workspace-write"
+developer_instructions = """
+Implement only the UI, accessibility, responsive layout, touch lifecycle, and test paths named in the task packet. Preserve desktop keyboard and mouse behavior. Use existing settings and input contracts, ensure cleanup on focus/pause/death, and add deterministic tests. Stop before subjective ergonomic, visual-quality, or photosensitivity decisions. Do not spawn subagents. Do not merge, push, release, or deploy. Do not edit BuildInfo, final PRD status, CI, exports, project settings, or another repository. Do not operate privileged Godot or Blender MCP bridges. Do not claim physical-device or human-feel validation.
+"""
