@@ -1,40 +1,36 @@
-# Release Notes — 0.6.0-alpha.5 Production Navigation
+# Release Notes — 0.6.0-alpha.7 Spark Interaction Slice
 
-Built on 2026-07-13 with Godot `4.7.stable.official.5b4e0cb0f`. Gameplay/runtime feature revision: `4059174`.
+Built on 2026-07-13 with Godot `4.7.stable.official.5b4e0cb0f`. Runtime feature revision: `eb66cf8`.
 
 ## Player-visible changes
 
-- Ground enemies now path around walls and arena cover instead of steering in a straight line and becoming stranded.
-- The complete Salmon Creek route is navigation-connected from the opening field through the Walker conclusion.
-- Persistent stalls trigger a bounded recovery only after three failed repaths, with a cooldown that prevents visible correction spam.
-- Flying drones retain their authored hovering and direct flight behavior.
-- The arena connector is widened to remove a real navigation seam exposed by agent-radius erosion.
+- Salmon Creek now contains 16 authored environmental interactions across its major arenas: breakables, explosive props, hazards, loot containers, and a persistent secret.
+- The Walker fight has explicit phase floors, weak-point windows, bounded summons, recovery drops, a clear pressure lane, and deterministic reset behavior.
+- Critical narrative, objective, enemy-warning, boss-phase, checkpoint, and PA cues use a bounded priority-caption system.
+- The full twin-stick tablet layout remains first-class: left movement, right aiming, action controls, focus recovery, cancellation, handedness, opacity, and responsive layout contracts.
+- Vancouver Waterfront now has a typed production route and three-wave citation-convoy foundation, but remains intentionally locked and non-public.
 
 ## Production improvements
 
-- Salmon Creek bakes 112 polygons/114 vertices once from temporary CPU-side collision sources, avoiding render-mesh GPU readback and removing the source bodies after construction.
-- Every grounded archetype receives a throttled `NavigationAgent3D`; target refresh is capped at four times per second unless the destination moves materially.
-- Navigation registration, map lifecycle, cover routing, ground/flying separation, and recovery are deterministic release gates on macOS and Linux CI.
-- Navigation recoveries increment privacy-preserving local playtest metrics.
-- Enemy death VFX moved into a focused component so the shared enemy controller remains within the repository's 500-line architecture limit.
+- A committed Spark orchestration skill and six pinned `gpt-5.3-codex-spark` roles make bounded implementation, testing, content, audit, accessibility, and review work reproducible while root retains architecture and release ownership.
+- Salmon Creek interaction construction, stable IDs, callbacks, restore, and reset moved into `MissionInteractionRuntime`.
+- Interaction and Walker tuning are typed Resources with content validation and focused regression coverage.
+- The release matrix covers 100 routes, 100 checkpoint/death/restarts, 100 touch/focus cancellations, 500 weapon transitions, low-frame projectile behavior, content/IP/architecture gates, Web export, and Universal macOS export.
 
 ## Validation boundary
 
-- Full functional, soak, native-rendered, Linux CI, Web export, and unsigned macOS export gates pass.
-- The native profile reached seven navigation agents at Walker density. Walker p95/p99 was 19.735/22.058 ms; a 151.852 ms single-frame wall-time maximum remains tracked.
-- Physical iPad Safari comfort/thermal/audio, final difficulty feel, pathing feel, photosensitivity, mix quality, and a target-Mac human playthrough remain explicit human gates.
-
-The macOS ZIP is unsigned and unnotarized. The working title still requires clearance before commercial distribution.
+- Native rendered gameplay p95 is 17.175–19.581 ms on the target M4 Mac. One 104.345 ms tunnel sample and one 165.351 ms Walker sample remain explicitly tracked.
+- The exact packaged build passed desktop and 1024×768 forced-touch browser checks through title, menu, mission selection, gameplay, full twin-stick layout, and live right-stick aim response.
+- Physical iPad Safari comfort/thermal/audio, full human playthrough, boss/difficulty feel, interaction usefulness, mix, humor, and photosensitivity remain human-only gates.
+- The macOS ZIP is unsigned and unnotarized. The working title still requires clearance before commercial distribution.
 
 ## Artifacts
 
-- `cobie-nukem-0.6.0-alpha.5-itch.zip` — 21,435,476 bytes; SHA-256 `c9045d978f1813f573563b1eccf7a489eebb2c6c8848cd496f9aac89443f9442`.
-- `cobie-nukem-0.6.0-alpha.5-macos-unsigned.zip` — 70,799,482 bytes; SHA-256 `3349967becde835e38bcbdc745b207cb4f5b60ce4555f7988af7b01357ab819c`.
-- Web PCK — 11,489,896 bytes; SHA-256 `0249b13ca7036cd73d546c5923a927ce5c528591902947b3218a6e7203e86ac2`.
+- `cobie-nukem-0.6.0-alpha.7-itch.zip` — 26,183,196 bytes; SHA-256 `7e50a546f75cc8cb7432e8653537549be49809325fcc5d246469d5f7f68bd59a`.
+- `cobie-nukem-0.6.0-alpha.7-macos-unsigned.zip` — 75,547,579 bytes; SHA-256 `35a35380b659ddf031db3442adc1d5e1a5b7591d5eef3c86d34609d7d34eabde`.
+- Web PCK — 16,323,388 bytes; SHA-256 `f9f11d5e419519b2fde01b57d2f46c8c56c1fe0e8baddd02176d3ee2835d0af6`.
 
 ## Integration
 
-- Gameplay integration: `64ee96f` on `Louisleh/cobie-nukem` through PR #25.
-- Release integration: `499eab2` through PR #26.
-- Website deployment: `f9065c4` through `Louisleh/louislehmann-site` PR #96.
-- Live route: <https://www.louislehmann.fyi/games/cobie-nukem/>. The uncached public landing, truthful loader, 1024×768 title screen, clean browser console, and downloaded PCK hash were verified after deployment.
+- Candidate source: `86ead74` on `codex/alpha7-spark-vertical-slice`.
+- Source merge, GitHub prerelease, website deployment, and public PCK verification are recorded after those operations complete.

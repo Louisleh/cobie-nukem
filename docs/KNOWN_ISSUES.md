@@ -13,7 +13,7 @@ This file distinguishes confirmed product limitations from unperformed validatio
 - Salmon Creek now instantiates 16 data-authored breakable, explosive, hazard, loot, and secret interactions across five arenas. Their collision, grounding, reset, bounded effects, and route safety are automated; visual density, discoverability, and whether each placement feels meaningfully useful require a human playthrough.
 - Walker weak-point phase floors, Golden Ball defeat, summon caps, recovery drops, and repeated reset behavior are automated. Boss telegraph fairness, perceived speed, spectacle, and the approximately 1,000-HP pacing target still require human play.
 - Vancouver has a locked typed route and three-wave citation-convoy production foundation only. It remains unrouted and non-public; none of this data is a claim of finished geometry or playability.
-- The new native 1080p zone profiler passes its p95/p99 gates. The current candidate recorded p95 17.180–18.395 ms in gameplay zones, a 38.132 ms tunnel p99 with one 101.365 ms sample, and one isolated 155.964 ms Walker sample. These are preserved as profiler-driven optimization evidence rather than described as resolved ordinary-combat smoothness.
+- The new native 1080p zone profiler passes its p95/p99 gates. The alpha.7 candidate recorded gameplay p95 17.175–19.581 ms, a 38.401 ms tunnel p99 with one 104.345 ms sample, and one isolated 165.351 ms Walker sample. These are preserved as profiler-driven optimization evidence rather than described as resolved ordinary-combat smoothness.
 
 ## Distribution and legal
 
