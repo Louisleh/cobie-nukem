@@ -1,0 +1,33 @@
+work_id: alpha7-full-integration-review
+role: spark-code-reviewer
+goal: Independently review the complete Alpha.7 integration for correctness, coupling, regressions, leaks, Web incompatibilities, test gaps, and false completeness claims.
+baseline_revision: 35c057f
+dependencies:
+  - alpha7-stabilization
+  - alpha7-salmon-interactions
+  - alpha7-walker-combat
+  - alpha7-caption-priority
+  - alpha7-vancouver-production-foundation
+owned_paths: []
+read_only_context:
+  - complete diff 35c057f..HEAD
+  - docs/PHASE_ROADMAP_PRD.md
+  - docs/KNOWN_ISSUES.md
+  - tools/release_validate.sh
+forbidden_paths:
+  - "**/*"
+behavioral_contract: Review code and tests independently from worker conclusions. Report only evidence-backed findings with severity, exact file/line, reproduction or contract reasoning, and recommended disposition. Explicitly inspect initialization/reset ordering, stable interaction identity, loot/secret lifecycle, Walker phase state, timers/temporary effects, caption queue ownership, hot-path allocation changes, route graph/content validation, locked Vancouver routing, Web-safe syntax, and PRD claims.
+acceptance_criteria:
+  - Every Blocker/Critical/Major finding includes exact evidence and a concrete disposition.
+  - Review detects progression deadlocks, duplicate rewards, orphan timers/nodes/summons, invalid save/reset behavior, per-frame scans/allocations, unbounded queues/effects, test false positives, parser/export risks, and public unlocks where present.
+  - Review distinguishes human-only feel/device gates from code defects.
+  - Reviewer makes no filesystem changes and does not rely on implementing-worker summaries.
+focused_tests:
+  - Read existing root test evidence; run only narrowly targeted read-only checks needed to reproduce a finding.
+evidence_required:
+  - Structured report with PASS or ranked findings; exact baseline/head; no filesystem changes.
+out_of_scope:
+  - Implementation
+  - Product balancing or subjective visual judgment
+  - Merge, release, deployment, or PRD edits
+time_limit_minutes: 35
