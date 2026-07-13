@@ -2,6 +2,38 @@
 
 This is a durable evidence template, not a claim that every listed check has run against the current working tree. Add one section per candidate; never overwrite older evidence.
 
+## Candidate 0.6.0-alpha.6 — 2026-07-13
+
+| Field | Value |
+| --- | --- |
+| Version | `0.6.0-alpha.6` / build `2026-07-13-presentation-pacing-alpha` |
+| Feature revision | `52e8240` (`Overhaul enemy presentation, audio, and encounter pacing`) |
+| Godot | `4.7.stable.official.5b4e0cb0f` |
+| Platform | macOS M4 native Compatibility renderer, packaged Web desktop and simulated 1024×768 tablet; no physical-device claim |
+
+### Gates
+
+| Check | Result | Evidence |
+| --- | --- | --- |
+| Enemy presentation | Pass | Three manifested original directional/reaction atlases plus deterministic state presentation for all five archetypes; alert/attack/hurt/stagger/death contracts covered |
+| Imported audio | Pass | 60 byte-distinct original WAVs, 29 bounded cue families, full weapon lifecycles, four footstep surfaces, positional enemy cues, and Web voice cap |
+| Encounter pacing | Pass | Five schema-v2 encounters; 12 initial actors plus five reinforcements; peak authored density three; Walker pressure/phases/summons/recovery/reset contracts green |
+| Complete regression/soak | Pass | 100 routes, 100 checkpoints, 100 twin-stick cancellations, 500 weapon transitions, 100 effects; engine/architecture/IP/content gates green |
+| Native 1080p zone profile | Pass with retained outliers | Gameplay-zone p95 17.180–18.395 ms; tunnel p99 38.132 ms with one 101.365 ms sample; one isolated Walker 155.964 ms sample tracked in Known Issues |
+| Complete release/export matrix | Pass | `QA_EXPORTS=1 bash tools/release_validate.sh`, exit 0; Web and unsigned Universal macOS exports |
+| Packaged Web desktop/tablet | Pass | Title, menu, five-card level selector, Salmon Creek launch, twin-stick HUD layout, and aim response at 1024×768; no game console warnings/errors |
+| Public deployment | Pending | Requires GitHub integration, final package, deployment, PCK hash match, and uncached public verification |
+| Physical iPad and human playthrough/mix | Not run | Explicit human-only gates |
+
+### Pre-stamp exports
+
+| Artifact | Bytes | SHA-256 |
+| --- | ---: | --- |
+| Web PCK | 16 MB on disk | `ecb9492107136f9750324cf9fdc6dc69e8fe89e096e0d2ac26f719a7156fdd81` |
+| Unsigned Universal macOS ZIP | 72 MB on disk | `5991fcc6f95286d4c5d81ba0723fb7464f33b7dba3e6f0de779ae9749a34444d` |
+
+Final stamped release-package sizes and hashes replace neither these pre-stamp values nor the public hash evidence; they will be added after packaging and deployment.
+
 ## Shipped 0.6.0-alpha.5 — 2026-07-13
 
 | Field | Value |
