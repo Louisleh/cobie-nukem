@@ -255,22 +255,15 @@ func _build_navigation() -> void:
 func _bake_navigation() -> void:
 	if is_instance_valid(_navigation_region):
 		_navigation_region.bake_navigation_mesh(false)
-		# Region assignment is queued after the bake on Linux headless but may land
-		# in the same turn on macOS. Synchronize on a second deferred turn so both
-		# platforms expose the same ready map before normal combat steering.
-		call_deferred("_synchronize_navigation_map")
+		# Assign the completed resource to the server RID explicitly. Linux
+		# headless otherwise defers the node's resource-change notification beyond
+		# a physics-only test loop, while macOS applies it in the same turn.
+		NavigationServer3D.region_set_navigation_mesh(_navigation_region.get_rid(), _navigation_region.navigation_mesh)
+		NavigationServer3D.map_force_update(_navigation_region.get_navigation_map())
 	for source in _navigation_sources:
 		if is_instance_valid(source):
 			source.queue_free()
 	_navigation_sources.clear()
-
-
-func _synchronize_navigation_map() -> void:
-	if is_instance_valid(_navigation_region):
-		# This occurs exactly once at construction; never force-update per frame.
-		NavigationServer3D.map_force_update(_navigation_region.get_navigation_map())
-
-
 func _build_field_dressing() -> void:
 	# Bold markings and silhouettes give the opening field immediate scale and
 	# navigation cues even at the low internal render resolution.
