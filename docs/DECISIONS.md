@@ -1,5 +1,11 @@
 # Decisions
 
+## D-011 — Audited local agentic game-development toolchain
+
+Godot and Blender automation are privileged localhost-only development tools, not game dependencies. The permanent Godot MCP is an audited, locally pinned fork of `alexmeckes/godot-mcp` because it alone passed the required live InputMap, screenshot, output, and runtime-state capability gate. Its Node dependencies are upgraded to a zero-known-vulnerability production audit. Its temporary runtime autoload is removed when the plugin exits, and `tools/release_validate.sh` fails if bridge files or settings are present. The upstream package currently lacks a distributable top-level license file, so the bridge is not vendored into this repository.
+
+Blender MCP is pinned locally with telemetry and all external asset services disabled. Blender output enters the game only as an intentional exported asset with provenance. TrenchBroom/FuncGodot and GdUnit4 remain isolated pilots until their acceptance gates pass; neither can replace the stock Godot test entry point or become an export dependency by default.
+
 ## D-009 — Fixed-speed twin-stick response with bounded assistance
 
 The right stick remains a rate-based aiming control: displacement controls angular speed, not an unbounded swipe delta. Fine aim uses a configurable response curve and time-based smoothing; sustained outer-ring input receives a delayed, bounded turn boost; visible targets may reduce angular rate through configurable friction. No gyro or swipe-look is added in this pass. Profiles live in typed Resources and transient response state lives outside the player controller.

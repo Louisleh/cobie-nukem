@@ -11,6 +11,7 @@ extends Control
 @onready var continue_button: Button = %ContinueButton
 @onready var sounds: ProceduralAudio = %ProceduralAudio
 @onready var music: AudioStreamPlayer = %Music
+var _layout_frames_remaining := 2
 
 func _ready() -> void:
 	modulate.a = 0.0
@@ -30,9 +31,20 @@ func _ready() -> void:
 	music.play()
 	_reveal_after_layout()
 
+
+func _exit_tree() -> void:
+	# Menu music is synthesized at runtime. Release both the playback and stream
+	# explicitly so headless scene churn and real menu transitions cannot retain
+	# WAV playback resources until engine shutdown.
+	if is_instance_valid(music):
+		music.stop()
+		music.stream = null
+
 func _reveal_after_layout() -> void:
-	await get_tree().process_frame
-	await get_tree().process_frame
+	if _layout_frames_remaining > 0:
+		_layout_frames_remaining -= 1
+		get_tree().process_frame.connect(_reveal_after_layout, CONNECT_ONE_SHOT)
+		return
 	modulate.a = 1.0
 
 func _wire_button(button: Button, callback: Callable) -> void:

@@ -1,14 +1,14 @@
 # Cobie Nukem — Multi-Phase Production PRD
 
-**Status:** Active production source of truth; `0.6.0-alpha.2` stabilization and illustrated-roadmap checkpoint shipped
+**Status:** Active production source of truth; `0.6.0-alpha.3` agentic-production candidate under release validation
 
 **Created:** 2026-07-11
 
-**Last status review:** 2026-07-12
+**Last status review:** 2026-07-13
 
 **Current public baseline:** `0.6.0-alpha.2` (`e6b4700` gameplay/UI feature revision; source integration `5cc352b`)
 
-**Unreleased development baseline:** none; `main` and the public release are synchronized after the `0.6.0-alpha.2` checkpoint
+**Unreleased development baseline:** `0.6.0-alpha.3` candidate at feature revision `b8795dc`; public remains `0.6.0-alpha.2` until the release matrix passes and the matching artifact is deployed
 
 **Last playtest alpha:** `0.6.0-alpha.2` (`e6b4700`) — live at <https://www.louislehmann.fyi/games/cobie-nukem/>
 
@@ -43,6 +43,8 @@ This section is the first place a new Codex or external-auditor run should read.
 **Twin-stick iPad checkpoint (0.6 alpha candidate):** right-side swipe look has been replaced by a fixed aiming joystick consumed in physics ticks. The left movement stick, right aim stick, and action buttons use exclusive multi-touch finger ownership. Options expose independent horizontal/vertical aim speed, Y inversion, stick size and placement presets, opacity, and complete left-handed mirroring. The legacy touch-speed setting migrates to both axes. Automated evidence covers dead zones, full response, three simultaneous fingers, 30/120 FPS aim equivalence, focus cancellation, tablet coordinate scaling, and expanded soak cycles; physical iPad Safari remains a named human gate.
 
 **Loading/aim/roadmap stabilization checkpoint (`0.6.0-alpha.2` candidate):** Web bootstrap now preserves Godot's real download progress while explaining first-load latency; the title preloads the main menu and does not show or accept “continue” until ready. Right-stick aiming adds three typed response profiles, exponential smoothing, delayed outer-ring turn boost, and configurable target friction while retaining physics-tick consumption and clean cancellation. The mission selector now previews five destinations using original manifested art: playable Salmon Creek plus locked Vancouver Waterfront, Mount Hood, Moon, and Ventura Pier cards. This is teaser/pipeline work, not a claim that Phase 3 level production has begun.
+
+**Agentic production checkpoint (2026-07-13, unreleased):** Godot 4.7, a privacy-hardened Blender 5.1 MCP path, and focused Godot production skills are installed locally and governed by repository contracts. Three Godot MCP candidates, GdUnit4, and FuncGodot/TrenchBroom were piloted before adoption decisions; runtime bridges remain forbidden from source and exports. The release gate now rejects engine script/leak/orphan output, a 300-frame percentile/drift performance smoke replaces the average-only check, and player lookup is event-indexed for pickup/enemy hot paths. The first Blender-authored production prop replaces the procedural ball-return placeholder in Salmon Creek with manifested source/runtime assets and a gameplay contract test. This improves the production loop and one secret; it does not complete the remaining directional-animation, imported-audio, navigation, encounter-balance, or physical-device gates.
 
 ### World-class vertical-slice delivery boundary
 

@@ -37,7 +37,7 @@ One-time repository setup:
 4. Push `main`, inspect the `Godot release gates` run, and open its `github-pages` environment URL.
 5. Verify `/`, `/play/`, browser console, audio activation, and pointer lock.
 
-No GitHub remote is configured in this local checkout as of this documentation update, so no live URL or deployment is claimed.
+The source remote is `https://github.com/Louisleh/cobie-nukem`. GitHub Pages remains an optional secondary artifact host; the family-playtest release is deployed from the separate owner-site repository to `https://www.louislehmann.fyi/games/cobie-nukem/`. Follow that repository's game-export path and verify the runtime build label after every copy.
 
 ## itch.io
 

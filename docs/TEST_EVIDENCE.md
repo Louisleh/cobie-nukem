@@ -2,6 +2,36 @@
 
 This is a durable evidence template, not a claim that every listed check has run against the current working tree. Add one section per candidate; never overwrite older evidence.
 
+## Candidate 0.6.0-alpha.3 — 2026-07-13
+
+| Field | Value |
+| --- | --- |
+| Version | `0.6.0-alpha.3` / build `2026-07-13-agentic-production-alpha` |
+| Feature revision | `b8795dc` (`Harden agentic production loop and add authored prop`) |
+| Godot | `4.7.stable.official.5b4e0cb0f` |
+| Platform | macOS host plus locally served packaged Web export; no physical-device claim |
+
+### Gates
+
+| Check | Result | Evidence |
+| --- | --- | --- |
+| Complete automated release matrix | Pass | `QA_EXPORTS=1 bash tools/release_validate.sh`, exit 0; Web and unsigned Universal macOS exports |
+| Expanded vertical-slice soak | Pass | 100 routes, 100 checkpoints, 100 twin-stick cancellations, 500 weapon transitions, 100 effects |
+| Engine lifecycle and artifact hygiene | Pass | Zero script/leak/orphan errors; no runtime bridge; no development Resource under `tmp/`; artifact re-exported after the new gate caught two probes |
+| Blender-to-Godot asset contract | Pass | Nine rendered mesh parts, collision-only hull, ground placement, dedicated projectile trigger, Fetch-only one-shot activation |
+| Headless performance smoke | Pass | 30-frame warmup plus 300 samples: 16.663 ms average, 22.921 ms p95, 24.757 ms p99, 26.142 ms max; zero node drift and -2 object drift (not GPU evidence) |
+| Packaged Web desktop | Pass | 1280×720 canvas, title build identity, no browser warnings/errors |
+| Packaged Web tablet viewport | Pass | 1024×768 `?touch=1`: title, main menu, five-card selector, and Salmon Creek twin-stick HUD; no browser warnings/errors |
+| True iPad multi-touch/comfort/thermal | Not run | Requires physical iPad Safari testing |
+| Human full playthrough, prop readability, and feel | Not run | Automated route and browser entry evidence are not represented as a human playthrough |
+
+### Artifacts
+
+| Artifact | Bytes | SHA-256 |
+| --- | ---: | --- |
+| `cobie-nukem-0.6.0-alpha.3-itch.zip` | 21,421,046 | `ba2a1e0c9a99be076f50b6f152fe1c5e870893652f4566421455cf8017012e4c` |
+| `cobie-nukem-0.6.0-alpha.3-macos-unsigned.zip` | 70,785,017 | `f7ff01c9d186feb62abdd34c45040721b2fe0d86e7769b933016573ff3ac91cc` |
+
 ## Candidate 0.6.0-alpha.2 — 2026-07-12
 
 | Field | Value |
