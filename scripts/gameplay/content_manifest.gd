@@ -7,6 +7,7 @@ extends Resource
 @export var difficulty_profiles: Array[DifficultyProfile] = []
 @export var objectives: Array[ObjectiveDefinition] = []
 @export var encounters: Array[EncounterDefinition] = []
+@export var interaction_catalog: InteractionCatalog
 
 
 func validate() -> PackedStringArray:
@@ -14,6 +15,7 @@ func validate() -> PackedStringArray:
 	if level_id == &"": errors.append("manifest level_id is empty")
 	if level_scene.is_empty() or not ResourceLoader.exists(level_scene): errors.append("manifest level scene missing: %s" % level_scene)
 	var ids := {}
+	var encounter_zones := {}
 	for objective in objectives:
 		if ids.has(objective.id): errors.append("duplicate objective id: %s" % objective.id)
 		ids[objective.id] = true
@@ -23,7 +25,6 @@ func validate() -> PackedStringArray:
 			if not ids.has(prerequisite): errors.append("objective %s has missing prerequisite %s" % [objective.id, prerequisite])
 	if _has_objective_cycle(): errors.append("objective graph contains a dependency cycle")
 	var encounter_ids := {}
-	var encounter_zones := {}
 	for encounter in encounters:
 		if encounter_ids.has(encounter.id): errors.append("duplicate encounter id: %s" % encounter.id)
 		if encounter_zones.has(encounter.zone_id): errors.append("duplicate encounter zone_id: %s" % encounter.zone_id)
@@ -35,6 +36,11 @@ func validate() -> PackedStringArray:
 		if difficulty_ids.has(profile.id): errors.append("duplicate difficulty id: %s" % profile.id)
 		difficulty_ids[profile.id] = true
 		errors.append_array(profile.validate())
+	if interaction_catalog != null:
+		var zones: Array[StringName] = []
+		for zone_id in encounter_zones.keys():
+			zones.append(zone_id)
+		errors.append_array(interaction_catalog.validate(zones, level_id))
 	return errors
 
 
