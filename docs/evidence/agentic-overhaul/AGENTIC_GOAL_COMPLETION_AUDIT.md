@@ -4,7 +4,9 @@ Date: 2026-07-13
 
 Engine: Godot `4.7.stable.official.5b4e0cb0f`
 
-Branch: `codex/agentic-overhaul-completion`
+Release integration: `9539978824279bd886f7088b768597745f7a0619`
+
+Durability follow-up branch: `codex/agentic-toolchain-evidence`
 
 ## Outcome
 
@@ -16,19 +18,19 @@ The repository now has one governed Godot MCP, one privacy-hardened Blender MCP,
 | --- | --- | --- |
 | Clean baseline and rollback | Complete | `docs/AGENTIC_GAMEDEV_BASELINE.md`; alpha.3 source/public hashes retained |
 | Godot MCP bakeoff | Complete | alexmeckes selected; slangwald/bradypp rejected for missing required live-input/runtime coverage; `docs/design/agentic-toolchain.md` |
-| Godot 4.7 live operation | Complete | Run/stop, scene tree, viewport, screenshot, InputMap, state and stdout exercised; 144 local MCP tests |
+| Godot 4.7 live operation | Complete | Full title/menu/mission route, raw key/pointer, InputMap movement/weapon/pause, live player/enemy/pickup state and stdout exercised; audited fork `87ece14`; 148 local MCP tests |
 | Export bridge safety | Complete | source-presence block plus post-export PCK marker inspection |
 | Blender MCP | Complete | pinned localhost/telemetry-off installation and privileged-execution boundary |
 | Blender-to-Godot production pilot | Complete | reproducible `.blend`, five GLBs, five directional/reaction frames, manifest hashes, native/Web gallery captures, asset contract |
-| Cobie production skill | Complete | `/Users/louislehmann/.codex/skills/cobie-godot-production/SKILL.md` plus focused references and health workflow |
-| FuncGodot/TrenchBroom | Complete decision | measured successful import; isolated Vancouver pilot only; `docs/LEVEL_AUTHORING_PIPELINE.md` |
+| Cobie production skill | Complete | `/Users/louislehmann/.codex/skills/cobie-godot-production/SKILL.md` plus references, health workflow, and successful clean-clone/ephemeral-task discovery test |
+| FuncGodot/TrenchBroom | Complete decision | 52-node scripted rebuild, collision/nav bake, semantic reimport comparison, and Compatibility Web export; isolated Vancouver pilot only; `docs/LEVEL_AUTHORING_PIPELINE.md` |
 | GdUnit4 | Complete decision | compatibility pilot passed; not vendored due runner noise/class footprint/headless-input limits |
 | Daily loop | Complete | `docs/AGENTIC_GAMEDEV_WORKFLOW.md`, `docs/GODOT_MCP_SETUP.md`, `tools/game_dev_health.sh` |
 | Salmon Creek functional contracts | Complete automated evidence | 100 routes/checkpoints/touch cancellations, 500 weapon transitions, 100 effect cycles; native field-to-victory captures |
 | Death/retry runtime | Fixed | typed fallback selection in `DeathScreen`; live death capture; UI regression |
 | Async lifecycle | Fixed | every gameplay `SceneTreeTimer` replaced with node-owned timers; architecture gate rejects regressions |
 | Combat first-use warmup | Improved | shared synthesized-cue cache, explicit title WARMING state, visual pipeline prewarmer, bounded 16-bolt pool, projectile rendered-frame regression |
-| Performance | Complete evidence, ongoing optimization | native 1080p per-zone p95/p99/draw-call/object/memory report; headless 300-frame drift smoke |
+| Performance | Complete checkpoint, ongoing optimization | native 1080p per-zone p95/p99/draw-call/object/memory report; headless 300-frame drift smoke; load/instantiate time plus enemy/physics/nav/audio/particle/decal populations |
 | Physical iPad and subjective feel | Human-only | intentionally not claimed; see `docs/KNOWN_ISSUES.md` |
 
 ## Asset pilot inventory
@@ -71,3 +73,8 @@ All native route frames have distinct hashes. The Web gallery was exported from 
 - Human full target-Mac playthrough and weapon/difficulty/Walker fairness.
 - Art, humor, audio-mix, captions, and photosensitivity judgment.
 - Continue profiler-driven reduction of the isolated Walker attack outlier; it is not a Blocker for a public alpha because p95/p99, functional routes, node lifetime, and exports pass, but it remains tracked technical work.
+- Production navigation remains unimplemented in the current mission profile (`nav_agents=0`); the FuncGodot proxy bake does not satisfy that gameplay gate.
+
+## Release artifact
+
+The public alpha is also preserved as a GitHub release at <https://github.com/Louisleh/cobie-nukem/releases/tag/v0.6.0-alpha.4> with the verified itch/Web ZIP, unsigned macOS ZIP, `SHA256SUMS.txt`, and `BUILD_INFO.txt`. The tag targets source integration `9539978824279bd886f7088b768597745f7a0619`; the runtime gameplay identity remains `67a0ee4` as recorded in the build artifact.

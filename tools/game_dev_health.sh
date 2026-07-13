@@ -7,6 +7,8 @@ GODOT_BIN="${GODOT_BIN:-/opt/homebrew/bin/godot}"
 BLENDER_BIN="${BLENDER_BIN:-/Applications/Blender.app/Contents/MacOS/Blender}"
 CODEX_CONFIG="${CODEX_CONFIG:-$HOME/.codex/config.toml}"
 GODOT_MCP_ENTRY="${GODOT_MCP_ENTRY:-$HOME/.codex/game-dev-tools/candidates/alexmeckes--godot-mcp/dist/index.js}"
+GODOT_MCP_REPO="${GODOT_MCP_REPO:-$HOME/.codex/game-dev-tools/candidates/alexmeckes--godot-mcp}"
+GODOT_MCP_REVISION="${GODOT_MCP_REVISION:-87ece143e3fedb494dd13494c35f120d6fb0a8d7}"
 BLENDER_MCP_BIN="${BLENDER_MCP_BIN:-$HOME/.local/bin/blender-mcp}"
 
 failures=0
@@ -28,10 +30,13 @@ else
   fail "Blender is not available at $BLENDER_BIN"
 fi
 
-if [[ -s "$GODOT_MCP_ENTRY" ]]; then
-  pass "pinned Godot MCP entry exists"
+if [[ -s "$GODOT_MCP_ENTRY" ]] \
+  && [[ -d "$GODOT_MCP_REPO/.git" ]] \
+  && [[ "$(git -C "$GODOT_MCP_REPO" rev-parse HEAD 2>/dev/null || true)" == "$GODOT_MCP_REVISION" ]] \
+  && [[ -z "$(git -C "$GODOT_MCP_REPO" status --porcelain 2>/dev/null || true)" ]]; then
+  pass "audited Godot MCP is clean at ${GODOT_MCP_REVISION:0:7}"
 else
-  fail "Godot MCP entry missing: $GODOT_MCP_ENTRY"
+  fail "Godot MCP must be clean at $GODOT_MCP_REVISION in $GODOT_MCP_REPO"
 fi
 
 if [[ -x "$BLENDER_MCP_BIN" ]]; then
