@@ -35,11 +35,14 @@ bash tools/asset_ip_scan.sh
 | Dead zones, response curves, profiles, diagnostics | `tests/unit/input_system_test.gd` |
 | Damage/armor, ammo, cooldown, weapon scenes | `tests/unit/combat_test_runner.gd` |
 | Five enemy scenes, damage hooks, shield, boss phases | `tests/unit/enemy_contract_tests.gd` |
+| Reusable interaction lifecycle, bounded effects, damage, hazards, loot, and reset | `tests/unit/world_interaction_test.gd` |
+| Salmon Creek interaction placement IDs, zone density, transforms, and manifest validation | `tests/unit/interaction_catalog_test.gd` |
 | Multi-zone navmesh, ground/flying split, arena-cover routing, bounded stuck recovery | `tests/unit/navigation_contract_test.gd` |
 | Save/load, profile JSON, auto-aim filtering, FSM, secrets, finale | `tests/integration/integration_test_runner.gd` |
 | Save-schema versioning, migrations, corrupt/legacy/future payload recovery | `tests/unit/save_schema_test.gd` |
 | Difficulty selector contract, resource-driven labels, Classic default | `tests/unit/ui_scene_test.gd` |
 | Grace-timer lifecycle, restart pressure, pause suppression, stuck touch input, reload interruption, double level lifecycle, enemy drops | `tests/integration/adversarial_state_test.gd` |
+| Locked Vancouver route graph, spawn/patrol/checkpoint data, three-wave convoy, reset simulation | `tests/integration/vancouver_route_foundation_test.gd` |
 | Every scene loads/instantiates; boot/diagnostics survive entry | `tests/smoke/smoke_test_runner.gd` |
 | Catastrophic main-loop stalls | `tests/smoke/performance_smoke.gd` |
 | Asset manifest coverage and obvious protected-source indicators | `tools/asset_ip_scan.sh` |
@@ -66,7 +69,7 @@ Also test 16:9, 16:10, and ultrawide; clean `user://`; existing settings/save; n
 - Time is 12–20 minutes for a first-time representative playthrough.
 - All six zones are traversable; checkpoint/restart never traps progress.
 - Three weapons, three regular enemies, elite, and boss appear and function.
-- Three secrets are independently discoverable and count exactly once.
+- Four secrets are independently discoverable and count exactly once.
 - The opening forbidden-field sign and final Golden Tennis Ball payoff work.
 - End screen totals enemies, secrets, accuracy, damage, time, control method, and rank plausibly.
 - Keyboard-only recovery exists from every menu and calibration state.
