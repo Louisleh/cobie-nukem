@@ -26,12 +26,15 @@ func _initialize() -> void:
 	check(level.get_node_or_null("Geometry/LabEastBoundaryFront") != null, "Front lab boundary segment missing")
 	var hover_origins_ok := true
 	var drone_origins_ok := true
+	var combat_pickup_count := 0
 	for actor in level.get_node("Actors").get_children():
 		if actor is CombatPickup:
+			combat_pickup_count += 1
 			hover_origins_ok = hover_origins_ok and actor._anchor.y > 0.6
 		elif actor is LeashEnforcementDrone:
 			drone_origins_ok = drone_origins_ok and actor._base_height > 1.5 and not actor.uses_gravity
 	check(hover_origins_ok, "Pickup hover origins were captured before spawn placement")
+	check(combat_pickup_count == 10, "Salmon Creek should author exactly 10 pickups")
 	check(drone_origins_ok, "Drone hover height was captured before spawn placement")
 	var doors := 0; var signs := 0; var checkpoints := 0; var finale := 0
 	for child in level.get_node("Interactables").get_children():
