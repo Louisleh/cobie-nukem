@@ -110,6 +110,7 @@ func _test_encounter() -> void:
 	_expect(first_wave.size() == 1, "multi-wave encounter starts only its first wave")
 	(first_wave[0] as FakeEnemy).died.emit(first_wave[0], null)
 	_expect(wave_runner.active.has(&"multi") and wave_runner.active[&"multi"].actors.size() == 1, "defeating a wave advances to the next authored wave")
+	_test_boss_encounter_contracts()
 	wave_runner.queue_free()
 
 
@@ -130,6 +131,56 @@ func _test_encounter_failures_and_reset() -> void:
 	_expect(reset_runner.reset_zone(&"failure_zone"), "active encounter resets")
 	_expect(reset_runner.activate_zone(&"failure_zone").size() == 1, "reset encounter can respawn")
 	reset_runner.queue_free()
+
+
+func _test_boss_encounter_contracts() -> void:
+	var marker_missing := EncounterDefinition.new(); marker_missing.id = &"boss_missing"; marker_missing.zone_id = &"boss_missing"
+	marker_missing.completion_policy = EncounterDefinition.CompletionPolicy.BOSS_DEFEATED
+	marker_missing.waves = [{"spawns": [{"scene":"res://scenes/enemies/squirrel_trooper.tscn","position":Vector3.ZERO}]}]
+	_expect(not marker_missing.validate().is_empty(), "BOSS_DEFEATED rejects missing completion marker")
+	var marker_multiple := EncounterDefinition.new(); marker_multiple.id = &"boss_multiple"; marker_multiple.zone_id = &"boss_multiple"
+	marker_multiple.completion_policy = EncounterDefinition.CompletionPolicy.BOSS_DEFEATED
+	marker_multiple.waves = [{"spawns": [
+		{"scene":"res://scenes/enemies/squirrel_trooper.tscn","position":Vector3.ZERO, "completion_marker": "boss"},
+		{"scene":"res://scenes/enemies/squirrel_trooper.tscn","position":Vector3.ONE, "completion_marker": "boss"}
+	]}]
+	_expect(not marker_multiple.validate().is_empty(), "BOSS_DEFEATED rejects multiple completion targets")
+	var marker_type_invalid := EncounterDefinition.new(); marker_type_invalid.id = &"boss_type"; marker_type_invalid.zone_id = &"boss_type"
+	marker_type_invalid.completion_policy = EncounterDefinition.CompletionPolicy.BOSS_DEFEATED
+	marker_type_invalid.waves = [{"spawns": [{"scene":"res://scenes/enemies/squirrel_trooper.tscn","position":Vector3.UP, "completion_marker": 7}]}]
+	_expect(not marker_type_invalid.validate().is_empty(), "BOSS_DEFEATED rejects invalid completion marker type")
+	var marker_policy_mismatch := EncounterDefinition.new(); marker_policy_mismatch.id = &"boss_mismatch"; marker_policy_mismatch.zone_id = &"boss_mismatch"
+	marker_policy_mismatch.waves = [{"spawns": [{"scene":"res://scenes/enemies/squirrel_trooper.tscn","position":Vector3.BACK, "completion_marker":"boss"}]}]
+	_expect(not marker_policy_mismatch.validate().is_empty(), "completion marker requires BOSS_DEFEATED policy")
+
+	var boss_definition := EncounterDefinition.new(); boss_definition.id = &"boss_runtime"; boss_definition.zone_id = &"boss_runtime"
+	boss_definition.completion_policy = EncounterDefinition.CompletionPolicy.BOSS_DEFEATED
+	boss_definition.waves = [
+		{"spawns": [{"scene":"res://scenes/enemies/squirrel_trooper.tscn","position":Vector3.ZERO}], "delay_seconds": 0.0},
+		{"delay_seconds": 0.12, "spawns": [{"scene":"res://scenes/enemies/squirrel_trooper.tscn","position":Vector3.ONE, "completion_marker":"boss"}]},
+	]
+	var boss_runner := EncounterRunner.new(); get_root().add_child(boss_runner)
+	boss_runner.configure([boss_definition], _spawn_fake)
+	var boss_events := 0
+	boss_runner.encounter_completed.connect(func(_definition: EncounterDefinition) -> void: boss_events += 1)
+	var first_wave := boss_runner.activate_zone(&"boss_runtime")
+	_expect(first_wave.size() == 1, "boss policy spawns authored first wave")
+	var first_target := first_wave[0]
+	(first_target as FakeEnemy).died.emit(first_target, null)
+	_expect(boss_runner.completed.is_empty(), "non-target defeat does not complete boss encounter")
+	_expect(boss_runner.active.has(&"boss_runtime"), "boss encounter remains active after non-target defeat")
+	await create_timer(0.13).timeout
+	var second_wave := boss_runner.active.get(&"boss_runtime", {}).get("actors", [])
+	_expect(second_wave.size() == 1, "boss encounter advances into authored boss wave while target still alive")
+	var boss_target := second_wave[0]
+	(boss_target as FakeEnemy).died.emit(boss_target, null)
+	await process_frame
+	_expect(boss_events == 1, "boss completion is emitted exactly once")
+	_expect(boss_runner.completed.has(&"boss_runtime"), "defeating authored boss target completes encounter")
+	_expect(not boss_runner.active.has(&"boss_runtime"), "boss completion clears all active encounter tracking")
+	_expect(not is_instance_valid(first_target), "non-target runner actor is cleaned on boss completion")
+	_expect(not is_instance_valid(boss_target), "boss target actor is cleaned on boss completion")
+	boss_runner.queue_free()
 
 
 func _test_manifest() -> void:
