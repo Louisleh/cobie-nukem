@@ -2,6 +2,7 @@ class_name EncounterDefinition
 extends Resource
 
 enum CompletionPolicy { ALL_DEFEATED, BOSS_DEFEATED, FIRE_AND_FORGET }
+const BOSS_COMPLETION_MARKER := &"boss"
 
 @export var id: StringName = &"encounter"
 @export var zone_id: StringName = &"zone"
@@ -35,6 +36,7 @@ func validate() -> PackedStringArray:
 	if zone_id == &"": errors.append("encounter %s has no zone_id" % id)
 	var all_waves: Array[Dictionary] = effective_waves()
 	if all_waves.is_empty(): errors.append("encounter %s has no waves or spawns" % id)
+	var completion_marker_count := 0
 	var authored_count := 0
 	for wave_index in all_waves.size():
 		var wave: Dictionary = all_waves[wave_index]
@@ -45,6 +47,22 @@ func validate() -> PackedStringArray:
 		for index in wave_spawns.size():
 			authored_count += 1
 			errors.append_array(_validate_spawn(wave_spawns[index], wave_index, index))
+			var marker: Variant = (wave_spawns[index] as Dictionary).get("completion_marker", null)
+			if marker != null:
+				if marker is String or marker is StringName:
+					if StringName(marker) == BOSS_COMPLETION_MARKER:
+						completion_marker_count += 1
+					else:
+						errors.append("encounter %s wave %d spawn %d has invalid completion marker: %s" % [id, wave_index, index, String(marker)])
+				else:
+					errors.append("encounter %s wave %d spawn %d has invalid completion marker type: %s" % [id, wave_index, index, typeof(marker)])
+	if completion_policy == CompletionPolicy.BOSS_DEFEATED:
+		if completion_marker_count == 0:
+			errors.append("encounter %s with BOSS_DEFEATED must specify exactly one completion_marker=%s" % [id, BOSS_COMPLETION_MARKER])
+		elif completion_marker_count > 1:
+			errors.append("encounter %s with BOSS_DEFEATED has more than one completion_marker=%s" % [id, BOSS_COMPLETION_MARKER])
+	elif completion_marker_count > 0:
+		errors.append("encounter %s has a completion_marker but policy is %s" % [id, CompletionPolicy.keys()[completion_policy]])
 	if authored_count > enemy_budget:
 		errors.append("encounter %s authors %d enemies above budget %d" % [id, authored_count, enemy_budget])
 	return errors

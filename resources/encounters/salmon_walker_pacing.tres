@@ -8,5 +8,4 @@ phase_ids = Array[StringName]([&"cannons", &"exposed_core", &"charge", &"golden_
 phase_cues = PackedStringArray("CANNONS ACTIVE — KEEP MOVING", "ARMOR PANELS BROKEN — HIT THE EXPOSED CORE", "CHARGE MODE — BREAK LINE AND KEEP MOVING", "FINAL VULNERABILITY — FETCH THE GOLDEN BALL", "WALKER DEFEATED")
 phase_recovery_pickups = PackedStringArray("", "res://scenes/pickups/premium_treat.tscn", "res://scenes/pickups/tennis_balls.tscn", "", "")
 phase_recovery_positions = Array[Vector3]([Vector3(0, 0.8, -145), Vector3(-8, 0.8, -145), Vector3(8, 0.8, -145), Vector3(0, 0.8, -140), Vector3(0, 0.8, -140)])
-summon_attack_interval = 3
 pressure_distance = Vector2(4.5, 12)

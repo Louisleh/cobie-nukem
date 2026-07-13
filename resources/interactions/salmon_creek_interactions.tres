@@ -1,0 +1,216 @@
+[gd_resource type="Resource" load_steps=25 format=3]
+
+[ext_resource type="Script" path="res://scripts/gameplay/interaction_catalog.gd" id="1"]
+[ext_resource type="Script" path="res://scripts/gameplay/interaction_placement.gd" id="2"]
+[ext_resource type="Script" path="res://scripts/gameplay/world_interaction_definition.gd" id="3"]
+
+[sub_resource type="Resource" id="BreakableDefinition"]
+script = ExtResource("3")
+schema_version = 1
+id = &"salmon_breakable_console"
+prompt = "PUNCH CONTROL BOX"
+enabled = true
+kind = 0
+visual_size = Vector3(1.1, 0.75, 0.5)
+visual_color = Color(0.8706, 0.4863, 0.3412, 1.0)
+surface_type = &"metal"
+breakable_health = 42.0
+breakable_reset_health = 0.0
+breakable_secret_id = &""
+breakable_secret_title = ""
+
+[sub_resource type="Resource" id="ExplosiveDefinition"]
+script = ExtResource("3")
+schema_version = 1
+id = &"salmon_explosive_carton"
+prompt = "TRIGGER FLARE"
+enabled = true
+kind = 1
+visual_size = Vector3(0.9, 1.0, 0.9)
+visual_color = Color(0.2941, 0.2314, 0.0941, 1.0)
+surface_type = &"metal"
+explosive_health = 18.0
+explosive_reset_health = 0.0
+explosive_collision_mask = 16777215
+explosive_damage = 24.0
+detonation_delay = 0.02
+chain_reaction_radius = 3.2
+chain_reaction_limit = 1
+explosive_blast_radius = 2.4
+
+[sub_resource type="Resource" id="HazardDefinition"]
+script = ExtResource("3")
+schema_version = 1
+id = &"salmon_hazard_steam"
+prompt = "VENTING ARC"
+enabled = true
+kind = 2
+visual_size = Vector3(3.5, 0.2, 2.2)
+visual_color = Color(0.9020, 0.7216, 0.5608, 1.0)
+surface_type = &"concrete"
+hazard_tick_seconds = 0.7
+hazard_damage = 6.0
+hazard_radius = 2.2
+
+[sub_resource type="Resource" id="LootDefinition"]
+script = ExtResource("3")
+schema_version = 1
+id = &"salmon_loot_crate"
+prompt = "OPEN CRATE"
+enabled = true
+kind = 3
+visual_size = Vector3(1.1, 0.75, 0.8)
+visual_color = Color(0.9412, 0.8118, 0.3765, 1.0)
+surface_type = &"plastic"
+loot_scene = "res://scenes/pickups/shells.tscn"
+loot_drop_count = 2
+
+[sub_resource type="Resource" id="SecretDefinition"]
+script = ExtResource("3")
+schema_version = 1
+id = &"salmon_secret_hatch"
+prompt = "RATTLE HATCH"
+enabled = true
+kind = 4
+visual_size = Vector3(1.3, 1.0, 0.7)
+visual_color = Color(0.6235, 0.4353, 0.3020, 1.0)
+surface_type = &"metal"
+secret_id = &"salmon_secret_hatch"
+secret_title = "COVERSLIDE LATCH OPEN"
+persistence_id = &"salmon_secret_hatch"
+persists_across_reset = false
+
+[sub_resource type="Resource" id="PlacementForbiddenBreakableA"]
+script = ExtResource("2")
+schema_version = 1
+id = &"forbidden_field_breakable_console_1"
+zone_id = &"forbidden_field"
+definition = SubResource("BreakableDefinition")
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.4, 0.375, -6.4)
+
+[sub_resource type="Resource" id="PlacementForbiddenExplosiveA"]
+script = ExtResource("2")
+schema_version = 1
+id = &"forbidden_field_explosive_carton_1"
+zone_id = &"forbidden_field"
+definition = SubResource("ExplosiveDefinition")
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.2, 0.5, -9.8)
+
+[sub_resource type="Resource" id="PlacementForbiddenHazardA"]
+script = ExtResource("2")
+schema_version = 1
+id = &"forbidden_field_hazard_steam_1"
+zone_id = &"forbidden_field"
+definition = SubResource("HazardDefinition")
+transform = Transform3D(0.9, 0, 0, 0, 0.9, 0, 0, 0, 1, 2.7, 0.45, -16.1)
+
+[sub_resource type="Resource" id="PlacementForbiddenLootA"]
+script = ExtResource("2")
+schema_version = 1
+id = &"forbidden_field_loot_crate_1"
+zone_id = &"forbidden_field"
+definition = SubResource("LootDefinition")
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.7, 0.375, -21.0)
+
+[sub_resource type="Resource" id="PlacementShedBreakableA"]
+script = ExtResource("2")
+schema_version = 1
+id = &"equipment_shed_breakable_console_1"
+zone_id = &"equipment_shed"
+definition = SubResource("BreakableDefinition")
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.5, 0.375, -35.4)
+
+[sub_resource type="Resource" id="PlacementShedExplosiveA"]
+script = ExtResource("2")
+schema_version = 1
+id = &"equipment_shed_explosive_carton_1"
+zone_id = &"equipment_shed"
+definition = SubResource("ExplosiveDefinition")
+transform = Transform3D(0.94, 0, 0, 0, 1.05, 0, 0, 0, 1, 3.8, 0.525, -40.6)
+
+[sub_resource type="Resource" id="PlacementShedLootA"]
+script = ExtResource("2")
+schema_version = 1
+id = &"equipment_shed_loot_crate_1"
+zone_id = &"equipment_shed"
+definition = SubResource("LootDefinition")
+transform = Transform3D(1, 0, 0, 0, 0.95, 0, 0, 0, 1, -8.1, 0.35625, -44.2)
+
+[sub_resource type="Resource" id="PlacementTunnelsBreakableA"]
+script = ExtResource("2")
+schema_version = 1
+id = &"maintenance_tunnels_breakable_console_1"
+zone_id = &"maintenance_tunnels"
+definition = SubResource("BreakableDefinition")
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.0, 0.375, -57.5)
+
+[sub_resource type="Resource" id="PlacementTunnelsExplosiveA"]
+script = ExtResource("2")
+schema_version = 1
+id = &"maintenance_tunnels_explosive_carton_1"
+zone_id = &"maintenance_tunnels"
+definition = SubResource("ExplosiveDefinition")
+transform = Transform3D(0.98, 0, 0, 0, 1, 0, 0, 0, 1, -2.4, 0.5, -63.1)
+
+[sub_resource type="Resource" id="PlacementTunnelsHazardA"]
+script = ExtResource("2")
+schema_version = 1
+id = &"maintenance_tunnels_hazard_steam_1"
+zone_id = &"maintenance_tunnels"
+definition = SubResource("HazardDefinition")
+transform = Transform3D(0.9, 0, 0, 0, 0.9, 0, 0, 0, 1, -7.8, 0.5, -59.2)
+
+[sub_resource type="Resource" id="PlacementLabBreakableA"]
+script = ExtResource("2")
+schema_version = 1
+id = &"compliance_lab_breakable_console_1"
+zone_id = &"compliance_lab"
+definition = SubResource("BreakableDefinition")
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.4, 0.375, -104.4)
+
+[sub_resource type="Resource" id="PlacementLabLootA"]
+script = ExtResource("2")
+schema_version = 1
+id = &"compliance_lab_loot_crate_1"
+zone_id = &"compliance_lab"
+definition = SubResource("LootDefinition")
+transform = Transform3D(1, 0, 0, 0, 0.97, 0, 0, 0, 1, 6.2, 0.36375, -106.8)
+
+[sub_resource type="Resource" id="PlacementLabSecretA"]
+script = ExtResource("2")
+schema_version = 1
+id = &"compliance_lab_secret_hatch_1"
+zone_id = &"compliance_lab"
+definition = SubResource("SecretDefinition")
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.1, 0.5, -111.9)
+
+[sub_resource type="Resource" id="PlacementArenaHazardA"]
+script = ExtResource("2")
+schema_version = 1
+id = &"walker_arena_hazard_steam_1"
+zone_id = &"walker_arena"
+definition = SubResource("HazardDefinition")
+transform = Transform3D(0.95, 0, 0, 0, 0.95, 0, 0, 0, 1, 8.2, 0.65, -134.4)
+
+[sub_resource type="Resource" id="PlacementArenaExplosiveA"]
+script = ExtResource("2")
+schema_version = 1
+id = &"walker_arena_explosive_carton_1"
+zone_id = &"walker_arena"
+definition = SubResource("ExplosiveDefinition")
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.8, 0.5, -138.6)
+
+[sub_resource type="Resource" id="PlacementArenaLootA"]
+script = ExtResource("2")
+schema_version = 1
+id = &"walker_arena_loot_crate_1"
+zone_id = &"walker_arena"
+definition = SubResource("LootDefinition")
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14.0, 0.375, -148.0)
+
+[resource]
+script = ExtResource("1")
+schema_version = 1
+level_id = &"episode_1_level_1"
+placements = Array[Resource]([SubResource("PlacementForbiddenBreakableA"), SubResource("PlacementForbiddenExplosiveA"), SubResource("PlacementForbiddenHazardA"), SubResource("PlacementForbiddenLootA"), SubResource("PlacementShedBreakableA"), SubResource("PlacementShedExplosiveA"), SubResource("PlacementShedLootA"), SubResource("PlacementTunnelsBreakableA"), SubResource("PlacementTunnelsExplosiveA"), SubResource("PlacementTunnelsHazardA"), SubResource("PlacementLabBreakableA"), SubResource("PlacementLabLootA"), SubResource("PlacementLabSecretA"), SubResource("PlacementArenaHazardA"), SubResource("PlacementArenaExplosiveA"), SubResource("PlacementArenaLootA")])
+required_zone_minimums = {"forbidden_field": 3, "equipment_shed": 3, "maintenance_tunnels": 3, "compliance_lab": 3, "walker_arena": 3}

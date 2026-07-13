@@ -2,6 +2,40 @@
 
 This is a durable evidence template, not a claim that every listed check has run against the current working tree. Add one section per candidate; never overwrite older evidence.
 
+## Candidate 0.6.0-alpha.7 — 2026-07-13
+
+| Field | Value |
+| --- | --- |
+| Version | `0.6.0-alpha.7` / build `2026-07-13-spark-interaction-alpha` |
+| Runtime feature revision | `eb66cf8` (`Keep Walker pressure lane clear of authored props`) |
+| Candidate source | `86ead74` (`Stamp 0.6.0-alpha.7 release candidate`) |
+| Godot | `4.7.stable.official.5b4e0cb0f` |
+| Platform | macOS M4 native Compatibility renderer, packaged Web desktop and simulated 1024×768 tablet; no physical-device claim |
+
+### Gates
+
+| Check | Result | Evidence |
+| --- | --- | --- |
+| Spark orchestration | Pass | Repo-scoped skill, six model-pinned profiles, static verifier, read-only and writer pilots, isolated commit import, structured packets, and independent review |
+| Salmon Creek interactions | Pass | Five reusable typed kinds, 16 stable catalog placements, three-plus per major arena, bounded effects/audio/timers, deterministic reset/restore, loot and secret contracts |
+| Walker lifecycle | Pass | Typed phase floors, weak-point windows, approximately 1,000 HP baseline, authored attack/summon/recovery policy, Golden Ball finish, reset-safe summons, and clear pressure lane |
+| Accessibility/presentation | Pass with human gates | Priority captions, scalable responsive UI contracts, settings persistence, and existing focus/touch cancellation soaks green; physical comfort and photosensitivity remain human-only |
+| Locked Vancouver foundation | Pass, non-public | Five typed route zones, finite spawn/patrol/prop/surface/checkpoint/secret data, schema-v2 encounters, three-wave convoy, deterministic dependency/reset simulation; mission card remains locked |
+| Complete regression/soak | Pass | 100 routes, 100 checkpoints/death/restarts, 100 focus/touch cancellations, 500 weapon transitions, 100 effects; engine/architecture/IP/content gates green |
+| Complete release/export matrix | Pass | `QA_EXPORTS=1 bash tools/release_validate.sh`, exit 0; Web and unsigned Universal macOS exports |
+| Native 1080p zone profile | Pass with retained outliers | Gameplay p95 17.175–19.581 ms; tunnel p99 38.401 ms with one 104.345 ms sample; one isolated 165.351 ms Walker sample tracked in Known Issues |
+| Packaged Web desktop/tablet | Pass | Stamped title, menu, five-card selector, Salmon Creek launch, complete 1024×768 twin-stick HUD, and live right-stick aim response; no Godot warning/error (generic Chromium automation-host `UnknownError` retained as host noise) |
+| Public deployment | Pending | Source merge, prerelease, website deployment, public identity, and downloaded PCK hash verification remain the release actions |
+| Physical iPad and human playthrough/mix | Not run | Explicit human-only gates |
+
+### Candidate artifacts
+
+| Artifact | Bytes | SHA-256 |
+| --- | ---: | --- |
+| `cobie-nukem-0.6.0-alpha.7-itch.zip` | 26,183,196 | `7e50a546f75cc8cb7432e8653537549be49809325fcc5d246469d5f7f68bd59a` |
+| `cobie-nukem-0.6.0-alpha.7-macos-unsigned.zip` | 75,547,579 | `35a35380b659ddf031db3442adc1d5e1a5b7591d5eef3c86d34609d7d34eabde` |
+| Web PCK | 16,323,388 | `f9f11d5e419519b2fde01b57d2f46c8c56c1fe0e8baddd02176d3ee2835d0af6` |
+
 ## Shipped 0.6.0-alpha.6 — 2026-07-13
 
 | Field | Value |

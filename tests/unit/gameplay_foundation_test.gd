@@ -17,6 +17,7 @@ func _initialize() -> void:
 	_test_difficulty()
 	_test_objectives()
 	_test_encounter()
+	await _test_boss_encounter_contracts()
 	_test_encounter_failures_and_reset()
 	_test_manifest()
 	_test_respawn_protection()
@@ -132,6 +133,62 @@ func _test_encounter_failures_and_reset() -> void:
 	reset_runner.queue_free()
 
 
+func _test_boss_encounter_contracts() -> void:
+	var marker_missing := EncounterDefinition.new(); marker_missing.id = &"boss_missing"; marker_missing.zone_id = &"boss_missing"
+	marker_missing.completion_policy = EncounterDefinition.CompletionPolicy.BOSS_DEFEATED
+	marker_missing.waves = [{"spawns": [{"scene":"res://scenes/enemies/squirrel_trooper.tscn","position":Vector3.ZERO}]}]
+	_expect(not marker_missing.validate().is_empty(), "BOSS_DEFEATED rejects missing completion marker")
+	var marker_multiple := EncounterDefinition.new(); marker_multiple.id = &"boss_multiple"; marker_multiple.zone_id = &"boss_multiple"
+	marker_multiple.completion_policy = EncounterDefinition.CompletionPolicy.BOSS_DEFEATED
+	marker_multiple.waves = [{"spawns": [
+		{"scene":"res://scenes/enemies/squirrel_trooper.tscn","position":Vector3.ZERO, "completion_marker": "boss"},
+		{"scene":"res://scenes/enemies/squirrel_trooper.tscn","position":Vector3.ONE, "completion_marker": "boss"}
+	]}]
+	_expect(not marker_multiple.validate().is_empty(), "BOSS_DEFEATED rejects multiple completion targets")
+	var marker_type_invalid := EncounterDefinition.new(); marker_type_invalid.id = &"boss_type"; marker_type_invalid.zone_id = &"boss_type"
+	marker_type_invalid.completion_policy = EncounterDefinition.CompletionPolicy.BOSS_DEFEATED
+	marker_type_invalid.waves = [{"spawns": [{"scene":"res://scenes/enemies/squirrel_trooper.tscn","position":Vector3.UP, "completion_marker": 7}]}]
+	_expect(not marker_type_invalid.validate().is_empty(), "BOSS_DEFEATED rejects invalid completion marker type")
+	var marker_policy_mismatch := EncounterDefinition.new(); marker_policy_mismatch.id = &"boss_mismatch"; marker_policy_mismatch.zone_id = &"boss_mismatch"
+	marker_policy_mismatch.waves = [{"spawns": [{"scene":"res://scenes/enemies/squirrel_trooper.tscn","position":Vector3.BACK, "completion_marker":"boss"}]}]
+	_expect(not marker_policy_mismatch.validate().is_empty(), "completion marker requires BOSS_DEFEATED policy")
+
+	var boss_definition := EncounterDefinition.new(); boss_definition.id = &"boss_runtime"; boss_definition.zone_id = &"boss_runtime"
+	boss_definition.completion_policy = EncounterDefinition.CompletionPolicy.BOSS_DEFEATED
+	boss_definition.waves = [
+		{"spawns": [{"scene":"res://scenes/enemies/squirrel_trooper.tscn","position":Vector3.ZERO}], "delay_seconds": 0.0},
+		{"delay_seconds": 0.12, "spawns": [
+			{"scene":"res://scenes/enemies/squirrel_trooper.tscn","position":Vector3.ONE, "completion_marker":"boss"},
+			{"scene":"res://scenes/enemies/squirrel_trooper.tscn","position":Vector3.RIGHT},
+		]},
+	]
+	var boss_runner := EncounterRunner.new(); get_root().add_child(boss_runner)
+	boss_runner.configure([boss_definition], _spawn_fake)
+	var boss_events := [0]
+	boss_runner.encounter_completed.connect(func(_definition: EncounterDefinition) -> void: boss_events[0] += 1)
+	var first_wave := boss_runner.activate_zone(&"boss_runtime")
+	_expect(first_wave.size() == 1, "boss policy spawns authored first wave")
+	var first_target: FakeEnemy = first_wave[0] as FakeEnemy
+	(first_target as FakeEnemy).died.emit(first_target, null)
+	_expect(boss_runner.completed.is_empty(), "non-target defeat does not complete boss encounter")
+	_expect(boss_runner.active.has(&"boss_runtime"), "boss encounter remains active after non-target defeat")
+	await create_timer(0.13).timeout
+	var second_wave: Array = boss_runner.active.get(&"boss_runtime", {}).get("actors", [])
+	_expect(second_wave.size() == 2, "boss encounter advances into authored boss wave while target still alive")
+	var boss_target: FakeEnemy = boss_runner.active[&"boss_runtime"].boss_target as FakeEnemy
+	var remaining_guard: FakeEnemy = second_wave[1] as FakeEnemy
+	(boss_target as FakeEnemy).died.emit(boss_target, null)
+	await process_frame
+	_expect(boss_events[0] == 1, "boss completion is emitted exactly once")
+	_expect(boss_runner.completed.has(&"boss_runtime"), "defeating authored boss target completes encounter")
+	_expect(not boss_runner.active.has(&"boss_runtime"), "boss completion clears all active encounter tracking")
+	_expect(is_instance_valid(first_target), "already-defeated actors remain owned by their own death lifecycle")
+	_expect(not is_instance_valid(remaining_guard), "boss completion cleans surviving runner-owned actors")
+	first_target.free()
+	boss_target.free()
+	boss_runner.queue_free()
+
+
 func _test_manifest() -> void:
 	var manifest := load("res://resources/content/salmon_creek_manifest.tres") as ContentManifest
 	_expect(manifest != null, "Salmon Creek manifest loads")
@@ -204,13 +261,19 @@ func _test_world_registry_player_index() -> void:
 		return
 	var indexed_player := Node3D.new()
 	indexed_player.add_to_group(&"player")
+	indexed_player.add_to_group(&"auto_aim_targets")
+	indexed_player.add_to_group(&"interactables")
 	get_root().add_child(indexed_player)
 	await process_frame
 	await process_frame
 	_expect(registry.primary_player() == indexed_player, "WorldRegistry indexes the primary player without hot-path SceneTree scans")
+	_expect(indexed_player in registry.targets_view(), "WorldRegistry exposes an allocation-free target view")
+	_expect(indexed_player in registry.interactables_view(), "WorldRegistry exposes an allocation-free interaction view")
 	indexed_player.queue_free()
 	await process_frame
 	_expect(registry.primary_player() == null, "WorldRegistry removes freed player entries")
+	_expect(registry.targets_view().all(func(node: Node) -> bool: return is_instance_valid(node)), "WorldRegistry removes freed targets from the hot-path view")
+	_expect(registry.interactables_view().all(func(node: Node) -> bool: return is_instance_valid(node)), "WorldRegistry removes freed interactables from the hot-path view")
 
 
 func _spawn_fake(_path: String, _position: Vector3) -> Node:

@@ -4,5 +4,25 @@
 script = ExtResource("1")
 id = &"vancouver_convoy_showdown"
 zone_id = &"harbour_pier"
-display_name = "CITATION CONVOY (PLACEHOLDER)"
-spawns = Array[Dictionary]([{"scene":"res://scenes/enemies/compliance_hound.tscn","position":Vector3(-4,0,-130)}, {"scene":"res://scenes/enemies/compliance_hound.tscn","position":Vector3(4,0,-136)}])
+display_name = "CITATION CONVOY"
+schema_version = 2
+spawns = []
+waves = Array[Dictionary]([{
+"spawns": [
+	{"scene":"res://scenes/enemies/compliance_hound.tscn","position":Vector3(-4,0,-130)},
+	{"scene":"res://scenes/enemies/compliance_hound.tscn","position":Vector3(4,0,-136)}
+]}, {
+"delay_seconds": 2.5,
+"spawns": [
+	{"scene":"res://scenes/enemies/leash_enforcement_drone.tscn","position":Vector3(1,2,-146)},
+	{"scene":"res://scenes/enemies/leash_enforcement_drone.tscn","position":Vector3(-4,2,-148)}
+]}, {
+"delay_seconds": 2.5,
+"spawns": [
+	{"scene":"res://scenes/enemies/mutant_groundskeeper.tscn","position":Vector3(0,0,-158)},
+	{"scene":"res://scenes/enemies/squirrel_trooper.tscn","position":Vector3(2,0,-156)}
+]}])
+enemy_budget = 6
+maximum_simultaneous_attackers = 2
+music_intensity = 0.9
+reward_policy = &"authored"

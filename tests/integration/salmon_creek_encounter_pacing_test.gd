@@ -2,6 +2,7 @@ extends SceneTree
 
 const LevelScene := preload("res://scenes/levels/episode_1_level_1.tscn")
 const Pacing := preload("res://resources/encounters/salmon_walker_pacing.tres")
+const WalkerProfile := preload("res://resources/enemies/walker_combat_profile.tres")
 
 var failures := PackedStringArray()
 
@@ -14,6 +15,7 @@ func _run() -> void:
 	_test_authored_pacing_contract()
 	await _test_complete_route_spawns_every_wave()
 	await _test_checkpoint_reset_cancels_pending_reinforcement()
+	await _test_walker_phase_ordering_guardrail()
 	await _test_walker_pressure_phases_summons_and_recovery()
 	if failures.is_empty():
 		print("SALMON CREEK ENCOUNTER PACING: PASS")
@@ -29,6 +31,23 @@ func _test_authored_pacing_contract() -> void:
 	_expect(manifest != null, "Salmon Creek manifest loads")
 	if manifest == null:
 		return
+	var profile := WalkerProfile
+	_expect(profile != null, "Walker combat profile resource loads")
+	var profile_errors: PackedStringArray = profile.validate()
+	for error in profile_errors:
+		_expect(false, "Walker profile validates: %s" % error)
+	_expect(profile.phase_transition_fractions.size() == profile.phase_ids.size() - 2, "Walker profile has one threshold per normal combat phase transition")
+	for i in range(profile.phase_transition_fractions.size()):
+		_expect(profile.phase_transition_fractions[i] > 0.0, "Walker phase boundary %d keeps positive health fraction" % i)
+		_expect(profile.phase_transition_fractions[i] < 1.0, "Walker phase boundary %d stays under full health" % i)
+		_expect(profile.phase_ids.size() == 5, "Walker profile includes 5 authored phases")
+		if i > 0:
+			_expect(profile.phase_transition_fractions[i] < profile.phase_transition_fractions[i - 1], "Walker phase boundaries remain ordered")
+	_expect(profile.phase_attack_ranges.size() == profile.phase_ids.size(), "Walker profile includes per-phase authored attack range")
+	_expect(profile.phase_attack_cooldowns.size() == profile.phase_ids.size(), "Walker profile includes per-phase authored cooldown")
+	_expect(profile.phase_telegraph_seconds.size() == profile.phase_ids.size(), "Walker profile includes per-phase authored telegraph window")
+	_expect(profile.phase_projectile_speeds.size() == profile.phase_ids.size(), "Walker profile includes per-phase authored projectile speed")
+	_expect(profile.max_live_summons >= 1, "Walker summon cap is authored as positive")
 	var expected_waves := {
 		&"forbidden_field": 1,
 		&"equipment_shed": 2,
@@ -52,7 +71,7 @@ func _test_authored_pacing_contract() -> void:
 	_expect(opening.opening_grace_seconds == 12.0, "Opening retains the family-safe 12-second grace window")
 	_expect(opening.maximum_simultaneous_attackers == 1, "Opening limits simultaneous pressure to one attacker")
 	_expect(Pacing.validate().is_empty(), "Walker phase pacing resource validates")
-	_expect(Pacing.summon_attack_interval == 3, "Walker telegraphs a reinforcement every third cannon attack")
+	_expect(WalkerProfile.summon_attack_interval == 3, "Walker combat profile authors a reinforcement every third cannon attack")
 
 
 func _test_complete_route_spawns_every_wave() -> void:
@@ -126,6 +145,15 @@ func _test_walker_pressure_phases_summons_and_recovery() -> void:
 		level.free()
 		await process_frame
 		return
+	var profile := walker.combat_profile as WalkerCombatProfile
+	_expect(profile != null, "Walker combat profile is attached")
+	if profile == null:
+		level.free()
+		await process_frame
+		return
+	var profile_errors: PackedStringArray = profile.validate()
+	for error in profile_errors:
+		_expect(false, "Walker profile validates in runtime: %s" % error)
 	var initial_distance := walker.global_position.distance_to(target.global_position)
 	var minimum_distance := initial_distance
 	for frame in 360:
@@ -134,7 +162,9 @@ func _test_walker_pressure_phases_summons_and_recovery() -> void:
 	var settled_distance := walker.global_position.distance_to(target.global_position)
 	print("WALKER PRESSURE EVIDENCE: initial=%.3f minimum=%.3f settled=%.3f state=%s cooldown=%.3f attack_range=%.3f authored=%s" % [initial_distance, minimum_distance, settled_distance, walker.state, walker._cooldown, walker.definition.attack_range, Pacing.pressure_distance])
 	_expect(initial_distance > Pacing.pressure_distance.y, "Walker begins outside its pressure band")
-	_expect(walker.summon_attack_interval == Pacing.summon_attack_interval, "Walker consumes the authored summon cadence")
+	_expect(walker.summon_attack_interval == profile.summon_attack_interval, "Walker consumes the authored summon cadence")
+	_expect(walker.definition.attack_range == profile.phase_attack_ranges[AnimalControlWalker.BossPhase.CANNONS], "Walker starts on authored attack range")
+	_expect(walker.definition.attack_cooldown == profile.phase_attack_cooldowns[AnimalControlWalker.BossPhase.CANNONS], "Walker starts on authored attack cooldown")
 	_expect(minimum_distance <= Pacing.pressure_distance.y, "Walker actively closes into the authored pressure band")
 	_expect(settled_distance >= Pacing.pressure_distance.x and settled_distance <= Pacing.pressure_distance.y, "Walker settles at a readable pressure distance")
 
@@ -157,10 +187,27 @@ func _test_walker_pressure_phases_summons_and_recovery() -> void:
 	walker.boss_phase = AnimalControlWalker.BossPhase.CANNONS
 	current_scene = level
 	var summons_before := get_nodes_in_group(&"boss_summons").size()
-	for attack in Pacing.summon_attack_interval:
+	var summon_interval := maxi(1, profile.summon_attack_interval)
+	var summon_cap := maxi(1, profile.max_live_summons)
+	for attack in summon_interval:
 		walker._perform_attack()
 		walker.attack_fired.emit(&"walker_cannons")
-	_expect(get_nodes_in_group(&"boss_summons").size() == summons_before + 1, "Every third cannon attack creates exactly one drone reinforcement")
+	_expect(get_nodes_in_group(&"boss_summons").size() == summons_before + 1, "Every %dth cannon attack creates one reinforcement drone" % summon_interval)
+	for attack in summon_interval * summon_cap:
+		walker._perform_attack()
+		walker.attack_fired.emit(&"walker_cannons")
+		_expect(get_nodes_in_group(&"boss_summons").size() <= summon_cap, "Summoned drones never exceed the authored live cap")
+		await process_frame
+	var running_summons := get_nodes_in_group(&"boss_summons")
+	_expect(running_summons.size() == summon_cap, "Summon pool reaches the authored cap under pressure")
+	if running_summons.size() > 0:
+		running_summons[0].queue_free()
+		await process_frame
+		_expect(get_nodes_in_group(&"boss_summons").size() == summon_cap - 1, "Freed summon releases one slot")
+		for replay in summon_interval:
+			walker._perform_attack()
+			walker.attack_fired.emit(&"walker_cannons")
+		_expect(get_nodes_in_group(&"boss_summons").size() == summon_cap, "Summon slot recovers after cleanup")
 	_expect(narrative.any(func(text: String) -> bool: return "REINFORCEMENT DEPLOYED" in text), "The summon cadence communicates the deployed pressure actor")
 
 	level._last_combat_zone = &"walker_arena"
@@ -173,6 +220,52 @@ func _test_walker_pressure_phases_summons_and_recovery() -> void:
 	_expect(level.enemies_defeated <= level.enemies_total, "Checkpoint replay never reports more credited defeats than authored enemies")
 	level.free()
 	current_scene = null
+	await process_frame
+
+
+func _test_walker_phase_ordering_guardrail() -> void:
+	var level := _make_level()
+	var target := CharacterBody3D.new()
+	target.name = "WalkerOrderingTarget"
+	level.add_child(target)
+	target.global_position = Vector3(0.0, 0.0, -130.0)
+	level.player = target
+	await process_frame
+	level._enter_zone(&"walker_arena", "ANIMAL CONTROL WALKER", target)
+	var walker := level._walker as AnimalControlWalker
+	_expect(walker != null, "Walker ordering guardrail can instantiate the boss")
+	if walker == null:
+		level.free()
+		await process_frame
+		return
+	var profile := walker.combat_profile as WalkerCombatProfile
+	_expect(profile != null, "Walker ordering guardrail sees a profile")
+	if profile == null:
+		level.free()
+		await process_frame
+		return
+	for error in profile.validate():
+		_expect(false, "Walker ordering guardrail profile validates: %s" % error)
+	var phase_events: Array[StringName] = []
+	level.boss_state_changed.connect(func(id: StringName, _fraction: float) -> void:
+		phase_events.append(id)
+	)
+	walker.apply_damage(walker.health * 0.9)
+	_expect(phase_events.size() == 1, "A single oversized hit advances at most one phase")
+	_expect(phase_events == [&"exposed_core"], "A single oversized hit advances exactly one phase in order")
+	_expect(is_equal_approx(walker.health_fraction(), profile.phase_transition_fractions[0]), "Oversized damage stops at the authored phase floor")
+	_expect(not walker.is_dead, "Normal weapon damage cannot bypass the Golden Ball finisher")
+	walker.apply_damage(100000.0)
+	walker.apply_damage(100000.0)
+	_expect(phase_events == [&"exposed_core", &"charge", &"golden_ball"], "Oversized follow-up hits still traverse every authored phase in order")
+	var defeated_events := [0]
+	walker.walker_defeated.connect(func() -> void: defeated_events[0] += 1)
+	walker.strike_with_golden_ball(target)
+	await process_frame
+	_expect(walker.is_dead and walker.boss_phase == AnimalControlWalker.BossPhase.DEFEATED, "Golden Ball strike reaches the explicit defeated phase")
+	_expect(defeated_events[0] == 1, "Walker defeated event emits exactly once")
+	_expect(level._encounter_runner.completed.has(&"walker_arena"), "Golden Ball defeat completes the authored boss encounter")
+	level.free()
 	await process_frame
 
 

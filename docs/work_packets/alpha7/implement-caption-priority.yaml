@@ -1,0 +1,41 @@
+work_id: alpha7-caption-priority-layout
+role: spark-ui-accessibility-worker
+goal: Make HUD captions priority-aware, bounded, settings-respecting, and responsive without changing desktop input or making human ergonomic claims.
+baseline_revision: 5f589b4
+dependencies: []
+owned_paths:
+  - scripts/ui/hud.gd
+  - scenes/ui/hud.tscn
+  - tests/unit/ui_scene_test.gd
+read_only_context:
+  - scripts/core/settings_manager.gd
+  - scripts/level/episode_1_level_1.gd
+  - scripts/ui/mobile_controls.gd
+  - scenes/ui/mobile_controls.tscn
+  - tests/unit/mobile_controls_test.gd
+forbidden_paths:
+  - scripts/core
+  - scripts/level
+  - scripts/input
+  - project.godot
+  - export_presets.cfg
+  - tools/release_validate.sh
+  - docs/PHASE_ROADMAP_PRD.md
+behavioral_contract: GameHUD offers bounded caption categories/priorities for narrative, objective, enemy warning, boss phase, checkpoint, and PA cues. Higher-priority cues preempt lower ones; equal/lower cues queue within a strict cap; duplicates coalesce; settings can disable captions; hide/reset cancels all owned tweens/queue state. Layout remains safe at 16:9, 16:10, 4:3 tablet, and ultrawide.
+acceptance_criteria:
+  - Caption API remains backward-compatible with show_caption(message).
+  - Queue length and duration are bounded and node-owned.
+  - Enemy/boss warnings cannot be buried by low-priority narrative spam.
+  - Text scale/high contrast/subtitles settings still work.
+  - Tests cover priority, dedupe, queue cap, reset, subtitles-off, and supported viewport bounds.
+focused_tests:
+  - HOME=/tmp/cobie-alpha7-ui-home /opt/homebrew/bin/godot --headless --editor --path repo --quit
+  - HOME=/tmp/cobie-alpha7-ui-home /opt/homebrew/bin/godot --headless --path repo --script res://tests/unit/ui_scene_test.gd
+evidence_required:
+  - One externally verifiable commit whose parent is the packet baseline.
+  - Complete test output with no attributable ERROR, leak, orphan, or out-of-bounds control.
+out_of_scope:
+  - Physical iPad comfort/photosensitivity claims
+  - Wiring mission signals outside HUD ownership
+  - Desktop input behavior
+time_limit_minutes: 35

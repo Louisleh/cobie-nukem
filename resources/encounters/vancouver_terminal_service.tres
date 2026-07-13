@@ -5,4 +5,14 @@ script = ExtResource("1")
 id = &"vancouver_terminal_lockdown"
 zone_id = &"terminal_service"
 display_name = "TERMINAL LOCKDOWN"
-spawns = Array[Dictionary]([{"scene":"res://scenes/enemies/compliance_hound.tscn","position":Vector3(-2,0,-96)}, {"scene":"res://scenes/enemies/squirrel_trooper.tscn","position":Vector3(2,0,-102)}])
+schema_version = 2
+spawns = []
+waves = Array[Dictionary]([{
+"spawns": [
+	{"scene":"res://scenes/enemies/compliance_hound.tscn","position":Vector3(-2,0,-96)},
+	{"scene":"res://scenes/enemies/squirrel_trooper.tscn","position":Vector3(2,0,-102)}
+]}])
+enemy_budget = 4
+maximum_simultaneous_attackers = 2
+music_intensity = 0.75
+reward_policy = &"authored"

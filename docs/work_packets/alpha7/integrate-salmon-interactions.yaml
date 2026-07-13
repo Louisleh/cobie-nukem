@@ -1,0 +1,48 @@
+work_id: alpha7-integrate-salmon-interactions
+role: spark-gameplay-worker
+goal: Integrate the validated Salmon Creek interaction catalog through a reusable mission-owned runtime, with deterministic checkpoint resets and bounded loot/secret callbacks.
+baseline_revision: 34df30e
+dependencies:
+  - alpha7-interaction-runtime
+  - alpha7-salmon-interaction-catalog
+owned_paths:
+  - scripts/gameplay/mission_interaction_runtime.gd
+  - scripts/gameplay/mission_interaction_runtime.gd.uid
+  - scripts/level/episode_1_level_1.gd
+  - tests/integration/test_episode_1_level.gd
+read_only_context:
+  - scripts/gameplay/interaction_catalog.gd
+  - scripts/gameplay/interaction_placement.gd
+  - scripts/gameplay/world_interaction_definition.gd
+  - scripts/level/world_interaction.gd
+  - resources/interactions/salmon_creek_interactions.tres
+  - resources/content/salmon_creek_manifest.tres
+  - scripts/gameplay/checkpoint_payload.gd
+forbidden_paths:
+  - scripts/core
+  - scripts/input
+  - project.godot
+  - export_presets.cfg
+  - tools/release_validate.sh
+  - docs/PHASE_ROADMAP_PRD.md
+behavioral_contract: MissionInteractionRuntime owns catalog instantiation, stable per-placement runtime identity, signal wiring, bounded loot offsets, secret forwarding, reset, and restored-secret application. EpisodeOneLevel supplies callbacks and invokes the runtime; it does not loop over placement data itself. Every live WorldInteraction receives a duplicated definition whose id is the unique placement id. Checkpoint retry resets non-persistent interactions and preserves already discovered secrets without replaying rewards.
+acceptance_criteria:
+  - Exactly one live interaction exists for every catalog placement and has the placement transform and unique placement ID.
+  - Loot requests spawn 1-8 existing pickup scenes at finite grounded offsets around the interaction source, never the actor that opened it.
+  - Secret requests call the level secret contract exactly once; restored discovered secrets cannot replay.
+  - Checkpoint retry resets breakables, explosives, hazards, and loot containers deterministically without adding timers, nodes, or duplicate callbacks.
+  - Runtime invalid catalog/content fails closed with actionable errors and no partial placement.
+  - EpisodeOneLevel delegates interaction construction/reset to the new runtime and observable route behavior remains unchanged.
+focused_tests:
+  - HOME=/tmp/cobie-alpha7-interaction-integration-home /opt/homebrew/bin/godot --headless --editor --path repo --quit
+  - HOME=/tmp/cobie-alpha7-interaction-integration-home /opt/homebrew/bin/godot --headless --path repo --script res://tests/integration/test_episode_1_level.gd
+evidence_required:
+  - One externally verifiable cohesive commit.
+  - Full focused output with no attributable ERROR, leak, orphan, missing resource, or duplicate stable ID.
+out_of_scope:
+  - Save schema changes
+  - Interaction visual redesign
+  - Walker behavior
+  - New autoloads or per-frame scans
+  - Release metadata
+time_limit_minutes: 45

@@ -27,6 +27,7 @@ const VictoryScene = preload("res://scenes/ui/victory_screen.tscn")
 const CombatAudioScene = preload("res://scenes/ui/combat_audio_bridge.tscn")
 const MobileControlsScene = preload("res://scenes/ui/mobile_controls.tscn")
 const SalmonCreekPacing = preload("res://resources/encounters/salmon_walker_pacing.tres")
+const MissionInteractionRuntimeScript = preload("res://scripts/gameplay/mission_interaction_runtime.gd")
 const ROUTE_PROGRESS := [
 	[-22.0, &"equipment_shed", "EQUIPMENT SHED"],
 	[-47.0, &"maintenance_tunnels", "MAINTENANCE TUNNELS"],
@@ -62,6 +63,7 @@ var _death_screen: DeathScreen
 var _victory_screen: VictoryScreen
 var _combat_audio: CombatAudioBridge
 var _mobile_controls: MobileControls
+var _interaction_runtime: MissionInteractionRuntime
 var _opening_enemies: Array[Node] = []
 var _opening_encounter_active := false
 var _objective_tracker: ObjectiveTracker
@@ -86,10 +88,14 @@ func _ready() -> void:
 	_apply_requested_checkpoint()
 	_setup_gameplay_systems()
 	_build_level()
+	_setup_interaction_runtime()
 	if spawn_player: _spawn_player()
 	if setup_presentation: _setup_presentation()
 	if start_run_automatically and get_node_or_null("/root/GameState"):
-		get_node("/root/GameState").begin_run(metadata.level_id)
+		var game_state := get_node("/root/GameState")
+		game_state.begin_run(metadata.level_id)
+		if not _restored_checkpoint.is_empty():
+			game_state.run_stats["checkpoint_id"] = String(_restored_checkpoint.get("checkpoint_id", "start"))
 	objective_changed.emit(metadata.opening_objective)
 	narrative_message.emit("EPISODE 1, LEVEL 1: %s\n%s" % [metadata.title, metadata.subtitle], 4.0)
 	level_ready.emit(player)
@@ -168,6 +174,25 @@ func _restore_mission_snapshot() -> void:
 	_spawn_registry.completed_zones.clear()
 	for zone_id: Variant in _encounter_runner.completed:
 		_spawn_registry.completed_zones[zone_id] = true
+	if _interaction_runtime != null:
+		_interaction_runtime.restore_checkpoint_secrets(_restored_checkpoint.get("secrets", {}))
+
+
+func _setup_interaction_runtime() -> void:
+	if _interactables == null:
+		_interaction_runtime = null
+		return
+	_interaction_runtime = MissionInteractionRuntimeScript.new()
+	_interaction_runtime.name = "MissionInteractionRuntime"
+	add_child(_interaction_runtime)
+	if not _interaction_runtime.configure(content_manifest, _interactables, _spawn_registry):
+		push_warning("Mission interaction runtime failed to initialize from catalog; catalog interactions are disabled.")
+		_interaction_runtime.queue_free()
+		_interaction_runtime = null
+		return
+	_interaction_runtime.secret_requested.connect(_on_interaction_secret_requested)
+	_interaction_runtime.loot_requested.connect(_on_interaction_loot_requested)
+	_interaction_runtime.restore_checkpoint_secrets(_restored_checkpoint.get("secrets", {}))
 
 
 func _check_route_recovery() -> void:
@@ -411,7 +436,6 @@ func _bind_walker(walker: Node) -> void:
 	if encounter_pacing != null and walker is EnemyAgent and walker.definition != null:
 		walker.definition.preferred_distance = walker.definition.attack_range
 		walker.definition.retreat_distance = encounter_pacing.pressure_distance.x
-		walker.summon_attack_interval = encounter_pacing.summon_attack_interval
 		boss_state_changed.emit(encounter_pacing.phase_id(0), walker.health_fraction())
 		narrative_message.emit(encounter_pacing.phase_cue(0), 2.5)
 	if walker.has_signal("golden_ball_enabled"): walker.golden_ball_enabled.connect(func(target): _golden_ball.enable_for_boss(target); objective_changed.emit("FETCH THE GOLDEN TENNIS BALL"))
@@ -429,6 +453,8 @@ func _on_walker_phase_changed(_previous: int, phase: int, walker: Node) -> void:
 	boss_state_changed.emit(encounter_pacing.phase_id(phase), walker.health_fraction())
 	var cue := encounter_pacing.phase_cue(phase)
 	if not cue.is_empty():
+		if _hud != null:
+			_hud.show_boss_phase_caption(cue, 3.0)
 		narrative_message.emit(cue, 3.0)
 	if _walker_phase_rewards.has(phase):
 		return
@@ -446,7 +472,8 @@ func _on_walker_attack_fired(_kind: StringName, walker: Node) -> void:
 	if walker != _walker or encounter_pacing == null or int(walker.boss_phase) != 0:
 		return
 	_walker_cannon_attacks += 1
-	if _walker_cannon_attacks % encounter_pacing.summon_attack_interval == 0:
+	var summon_interval := int(walker.summon_attack_interval)
+	if summon_interval > 0 and _walker_cannon_attacks % summon_interval == 0:
 		narrative_message.emit("DRONE REINFORCEMENT DEPLOYED", 2.0)
 
 
@@ -476,13 +503,22 @@ func _on_sign_read(_id: StringName, text: String, _actor: Node, times: int) -> v
 
 
 func _on_checkpoint(id: StringName, position_value: Vector3) -> void:
-	checkpoint_position = position_value; checkpoint_activated.emit(id, position_value); narrative_message.emit("CHECKPOINT: GOOD DOG STATUS TEMPORARILY RESTORED.", 2.5)
+	checkpoint_position = position_value; checkpoint_activated.emit(id, position_value)
+	if _hud != null:
+		_hud.show_checkpoint_caption("CHECKPOINT: GOOD DOG STATUS TEMPORARILY RESTORED.", 2.5)
+	narrative_message.emit("CHECKPOINT: GOOD DOG STATUS TEMPORARILY RESTORED.", 2.5)
 	var game_state := get_node_or_null("/root/GameState")
 	if game_state:
 		game_state.run_stats["checkpoint_id"] = String(id)
 
 
 func restart_from_checkpoint() -> void:
+	if _interaction_runtime != null:
+		# Secrets are permanent for the current run even when the player dies;
+		# checkpoint saves persist the same dictionary across app restarts.
+		_interaction_runtime.reset_for_checkpoint({"secrets": secrets})
+	if _combat_audio != null:
+		_combat_audio.reset_gameplay_audio()
 	_reset_active_encounter_for_checkpoint()
 	if player:
 		if player.has_method("respawn"):
@@ -587,10 +623,14 @@ func _setup_presentation() -> void:
 	for actor in _actors.get_children(): _bind_enemy_captions(actor)
 	_pause_menu.restart_requested.connect(restart_from_checkpoint)
 	_death_screen.retry_requested.connect(restart_from_checkpoint)
-	narrative_message.connect(func(text: String, _duration: float): _hud.show_notification(text))
+	narrative_message.connect(func(text: String, duration: float):
+		_hud.show_notification(text)
+		_hud.show_caption(text, GameHUD.CaptionCategory.NARRATIVE, duration)
+	)
 	objective_changed.connect(func(text: String):
 		_hud.show_objective(text)
 		_hud.show_notification("OBJECTIVE: " + text)
+		_hud.show_objective_caption(text, 2.0)
 	)
 	_hud.show_objective(metadata.opening_objective)
 	secret_found.connect(func(_id: StringName, title: String, found: int, total: int): _hud.show_secret("SECRET: %s (%d/%d)" % [title, found, total]))
@@ -645,6 +685,26 @@ func _spawn_pickup(path: String, position_value: Vector3) -> Node:
 			if game_state != null: game_state.record_pickup()
 		)
 	return pickup
+
+
+func _on_interaction_secret_requested(secret_id: StringName, title: String, _source: Node) -> void:
+	_discover_secret(secret_id, title)
+
+
+func _on_interaction_loot_requested(loot_scene: String, count: int, source: Node) -> void:
+	var actor := source as Node3D
+	if actor == null:
+		actor = player
+	var base_position := actor.global_position if actor != null else Vector3.ZERO
+	var safe_count := clampi(count, 1, 8)
+	for index in safe_count:
+		var angle := TAU * float(index) / float(max(safe_count, 1))
+		var radius := 0.72 + 0.14 * float(index % 4)
+		var offset := Vector3(cos(angle), 0.0, sin(angle)) * radius
+		var drop_position := Vector3(base_position.x + offset.x, max(0.8, base_position.y), base_position.z + offset.z)
+		if player != null and player.global_position.distance_to(drop_position) < 0.4:
+			drop_position += Vector3(0.36, 0.0, 0.36)
+		_spawn_pickup(loot_scene, drop_position)
 
 
 func _spawn_scene(path: String, position_value: Vector3) -> Node:

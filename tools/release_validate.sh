@@ -67,12 +67,15 @@ run_godot_test res://tests/unit/navigation_contract_test.gd
 run_godot_test res://tests/unit/ui_scene_test.gd
 run_godot_test res://tests/unit/asset_contract_test.gd
 run_godot_test res://tests/unit/gameplay_foundation_test.gd
+run_godot_test res://tests/unit/world_interaction_test.gd
+run_godot_test res://tests/unit/interaction_catalog_test.gd
 run_godot_test res://tests/unit/save_schema_test.gd
 run_godot_test res://tests/unit/mobile_controls_test.gd
 run_godot_test res://tests/unit/imported_audio_contract_test.gd
 run_godot_test res://tests/integration/integration_test_runner.gd
 run_godot_test res://tests/integration/test_episode_1_level.gd
 run_godot_test res://tests/integration/salmon_creek_encounter_pacing_test.gd
+run_godot_test res://tests/integration/vancouver_route_foundation_test.gd
 run_godot_test res://tests/integration/adversarial_state_test.gd
 run_godot_test res://tests/integration/vertical_slice_soak_test.gd
 run_godot_test res://tests/smoke/smoke_test_runner.gd

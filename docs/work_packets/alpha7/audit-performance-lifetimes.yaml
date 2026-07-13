@@ -1,0 +1,30 @@
+work_id: alpha7-audit-performance-lifetimes
+role: spark-performance-auditor
+goal: Audit hot paths, allocations, timer/node lifetimes, pools, per-frame work, and measurable Web/iPad performance risks without implementing speculative optimizations.
+baseline_revision: cad60c3
+dependencies: []
+owned_paths: []
+read_only_context:
+  - scripts
+  - scenes
+  - resources/quality_profiles
+  - tests/smoke
+  - tests/soak
+  - tools
+forbidden_paths:
+  - "**/* (all writes are forbidden)"
+behavioral_contract: Rank only measurable or strongly evidenced issues. Distinguish correctness leaks from optimization opportunities and identify the measurement that would validate each recommendation.
+acceptance_criteria:
+  - Physics/render loops, group scans, allocations, temporary nodes, timers, particles, decals, projectiles, audio voices, navigation updates, and UI redraws are sampled.
+  - Existing profiler and leak gates are assessed for blind spots.
+  - Each finding includes severity, exact file and line, reproduction/measurement path, expected signal, and recommended disposition.
+focused_tests:
+  - Inspect existing profiler output and run only a bounded directly relevant smoke test if useful.
+evidence_required:
+  - Structured result contract followed by ranked findings and proposed before/after metrics.
+  - Explicit statement when no Blocker, Critical, or Major issue is found.
+out_of_scope:
+  - Production edits
+  - Speculative micro-optimization
+  - Physical iPad thermal claims
+time_limit_minutes: 30

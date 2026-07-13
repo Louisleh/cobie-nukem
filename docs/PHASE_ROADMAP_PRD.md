@@ -1,6 +1,6 @@
 # Cobie Nukem — Multi-Phase Production PRD
 
-**Status:** Active production source of truth; `0.6.0-alpha.6` presentation/pacing alpha public
+**Status:** Active production source of truth; `0.6.0-alpha.7` candidate green and awaiting public integration
 
 **Created:** 2026-07-11
 
@@ -8,7 +8,7 @@
 
 **Current public baseline:** `0.6.0-alpha.6` (`52e8240` gameplay/runtime revision; source integration `e0827ae`; website deployment `7b31e74`; PCK SHA-256 `a4a4b5c7114203a3f1ccea506da9f5b09f05738f593ab55db9cef7fb24d595b4`)
 
-**Unreleased development baseline:** none; `main` is clean after the alpha.6 integration
+**Unreleased development baseline:** `codex/alpha7-spark-vertical-slice`; alpha.7 integration and release evidence in progress
 
 **Last playtest alpha:** `0.6.0-alpha.6` (`52e8240`) — live at <https://www.louislehmann.fyi/games/cobie-nukem/>
 
@@ -17,12 +17,35 @@
 
 ## 0. Current status dashboard
 
+### Alpha.7 Spark acceleration ledger
+
+The alpha.7 phase uses a repo-committed GPT-5.6/Spark orchestration contract. GPT-5.6 owns architecture, review, integration, evidence, and release; explicitly pinned GPT-5.3-Codex-Spark profiles own bounded packets. Target allocation is 70% definitive Salmon Creek work and 30% locked Vancouver production foundation. Repository guidance and this PRD—not conversational memory—are authoritative.
+
+| Batch | Allocation | Status | Exit evidence |
+| --- | ---: | --- | --- |
+| 0. Orchestration skill, profiles, validator, pilots | Foundation | **COMPLETE** | Six profiles validate; explicit model inventory proves `gpt-5.3-codex-spark`; read-only sandbox stayed clean; writer pilot integrated; CLI writer sandbox/commit procedure forward-tested and hardened |
+| 1. Stabilization audits | Salmon Creek | **COMPLETE — ACCEPTED FIXES INTEGRATED** | Four independent audits; no Blocker/Critical; boss-completion contract, retry audio flush, and Continue checkpoint identity pass focused tests |
+| 2. Environmental interaction foundation | Salmon Creek | **INTEGRATED — AUTOMATED GATES GREEN** | Reusable five-kind runtime; 16 stable placements; three-plus per arena; grounded collision, bounded effects, loot/secret wiring, and deterministic reset tests |
+| 3. Walker production pass | Salmon Creek | **INTEGRATED — HUMAN FEEL OPEN** | Typed combat profile; explicit phase floors/weak point/Golden Ball defeat; resource-driven attacks, summon cap, recovery policy, and reset coverage |
+| 4. Accessibility and presentation | Salmon Creek | **INTEGRATED — DEVICE GATES OPEN** | Bounded priority captions for narrative/objective/enemy/boss/checkpoint/PA; settings/aspect coverage; existing twin-stick focus/cancellation soaks remain green |
+| 5. Mission controller extraction | Salmon Creek | **INTEGRATED — FIRST RESPONSIBILITY SLICE** | `MissionInteractionRuntime` owns catalog validation, construction, stable identity, callbacks, restore, and reset; broader controller decomposition remains incremental technical work |
+| 6. Vancouver production foundation | Vancouver | **INTEGRATED — LOCKED/NON-PUBLIC** | Five-zone typed route, finite spawn volumes/patrols/surfaces/checkpoints/secrets, schema-v2 encounters, three-wave convoy, and deterministic route/reset simulation |
+| 7. Independent integration and release gate | Release | **CANDIDATE GREEN — PUBLIC INTEGRATION IN PROGRESS** | Independent Spark review found no unequivocal release blocker; Walker-lane obstruction fixed; full headless/soak/content/export matrix, native profile, packaged desktop and 1024×768 twin-stick browser checks green; merge/deploy/hash verification remain |
+
+Human-only throughout: physical iPad Safari comfort/thermal/audio, family comprehension, boss and difficulty feel, mix, humor, and photosensitivity.
+
+Batch 0 evidence: setup commit `1b7f58e`; the read-only audit pilot reported structured evidence and no filesystem changes; the implementation pilot added a deterministic ten-pickup authoring assertion and passed `tests/integration/test_episode_1_level.gd`. Its first standard-worktree commit claim was rejected because CLI sandboxing could not update Git metadata outside the checkout. Explicit CLI writers now run in a disposable parent sandbox with a nested full local clone; root review verifies every commit object, parent, owned path, and test independently before integration.
+
+Batch 1 evidence: audit ledger `b1ae6c9`; accepted worker changes `7b649ef` and `3593bdb`; root integration corrections `0bbc25a`. `EncounterRunner` now consumes the authored `BOSS_DEFEATED` policy through an explicit validated completion marker and cleans surviving runner-owned actors/timers exactly once. Checkpoint retry flushes pooled gameplay audio without rebuilding registrations, and Continue immediately restores the sanitized checkpoint ID into run statistics. `tests/unit/gameplay_foundation_test.gd` and `tests/integration/test_episode_1_level.gd` pass after root review. Performance opportunities without measured regressions remain queued rather than being mislabeled as leaks.
+
+Batches 2–6 evidence: the root rejected and corrected incomplete Spark handoffs before integration. `MissionInteractionRuntime`, `WorldInteraction`, and the Salmon Creek catalog now produce 16 unique live props with floor-correct transforms, bounded loot/effects, permanent in-run secrets, and deterministic checkpoint reset. Walker normal damage cannot skip phase floors or bypass the Golden Ball finish; its attack cadence, summon cap, weak-point behavior, and recovery data are typed. `GameHUD` uses a bounded priority/deduplication queue across all critical cue families. Hot player/aim registries no longer materialize arrays per physics tick. Mission 2 now owns a five-zone typed route and schema-v2 encounters, including the locked three-wave citation convoy. Focused Episode 1, interaction, catalog, Walker pacing, UI, Vancouver route, and content validation suites are green; physical iPad, human boss feel, and human interaction-density review remain open.
+
 This section is the first place a new Codex or external-auditor run should read. “Foundation complete” means the reusable contract exists, Salmon Creek exercises it, and automated regression passes; it does not mean every future extension listed in the phase is finished.
 
 | Phase | Status | Completed | Explicitly remaining |
 | --- | --- | --- | --- |
 | 1. Gameplay systems foundation | **VERTICAL-SLICE FOUNDATION IMPLEMENTED — IN REVIEW** | Previous foundation plus `PlayerFeelProfile`, `WeaponFeelProfile`, terminal combat feedback events, damage reactions, observable pressure/attack-token budgets, group alert, weak-point metadata, live multi-wave encounter schema v2, mission runtime/spawn registry extraction, event-driven interaction/aim registries, production ground navigation and bounded stuck recovery | Bespoke Hound/Walker directional atlases; final human feel/balance |
-| 2. Content-production pipeline | **FOUNDATION COMPLETE** | Versioned manifest, Salmon Creek content data, headless validator, release-gate integration, authoring guide, manifest template, critical-path rules, Mission 2 (Vancouver Waterfront) manifest/objective/encounter skeleton validating in CI with a locked card and non-public graybox | Visual editor tooling; spawn volumes/patrol paths; richer pickup/prop/zone schemas; automated nav/reachability analysis; Mission 2 full production |
+| 2. Content-production pipeline | **FOUNDATION COMPLETE + MISSION 2 ROUTE PROOF** | Versioned manifest, Salmon Creek interaction catalog, headless validator, release-gate integration, authoring guide, manifest template, critical-path rules, and a locked Mission 2 manifest with typed route zones, spawn volumes, patrol paths, surfaces, checkpoints, secrets, schema-v2 encounters, and deterministic route/reset simulation | Visual editor tooling; production geometry/assets; rendered navigation/reachability; Mission 2 human pacing and full production |
 | 3. World and episode structure | **NOT STARTED — BRIEFS + TEASER ART ONLY** | Vancouver Waterfront, Mount Hood, Moon, and Ventura briefs/locked illustrated cards establish the campaign roadmap | No production geometry, mission routing, encounters, enemies, or playable level assets have been built |
 | 4. Combat and presentation expansion | **PRODUCTION TRANCHE IMPLEMENTED — IN VALIDATION** | High-resolution 640×360 baseline; surface-aware combat events; muzzle/impact/death feedback; three original directional/reaction enemy atlases; code-driven elite/boss states; 60 original imported WAVs across 29 bounded weapon/enemy/footstep cue families; staged encounters and resource-driven Walker pressure/phases/recovery/summons | Bespoke Hound/Walker atlases, adaptive music, authored ambience/Cobie voice, environmental kit/interaction density, human art/mix/boss review |
 | 5. Accessibility, persistence, observability | **IMPLEMENTED FOUNDATION — IN REVIEW** | Save schema v3 with v2 migration and objective/encounter/secret persistence; local-only frame/combat/damage/pickup metrics; objective HUD; reduced-flash integration; quality profiles; 100-route/100-checkpoint/100-touch-cancellation/500-weapon-transition soak | Complete settings UI for every assist, captions beyond current narrative text, visual regression gallery, physical devices |

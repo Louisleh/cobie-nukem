@@ -9,7 +9,7 @@ completion_policy = 1
 schema_version = 2
 waves = Array[Dictionary]([{
 "delay_seconds": 0.0,
-"spawns": [{"scene":"res://scenes/enemies/animal_control_walker.tscn","position":Vector3(0,0,-150)}]
+"spawns": [{"scene":"res://scenes/enemies/animal_control_walker.tscn","position":Vector3(0,0,-150),"completion_marker":"boss"}]
 }])
 enemy_budget = 5
 maximum_simultaneous_attackers = 2

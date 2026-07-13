@@ -1,0 +1,74 @@
+[gd_resource type="Resource" script_class="MissionRouteDefinition" load_steps=8 format=3]
+[ext_resource type="Script" path="res://scripts/gameplay/mission_route_definition.gd" id="1"]
+[ext_resource type="Script" path="res://scripts/gameplay/mission_route_zone.gd" id="2"]
+
+[sub_resource type="Resource" id="DowntownAlley"]
+script = ExtResource("2")
+zone_id = &"downtown_alley"
+zone_title = "DOWNTOWN ALLEY"
+bounds = AABB(-8.0, -1.0, -4.0, 14.0, 6.0, 24.0)
+spawn_volumes = Array[AABB]([AABB(-12.0, 0.0, -12.0, 22.0, 2.0, 18.0), AABB(-10.0, 0.0, -26.0, 20.0, 2.0, 24.0)])
+patrol_paths = [[Vector3(-6.0, 0.0, -4.0), Vector3(2.0, 0.0, -14.0), Vector3(5.0, 0.0, -18.0)], [Vector3(-1.0, 0.0, -21.5), Vector3(-1.0, 0.0, -24.0), Vector3(5.0, 0.0, -24.0)]]
+prop_set_id = &"vancouver_downtown_props"
+surface_ids = [&"asphalt", &"sidewalk", &"brick"]
+checkpoint_ids = [&"checkpoint_downtown_alley"]
+secret_ids = [&"secret_downtown_alley"]
+outgoing_edge_ids = [&"ruse_block"]
+
+[sub_resource type="Resource" id="RuseBlock"]
+script = ExtResource("2")
+zone_id = &"ruse_block"
+zone_title = "RUSE BLOCK"
+bounds = AABB(-10.0, -1.0, -30.0, 18.0, 6.0, 25.0)
+spawn_volumes = Array[AABB]([AABB(-8.0, 0.0, -34.0, 4.5, 2.0, 6.5), AABB(0.0, 0.0, -38.0, 7.0, 2.0, 7.0), AABB(7.0, 0.0, -43.0, 2.5, 2.0, 4.0)])
+patrol_paths = [[Vector3(-2.5, 0.0, -31.0), Vector3(-1.0, 0.0, -39.0), Vector3(4.0, 0.0, -49.0)]]
+prop_set_id = &"vancouver_ruse_props"
+surface_ids = [&"brick", &"concrete", &"rain"]
+checkpoint_ids = [&"checkpoint_ruse_block"]
+secret_ids = [&"secret_ruse_block"]
+outgoing_edge_ids = [&"waterfront_seawall"]
+
+[sub_resource type="Resource" id="WaterfrontSeawall"]
+script = ExtResource("2")
+zone_id = &"waterfront_seawall"
+zone_title = "WATERFRONT SEAWALL"
+bounds = AABB(-14.0, -1.0, -61.0, 22.0, 6.0, 38.0)
+spawn_volumes = Array[AABB]([AABB(-14.0, 0.0, -74.0, 28.0, 2.0, 26.0), AABB(-12.0, 0.0, -95.0, 24.0, 2.0, 22.0), AABB(-9.0, 0.0, -116.0, 24.0, 2.0, 18.0)])
+patrol_paths = [[Vector3(-8.0, 0.0, -63.0), Vector3(1.0, 0.0, -71.0), Vector3(5.5, 0.0, -81.0), Vector3(-3.0, 0.0, -88.0)], [Vector3(-10.0, 0.0, -92.0), Vector3(-10.0, 0.0, -66.0), Vector3(3.5, 0.0, -75.0)]]
+prop_set_id = &"vancouver_waterfront_props"
+surface_ids = [&"metal", &"waterfront", &"steel"]
+checkpoint_ids = [&"checkpoint_waterfront_seawall"]
+secret_ids = [&"secret_waterfront_seawall"]
+outgoing_edge_ids = [&"terminal_service"]
+
+[sub_resource type="Resource" id="TerminalService"]
+script = ExtResource("2")
+zone_id = &"terminal_service"
+zone_title = "TERMINAL SERVICE"
+bounds = AABB(-8.0, -1.0, -96.0, 20.0, 6.0, 28.0)
+spawn_volumes = Array[AABB]([AABB(-7.0, 0.0, -102.0, 11.0, 2.0, 7.0), AABB(-1.0, 0.0, -109.0, 6.0, 2.0, 8.0), AABB(7.0, 0.0, -100.0, 3.0, 2.0, 8.0)])
+patrol_paths = [[Vector3(-5.0, 0.0, -99.0), Vector3(3.0, 0.0, -106.0), Vector3(5.0, 0.0, -112.0)], [Vector3(-8.0, 0.0, -118.0), Vector3(-4.0, 0.0, -112.0), Vector3(2.5, 0.0, -108.0)]]
+prop_set_id = &"vancouver_terminal_props"
+surface_ids = [&"concrete", &"metal", &"hazmat"]
+checkpoint_ids = [&"checkpoint_terminal_service"]
+secret_ids = [&"secret_terminal_service"]
+outgoing_edge_ids = [&"harbour_pier"]
+
+[sub_resource type="Resource" id="HarbourPier"]
+script = ExtResource("2")
+zone_id = &"harbour_pier"
+zone_title = "HARBOUR PIER"
+bounds = AABB(-12.0, -1.0, -128.0, 24.0, 7.0, 32.0)
+spawn_volumes = Array[AABB]([AABB(-12.0, 0.0, -170.0, 20.0, 2.0, 80.0), AABB(-9.0, 0.0, -136.0, 18.0, 2.0, 28.0), AABB(-14.0, 0.0, -150.0, 26.0, 2.0, 70.0)])
+patrol_paths = [[Vector3(-6.0, 0.0, -133.0), Vector3(1.0, 0.0, -141.0), Vector3(6.0, 0.0, -150.0)], [Vector3(-11.0, 0.0, -132.5), Vector3(-2.0, 0.0, -136.0), Vector3(-7.0, 0.0, -147.0)]]
+prop_set_id = &"vancouver_harbour_props"
+surface_ids = [&"steel", &"concrete", &"water"]
+checkpoint_ids = [&"checkpoint_harbour_pier"]
+secret_ids = [&"secret_harbour_pier"]
+outgoing_edge_ids = []
+
+[resource]
+script = ExtResource("1")
+route_id = &"vancouver_mission2_route"
+entry_zone_id = &"downtown_alley"
+zones = [SubResource("DowntownAlley"), SubResource("RuseBlock"), SubResource("WaterfrontSeawall"), SubResource("TerminalService"), SubResource("HarbourPier")]

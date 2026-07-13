@@ -57,10 +57,11 @@ The Mission 2 skeleton now exists as real content and validates in CI without an
 - Manifest: `resources/content/vancouver_waterfront_manifest.tres` (`episode_1_vancouver_waterfront`)
 - Level scene: `scenes/levels/vancouver_waterfront_graybox.tscn` — a non-public graybox of the five-zone route; it is not routed by any card and must stay that way until production
 - Objectives: `resources/objectives/vancouver_*.tres` — `reach_waterfront` → `restore_terminal` → `stop_citation_convoy` → `complete_harbour_pier`
-- Encounters: `resources/encounters/vancouver_*.tres` — one per zone (`downtown_alley`, `ruse_block`, `waterfront_seawall`, `terminal_service`, `harbour_pier`) with placeholder spawn groups drawn from existing enemy scenes
+- Route: `resources/routes/vancouver_route_definition.tres` — ordered typed zone bounds, spawn volumes, patrol paths, surfaces, checkpoints, secrets, and directed edges for deterministic authoring validation
+- Encounters: `resources/encounters/vancouver_*.tres` — schema-v2 waves for each route zone (`downtown_alley`, `ruse_block`, `waterfront_seawall`, `terminal_service`, `harbour_pier`) using existing enemy contracts
 - Level card: `resources/level/rain_city_card.tres` stays locked with an empty `scene_path`; `ui_scene_test` enforces exactly one unlocked card and `gameplay_foundation_test` enforces the manifest/card contract
 
-The harbour-pier encounter is a placeholder for the citation-convoy set piece; split it into explicit waves only after the runner gains multi-wave schema support.
+The harbour-pier citation convoy is authored as a reusable three-wave encounter contract. Its enemies and graybox placement remain non-public production placeholders until rendered geometry, performance evidence, and human pacing review exist.
 
 ### Mission 2 asset and landmark list (all original art; no copied logos, trade dress, or map geometry)
 

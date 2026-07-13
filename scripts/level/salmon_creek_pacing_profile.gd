@@ -5,7 +5,6 @@ extends Resource
 @export var phase_cues := PackedStringArray()
 @export var phase_recovery_pickups := PackedStringArray()
 @export var phase_recovery_positions: Array[Vector3] = []
-@export_range(1, 8, 1) var summon_attack_interval := 3
 @export var pressure_distance := Vector2(4.5, 12.0)
 
 

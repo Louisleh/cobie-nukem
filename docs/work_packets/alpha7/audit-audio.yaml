@@ -1,0 +1,32 @@
+work_id: alpha7-audit-audio
+role: spark-code-reviewer
+goal: Audit audio ownership, voice budgets, reset behavior, Web compatibility, and temporary audio-node lifetimes for reproducible defects.
+baseline_revision: cad60c3
+dependencies: []
+owned_paths: []
+read_only_context:
+  - scripts/audio
+  - scripts/ai
+  - scripts/combat
+  - scripts/player
+  - scripts/ui
+  - resources/audio
+  - assets/audio
+  - tests
+forbidden_paths:
+  - "**/* (all writes are forbidden)"
+behavioral_contract: Trace imported-sample playback, pooled or temporary emitters, polyphony, distance, pause/reset, scene changes, and Web fallbacks. Report code and contract failures, not subjective mix opinions.
+acceptance_criteria:
+  - Weapon, enemy, footstep, UI, caption-adjacent, and music/ambience ownership are inspected where present.
+  - Voice caps and cleanup paths are verified across death, retry, checkpoint, level exit, and focus changes.
+  - Each finding includes severity, exact file and line, reproduction path, root cause, and recommended disposition.
+focused_tests:
+  - Run only directly relevant existing headless tests when useful; do not run the full release suite.
+evidence_required:
+  - Structured result contract followed by a ranked findings list.
+  - Explicit statement when no Blocker, Critical, or Major issue is found.
+out_of_scope:
+  - Implementation
+  - Human mix or device-speaker claims
+  - Creating audio assets
+time_limit_minutes: 30

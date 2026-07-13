@@ -1,9 +1,10 @@
-[gd_scene load_steps=17 format=3]
+[gd_scene load_steps=18 format=3]
 
 [ext_resource type="Script" path="res://scripts/ai/animal_control_walker.gd" id="1"]
 [ext_resource type="Resource" path="res://resources/enemies/animal_control_walker.tres" id="2"]
 [ext_resource type="Texture2D" path="res://assets/sprites/enemies/animal_control_walker.png" id="3_sprite"]
 [ext_resource type="Script" path="res://scripts/ai/enemy_sprite_presentation.gd" id="4_presentation"]
+[ext_resource type="Resource" path="res://resources/enemies/walker_combat_profile.tres" id="5"]
 [sub_resource type="BoxShape3D" id="Shape"]
 size = Vector3(3.0, 4.6, 2.5)
 [sub_resource type="StandardMaterial3D" id="Armor"]
@@ -61,6 +62,7 @@ collision_layer = 4
 collision_mask = 3
 script = ExtResource("1")
 definition = ExtResource("2")
+combat_profile = ExtResource("5")
 target_height = 3.35
 death_linger_seconds = 2.8
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]

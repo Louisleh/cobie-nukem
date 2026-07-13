@@ -1,0 +1,62 @@
+work_id: alpha7-vancouver-production-foundation
+role: spark-content-author
+goal: Author a validated, locked Mission 2 route foundation and convert Vancouver encounters to schema-v2 multi-wave data without adding public routing or mission-specific gameplay forks.
+baseline_revision: 34df30e
+dependencies:
+  - encounter-schema-v2
+owned_paths:
+  - scripts/gameplay/mission_route_zone.gd
+  - scripts/gameplay/mission_route_zone.gd.uid
+  - scripts/gameplay/mission_route_definition.gd
+  - scripts/gameplay/mission_route_definition.gd.uid
+  - scripts/gameplay/content_manifest.gd
+  - resources/content/vancouver_route_definition.tres
+  - resources/content/vancouver_waterfront_manifest.tres
+  - resources/encounters/vancouver_downtown_alley.tres
+  - resources/encounters/vancouver_ruse_block.tres
+  - resources/encounters/vancouver_waterfront_seawall.tres
+  - resources/encounters/vancouver_terminal_service.tres
+  - resources/encounters/vancouver_harbour_pier.tres
+  - tests/integration/vancouver_route_foundation_test.gd
+  - tests/integration/vancouver_route_foundation_test.gd.uid
+read_only_context:
+  - scripts/gameplay/encounter_definition.gd
+  - scripts/gameplay/objective_definition.gd
+  - scripts/gameplay/mission_runtime.gd
+  - scenes/levels/vancouver_waterfront_graybox.tscn
+  - resources/content/salmon_creek_manifest.tres
+  - resources/level/rain_city_card.tres
+  - docs/CONTENT_AUTHORING.md
+forbidden_paths:
+  - scripts/core
+  - scripts/level
+  - scenes/levels
+  - scenes/ui
+  - project.godot
+  - export_presets.cfg
+  - tools/release_validate.sh
+  - docs/PHASE_ROADMAP_PRD.md
+behavioral_contract: ContentManifest optionally owns a MissionRouteDefinition. Mission 2 authors ordered downtown_alley, ruse_block, waterfront_seawall, terminal_service, and harbour_pier zones with finite bounds, spawn volumes, patrol paths, prop-set IDs, surface IDs, checkpoint IDs, secret IDs, and stable route edges. Encounter zones exactly match route zones and use schema-v2 waves; the citation convoy is a reusable three-wave harbour_pier encounter. The mission remains locked and unrouted.
+acceptance_criteria:
+  - Route validation rejects duplicate/empty IDs, non-finite or empty bounds, invalid path points, unknown edges, invalid checkpoint order, and encounter/zone mismatches.
+  - All five zones are ordered and reachable from the first to last zone by the authored directed edges.
+  - Every zone has at least one finite spawn volume, one patrol path with two or more finite points, a prop-set ID, and surface identities.
+  - Vancouver encounters use schema_version 2 and authored waves; no v1 spawns remain.
+  - Harbour pier citation convoy contains three waves and uses only existing enemy contracts within a finite budget.
+  - Deterministic non-rendered route simulation validates objective order, checkpoint order, encounter reset data, and no dead end.
+  - Rain City card remains locked and no level routing/public unlock is introduced.
+focused_tests:
+  - HOME=/tmp/cobie-alpha7-vancouver-home /opt/homebrew/bin/godot --headless --editor --path repo --quit
+  - HOME=/tmp/cobie-alpha7-vancouver-home /opt/homebrew/bin/godot --headless --path repo --script res://tests/integration/vancouver_route_foundation_test.gd
+  - HOME=/tmp/cobie-alpha7-vancouver-home /opt/homebrew/bin/godot --headless --path repo --script res://tools/validate_content.gd
+evidence_required:
+  - One externally verifiable cohesive commit.
+  - Full focused output with no attributable ERROR, leak, orphan, missing resource, public unlock, external asset, logo, private data, or legal-clearance claim.
+out_of_scope:
+  - Production geometry
+  - Public level routing or unlock
+  - New art/audio/photography/logos
+  - Vancouver-only shared-system branches
+  - Ruse Pizza branding or permission claims
+  - Release metadata
+time_limit_minutes: 50
