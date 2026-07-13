@@ -1,0 +1,34 @@
+work_id: alpha7-audit-enemy-walker
+role: spark-code-reviewer
+goal: Audit enemy, Walker, and encounter lifecycle behavior for reproducible progression, reset, reachability, phase, summon, reward, or cleanup defects.
+baseline_revision: cad60c3
+dependencies: []
+owned_paths: []
+read_only_context:
+  - scripts/ai
+  - scripts/level
+  - scripts/core/encounter_director.gd
+  - resources/enemies
+  - resources/encounters
+  - scenes/enemies
+  - scenes/levels
+  - tests/unit
+  - tests/integration
+  - tests/soak
+forbidden_paths:
+  - "**/* (all writes are forbidden)"
+behavioral_contract: Trace concrete runtime paths and tests. Report only reproducible defects or precisely evidenced gaps; do not treat intentional human-feel gates as code failures.
+acceptance_criteria:
+  - Walker phases, weak points, summons, recovery drops, death, retry, checkpoint restoration, and completion are traced.
+  - Grounded enemy navigation, reachability recovery, death cleanup, encounter counting, and reset ownership are traced.
+  - Each finding includes severity, exact file and line, reproduction path, root cause, and recommended disposition.
+focused_tests:
+  - Run only directly relevant existing headless tests when useful; do not run the full release suite.
+evidence_required:
+  - Structured result contract followed by a ranked findings list.
+  - Explicit statement when no Blocker, Critical, or Major issue is found.
+out_of_scope:
+  - Implementation
+  - Balance or spectacle judgments
+  - Physical-device or human validation
+time_limit_minutes: 30

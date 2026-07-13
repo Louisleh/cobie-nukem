@@ -1,0 +1,31 @@
+work_id: alpha7-audit-save-progression
+role: spark-code-reviewer
+goal: Audit save schema v3, migrations, checkpoints, objective/encounter/secret restoration, and Salmon Creek progression for reproducible deadlocks or corrupted-state failures.
+baseline_revision: cad60c3
+dependencies: []
+owned_paths: []
+read_only_context:
+  - scripts/core
+  - scripts/level
+  - resources/objectives
+  - resources/encounters
+  - resources/content
+  - tests/unit/save_schema_test.gd
+  - tests/integration
+  - tests/integration/vertical_slice_soak_test.gd
+forbidden_paths:
+  - "**/* (all writes are forbidden)"
+behavioral_contract: Trace serialization, sanitization, migration, restoration ordering, critical pickups/gates, encounter resets, secrets, death, Continue, victory, and invalid payload handling.
+acceptance_criteria:
+  - All schema-v3 fields and v2/unversioned migrations are mapped to runtime consumers.
+  - Every Salmon Creek critical progression dependency is checked against reset/checkpoint/Continue behavior.
+  - Each finding includes severity, exact file and line, reproduction path, root cause, and recommended disposition.
+focused_tests:
+  - Run only directly relevant existing headless tests when useful; do not run the full release suite.
+evidence_required:
+  - Structured result contract followed by a ranked findings list.
+  - Explicit statement when no Blocker, Critical, or Major issue is found.
+out_of_scope:
+  - Implementation
+  - New features unrelated to progression reliability
+time_limit_minutes: 30
