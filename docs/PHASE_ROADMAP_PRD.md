@@ -23,8 +23,8 @@ The alpha.7 phase uses a repo-committed GPT-5.6/Spark orchestration contract. GP
 
 | Batch | Allocation | Status | Exit evidence |
 | --- | ---: | --- | --- |
-| 0. Orchestration skill, profiles, validator, pilots | Foundation | **REVIEWED — INTEGRATING PILOT** | Six profiles validate; explicit model inventory proves `gpt-5.3-codex-spark`; read-only sandbox stayed clean; writer edit and focused test passed; CLI checkout policy hardened after rejecting an unverifiable worktree commit hash |
-| 1. Stabilization audits | Salmon Creek | **QUEUED** | Consolidated reproducible Blocker/Critical/Major queue |
+| 0. Orchestration skill, profiles, validator, pilots | Foundation | **COMPLETE** | Six profiles validate; explicit model inventory proves `gpt-5.3-codex-spark`; read-only sandbox stayed clean; writer pilot integrated; CLI writer sandbox/commit procedure forward-tested and hardened |
+| 1. Stabilization audits | Salmon Creek | **COMPLETE — ACCEPTED FIXES INTEGRATED** | Four independent audits; no Blocker/Critical; boss-completion contract, retry audio flush, and Continue checkpoint identity pass focused tests |
 | 2. Environmental interaction foundation | Salmon Creek | **QUEUED** | Typed components, authored arena interactions, persistence/reset tests |
 | 3. Walker production pass | Salmon Creek | **QUEUED** | Resource-driven phases/weak points/summons/recovery and reset stress |
 | 4. Accessibility and presentation | Salmon Creek | **QUEUED** | Caption/touch/focus/settings/aspect contracts and packaged visual evidence |
@@ -34,7 +34,9 @@ The alpha.7 phase uses a repo-committed GPT-5.6/Spark orchestration contract. GP
 
 Human-only throughout: physical iPad Safari comfort/thermal/audio, family comprehension, boss and difficulty feel, mix, humor, and photosensitivity.
 
-Batch 0 evidence: setup commit `1b7f58e`; the read-only audit pilot reported structured evidence and no filesystem changes; the implementation pilot added a deterministic ten-pickup authoring assertion and passed `tests/integration/test_episode_1_level.gd`. Its first standard-worktree commit claim was rejected because CLI sandboxing could not update Git metadata outside the checkout. Subsequent CLI writers therefore use full local clones, and root review verifies every commit object, parent, owned path, and test independently before integration.
+Batch 0 evidence: setup commit `1b7f58e`; the read-only audit pilot reported structured evidence and no filesystem changes; the implementation pilot added a deterministic ten-pickup authoring assertion and passed `tests/integration/test_episode_1_level.gd`. Its first standard-worktree commit claim was rejected because CLI sandboxing could not update Git metadata outside the checkout. Explicit CLI writers now run in a disposable parent sandbox with a nested full local clone; root review verifies every commit object, parent, owned path, and test independently before integration.
+
+Batch 1 evidence: audit ledger `b1ae6c9`; accepted worker changes `7b649ef` and `3593bdb`; root integration corrections `0bbc25a`. `EncounterRunner` now consumes the authored `BOSS_DEFEATED` policy through an explicit validated completion marker and cleans surviving runner-owned actors/timers exactly once. Checkpoint retry flushes pooled gameplay audio without rebuilding registrations, and Continue immediately restores the sanitized checkpoint ID into run statistics. `tests/unit/gameplay_foundation_test.gd` and `tests/integration/test_episode_1_level.gd` pass after root review. Performance opportunities without measured regressions remain queued rather than being mislabeled as leaks.
 
 This section is the first place a new Codex or external-auditor run should read. “Foundation complete” means the reusable contract exists, Salmon Creek exercises it, and automated regression passes; it does not mean every future extension listed in the phase is finished.
 

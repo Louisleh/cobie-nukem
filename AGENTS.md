@@ -15,7 +15,7 @@ These rules apply to the entire repository.
 
 - For complex multi-subsystem phases or requests to use GPT-5.3-Codex-Spark credits, invoke the repo skill `cobie-spark-orchestration`.
 - GPT-5.6 remains architect, task owner, reviewer, integrator, PRD/release owner, and final claimant. Spark workers receive one decision-complete, bounded ownership packet and focused tests.
-- Use isolated checkouts for Spark writers and never allow overlapping writer ownership. Use a local full clone for explicit CLI workers when standard worktree Git metadata is outside their writable sandbox. Spark workers do not merge, deploy, stamp builds, operate privileged MCP bridges, or claim human/physical-device evidence.
+- Use isolated checkouts for Spark writers and never allow overlapping writer ownership. Explicit CLI workers use a disposable parent sandbox with the assigned full local clone nested beneath it so their commit metadata is writable and externally verifiable. Spark workers do not merge, deploy, stamp builds, operate privileged MCP bridges, or claim human/physical-device evidence.
 - Review every Spark diff and complete test output with GPT-5.6 before integration. Repository guidance and the PRD—not conversational memory—are authoritative.
 
 ## Shared-file ownership

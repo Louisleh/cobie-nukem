@@ -20,7 +20,7 @@ Keep the root GPT-5.6 task responsible for requirements, architecture, task part
 - Use the six project profiles under `.codex/agents`: gameplay, tests, content, performance, UI/accessibility, and independent review.
 - Give each worker one decision-complete packet, one ownership boundary, 1–8 files normally, explicit forbidden paths, focused tests, and a time limit.
 - Run at most four read-only workers or two non-overlapping writers concurrently.
-- Give every writer a `codex/spark/<work-id>` branch and isolated checkout. Prefer a worktree when the worker can write its Git metadata; use a local full clone for CLI sandbox workers whose worktree metadata lives outside their writable root. Require one cohesive, externally verifiable commit and the structured result contract.
+- Give every writer a `codex/spark/<work-id>` branch and isolated checkout. Prefer a worktree when the worker can write its Git metadata. For explicit CLI sandbox workers, make the sandbox root a disposable parent directory and place a full local clone beneath it; Codex protects the sandbox root's own `.git`, while the nested clone can produce a verifiable commit. Require one cohesive, externally verifiable commit and the structured result contract.
 - Keep workers at nesting depth one. Workers never merge, deploy, stamp releases, edit final PRD status, operate privileged Godot/Blender bridges, or claim human/device evidence.
 
 ## Integrate with GPT-5.6

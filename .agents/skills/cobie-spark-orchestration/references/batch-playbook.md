@@ -14,10 +14,12 @@
 - Checkout root: a temporary sibling directory outside the source checkout.
 - Create isolated checkouts only from the recorded integration baseline.
 - In-app workers may use standard Git worktrees when their sandbox can update the shared Git metadata.
-- Explicit CLI Spark writers should use a local full clone when a standard worktree stores `.git` metadata outside the writable sandbox. A source edit without a commit visible from the parent repository is incomplete; never accept an ephemeral or reported-only hash.
+- Explicit CLI Spark writers should run from a disposable parent sandbox containing a nested local full clone. The CLI protects the sandbox root's own `.git` even when it is otherwise writable; putting the assigned repository one level below the sandbox root keeps its metadata writable. Instruct the worker to operate only in that nested clone.
+- A source edit without a commit object importable by the parent repository is incomplete; never accept an ephemeral or reported-only hash.
 - Never assign overlapping writer ownership concurrently.
 - A writer commits one cohesive change. The root imports the object from the isolated clone when needed, then reviews `git show --stat --check <commit>` and the full patch before cherry-picking.
 - The root independently verifies the named commit exists, its parent equals the packet baseline, and it changes only owned paths.
+- Fresh clones must complete a headless editor import scan before focused script tests. Do not mislabel missing `.godot` class caches as product parse failures; rerun after import and report any remaining exact parser error.
 - Remove the temporary checkout and branch after integration or rejection.
 
 ## Concurrency
