@@ -2,6 +2,33 @@
 
 This is a durable evidence template, not a claim that every listed check has run against the current working tree. Add one section per candidate; never overwrite older evidence.
 
+## Candidate 0.6.0-alpha.5 — 2026-07-13
+
+| Field | Value |
+| --- | --- |
+| Version | `0.6.0-alpha.5` / build `2026-07-13-production-navigation-alpha` |
+| Feature revision | `4059174` (`query navigation through active ground consumer`) |
+| Godot | `4.7.stable.official.5b4e0cb0f` |
+| Platform | macOS M4 native Compatibility renderer, Linux headless CI, packaged Web; no physical-device claim |
+
+### Gates
+
+| Check | Result | Evidence |
+| --- | --- | --- |
+| Navigation contract | Pass | 112 polygons/114 vertices; 41-point full route; eight-point cover route with 2.00 m lateral deviation; registered-before-wake contract; one bounded recovery after three repaths |
+| Complete regression/soak | Pass | 100 routes, 100 checkpoints, 100 twin-stick cancellations, 500 weapon transitions, 100 effects; architecture/IP/content/smoke gates green |
+| Native 1080p zone profile | Pass with retained outlier | Seven agents at Walker density; Walker p95/p99 19.735/22.058 ms; maximum 151.852 ms retained in Known Issues |
+| Complete release/export matrix | Pass | `QA_EXPORTS=1 bash tools/release_validate.sh`; Web and unsigned Universal macOS exports; GitHub Actions `validate-package` green |
+| Physical iPad and human playthrough | Not run | Explicit human-only gate |
+
+### Artifacts
+
+| Artifact | Bytes | SHA-256 |
+| --- | ---: | --- |
+| `cobie-nukem-0.6.0-alpha.5-itch.zip` | 21,435,476 | `4ed71e5745c1b5f6162fd5c4c4082d55166245a7baf69af78d00f5d15e72190e` |
+| `cobie-nukem-0.6.0-alpha.5-macos-unsigned.zip` | 70,799,482 | `78b603eec3a5a2e864340df8a21daca799e93b2f43cac337b572c0283c1a6f62` |
+| Web PCK | 11,489,896 | `0249b13ca7036cd73d546c5923a927ce5c528591902947b3218a6e7203e86ac2` |
+
 ## Candidate 0.6.0-alpha.4 — 2026-07-13
 
 | Field | Value |
