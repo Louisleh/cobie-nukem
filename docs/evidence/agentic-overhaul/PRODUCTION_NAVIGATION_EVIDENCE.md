@@ -21,7 +21,8 @@ playthrough.
   completed bake before a one-time map flush. Linux headless otherwise defers
   region registration/resource notification until an active agent appears,
   while macOS registers it earlier. CI caught this portability difference;
-  both platforms must report map iteration 2 before an enemy wakes.
+  both platforms must register the baked region before activation and report
+  map iteration 2 once a grounded navigation consumer becomes active.
 - Recovery requires three stationary samples, moves no more than three metres
   to a valid mesh point, resets interpolation, and increments local-only
   `navigation_recoveries`.

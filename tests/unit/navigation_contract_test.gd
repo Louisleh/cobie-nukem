@@ -20,31 +20,8 @@ func _run() -> void:
 	if region != null:
 		var mesh := region.navigation_mesh
 		var navigation_map := region.get_navigation_map()
-		print("NAVIGATION EVIDENCE: polygons=%d vertices=%d bounds=%s map_iteration=%d closest_opening=%s closest_arena=%s" % [mesh.get_polygon_count(), mesh.get_vertices().size(), region.get_bounds(), NavigationServer3D.map_get_iteration_id(navigation_map), NavigationServer3D.map_get_closest_point(navigation_map, Vector3(0.0, 0.5, 10.0)), NavigationServer3D.map_get_closest_point(navigation_map, Vector3(0.0, 0.5, -164.0))])
 		_expect(_navigation_map_contains_region(navigation_map, region.get_rid()), "Navigation region is registered before the first active enemy wakes")
 		_expect(mesh != null and mesh.get_polygon_count() >= 10, "Navigation bake contains representative multi-zone polygons")
-		var route := NavigationServer3D.map_get_path(
-			region.get_navigation_map(),
-			Vector3(0.0, 0.5, 10.0),
-			Vector3(0.0, 0.5, -164.0),
-			true
-		)
-		print("NAVIGATION EVIDENCE: cross_zone_path_points=%d" % route.size())
-		_expect(route.size() >= 2, "Navigation path connects the opening field to the Walker arena")
-		if route.size() >= 2:
-			_expect(route[0].distance_to(Vector3(0.0, 0.5, 10.0)) < 2.0, "Route begins near the authored opening")
-			_expect(route[-1].distance_to(Vector3(0.0, 0.5, -164.0)) < 2.0, "Route reaches the authored arena conclusion")
-		var cover_route := NavigationServer3D.map_get_path(
-			region.get_navigation_map(),
-			Vector3(-10.0, 0.5, -135.0),
-			Vector3(-10.0, 0.5, -161.0),
-			true
-		)
-		var maximum_cover_deviation := 0.0
-		for point in cover_route:
-			maximum_cover_deviation = maxf(maximum_cover_deviation, absf(point.x + 10.0))
-		print("NAVIGATION EVIDENCE: arena_cover_path_points=%d lateral_deviation=%.2f" % [cover_route.size(), maximum_cover_deviation])
-		_expect(cover_route.size() >= 3 and maximum_cover_deviation > 1.5, "Arena paths route around authored cover instead of through it")
 
 	var ground_enemy := preload("res://scenes/enemies/mutant_groundskeeper.tscn").instantiate() as EnemyAgent
 	ground_enemy.position = Vector3(0.0, 0.1, -140.0)
@@ -57,6 +34,32 @@ func _run() -> void:
 	_expect(ground_enemy.get_node_or_null("NavigationAgent3D") is NavigationAgent3D, "Ground enemies receive a NavigationAgent3D")
 	_expect(drone.get_node_or_null("EnemyNavigator") == null, "Flying enemies preserve authored flight steering")
 
+	if region != null:
+		var mesh := region.navigation_mesh
+		var navigation_map := ground_enemy._navigator.agent.get_navigation_map()
+		print("NAVIGATION EVIDENCE: polygons=%d vertices=%d bounds=%s map_iteration=%d closest_opening=%s closest_arena=%s" % [mesh.get_polygon_count(), mesh.get_vertices().size(), region.get_bounds(), NavigationServer3D.map_get_iteration_id(navigation_map), NavigationServer3D.map_get_closest_point(navigation_map, Vector3(0.0, 0.5, 10.0)), NavigationServer3D.map_get_closest_point(navigation_map, Vector3(0.0, 0.5, -164.0))])
+		var route := NavigationServer3D.map_get_path(
+			navigation_map,
+			Vector3(0.0, 0.5, 10.0),
+			Vector3(0.0, 0.5, -164.0),
+			true
+		)
+		print("NAVIGATION EVIDENCE: cross_zone_path_points=%d" % route.size())
+		_expect(route.size() >= 2, "Navigation path connects the opening field to the Walker arena")
+		if route.size() >= 2:
+			_expect(route[0].distance_to(Vector3(0.0, 0.5, 10.0)) < 2.0, "Route begins near the authored opening")
+			_expect(route[-1].distance_to(Vector3(0.0, 0.5, -164.0)) < 2.0, "Route reaches the authored arena conclusion")
+		var cover_route := NavigationServer3D.map_get_path(
+			navigation_map,
+			Vector3(-10.0, 0.5, -135.0),
+			Vector3(-10.0, 0.5, -161.0),
+			true
+		)
+		var maximum_cover_deviation := 0.0
+		for point in cover_route:
+			maximum_cover_deviation = maxf(maximum_cover_deviation, absf(point.x + 10.0))
+		print("NAVIGATION EVIDENCE: arena_cover_path_points=%d lateral_deviation=%.2f" % [cover_route.size(), maximum_cover_deviation])
+		_expect(cover_route.size() >= 3 and maximum_cover_deviation > 1.5, "Arena paths route around authored cover instead of through it")
 	var recoveries := [0]
 	ground_enemy.navigation_recovery_requested.connect(func(_enemy: EnemyAgent, reason: StringName) -> void:
 		print("NAVIGATION EVIDENCE: recovery_reason=%s" % reason)
