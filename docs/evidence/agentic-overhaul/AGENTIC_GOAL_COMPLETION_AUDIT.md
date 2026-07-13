@@ -32,6 +32,8 @@ The repository now has one governed Godot MCP, one privacy-hardened Blender MCP,
 | Combat first-use warmup | Improved | shared synthesized-cue cache, explicit title WARMING state, visual pipeline prewarmer, bounded 16-bolt pool, projectile rendered-frame regression |
 | Performance | Complete checkpoint, ongoing optimization | native 1080p per-zone p95/p99/draw-call/object/memory report; headless 300-frame drift smoke; load/instantiate time plus enemy/physics/nav/audio/particle/decal populations |
 | Physical iPad and subjective feel | Human-only | intentionally not claimed; see `docs/KNOWN_ISSUES.md` |
+| Public desktop death/retry | Complete browser evidence | deployed alpha reached unattended combat death; Retry restored Salmon Creek with authored protection |
+| Public tablet layout/start | Complete browser evidence | 1024×768 `?touch=1` route reached gameplay with distinct Move/Aim sticks and all action buttons visible |
 
 ## Asset pilot inventory
 
@@ -78,3 +80,5 @@ All native route frames have distinct hashes. The Web gallery was exported from 
 ## Release artifact
 
 The public alpha is also preserved as a GitHub release at <https://github.com/Louisleh/cobie-nukem/releases/tag/v0.6.0-alpha.4> with the verified itch/Web ZIP, unsigned macOS ZIP, `SHA256SUMS.txt`, and `BUILD_INFO.txt`. The tag targets source integration `9539978824279bd886f7088b768597745f7a0619`; the runtime gameplay identity remains `67a0ee4` as recorded in the build artifact.
+
+The public runtime was rechecked after release through landing, title, menu, level select, Salmon Creek, live death, Retry, and a 1024×768 forced-touch startup. See `PUBLIC_RUNTIME_RECHECK.md`. Physical Safari/iPad claims remain open.
