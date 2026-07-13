@@ -10,6 +10,7 @@ RUNTIME_REVISION="$(sed -n 's/^const REVISION := "\([^"]*\)"/\1/p' scripts/core/
 [[ -n "$RUNTIME_REVISION" ]] || { echo "ERROR runtime revision missing from BuildInfo"; exit 1; }
 PACKAGES_DIR="builds/packages"
 PAGES_DIR="builds/pages"
+WEB_CACHE_KEY="$(printf '%s' "$VERSION" | tr -c 'A-Za-z0-9._-' '-')"
 
 if [[ "${SKIP_VALIDATION:-0}" != "1" ]]; then
   QA_EXPORTS=1 bash tools/release_validate.sh
@@ -33,6 +34,37 @@ rm -rf "$PACKAGES_DIR" "$PAGES_DIR"
 mkdir -p "$PACKAGES_DIR" "$PAGES_DIR/play" "$PAGES_DIR/assets"
 
 cp -R builds/web/. "$PAGES_DIR/play/"
+# GitHub Pages and browsers may retain Godot's large immutable-looking index
+# payloads between public alphas. Give every packaged release a distinct
+# executable basename so an updated HTML shell can never boot an older PCK
+# from memory or disk cache.
+for extension in js pck wasm audio.position.worklet.js audio.worklet.js; do
+  mv "$PAGES_DIR/play/index.$extension" "$PAGES_DIR/play/index-$WEB_CACHE_KEY.$extension"
+done
+python3 - "$PAGES_DIR/play/index.html" "$WEB_CACHE_KEY" <<'PY'
+from pathlib import Path
+import sys
+
+path = Path(sys.argv[1])
+cache_key = sys.argv[2]
+html = path.read_text()
+html = html.replace('"executable":"index"', f'"executable":"index-{cache_key}"')
+for extension in ("js", "pck", "wasm"):
+    html = html.replace(f'index.{extension}', f'index-{cache_key}.{extension}')
+path.write_text(html)
+PY
+for extension in js pck wasm audio.position.worklet.js audio.worklet.js; do
+  [[ -s "$PAGES_DIR/play/index-$WEB_CACHE_KEY.$extension" ]] || {
+    echo "ERROR cache-keyed Pages payload missing: index-$WEB_CACHE_KEY.$extension"
+    exit 1
+  }
+done
+if find "$PAGES_DIR/play" -maxdepth 1 -type f \
+    \( -name 'index.js' -o -name 'index.pck' -o -name 'index.wasm' \
+       -o -name 'index.audio*.js' \) | grep -q .; then
+  echo "ERROR unversioned cache-sensitive Pages payload survived packaging"
+  exit 1
+fi
 cp web/landing/styles.css "$PAGES_DIR/styles.css"
 cp assets/brand/cobie_nukem_cover.png "$PAGES_DIR/assets/cobie-nukem-cover.png"
 sed -e "s/__BUILD_VERSION__/$VERSION/g" \

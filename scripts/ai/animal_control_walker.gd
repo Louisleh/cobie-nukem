@@ -51,7 +51,14 @@ func _perform_attack() -> void:
 			_spawn_projectile(BOLT, 14.0, 1.5)
 			# Bound method rather than a lambda: the connection dies with the
 			# walker instead of firing into a freed instance after a reset.
-			get_tree().create_timer(0.15).timeout.connect(_fire_followup_bolt)
+			var followup := Timer.new()
+			followup.name = "FollowupBoltTimer"
+			followup.one_shot = true
+			followup.wait_time = 0.15
+			followup.timeout.connect(_fire_followup_bolt)
+			followup.timeout.connect(followup.queue_free)
+			add_child(followup)
+			followup.start()
 		BossPhase.CHARGE:
 			if _target_valid():
 				var direction := global_position.direction_to(target.global_position)

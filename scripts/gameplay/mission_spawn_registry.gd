@@ -7,6 +7,28 @@ var completed_zones: Dictionary = {}
 var enemies: Dictionary = {}
 var pickups: Dictionary = {}
 var critical_objects: Dictionary = {}
+var _scene_cache: Dictionary = {}
+
+
+func prewarm_encounters(definitions: Array[EncounterDefinition]) -> void:
+	# Encounter actors must be ready before combat begins. Resolving these scene
+	# strings during the mission's load phase avoids first-shot/first-wave stalls
+	# when a new enemy family or the Walker is instantiated later in the route.
+	for definition in definitions:
+		for wave in definition.effective_waves():
+			for spawn in wave.get("spawns", []):
+				var path := String(spawn.get("scene", ""))
+				if not path.is_empty():
+					resolve_scene(path)
+
+
+func resolve_scene(path: String) -> PackedScene:
+	if _scene_cache.has(path):
+		return _scene_cache[path] as PackedScene
+	var packed := load(path) as PackedScene if ResourceLoader.exists(path, "PackedScene") else null
+	if packed != null:
+		_scene_cache[path] = packed
+	return packed
 
 
 func mark_zone_spawned(zone_id: StringName) -> bool:

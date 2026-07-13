@@ -53,7 +53,11 @@ func _run() -> void:
 	var node_drift := final_nodes - initial_nodes
 	print("PERFORMANCE SMOKE: scene=%s warmup=%d frames=%d average=%.3fms p50=%.3fms p95=%.3fms p99=%.3fms max=%.3fms" % [scene_path, WARMUP_FRAMES, FRAME_COUNT, average, p50, p95, p99, maximum])
 	print("PERFORMANCE MONITORS: objects=%d->%d drift=%+d nodes=%d->%d drift=%+d memory=%d->%d draw_calls=%d" % [initial_objects, final_objects, object_drift, initial_nodes, final_nodes, node_drift, initial_memory, final_memory, draw_calls])
-	print("NOTE: headless timing detects stalls only; it is not M4 Mac rendering evidence.")
+	var display_name := DisplayServer.get_name()
+	if display_name == "headless":
+		print("NOTE: headless timing detects stalls only; it is not rendered GPU evidence.")
+	else:
+		print("RENDERED PERFORMANCE: display=%s renderer=%s" % [display_name, RenderingServer.get_rendering_device() if RenderingServer.get_rendering_device() != null else "Compatibility/OpenGL"])
 	var timing_ok := average <= MAX_AVERAGE_MSEC and p95 <= MAX_P95_MSEC and p99 <= MAX_P99_MSEC and maximum <= MAX_SINGLE_FRAME_MSEC
 	var lifetime_ok := object_drift <= MAX_OBJECT_DRIFT and node_drift <= MAX_OBJECT_DRIFT
 	instance.free()

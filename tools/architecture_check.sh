@@ -28,6 +28,16 @@ while IFS= read -r asset; do
   fi
 done < <(git ls-files 'assets/**')
 
+# Gameplay callbacks must be owned by a node that disappears with the scene.
+# SceneTreeTimer continuations can resume after their actor or captured locals
+# are freed, producing teardown errors and state changes in the next scene.
+if rg -n 'get_tree\(\)\.create_timer' scripts >/tmp/cobie-unowned-timers.txt; then
+	cat /tmp/cobie-unowned-timers.txt
+	rm -f /tmp/cobie-unowned-timers.txt
+	fail "gameplay scripts contain unowned SceneTreeTimer callbacks"
+fi
+rm -f /tmp/cobie-unowned-timers.txt
+
 # A release source tree may contain package instructions, but never a stale
 # hard-coded public artifact outside the canonical BuildInfo file.
 [[ -s scripts/core/build_info.gd ]] || fail "missing canonical build identity"

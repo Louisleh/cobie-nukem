@@ -1,30 +1,32 @@
-# Release Notes — 0.6.0-alpha.3 Agentic Production Checkpoint
+# Release Notes — 0.6.0-alpha.4 Agentic Overhaul
 
-Built on 2026-07-13 with Godot `4.7.stable.official.5b4e0cb0f` and matching official export templates. Feature revision: `b8795dc`.
+Built on 2026-07-13 with Godot `4.7.stable.official.5b4e0cb0f`. Gameplay/runtime feature revision: `67a0ee4`.
 
-## Player-visible change
+## Player-visible changes
 
-- The Salmon Creek ball-return secret now uses an original Blender-authored automatic tennis-ball machine instead of the procedural orange-box placeholder.
-- The machine has a clearer orange/charcoal silhouette, visible tennis balls, paw identity, a status light, and production collision while preserving the Fetch-projectile puzzle.
+- Startup now keeps the explicit WARMING state until combat audio and hidden material variants are ready, reducing first-hit/first-projectile hitches.
+- Death/retry presentation is reliable in the real routed mission; a typed fallback failure found by native capture is fixed.
+- Enemy bolts use a bounded pool, preventing repeated allocation during ranged encounters and the Walker fight.
+- Pawstol burst timing, muzzle cleanup, telegraphs, pickup respawns, death effects, and Walker follow-ups are owned by their actors and cannot resume into the next scene.
 
-## Stability and production improvements
+## Production improvements
 
-- Removed a threaded menu-preload Resource leak and made title/menu delayed layout teardown-safe.
-- Indexed the live player through `WorldRegistry`, removing repeated hot-path scene-tree searches from pickup fallback collection and enemy targeting.
-- Release validation now rejects script errors, ObjectDB/resource leaks, orphan nodes, embedded live-editor bridges, and development Resources under `tmp/`.
-- Performance smoke now records warmup-separated average, p50, p95, p99, max, object/node drift, memory, and available draw-call evidence.
-- Added an automated asset contract for imported mesh vocabulary, ground placement, physical collision, projectile triggering, and one-shot secret activation.
-- Added a pinned, audited local Godot/Blender agentic workflow and documented explicit adoption decisions for FuncGodot/TrenchBroom and GdUnit4.
+- Reproducible Blender 5.1 pipeline pilot: Salmon Creek prop family, modular tunnel piece, three-level LOD crate, Fetch pedestal, Rain City beacon, and four-direction/hit sentry frames.
+- Exact source/runtime provenance, hashes, collision and LOD contracts, plus native and Web gallery evidence.
+- One selected Godot MCP and one telemetry-disabled Blender MCP are governed by startup/removal/security documentation and export contamination checks.
+- Rendered 1080p profiles cover menu, field, lab, tunnels, Walker arena, and victory with p95/p99, draw calls, objects, nodes, and memory.
+- Native route evidence covers seven distinct states from opening field through death and victory.
 
-## Validation
+## Validation boundary
 
-- Full Godot 4.7 parser, unit, integration, adversarial, route, soak, smoke, content, architecture, provenance, Web export, and macOS export matrix passed.
-- The packaged Web artifact passed desktop 1280×720 and tablet 1024×768 `?touch=1` startup/menu/selector/gameplay-entry checks with no captured browser warnings or errors.
-- Physical iPad Safari multi-touch comfort/thermal behavior, native rendered performance, the prop’s in-route visual readability, and a complete human playthrough remain explicit manual gates.
+- Automated functional, soak, native-rendered, macOS export, and packaged-Web gates are required for this candidate.
+- One isolated 224 ms Walker attack sample remains tracked even though every zone's p95 is below 33 ms and p99 below 100 ms.
+- Physical iPad Safari comfort/thermal/audio, final difficulty feel, photosensitivity, mix quality, and a target-Mac human playthrough remain explicit human gates.
+
+The macOS ZIP is unsigned and unnotarized. The working title still requires clearance before commercial distribution.
 
 ## Artifacts
 
-- `cobie-nukem-0.6.0-alpha.3-itch.zip` — 21,421,046 bytes; SHA-256 `ba2a1e0c9a99be076f50b6f152fe1c5e870893652f4566421455cf8017012e4c`.
-- `cobie-nukem-0.6.0-alpha.3-macos-unsigned.zip` — 70,785,017 bytes; SHA-256 `f7ff01c9d186feb62abdd34c45040721b2fe0d86e7769b933016573ff3ac91cc`.
-
-The macOS ZIP remains unsigned and unnotarized. The working title still requires clearance before commercial distribution.
+- `cobie-nukem-0.6.0-alpha.4-itch.zip` — 21,429,209 bytes; SHA-256 `24f9468724b3396b843a67be793c6d2688728db0ff69e8b07eaac050e1c14430`.
+- `cobie-nukem-0.6.0-alpha.4-macos-unsigned.zip` — 70,793,257 bytes; SHA-256 `b7395cc96379b891c5246675cb3301eb449a339774079c6e2288a277823297dc`.
+- Web PCK — 11,482,536 bytes; SHA-256 `aaafdefdc9e649387a9bc070830dbb889eba13b66df96de1548e2779a2c2574d`.

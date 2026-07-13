@@ -92,6 +92,7 @@ func _setup_gameplay_systems() -> void:
 	_spawn_registry = MissionSpawnRegistry.new()
 	_spawn_registry.name = "MissionSpawnRegistry"
 	add_child(_spawn_registry)
+	_spawn_registry.prewarm_encounters(content_manifest.encounters)
 	spawned_zones = _spawn_registry.completed_zones
 	_mission_runtime = MissionRuntime.new()
 	_mission_runtime.name = "MissionRuntime"
@@ -537,7 +538,7 @@ func _spawn_pickup(path: String, position_value: Vector3) -> Node:
 func _spawn_scene(path: String, position_value: Vector3) -> Node:
 	if not ResourceLoader.exists(path):
 		push_warning("Optional level dependency missing: " + path); return null
-	var packed := load(path) as PackedScene
+	var packed := _spawn_registry.resolve_scene(path) if _spawn_registry != null else load(path) as PackedScene
 	if packed == null: return null
 	var instance := packed.instantiate()
 	# Place actors before _ready() runs so hover origins, drone flight heights,

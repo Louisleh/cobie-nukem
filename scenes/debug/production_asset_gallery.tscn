@@ -1,0 +1,59 @@
+[gd_scene load_steps=10 format=3]
+
+[ext_resource type="PackedScene" path="res://assets/models/pilot/salmon_creek_field_kit.glb" id="1_field"]
+[ext_resource type="PackedScene" path="res://assets/models/pilot/maintenance_tunnel_module_a.glb" id="2_tunnel"]
+[ext_resource type="PackedScene" path="res://assets/models/pilot/compliance_supply_crate_lod.glb" id="3_lod"]
+[ext_resource type="PackedScene" path="res://assets/models/pilot/fetch_charge_pedestal.glb" id="4_pickup"]
+[ext_resource type="PackedScene" path="res://assets/models/pilot/rain_city_wayfinding_beacon.glb" id="5_beacon"]
+[ext_resource type="Texture2D" path="res://assets/sprites/experiments/compliance_sentry/sentry_front.png" id="6_sentry"]
+[ext_resource type="Texture2D" path="res://assets/sprites/experiments/compliance_sentry/sentry_hit_front.png" id="7_hit"]
+
+[sub_resource type="Environment" id="Environment_gallery"]
+background_mode = 1
+background_color = Color(0.025, 0.045, 0.055, 1)
+ambient_light_source = 3
+ambient_light_color = Color(0.42, 0.55, 0.62, 1)
+ambient_light_energy = 0.65
+
+[node name="ProductionAssetGallery" type="Node3D"]
+
+[node name="Environment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_gallery")
+
+[node name="KeyLight" type="DirectionalLight3D" parent="."]
+rotation_degrees = Vector3(-48, -28, 0)
+light_color = Color(1, 0.79, 0.52, 1)
+light_energy = 1.25
+shadow_enabled = true
+
+[node name="Camera" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.939693, 0.34202, 0, -0.34202, 0.939693, 0, 5.8, 15.5)
+current = true
+fov = 54.0
+
+[node name="FieldKit" parent="." instance=ExtResource("1_field")]
+position = Vector3(-5.7, 0, 0)
+
+[node name="TunnelModule" parent="." instance=ExtResource("2_tunnel")]
+position = Vector3(0, 0, -3.5)
+
+[node name="LODStudy" parent="." instance=ExtResource("3_lod")]
+position = Vector3(-2.4, 0, 4.5)
+
+[node name="PickupPedestal" parent="." instance=ExtResource("4_pickup")]
+position = Vector3(4.8, 0, 1.8)
+
+[node name="VancouverBeacon" parent="." instance=ExtResource("5_beacon")]
+position = Vector3(5.8, 0, -3.0)
+
+[node name="SentryNeutral" type="Sprite3D" parent="."]
+position = Vector3(-5.5, 2.4, -3.8)
+pixel_size = 0.007
+billboard = 1
+texture = ExtResource("6_sentry")
+
+[node name="SentryHit" type="Sprite3D" parent="."]
+position = Vector3(-3.0, 2.4, -3.8)
+pixel_size = 0.007
+billboard = 1
+texture = ExtResource("7_hit")

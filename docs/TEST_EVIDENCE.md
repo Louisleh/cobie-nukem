@@ -2,6 +2,36 @@
 
 This is a durable evidence template, not a claim that every listed check has run against the current working tree. Add one section per candidate; never overwrite older evidence.
 
+## Candidate 0.6.0-alpha.4 — 2026-07-13
+
+| Field | Value |
+| --- | --- |
+| Version | `0.6.0-alpha.4` / build `2026-07-13-agentic-overhaul-alpha` |
+| Feature revision | `67a0ee4` (`Stabilize combat lifecycle and add rendered route profiling`) |
+| Godot | `4.7.stable.official.5b4e0cb0f` |
+| Platform | macOS M4 native Compatibility renderer plus packaged Web; no physical-device claim |
+
+### Gates
+
+| Check | Result | Evidence |
+| --- | --- | --- |
+| Focused UI/asset/gameplay/adversarial/soak | Pass | Typed death screen, five GLBs/five sentry frames, owned timers, pooled bolts, 100 routes/checkpoints/touch cancellations, 500 weapon transitions |
+| Native visual route | Pass | Seven distinct 1280×720 captures from opening through death/victory under `docs/evidence/agentic-overhaul/native-route/` |
+| Native 1080p zone profile | Pass with retained outlier | p95 ≤22.09 ms and p99 ≤62.65 ms across menu/field/lab/tunnels/Walker/victory; peak 220 draw calls, 2,815 objects, 67.8 MB static memory; isolated Walker maximum 224 ms tracked in Known Issues |
+| Projectile first-render profile | Pass | Runtime visual/audio warmup plus bounded pool; four rendered spawn frames stay below 50 ms |
+| Complete release/export matrix | Pending final stamped tree | `QA_EXPORTS=1 bash tools/release_validate.sh` required before merge |
+| Packaged Web desktop/tablet | PASS | Cache-keyed alpha.4 payload; loading/warming/ready, menu, mission select, gameplay, combat input, and 1024×768 twin-stick HUD verified in the in-app Chromium browser |
+| Public deployment | Pending | Verify the exact deployed hashes and uncached public route after merge |
+| Physical iPad and human playthrough | Not run | Explicit human-only gate |
+
+### Artifacts
+
+| Artifact | Bytes | SHA-256 |
+| --- | ---: | --- |
+| `cobie-nukem-0.6.0-alpha.4-itch.zip` | 21,429,209 | `24f9468724b3396b843a67be793c6d2688728db0ff69e8b07eaac050e1c14430` |
+| `cobie-nukem-0.6.0-alpha.4-macos-unsigned.zip` | 70,793,257 | `b7395cc96379b891c5246675cb3301eb449a339774079c6e2288a277823297dc` |
+| Web PCK | 11,482,536 | `aaafdefdc9e649387a9bc070830dbb889eba13b66df96de1548e2779a2c2574d` |
+
 ## Candidate 0.6.0-alpha.3 — 2026-07-13
 
 | Field | Value |

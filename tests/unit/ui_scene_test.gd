@@ -27,6 +27,7 @@ func _initialize() -> void:
 	await _check_responsive_title_contract()
 	_check_responsive_main_menu_contract()
 	_check_cobie_portrait_contract()
+	await _check_death_screen_contract()
 	if failures.is_empty():
 		print("UI SCENE TESTS: PASS")
 		call_deferred("_quit_after_cleanup", 0)
@@ -203,3 +204,23 @@ func _check_cobie_portrait_contract() -> void:
 	portrait.health_ratio = 0.29
 	if portrait.portrait_state() != CobiePortrait.State.CRITICAL: failures.append("0-30% health must use critical Cobie portrait")
 	portrait.free()
+
+
+func _check_death_screen_contract() -> void:
+	var packed := load("res://scenes/ui/death_screen.tscn") as PackedScene
+	if packed == null:
+		failures.append("Death screen scene must load")
+		return
+	var screen := packed.instantiate() as DeathScreen
+	root.add_child(screen)
+	await process_frame
+	screen.show_death()
+	var fallback_text := String(screen.get_node("Panel/VBox/QuipLabel").text)
+	if not screen.visible or fallback_text.is_empty():
+		failures.append("Default death path must show a fallback quip")
+	var authored: Array[String] = ["TEST QUIP"]
+	screen.show_death(authored)
+	if screen.get_node("Panel/VBox/QuipLabel").text != "TEST QUIP":
+		failures.append("Authored death quips must retain their typed-array contract")
+	screen.queue_free()
+	await process_frame

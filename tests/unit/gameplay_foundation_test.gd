@@ -21,6 +21,7 @@ func _initialize() -> void:
 	_test_manifest()
 	_test_respawn_protection()
 	_test_quality_profiles()
+	await _test_projectile_pool()
 	await _test_world_registry_player_index()
 	if failures.is_empty():
 		print("GAMEPLAY FOUNDATION TESTS: PASS")
@@ -176,6 +177,24 @@ func _test_quality_profiles() -> void:
 	_expect(Engine.max_fps == quality.WEB.target_fps, "Web quality applies its frame cap")
 	quality.apply_profile(quality.NATIVE)
 	_expect(quality.current.id == &"native" and pressure.maximum_attackers == quality.NATIVE.maximum_attackers, "native quality applies its enhanced budget")
+
+
+func _test_projectile_pool() -> void:
+	var pool := get_root().get_node_or_null("ProjectilePool")
+	_expect(pool != null, "bounded enemy projectile pool is available")
+	if pool == null:
+		return
+	if int(pool.available_count()) == 0:
+		await process_frame
+	var initial: int = int(pool.available_count())
+	_expect(initial > 0, "projectile pool prewarms a bounded bolt reserve")
+	var bolt_scene := load("res://scenes/enemies/enemy_bolt.tscn") as PackedScene
+	var bolt := pool.acquire(bolt_scene) as EnemyProjectile
+	_expect(bolt != null and bolt.visible and bolt.process_mode != Node.PROCESS_MODE_DISABLED, "pooled bolt activates without runtime instantiation")
+	_expect(pool.available_count() == initial - 1, "acquiring a pooled bolt consumes one available instance")
+	pool.release_projectile(bolt)
+	await process_frame
+	_expect(pool.available_count() == initial, "released bolt returns to the bounded pool")
 
 
 func _test_world_registry_player_index() -> void:

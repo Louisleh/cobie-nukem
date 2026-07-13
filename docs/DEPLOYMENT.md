@@ -6,15 +6,15 @@ Install Godot 4.7 stable plus matching export templates, then run from the repos
 
 ```bash
 QA_EXPORTS=1 bash tools/release_validate.sh
-SKIP_VALIDATION=1 VERSION=0.6.0-alpha.1 bash tools/package_release.sh
+SKIP_VALIDATION=1 VERSION=0.6.0-alpha.4 bash tools/package_release.sh
 ```
 
 Outputs:
 
 - `builds/web/` — raw Godot Web export.
 - `builds/pages/` — static landing page at `/` and game at `/play/`.
-- `builds/packages/cobie-nukem-0.6.0-alpha.1-itch.zip` — itch.io Web upload with `index.html` at ZIP root.
-- `builds/packages/cobie-nukem-0.6.0-alpha.1-macos-unsigned.zip` — unsigned macOS build.
+- `builds/packages/cobie-nukem-0.6.0-alpha.4-itch.zip` — itch.io Web upload with `index.html` at ZIP root.
+- `builds/packages/cobie-nukem-0.6.0-alpha.4-macos-unsigned.zip` — unsigned macOS build.
 - `builds/packages/SHA256SUMS.txt` and `BUILD_INFO.txt` — distribution evidence.
 
 Serve the staged site locally:
