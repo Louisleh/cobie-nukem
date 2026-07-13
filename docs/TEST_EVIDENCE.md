@@ -2,6 +2,26 @@
 
 This is a durable evidence template, not a claim that every listed check has run against the current working tree. Add one section per candidate; never overwrite older evidence.
 
+## Candidate 0.6.0-alpha.2 — 2026-07-12
+
+| Field | Value |
+| --- | --- |
+| Version | `0.6.0-alpha.2` / build `2026-07-12-aim-roadmap-alpha` |
+| Feature revision | `e6b4700` (`Stabilize loading, touch aim, and mission teasers`) |
+| Godot | `4.7.stable.official.5b4e0cb0f` |
+| Platform | macOS host plus locally served Web export; no physical-device claim |
+
+### Gates
+
+| Check | Result | Evidence |
+| --- | --- | --- |
+| Parser and focused contracts | Pass | Title readiness, five-card previews, touch aim and adversarial lifecycle |
+| Expanded vertical-slice soak | Pass | 100 routes, 100 checkpoints, 100 twin-stick cancellations, 500 weapon transitions, 100 effects |
+| 1024×768 tablet browser | Pass | Title, menu, illustrated selector, aim options and gameplay HUD; no captured console warnings/errors |
+| Complete export/release matrix | Pending final stamp | `QA_EXPORTS=1 bash tools/release_validate.sh` |
+| True iPad multi-touch/comfort/thermal | Not run | Requires physical iPad Safari testing |
+| Human full playthrough and feel | Not run | Automated route evidence is not represented as human evidence |
+
 ## Candidate 0.6.0-alpha.1 — 2026-07-12
 
 | Field | Value |
