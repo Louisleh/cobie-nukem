@@ -5,10 +5,12 @@ var failures: Array[String] = []
 
 func _initialize() -> void:
 	var packed := load("res://scenes/levels/episode_1_level_1.tscn") as PackedScene
+	var save_manager := root.get_node_or_null("/root/SaveManager")
+	var game_state := root.get_node_or_null("/root/GameState")
 	if packed == null:
 		fail("Level scene does not load")
 		finish(); return
-	var level := packed.instantiate() as EpisodeOneLevel
+	var level := packed.instantiate()
 	level.spawn_player = false
 	level.start_run_automatically = false
 	level.setup_presentation = false
@@ -51,7 +53,7 @@ func _initialize() -> void:
 	level._discover_secret(&"ball_return", "AUTHORIZED FETCHING")
 	level._discover_secret(&"ball_return", "AUTHORIZED FETCHING")
 	check(level.secrets.size() == 3, "Secrets must be unique and total three")
-	var player := preload("res://scenes/player/cobie_player.tscn").instantiate() as CobiePlayer
+	var player := preload("res://scenes/player/cobie_player.tscn").instantiate()
 	root.add_child(player)
 	await process_frame
 	check(player.is_in_group(&"player"), "Player identity group missing; zone progression cannot trigger")
@@ -59,6 +61,30 @@ func _initialize() -> void:
 	level.player = player
 	player.health_armor.health = 1.0
 	level.restart_from_checkpoint()
+	var audio_level := packed.instantiate()
+	audio_level.spawn_player = false
+	audio_level.start_run_automatically = false
+	audio_level.setup_presentation = true
+	root.add_child(audio_level)
+	await process_frame
+	await process_frame
+	var audio_bridge := audio_level._combat_audio
+	check(audio_bridge != null, "Episode level restores runtime audio bridge in presentation setup")
+	if audio_bridge != null:
+		audio_bridge.sounds.play(ProceduralAudio.Cue.PAWSTOL)
+		audio_bridge.sounds.play(ProceduralAudio.Cue.HURT)
+		if audio_bridge.samples != null:
+			check(audio_bridge.samples.play(&"enemy_hurt"), "Imported sample cue can be started for bridge reset coverage")
+		await process_frame
+		check(_active_voice_count(audio_bridge.sounds) >= 1, "Checkpoint restart test has active procedural voices before reset")
+		if audio_bridge.samples != null:
+			check(_active_voice_count(audio_bridge.samples) >= 1, "Checkpoint restart test has active sample voices before reset")
+		audio_level.restart_from_checkpoint()
+		await process_frame
+		check(_active_voice_count(audio_bridge.sounds) == 0, "Combat audio reset clears procedural gameplay voices")
+		if audio_bridge.samples != null:
+			check(_active_voice_count(audio_bridge.samples) == 0, "Combat audio reset clears sample gameplay voices")
+	audio_level.queue_free()
 	await process_frame
 	check(player.health_armor.health == player.health_armor.max_health, "Checkpoint restart does not restore player health")
 	check(player.health_armor.invulnerable_remaining > 0.0, "Checkpoint restart lacks immediate spawn protection")
@@ -100,10 +126,43 @@ func _initialize() -> void:
 	var summary := level.get_level_summary()
 	check(summary.secrets_total == 3, "Summary secret total incorrect")
 	check(summary.level_id == &"episode_1_level_1", "Summary level id incorrect")
+	if game_state != null and save_manager != null:
+		game_state.continue_requested = true
+		save_manager.save_slot(&"checkpoint", {
+			"scene_path": "res://scenes/levels/episode_1_level_1.tscn",
+			"level_id": "episode_1_level_1",
+			"checkpoint_id": "lab_entry",
+			"difficulty_id": "classic",
+			"position": [1.0, 1.1, -87.0],
+			"objective_snapshot": {"progress": {}, "completed": []},
+			"encounter_snapshot": {"completed": []},
+			"secrets": {"optional_sign": "SIGN SEEMS OPTIONAL"},
+		})
+		var continue_level := packed.instantiate()
+		continue_level.spawn_player = false
+		continue_level.start_run_automatically = true
+		continue_level.setup_presentation = false
+		root.add_child(continue_level)
+		await process_frame
+		await process_frame
+		check(not game_state.continue_requested, "Continue request flag is consumed during checkpoint restore")
+		check(game_state.run_stats.get("checkpoint_id", "") == "lab_entry", "Continue restore applies sanitized checkpoint identity to run stats")
+		continue_level.queue_free()
+	else:
+		check(false, "SaveManager and GameState are available for continue checkpoint identity coverage")
 	level.free()
 	await process_frame
 	await process_frame
 	finish()
+
+
+func _active_voice_count(node: Node) -> int:
+	var count := 0
+	for child in node.get_children():
+		if child is AudioStreamPlayer or child is AudioStreamPlayer3D:
+			if child.playing:
+				count += 1
+	return count
 
 
 func check(condition: bool, message: String) -> void:

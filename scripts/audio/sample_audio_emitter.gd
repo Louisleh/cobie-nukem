@@ -71,6 +71,17 @@ func play_at(cue_id: StringName, world_position: Vector3) -> bool:
 	return true
 
 
+func stop_all() -> void:
+	# Preserve pooled nodes and registration so restart paths can reuse existing audio
+	# resources without churn.
+	for pools in [_voices, _spatial_voices]:
+		for pool: Array in pools.values():
+			for voice: Variant in pool:
+				if is_instance_valid(voice):
+					voice.stop()
+					voice.stream = null
+
+
 func registered_cue_count() -> int:
 	return _by_id.size()
 

@@ -89,7 +89,10 @@ func _ready() -> void:
 	if spawn_player: _spawn_player()
 	if setup_presentation: _setup_presentation()
 	if start_run_automatically and get_node_or_null("/root/GameState"):
-		get_node("/root/GameState").begin_run(metadata.level_id)
+		var game_state := get_node("/root/GameState")
+		game_state.begin_run(metadata.level_id)
+		if not _restored_checkpoint.is_empty():
+			game_state.run_stats["checkpoint_id"] = String(_restored_checkpoint.get("checkpoint_id", "start"))
 	objective_changed.emit(metadata.opening_objective)
 	narrative_message.emit("EPISODE 1, LEVEL 1: %s\n%s" % [metadata.title, metadata.subtitle], 4.0)
 	level_ready.emit(player)
@@ -483,6 +486,8 @@ func _on_checkpoint(id: StringName, position_value: Vector3) -> void:
 
 
 func restart_from_checkpoint() -> void:
+	if _combat_audio != null:
+		_combat_audio.reset_gameplay_audio()
 	_reset_active_encounter_for_checkpoint()
 	if player:
 		if player.has_method("respawn"):

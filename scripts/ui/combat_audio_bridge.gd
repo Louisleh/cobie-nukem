@@ -11,6 +11,16 @@ func _ready() -> void:
 	get_tree().node_added.connect(_on_node_added)
 	call_deferred("_bind_existing_enemies")
 
+
+func reset_gameplay_audio() -> void:
+	if samples != null:
+		samples.stop_all()
+	if sounds != null:
+		for voice in sounds.get_children():
+			if voice is AudioStreamPlayer:
+				voice.stop()
+				voice.stream = null
+
 func bind_player(player: Node) -> void:
 	_player = player
 	_last_weapon_index = int(player.get("current_weapon_index")) if player.get("current_weapon_index") != null else -1
