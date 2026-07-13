@@ -158,7 +158,11 @@ func _check_responsive_title_contract() -> void:
 	root.add_child(instance)
 	if instance.can_accept_input() or not instance.get_node("BrandPanel/Margin/VBox/Prompt").text.begins_with("PREPARING COBIE"):
 		failures.append("Title must show an honest loading state before accepting input")
-	for frame in 6:
+	# Threaded resource completion is scheduler-dependent. Poll the product state
+	# with a strict bound instead of assuming Linux and macOS finish in six frames.
+	for _frame in 60:
+		if instance.can_accept_input():
+			break
 		await process_frame
 	if not instance.can_accept_input():
 		failures.append("Title must become input-ready after menu preload completes")
