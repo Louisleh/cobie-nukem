@@ -34,9 +34,11 @@ Baseline artifact sizes and hashes:
 
 ## Live-tool bakeoff evidence
 
-Three Godot MCP candidates were inspected. Only the alexmeckes candidate exposed all required runtime InputMap and screenshot operations. Its original production dependency audit had eight vulnerabilities; the local pinned installation was upgraded and now reports zero known vulnerabilities with 144/144 tests passing. The bridge connected to Godot 4.7, returned the live scene tree, ran the game, reported the 640×360 runtime viewport, captured the title screen, and stopped the scene.
+Three Godot MCP candidates were inspected. Only the alexmeckes candidate exposed the required editor/runtime foundation. Its original production dependency audit had eight vulnerabilities; the project fork is pinned at `87ece143e3fedb494dd13494c35f120d6fb0a8d7`, reports zero known vulnerabilities, and passes 148/148 tests plus its TypeScript build. The hardened bridge connected to Godot 4.7 and completed a reproducible title → menu → level-select → Salmon Creek bake-off with raw keyboard and pointer input, InputMap movement/weapon/pause actions, screenshots, live player/enemy/pickup state, pause/resume state, and zero reported engine errors. Player movement changed Z from `10.0` to `6.3472`; one grounded player, three opening enemies, and ten active pickups were inspected live.
 
 The first run also exposed an upstream defect: play-scene was invoked while Godot flushed a deferred message, emitting editor progress-dialog errors that the MCP error query did not report. The local fork now defers play/stop by a full process frame, and editor stdout remains a required parallel evidence channel.
+
+A second automation defect was found during the full route: `InputEventAction` correctly drives InputMap gameplay but does not satisfy screens that deliberately require a physical key/mouse/touch event. The fork now exposes a small allowlisted raw-key tool, and the contract test prevents future agents from claiming menu coverage through action injection alone.
 
 Blender 5.1.2 and its pinned MCP were checksum-verified, connected on localhost, and validated by reading the scene, creating and inspecting a temporary object, then removing it. Telemetry and all third-party asset integrations are off.
 
@@ -57,9 +59,9 @@ Still human-only: physical iPad feel and Safari thermal behavior, target-Mac ren
 
 ### FuncGodot and TrenchBroom
 
-Pinned FuncGodot commit `d68960dfce8b99f0dbc571abfc3fd9c396126b76` successfully imported the pinned example map at commit `d9a02b846d1de0fcca338604d8631da282112ba7` under Godot 4.7. The 10,128-byte source map generated a 17,201-byte, 29-node scene with 14 mesh/collision-related nodes and no engine errors. TrenchBroom 2026.1 is installed.
+Pinned FuncGodot commit `d68960dfce8b99f0dbc571abfc3fd9c396126b76` successfully imported the pinned example map at commit `d9a02b846d1de0fcca338604d8631da282112ba7` under Godot 4.7. A stricter scripted rebuild measured 52 nodes, eight mesh instances, 11 collision shapes, 16 leaf point entities, a four-polygon collision-derived navigation bake, and 238–289 ms generation. Consecutive packed scenes were semantically identical but churned Godot `unique_id` values. A Compatibility Web export passed, but its 1.1 MB PCK included the FuncGodot scripts under an all-resources export. TrenchBroom 2026.1 is installed.
 
-Decision: viable for an isolated Vancouver graybox experiment, deferred for Salmon Creek. Adoption still requires a Cobie-specific FGD/entity contract, Compatibility/Web export proof, deterministic reimport diff, navigation bake, collision/performance budget, and confirmation that authored post-import changes have a safe ownership model.
+Decision: viable only for an isolated Vancouver graybox experiment, deferred for Salmon Creek. Adoption still requires a Cobie-specific FGD/entity contract, stable-ID normalization, representative navigation reachability, a generated-geometry-only export path that excludes the addon/source map, a Cobie encounter performance budget, and confirmation that authored post-import changes have a safe ownership model.
 
 ### GdUnit4
 

@@ -1,6 +1,6 @@
 # Godot MCP operating guide
 
-The selected local bridge is the audited `alexmeckes/godot-mcp` fork pinned from upstream `e71540f8985e123a0fe6f977dc531aa10ea5bb3a`. It won the three-candidate bakeoff because it alone covered Godot 4.7 run/stop, live tree/state inspection, InputMap press/hold/release, screenshots, and output queries. The local dependency/lifecycle hardening passes 144 tests with zero known npm vulnerabilities.
+The selected local bridge is the audited project fork at <https://github.com/Louisleh/godot-mcp>, branch `codex/cobie-hardened-e71540f`, pinned to `87ece143e3fedb494dd13494c35f120d6fb0a8d7` from upstream base `e71540f8985e123a0fe6f977dc531aa10ea5bb3a`. It won the three-candidate bakeoff and was then hardened to cover Godot 4.7 run/stop, bounded live node/property inspection, InputMap press/hold/release, raw keyboard input, pointer input, screenshots, pause state, output, and engine errors. The fork passes 148 tests, TypeScript build, and `npm audit --omit=dev` with zero known vulnerabilities.
 
 ## Health and startup
 
@@ -11,6 +11,8 @@ bash tools/game_dev_health.sh
 ```
 
 Codex discovers the MCP as `godot-cobie` in `~/.codex/config.toml`, using localhost port `6550`. The editor addon is privileged and is copied/enabled only for an active live-inspection session. Inspect editor stdout alongside MCP error results; a bridge-reported empty error list never overrules an `ERROR:` line from Godot.
+
+The reproducible Cobie bake-off is stored in the tool fork as `scripts/cobie-live-bakeoff.mjs`. It proves the complete title → menu → level-select → Salmon Creek route, live player/enemy/pickup state, movement, weapon input, pause/resume, screenshots, and a zero-error result. Raw title/menu activation uses `godot_runtime_tap_key`; `godot_runtime_tap_action` is reserved for InputMap-driven gameplay because a synthetic action is intentionally not equivalent to a raw physical UI event.
 
 ## Shutdown and removal
 

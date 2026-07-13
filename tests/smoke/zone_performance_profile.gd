@@ -50,18 +50,28 @@ func _warm_runtime_pipelines() -> void:
 
 
 func _profile_menu() -> void:
+	var load_started := Time.get_ticks_usec()
 	var packed := load("res://scenes/menus/main_menu.tscn") as PackedScene
+	var load_ms := float(Time.get_ticks_usec() - load_started) / 1000.0
+	var instantiate_started := Time.get_ticks_usec()
 	var menu := packed.instantiate()
+	var instantiate_ms := float(Time.get_ticks_usec() - instantiate_started) / 1000.0
 	root.add_child(menu)
+	print("ZONE LOAD: main_menu load=%.3fms instantiate=%.3fms" % [load_ms, instantiate_ms])
 	await _measure("main_menu")
 	menu.queue_free()
 	await process_frame
 
 
 func _profile_mission() -> void:
+	var load_started := Time.get_ticks_usec()
 	var packed := load("res://scenes/levels/episode_1_level_1.tscn") as PackedScene
+	var load_ms := float(Time.get_ticks_usec() - load_started) / 1000.0
+	var instantiate_started := Time.get_ticks_usec()
 	var level := packed.instantiate() as EpisodeOneLevel
+	var instantiate_ms := float(Time.get_ticks_usec() - instantiate_started) / 1000.0
 	root.add_child(level)
+	print("ZONE LOAD: salmon_creek load=%.3fms instantiate=%.3fms" % [load_ms, instantiate_ms])
 	for _frame in 4:
 		await process_frame
 	var stages := [
@@ -103,6 +113,8 @@ func _measure(label: String) -> void:
 	var maximum_objects := 0
 	var maximum_nodes := 0
 	var maximum_memory := 0
+	var maximum_active_physics_bodies := 0
+	var maximum_navigation_agents := 0
 	var maximum_sample := 0
 	for sample_index in SAMPLE_FRAMES:
 		var started := Time.get_ticks_usec()
@@ -115,6 +127,8 @@ func _measure(label: String) -> void:
 		maximum_objects = maxi(maximum_objects, int(Performance.get_monitor(Performance.OBJECT_COUNT)))
 		maximum_nodes = maxi(maximum_nodes, int(Performance.get_monitor(Performance.OBJECT_NODE_COUNT)))
 		maximum_memory = maxi(maximum_memory, int(Performance.get_monitor(Performance.MEMORY_STATIC)))
+		maximum_active_physics_bodies = maxi(maximum_active_physics_bodies, int(Performance.get_monitor(Performance.PHYSICS_3D_ACTIVE_OBJECTS)))
+		maximum_navigation_agents = maxi(maximum_navigation_agents, int(Performance.get_monitor(Performance.NAVIGATION_AGENT_COUNT)))
 	var ordered := samples.duplicate()
 	ordered.sort()
 	var total := 0.0
@@ -125,6 +139,8 @@ func _measure(label: String) -> void:
 	var p99 := _percentile(ordered, 0.99)
 	var maximum: float = ordered.back()
 	print("ZONE PROFILE: %s average=%.3fms p95=%.3fms p99=%.3fms max=%.3fms@sample%d draw_calls=%d objects=%d nodes=%d memory=%d" % [label, average, p95, p99, maximum, maximum_sample, maximum_draw_calls, maximum_objects, maximum_nodes, maximum_memory])
+	var populations := _runtime_populations()
+	print("ZONE POPULATION: %s enemies=%d physics_bodies=%d nav_agents=%d audio_voices=%d particles=%d decals=%d" % [label, populations.enemies, maximum_active_physics_bodies, maximum_navigation_agents, populations.audio_voices, populations.particles, populations.decals])
 	if DisplayServer.get_name() != "headless" and (p95 > MAX_RENDERED_P95_MSEC or p99 > MAX_RENDERED_P99_MSEC):
 		failures.append("%s exceeded rendered frame budget (p95 %.3fms, p99 %.3fms)" % [label, p95, p99])
 
@@ -134,3 +150,30 @@ func _percentile(ordered: Array[float], fraction: float) -> float:
 		return 0.0
 	var index := clampi(ceili(fraction * ordered.size()) - 1, 0, ordered.size() - 1)
 	return ordered[index]
+
+
+func _runtime_populations() -> Dictionary:
+	var counts := {
+		"enemies": get_nodes_in_group(&"enemies").size(),
+		"audio_voices": 0,
+		"particles": 0,
+		"decals": 0,
+	}
+	var stack: Array[Node] = [root]
+	while not stack.is_empty():
+		var node := stack.pop_back() as Node
+		if node is AudioStreamPlayer and (node as AudioStreamPlayer).playing:
+			counts.audio_voices += 1
+		elif node is AudioStreamPlayer2D and (node as AudioStreamPlayer2D).playing:
+			counts.audio_voices += 1
+		elif node is AudioStreamPlayer3D and (node as AudioStreamPlayer3D).playing:
+			counts.audio_voices += 1
+		elif node is GPUParticles3D and (node as GPUParticles3D).emitting:
+			counts.particles += 1
+		elif node is CPUParticles3D and (node as CPUParticles3D).emitting:
+			counts.particles += 1
+		elif node is Decal and (node as Decal).visible:
+			counts.decals += 1
+		for child in node.get_children():
+			stack.append(child)
+	return counts
