@@ -21,6 +21,7 @@ func _run() -> void:
 		var mesh := region.navigation_mesh
 		var navigation_map := region.get_navigation_map()
 		print("NAVIGATION EVIDENCE: polygons=%d vertices=%d bounds=%s map_iteration=%d closest_opening=%s closest_arena=%s" % [mesh.get_polygon_count(), mesh.get_vertices().size(), region.get_bounds(), NavigationServer3D.map_get_iteration_id(navigation_map), NavigationServer3D.map_get_closest_point(navigation_map, Vector3(0.0, 0.5, 10.0)), NavigationServer3D.map_get_closest_point(navigation_map, Vector3(0.0, 0.5, -164.0))])
+		_expect(_navigation_map_contains_region(navigation_map, region.get_rid()), "Navigation region is registered before the first active enemy wakes")
 		_expect(mesh != null and mesh.get_polygon_count() >= 10, "Navigation bake contains representative multi-zone polygons")
 		var route := NavigationServer3D.map_get_path(
 			region.get_navigation_map(),
@@ -83,3 +84,7 @@ func _run() -> void:
 func _expect(condition: bool, label: String) -> void:
 	if not condition:
 		failures.append(label)
+
+
+func _navigation_map_contains_region(navigation_map: RID, region_rid: RID) -> bool:
+	return region_rid in NavigationServer3D.map_get_regions(navigation_map)

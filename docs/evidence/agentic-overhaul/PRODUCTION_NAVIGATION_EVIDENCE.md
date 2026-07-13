@@ -17,10 +17,11 @@ playthrough.
   server sync, and removes the temporary bodies.
 - No render-mesh GPU readback, runtime bridge, avoidance callback, gameplay
   rebake, or per-frame server force-update is used.
-- The completed bake is explicitly assigned to the region server RID before a
-  one-time map flush because Linux headless defers the node resource-change
-  notification later than macOS. CI caught this portability difference; both
-  platforms must report map iteration 2.
+- The region RID is explicitly attached to the world map and receives the
+  completed bake before a one-time map flush. Linux headless otherwise defers
+  region registration/resource notification until an active agent appears,
+  while macOS registers it earlier. CI caught this portability difference;
+  both platforms must report map iteration 2 before an enemy wakes.
 - Recovery requires three stationary samples, moves no more than three metres
   to a valid mesh point, resets interpolation, and increments local-only
   `navigation_recoveries`.
