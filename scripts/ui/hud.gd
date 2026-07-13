@@ -17,6 +17,7 @@ var _caption_queue: Array[Dictionary] = []
 var _active_caption: Dictionary = {}
 var _caption_visible := false
 var _base_label_font_sizes: Dictionary[NodePath, int] = {}
+var _base_label_colors: Dictionary[NodePath, Color] = {}
 var _caption_viewport: Viewport
 
 enum CaptionCategory {
@@ -30,11 +31,11 @@ enum CaptionCategory {
 
 const CATEGORY_PRIORITY: Dictionary = {
 	CaptionCategory.NARRATIVE: 0,
-	CaptionCategory.OBJECTIVE: 1,
-	CaptionCategory.ENEMY_WARNING: 2,
-	CaptionCategory.BOSS_PHASE: 3,
-	CaptionCategory.CHECKPOINT: 4,
-	CaptionCategory.PA_CUE: 5,
+	CaptionCategory.PA_CUE: 1,
+	CaptionCategory.OBJECTIVE: 2,
+	CaptionCategory.CHECKPOINT: 3,
+	CaptionCategory.ENEMY_WARNING: 4,
+	CaptionCategory.BOSS_PHASE: 5,
 }
 const CAPTION_QUEUE_LIMIT := 4
 const CAPTION_DEFAULT_SECONDS := 1.15
@@ -46,11 +47,10 @@ func _ready() -> void:
 	for label in $Root.find_children("*", "Label", true, false):
 		var label_path: NodePath = label.get_path()
 		_base_label_font_sizes[label_path] = maxi(7, roundi(label.get_theme_font_size("font_size")))
+		_base_label_colors[label_path] = label.get_theme_color("font_color")
 		label.add_theme_font_size_override("font_size", maxi(7, roundi(label.get_theme_font_size("font_size") * text_scale)))
 	var contrast := bool(settings.get_value(&"accessibility", &"high_contrast", false))
-	if contrast:
-		_set_caption_high_contrast(Color.WHITE, true)
-		crosshair.high_contrast = true
+	_apply_high_contrast(contrast)
 	if settings.has_signal("setting_changed"):
 		settings.setting_changed.connect(_on_setting_changed)
 	_caption_viewport = get_viewport()
@@ -225,12 +225,15 @@ func _apply_caption_font_settings() -> void:
 	caption.clip_text = true
 	_update_caption_layout()
 
-func _set_caption_high_contrast(font_color: Color, strong_contrast := false) -> void:
-	if strong_contrast:
-		%ObjectiveLabel.add_theme_color_override("font_color", font_color)
+func _apply_high_contrast(enabled: bool) -> void:
+	for label in $Root.find_children("*", "Label", true, false):
+		var path: NodePath = label.get_path()
+		var base_color: Color = _base_label_colors.get(path, Color.WHITE)
+		label.add_theme_color_override("font_color", Color.WHITE if enabled else base_color)
+	if enabled:
 		notification_label.add_theme_color_override("font_color", Color("ffff00"))
-	%CaptionLabel.add_theme_color_override("font_color", font_color)
-	%CaptionLabel.add_theme_color_override("font_outline_color", Color(0, 0, 0, 1))
+	%CaptionLabel.add_theme_color_override("font_outline_color", Color.BLACK)
+	crosshair.high_contrast = enabled
 
 func _apply_caption_layout() -> void:
 	var caption := %CaptionLabel
@@ -298,8 +301,7 @@ func _on_setting_changed(section: StringName, key: StringName, value: Variant) -
 						var base_size = int(_base_label_font_sizes.get(label.get_path(), label.get_theme_font_size("font_size")))
 						label.add_theme_font_size_override("font_size", maxi(7, roundi(base_size * text_scale)))
 				&"high_contrast":
-					var enabled = bool(value)
-					_set_caption_high_contrast(Color.WHITE if enabled else Color(1, 1, 1, 1), enabled)
+					_apply_high_contrast(bool(value))
 				&"subtitles":
 					if not bool(value):
 						clear_captions()

@@ -197,21 +197,17 @@ func _check_cobie_portrait_contract() -> void:
 		var texture := load(path) as Texture2D
 		if texture == null or texture.get_width() != 256 or texture.get_height() != 256:
 			failures.append("Cobie HUD portrait must be a loadable 256x256 texture: " + path)
-	var portrait_script := load("res://scripts/ui/cobie_portrait.gd") as Script
-	if portrait_script == null:
-		failures.append("Cobie portrait script must load")
-		return
-	var portrait: Object = portrait_script.new()
+	var portrait := CobiePortrait.new()
 	portrait.health_ratio = 1.0
-	if portrait.portrait_state() != portrait.State.HEALTHY: failures.append("70-100% health must use healthy Cobie portrait")
+	if portrait.portrait_state() != CobiePortrait.State.HEALTHY: failures.append("70-100% health must use healthy Cobie portrait")
 	portrait.health_ratio = 0.7
-	if portrait.portrait_state() != portrait.State.HEALTHY: failures.append("70% boundary must remain healthy")
+	if portrait.portrait_state() != CobiePortrait.State.HEALTHY: failures.append("70% boundary must remain healthy")
 	portrait.health_ratio = 0.69
-	if portrait.portrait_state() != portrait.State.HURT: failures.append("30-70% health must use hurt Cobie portrait")
+	if portrait.portrait_state() != CobiePortrait.State.HURT: failures.append("30-70% health must use hurt Cobie portrait")
 	portrait.health_ratio = 0.3
-	if portrait.portrait_state() != portrait.State.HURT: failures.append("30% boundary must remain hurt")
+	if portrait.portrait_state() != CobiePortrait.State.HURT: failures.append("30% boundary must remain hurt")
 	portrait.health_ratio = 0.29
-	if portrait.portrait_state() != portrait.State.CRITICAL: failures.append("0-30% health must use critical Cobie portrait")
+	if portrait.portrait_state() != CobiePortrait.State.CRITICAL: failures.append("0-30% health must use critical Cobie portrait")
 	portrait.free()
 
 func _check_caption_contracts() -> void:
@@ -270,7 +266,7 @@ func _check_death_screen_contract() -> void:
 	if packed == null:
 		failures.append("Death screen scene must load")
 		return
-	var screen := packed.instantiate()
+	var screen := packed.instantiate() as DeathScreen
 	root.add_child(screen)
 	await process_frame
 	screen.show_death()

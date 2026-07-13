@@ -431,6 +431,8 @@ func _on_walker_phase_changed(_previous: int, phase: int, walker: Node) -> void:
 	boss_state_changed.emit(encounter_pacing.phase_id(phase), walker.health_fraction())
 	var cue := encounter_pacing.phase_cue(phase)
 	if not cue.is_empty():
+		if _hud != null:
+			_hud.show_boss_phase_caption(cue, 3.0)
 		narrative_message.emit(cue, 3.0)
 	if _walker_phase_rewards.has(phase):
 		return
@@ -479,7 +481,10 @@ func _on_sign_read(_id: StringName, text: String, _actor: Node, times: int) -> v
 
 
 func _on_checkpoint(id: StringName, position_value: Vector3) -> void:
-	checkpoint_position = position_value; checkpoint_activated.emit(id, position_value); narrative_message.emit("CHECKPOINT: GOOD DOG STATUS TEMPORARILY RESTORED.", 2.5)
+	checkpoint_position = position_value; checkpoint_activated.emit(id, position_value)
+	if _hud != null:
+		_hud.show_checkpoint_caption("CHECKPOINT: GOOD DOG STATUS TEMPORARILY RESTORED.", 2.5)
+	narrative_message.emit("CHECKPOINT: GOOD DOG STATUS TEMPORARILY RESTORED.", 2.5)
 	var game_state := get_node_or_null("/root/GameState")
 	if game_state:
 		game_state.run_stats["checkpoint_id"] = String(id)
@@ -592,10 +597,14 @@ func _setup_presentation() -> void:
 	for actor in _actors.get_children(): _bind_enemy_captions(actor)
 	_pause_menu.restart_requested.connect(restart_from_checkpoint)
 	_death_screen.retry_requested.connect(restart_from_checkpoint)
-	narrative_message.connect(func(text: String, _duration: float): _hud.show_notification(text))
+	narrative_message.connect(func(text: String, duration: float):
+		_hud.show_notification(text)
+		_hud.show_caption(text, GameHUD.CaptionCategory.NARRATIVE, duration)
+	)
 	objective_changed.connect(func(text: String):
 		_hud.show_objective(text)
 		_hud.show_notification("OBJECTIVE: " + text)
+		_hud.show_objective_caption(text, 2.0)
 	)
 	_hud.show_objective(metadata.opening_objective)
 	secret_found.connect(func(_id: StringName, title: String, found: int, total: int): _hud.show_secret("SECRET: %s (%d/%d)" % [title, found, total]))
