@@ -5,4 +5,14 @@ script = ExtResource("1")
 id = &"vancouver_alley_patrol"
 zone_id = &"downtown_alley"
 display_name = "ALLEY PATROL"
-spawns = Array[Dictionary]([{"scene":"res://scenes/enemies/squirrel_trooper.tscn","position":Vector3(-3,0,-6)}, {"scene":"res://scenes/enemies/squirrel_trooper.tscn","position":Vector3(3,0,-9)}])
+schema_version = 2
+spawns = []
+waves = Array[Dictionary]([{
+"spawns": [
+	{"scene":"res://scenes/enemies/squirrel_trooper.tscn","position":Vector3(-3,0,-6)},
+	{"scene":"res://scenes/enemies/squirrel_trooper.tscn","position":Vector3(3,0,-9)}
+]}])
+enemy_budget = 3
+maximum_simultaneous_attackers = 2
+music_intensity = 0.35
+reward_policy = &"authored"

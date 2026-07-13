@@ -5,4 +5,15 @@ script = ExtResource("1")
 id = &"vancouver_seawall_sweep"
 zone_id = &"waterfront_seawall"
 display_name = "SEAWALL SWEEP"
-spawns = Array[Dictionary]([{"scene":"res://scenes/enemies/leash_enforcement_drone.tscn","position":Vector3(-6,2,-62)}, {"scene":"res://scenes/enemies/leash_enforcement_drone.tscn","position":Vector3(6,2,-68)}, {"scene":"res://scenes/enemies/mutant_groundskeeper.tscn","position":Vector3(0,0,-72)}])
+schema_version = 2
+spawns = []
+waves = Array[Dictionary]([{
+"spawns": [
+	{"scene":"res://scenes/enemies/leash_enforcement_drone.tscn","position":Vector3(-6,2,-62)},
+	{"scene":"res://scenes/enemies/leash_enforcement_drone.tscn","position":Vector3(6,2,-68)},
+	{"scene":"res://scenes/enemies/mutant_groundskeeper.tscn","position":Vector3(0,0,-72)}
+]}])
+enemy_budget = 6
+maximum_simultaneous_attackers = 2
+music_intensity = 0.6
+reward_policy = &"authored"

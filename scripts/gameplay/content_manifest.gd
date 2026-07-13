@@ -8,6 +8,7 @@ extends Resource
 @export var objectives: Array[ObjectiveDefinition] = []
 @export var encounters: Array[EncounterDefinition] = []
 @export var interaction_catalog: InteractionCatalog
+@export var route_definition: MissionRouteDefinition
 
 
 func validate() -> PackedStringArray:
@@ -29,7 +30,7 @@ func validate() -> PackedStringArray:
 		if encounter_ids.has(encounter.id): errors.append("duplicate encounter id: %s" % encounter.id)
 		if encounter_zones.has(encounter.zone_id): errors.append("duplicate encounter zone_id: %s" % encounter.zone_id)
 		encounter_ids[encounter.id] = true
-		encounter_zones[encounter.zone_id] = true
+		encounter_zones[encounter.zone_id] = encounter
 		errors.append_array(encounter.validate())
 	var difficulty_ids := {}
 	for profile in difficulty_profiles:
@@ -41,6 +42,17 @@ func validate() -> PackedStringArray:
 		for zone_id in encounter_zones.keys():
 			zones.append(zone_id)
 		errors.append_array(interaction_catalog.validate(zones, level_id))
+	if route_definition != null:
+		errors.append_array(route_definition.validate())
+		var route_zone_ids := route_definition.ordered_zone_ids()
+		if encounter_zones.size() != route_zone_ids.size():
+			errors.append("route and encounters have mismatched zone counts (%d vs %d)" % [route_zone_ids.size(), encounter_zones.size()])
+		for zone_id in route_zone_ids:
+			if not encounter_zones.has(zone_id):
+				errors.append("route zone %s has no matching encounter" % zone_id)
+		for zone_id in encounter_zones.keys():
+			if not route_zone_ids.has(zone_id):
+				errors.append("encounter zone %s is not in authored route" % zone_id)
 	return errors
 
 

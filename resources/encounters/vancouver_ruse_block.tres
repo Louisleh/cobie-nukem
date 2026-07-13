@@ -5,4 +5,14 @@ script = ExtResource("1")
 id = &"vancouver_ruse_block_watch"
 zone_id = &"ruse_block"
 display_name = "RUSE BLOCK WATCH"
-spawns = Array[Dictionary]([{"scene":"res://scenes/enemies/squirrel_trooper.tscn","position":Vector3(-4,0,-30)}, {"scene":"res://scenes/enemies/leash_enforcement_drone.tscn","position":Vector3(4,2,-34)}])
+schema_version = 2
+spawns = []
+waves = Array[Dictionary]([{
+"spawns": [
+	{"scene":"res://scenes/enemies/squirrel_trooper.tscn","position":Vector3(-4,0,-30)},
+	{"scene":"res://scenes/enemies/leash_enforcement_drone.tscn","position":Vector3(4,2,-34)}
+]}])
+enemy_budget = 4
+maximum_simultaneous_attackers = 2
+music_intensity = 0.45
+reward_policy = &"authored"
