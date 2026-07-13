@@ -47,3 +47,5 @@ The task independently:
 - preserved a clean clone and correctly reported the remaining human-only gates.
 
 This proves the project workflow is discoverable by a fresh task rather than depending on the original implementation conversation. The run also surfaced an unrelated connector reauthorization warning; it did not affect local skill discovery or repository checks.
+
+A second ephemeral clean-clone task at source `497bfcf140f2fc1f6871741f39fa09d79b9dc783` used workspace-write only so Godot could create ignored import state. It independently read the skill, its full production-loop reference, `AGENTS.md`, PRD, architecture/toolchain, build, and MCP-removal contracts; verified the bridge guard before launching Godot; found the exact 4.7 stable executable; ran health/import validation; and executed the repository-documented bounded native launch. The Codex task exited successfully, left the Git worktree clean, installed nothing, and made no source edits. This closes the clean-task launch requirement that the earlier read-only orientation test intentionally did not exercise.
