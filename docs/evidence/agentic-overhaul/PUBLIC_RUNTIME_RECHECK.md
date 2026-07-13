@@ -2,6 +2,28 @@
 
 Target: <https://www.louislehmann.fyi/games/cobie-nukem/>
 
+## `0.6.0-alpha.5` production-navigation release
+
+Observed identity after website deployment `f9065c4`:
+
+- version `0.6.0-alpha.5`;
+- runtime revision `4059174`;
+- status `Production navigation alpha`.
+
+The uncached public landing and `?touch=1` play route were exercised at a
+1024×768 tablet viewport. The page first displayed `DOWNLOADING GAME — FIRST
+LOAD MAY TAKE A MOMENT`, then replaced the loader with a full-viewport canvas
+and reached the stamped title screen. No browser warning/error messages were
+captured. The public PCK was downloaded independently: 11,489,896 bytes,
+SHA-256 `0249b13ca7036cd73d546c5923a927ce5c528591902947b3218a6e7203e86ac2`,
+exactly matching the packaged artifact.
+
+This proves public artifact identity, loader honesty, tablet containment, and
+startup. Physical iPad Safari multi-touch, audio unlock, thermal behavior,
+human pathing feel, and a full human playthrough remain explicit gates.
+
+## `0.6.0-alpha.4` retained route evidence
+
 Observed identity:
 
 - version `0.6.0-alpha.4`;

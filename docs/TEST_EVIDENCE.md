@@ -2,7 +2,7 @@
 
 This is a durable evidence template, not a claim that every listed check has run against the current working tree. Add one section per candidate; never overwrite older evidence.
 
-## Candidate 0.6.0-alpha.5 — 2026-07-13
+## Shipped 0.6.0-alpha.5 — 2026-07-13
 
 | Field | Value |
 | --- | --- |
@@ -19,14 +19,15 @@ This is a durable evidence template, not a claim that every listed check has run
 | Complete regression/soak | Pass | 100 routes, 100 checkpoints, 100 twin-stick cancellations, 500 weapon transitions, 100 effects; architecture/IP/content/smoke gates green |
 | Native 1080p zone profile | Pass with retained outlier | Seven agents at Walker density; Walker p95/p99 19.735/22.058 ms; maximum 151.852 ms retained in Known Issues |
 | Complete release/export matrix | Pass | `QA_EXPORTS=1 bash tools/release_validate.sh`; Web and unsigned Universal macOS exports; GitHub Actions `validate-package` green |
+| Public deployment | Pass | Source integration `499eab2`; website deployment `f9065c4`; public 1024×768 title screen and truthful loader verified with no console warnings/errors; downloaded PCK hash matched the release artifact |
 | Physical iPad and human playthrough | Not run | Explicit human-only gate |
 
 ### Artifacts
 
 | Artifact | Bytes | SHA-256 |
 | --- | ---: | --- |
-| `cobie-nukem-0.6.0-alpha.5-itch.zip` | 21,435,476 | `4ed71e5745c1b5f6162fd5c4c4082d55166245a7baf69af78d00f5d15e72190e` |
-| `cobie-nukem-0.6.0-alpha.5-macos-unsigned.zip` | 70,799,482 | `78b603eec3a5a2e864340df8a21daca799e93b2f43cac337b572c0283c1a6f62` |
+| `cobie-nukem-0.6.0-alpha.5-itch.zip` | 21,435,476 | `c9045d978f1813f573563b1eccf7a489eebb2c6c8848cd496f9aac89443f9442` |
+| `cobie-nukem-0.6.0-alpha.5-macos-unsigned.zip` | 70,799,482 | `3349967becde835e38bcbdc745b207cb4f5b60ce4555f7988af7b01357ab819c` |
 | Web PCK | 11,489,896 | `0249b13ca7036cd73d546c5923a927ce5c528591902947b3218a6e7203e86ac2` |
 
 ## Candidate 0.6.0-alpha.4 — 2026-07-13
