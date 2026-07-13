@@ -206,7 +206,7 @@ schema_version = 1
 id = &"walker_arena_loot_crate_1"
 zone_id = &"walker_arena"
 definition = SubResource("LootDefinition")
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.8, 0.375, -142.4)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14.0, 0.375, -148.0)
 
 [resource]
 script = ExtResource("1")
