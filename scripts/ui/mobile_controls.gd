@@ -18,7 +18,7 @@ var _onboarding_remaining := 6.0
 
 const DESIGN_SIZE := Vector2(320, 180)
 const BASE_STICK_RADIUS := 25.0
-const STICK_DEAD_ZONE := 0.12
+const STICK_DEAD_ZONE := 0.04
 const STICK_SIZE_SCALE := {&"small": 0.85, &"medium": 1.0, &"large": 1.18}
 const STICK_CENTERS := {
 	&"compact": [Vector2(42, 103), Vector2(215, 103)],
@@ -154,7 +154,7 @@ static func _apply_dead_zone(value: Vector2) -> Vector2:
 	var magnitude := value.length()
 	if magnitude <= STICK_DEAD_ZONE: return Vector2.ZERO
 	var scaled := clampf((magnitude - STICK_DEAD_ZONE) / (1.0 - STICK_DEAD_ZONE), 0.0, 1.0)
-	return value.normalized() * lerpf(scaled, scaled * scaled, 0.55)
+	return value.normalized() * scaled
 
 func _button_at(position: Vector2) -> StringName:
 	for action in BUTTONS:

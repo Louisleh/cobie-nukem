@@ -29,6 +29,21 @@ func get_aim_direction(camera: Camera3D, range_limit := -1.0) -> Vector3:
 	_lock_time_remaining = tuning.lock_persistence_seconds
 	return _corrected_direction(camera, best, forward)
 
+
+func touch_friction_scale(camera: Camera3D, strength := 0.3) -> float:
+	if tuning == null or tuning.mode == AutoAimTuning.Mode.OFF or strength <= 0.0:
+		return 1.0
+	var candidate := _find_best_target(camera, max_range)
+	if candidate == null:
+		return 1.0
+	var direction := (_target_position(candidate) - camera.global_position).normalized()
+	var angle := rad_to_deg((-camera.global_basis.z).angle_to(direction))
+	var window := maxf(tuning.horizontal_cone_degrees * 0.55, 1.0)
+	if angle >= window:
+		return 1.0
+	var proximity := 1.0 - clampf(angle / window, 0.0, 1.0)
+	return 1.0 - clampf(strength, 0.0, 0.65) * proximity * _difficulty_aim_scale()
+
 func _find_best_target(camera: Camera3D, effective_range: float) -> Node3D:
 	var best: Node3D
 	var best_score := INF

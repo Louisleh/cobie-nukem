@@ -24,7 +24,7 @@ func _initialize() -> void:
 		_check_scene(path)
 	_check_level_select_contract()
 	await _check_difficulty_selector_contract()
-	_check_responsive_title_contract()
+	await _check_responsive_title_contract()
 	_check_responsive_main_menu_contract()
 	_check_cobie_portrait_contract()
 	if failures.is_empty():
@@ -52,11 +52,13 @@ func _check_level_select_contract() -> void:
 		return
 	var instance := packed.instantiate()
 	var levels: Array = instance.get("levels")
-	if levels.size() < 4:
-		failures.append("Level select needs one active and multiple future cards")
+	if levels.size() != 5:
+		failures.append("Level select needs one active and four future cards")
 	else:
 		var unlocked := 0
 		for data in levels:
+			if data.preview == null:
+				failures.append("Every level card needs illustrated preview art: %s" % data.level_id)
 			if data.unlocked:
 				unlocked += 1
 				if data.scene_path.is_empty():
@@ -135,6 +137,8 @@ func _check_responsive_title_contract() -> void:
 	if packed == null:
 		return
 	var instance := packed.instantiate()
+	instance.minimum_warmup_seconds = 0.0
+	instance.play_intro_audio = false
 	var art := instance.get_node_or_null("ArtColumn") as Control
 	var cover := instance.get_node_or_null("ArtColumn/Cover") as TextureRect
 	var brand := instance.get_node_or_null("BrandPanel") as Control
@@ -142,7 +146,17 @@ func _check_responsive_title_contract() -> void:
 		failures.append("Title needs separate responsive art and brand safe areas")
 	elif cover.stretch_mode != TextureRect.STRETCH_KEEP_ASPECT_CENTERED:
 		failures.append("Title art must preserve the complete Cobie composition")
+	root.add_child(instance)
+	if instance.can_accept_input() or not instance.get_node("BrandPanel/Margin/VBox/Prompt").text.begins_with("PREPARING COBIE"):
+		failures.append("Title must show an honest loading state before accepting input")
+	for frame in 6:
+		await process_frame
+	if not instance.can_accept_input():
+		failures.append("Title must become input-ready after menu preload completes")
+	elif "PRESS" not in instance.get_node("BrandPanel/Margin/VBox/Prompt").text:
+		failures.append("Title may show the continue prompt only after readiness")
 	instance.free()
+	await process_frame
 
 func _check_responsive_main_menu_contract() -> void:
 	var packed := load("res://scenes/menus/main_menu.tscn") as PackedScene

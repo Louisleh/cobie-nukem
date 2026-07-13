@@ -1,6 +1,6 @@
 # Cobie Nukem — Multi-Phase Production PRD
 
-**Status:** Active production source of truth; world-class Salmon Creek vertical-slice pass in progress on `codex/world-class-vertical-slice`
+**Status:** Active production source of truth; `0.6.0-alpha.2` stabilization and illustrated-roadmap pass in progress
 
 **Created:** 2026-07-11
 
@@ -41,6 +41,8 @@ This section is the first place a new Codex or external-auditor run should read.
 **Autonomous soak checkpoint (unreleased):** the release gate now runs 100 deterministic Salmon Creek mission-contract routes, 100 schema-v3 checkpoint JSON cycles, 100 focus-loss/twin-stick-cancellation cycles, 500 weapon selection/reload transitions, and a 100-effect budget saturation pass. This supplements—not replaces—the existing scene route, adversarial lifecycle, export, and human/device gates.
 
 **Twin-stick iPad checkpoint (0.6 alpha candidate):** right-side swipe look has been replaced by a fixed aiming joystick consumed in physics ticks. The left movement stick, right aim stick, and action buttons use exclusive multi-touch finger ownership. Options expose independent horizontal/vertical aim speed, Y inversion, stick size and placement presets, opacity, and complete left-handed mirroring. The legacy touch-speed setting migrates to both axes. Automated evidence covers dead zones, full response, three simultaneous fingers, 30/120 FPS aim equivalence, focus cancellation, tablet coordinate scaling, and expanded soak cycles; physical iPad Safari remains a named human gate.
+
+**Loading/aim/roadmap stabilization checkpoint (`0.6.0-alpha.2` candidate):** Web bootstrap now preserves Godot's real download progress while explaining first-load latency; the title preloads the main menu and does not show or accept “continue” until ready. Right-stick aiming adds three typed response profiles, exponential smoothing, delayed outer-ring turn boost, and configurable target friction while retaining physics-tick consumption and clean cancellation. The mission selector now previews five destinations using original manifested art: playable Salmon Creek plus locked Vancouver Waterfront, Mount Hood, Moon, and Ventura Pier cards. This is teaser/pipeline work, not a claim that Phase 3 level production has begun.
 
 ### World-class vertical-slice delivery boundary
 

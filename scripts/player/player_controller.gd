@@ -14,7 +14,6 @@ signal combat_feedback(event: CombatFeedbackEvent)
 signal access_item_changed(label: String)
 signal footstep(running: bool)
 signal surface_footstep(surface: StringName, running: bool)
-
 @export_category("Movement")
 @export var feel_profile: PlayerFeelProfile = preload("res://resources/player/classic_feel.tres")
 @export var walk_speed := 6.0
@@ -29,7 +28,7 @@ signal surface_footstep(surface: StringName, running: bool)
 @export var head_bob_amount := 0.035
 @export var head_bob_speed := 10.5
 @export var out_of_bounds_y := -8.0
-
+@export var touch_aim_profile: TouchAimProfile = preload("res://resources/player/touch_aim_balanced.tres")
 @export_category("Interaction")
 @export var interaction_range := 3.0
 @export var interaction_mask := 1
@@ -53,9 +52,12 @@ var _wheel_switch_time_ms := -1000
 var _run_toggled := false
 var _touch_move := Vector2.ZERO
 var _touch_look := Vector2.ZERO
+var _touch_aim := TouchAimRuntime.new()
 var _touch_horizontal_sensitivity := 1.0
 var _touch_vertical_sensitivity := 1.0
 var _touch_invert_y := false
+var _touch_turn_boost := true
+var _touch_aim_friction := 0.3
 var _step_distance := 0.0
 var _last_step_position := Vector3.ZERO
 var _coyote_remaining := 0.0
@@ -67,6 +69,7 @@ func _ready() -> void:
 	add_to_group(&"player")
 	add_to_group(&"damageable_player")
 	_apply_feel_profile()
+	_touch_aim.profile = touch_aim_profile
 	_head_base_position = head.position
 	_last_step_position = global_position
 	var settings := get_node_or_null("/root/SettingsManager")
@@ -78,6 +81,11 @@ func _ready() -> void:
 		_touch_horizontal_sensitivity = clampf(float(settings.call("get_value", &"gameplay", &"touch_horizontal_sensitivity", settings.call("get_value", &"gameplay", &"touch_sensitivity", 1.0))), 0.25, 3.0)
 		_touch_vertical_sensitivity = clampf(float(settings.call("get_value", &"gameplay", &"touch_vertical_sensitivity", settings.call("get_value", &"gameplay", &"touch_sensitivity", 1.0))), 0.25, 3.0)
 		_touch_invert_y = bool(settings.call("get_value", &"gameplay", &"touch_invert_y", false))
+		_touch_aim.select_profile(String(settings.call("get_value", &"gameplay", &"touch_aim_preset", "balanced")))
+		touch_aim_profile = _touch_aim.profile
+		_touch_turn_boost = bool(settings.call("get_value", &"gameplay", &"touch_turn_boost", true))
+		_touch_aim.turn_boost = _touch_turn_boost
+		_touch_aim_friction = TouchAimProfile.friction_strength(String(settings.call("get_value", &"gameplay", &"touch_aim_friction", "standard")))
 		if settings.has_signal("setting_changed"): settings.setting_changed.connect(_on_setting_changed)
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE if MobileControls.touchscreen_expected() else Input.MOUSE_MODE_CAPTURED
 	health_armor.died.connect(_on_died)
@@ -222,25 +230,26 @@ func _check_out_of_bounds() -> bool:
 
 func apply_damage(amount: float, source: Node = null, _hit_position := Vector3.ZERO) -> float:
 	return health_armor.apply_damage(amount, source)
-
-
 func set_touch_move(value: Vector2) -> void:
 	_touch_move = value.limit_length(1.0)
 
 func set_touch_look(value: Vector2) -> void:
 	_touch_look = value.limit_length(1.0)
+	if _touch_look == Vector2.ZERO:
+		_touch_aim.reset()
 
 func clear_touch_input() -> void:
 	_touch_move = Vector2.ZERO
 	_touch_look = Vector2.ZERO
+	_touch_aim.reset()
 
 func _apply_touch_stick_look(delta: float) -> void:
-	if is_dead or _touch_look.length_squared() <= 0.0001: return
-	const YAW_SPEED := deg_to_rad(210.0)
-	const PITCH_SPEED := deg_to_rad(150.0)
-	rotate_y(-_touch_look.x * YAW_SPEED * _touch_horizontal_sensitivity * delta)
+	if is_dead or touch_aim_profile == null: return
+	var friction := auto_aim.touch_friction_scale(camera, _touch_aim_friction) if auto_aim != null else 1.0
+	var response := _touch_aim.resolve(_touch_look, delta, friction)
+	rotate_y(-response.x * deg_to_rad(touch_aim_profile.yaw_degrees_per_second) * _touch_horizontal_sensitivity * delta)
 	var pitch_direction := -1.0 if not _touch_invert_y else 1.0
-	head.rotation.x = clampf(head.rotation.x + _touch_look.y * PITCH_SPEED * _touch_vertical_sensitivity * pitch_direction * delta, deg_to_rad(-max_look_degrees), deg_to_rad(max_look_degrees))
+	head.rotation.x = clampf(head.rotation.x + response.y * deg_to_rad(touch_aim_profile.pitch_degrees_per_second) * _touch_vertical_sensitivity * pitch_direction * delta, deg_to_rad(-max_look_degrees), deg_to_rad(max_look_degrees))
 
 func _on_setting_changed(section: StringName, key: StringName, value: Variant) -> void:
 	if section != &"gameplay": return
@@ -248,8 +257,11 @@ func _on_setting_changed(section: StringName, key: StringName, value: Variant) -
 		&"touch_horizontal_sensitivity": _touch_horizontal_sensitivity = clampf(float(value), 0.25, 3.0)
 		&"touch_vertical_sensitivity": _touch_vertical_sensitivity = clampf(float(value), 0.25, 3.0)
 		&"touch_invert_y": _touch_invert_y = bool(value)
-
-
+		&"touch_aim_preset":
+			_touch_aim.select_profile(String(value)); touch_aim_profile = _touch_aim.profile
+		&"touch_turn_boost":
+			_touch_turn_boost = bool(value); _touch_aim.turn_boost = _touch_turn_boost
+		&"touch_aim_friction": _touch_aim_friction = TouchAimProfile.friction_strength(String(value))
 func apply_touch_look(relative: Vector2) -> void:
 	# Compatibility shim. Gameplay touch controls use set_touch_look() so aiming
 	# advances in physics ticks instead of depending on drag-event frequency.
@@ -272,6 +284,7 @@ func respawn(at_position: Vector3, protection_seconds := 1.5) -> void:
 	velocity = Vector3.ZERO
 	_touch_move = Vector2.ZERO
 	_touch_look = Vector2.ZERO
+	_touch_aim.reset()
 	is_dead = false
 	health_armor.restore_full()
 	health_armor.grant_invulnerability(protection_seconds)

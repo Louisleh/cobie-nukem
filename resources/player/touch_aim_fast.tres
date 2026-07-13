@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="TouchAimProfile" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/player/touch_aim_profile.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = &"fast"
+display_name = "FAST"
+dead_zone = 0.1
+response_exponent = 1.35
+smoothing_seconds = 0.025
+yaw_degrees_per_second = 250.0
+pitch_degrees_per_second = 175.0
+boost_threshold = 0.76
+boost_delay = 0.08
+boost_multiplier = 1.5

@@ -6,6 +6,9 @@ All notable changes are recorded here. This project follows a lightweight form o
 
 ### Added
 
+- Honest Web download and title-menu preload states; the continue prompt is readiness-gated and failed preloads can be retried.
+- Precision, Balanced, and Fast right-stick aim profiles with response curves, smoothing, delayed turn boost, and configurable target friction.
+- Original illustrated future-mission cards for Vancouver Waterfront, Mount Hood, the Moon, and Ventura Pier, plus a fifth locked Ventura mission.
 - Fixed twin-stick iPad controls: left movement, right rate-based aiming, simultaneous fire/actions, independent aim speeds, inversion, stick size/position presets, left-handed mirroring, and touch onboarding.
 - Deterministic touch-aim and three-finger ownership coverage, with the soak gate expanded to 100 cancellation cycles, 100 checkpoint cycles, and 500 weapon transitions.
 - Touch-first iPad/Web controls with independent movement and look fingers, on-screen fire/use/jump/reload/weapon/pause buttons, touch sensitivity, landscape scaling, and pointer-lock-free aiming.
@@ -23,6 +26,8 @@ All notable changes are recorded here. This project follows a lightweight form o
 
 ### Changed
 
+- Mission selection now uses illustrated, horizontally scrollable cards with explicit ACTIVE and COMING SOON states.
+- Touch dead-zone shaping is profile-driven and aim response state is isolated from the player controller.
 - Fable Phase 1–2 audit findings are triaged in the phase PRD; active encounters now reset at checkpoint retry with short spawn protection, authored enemy totals remain stable, and invalid encounters fail loudly.
 - Content validation now rejects duplicate difficulties, non-finite positions, and spawn scenes without the enemy contract; difficulty profiles are cached and objective activation signals emit once.
 - GitHub Actions now runs the complete repository validator, both exports, package verification, evidence upload, and immutable Pages-artifact deployment.

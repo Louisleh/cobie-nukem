@@ -1,5 +1,13 @@
 # Decisions
 
+## D-009 — Fixed-speed twin-stick response with bounded assistance
+
+The right stick remains a rate-based aiming control: displacement controls angular speed, not an unbounded swipe delta. Fine aim uses a configurable response curve and time-based smoothing; sustained outer-ring input receives a delayed, bounded turn boost; visible targets may reduce angular rate through configurable friction. No gyro or swipe-look is added in this pass. Profiles live in typed Resources and transient response state lives outside the player controller.
+
+## D-010 — Future levels are illustrated promises, not false routes
+
+Vancouver Waterfront, Mount Hood, Moon, and Ventura Pier appear as original illustrated mission cards. They remain locked, contain no scene route, and say COMING SOON. This builds campaign anticipation and validates the presentation pipeline without overstating Phase 3 production readiness.
+
 ## D-008 — iPad uses fixed twin-stick rate aiming
 
 **Status:** accepted from owner direction on 2026-07-12.

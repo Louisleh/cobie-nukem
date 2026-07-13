@@ -1,5 +1,6 @@
-[gd_resource type="Resource" script_class="LevelCardData" load_steps=2 format=3]
+[gd_resource type="Resource" script_class="LevelCardData" load_steps=3 format=3]
 [ext_resource type="Script" path="res://scripts/ui/level_card_data.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/level_previews/vancouver_waterfront.png" id="2"]
 [resource]
 script = ExtResource("1")
 level_id = &"episode_1_vancouver_waterfront"
@@ -9,3 +10,4 @@ description = "A citation convoy is loose between the downtown blocks and the ha
 difficulty = 3
 expected_minutes = "15–22 MIN"
 encounter = "CITATION CONVOY"
+preview = ExtResource("2")

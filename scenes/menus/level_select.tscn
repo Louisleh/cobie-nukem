@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=3]
+[gd_scene load_steps=14 format=3]
 
 [ext_resource type="Script" path="res://scripts/ui/level_select.gd" id="1"]
 [ext_resource type="Theme" path="res://resources/ui/retro_theme.tres" id="2"]
@@ -9,6 +9,7 @@
 [ext_resource type="Script" path="res://scripts/ui/procedural_audio.gd" id="7"]
 [ext_resource type="Script" path="res://scripts/ui/retro_overlay.gd" id="8"]
 [ext_resource type="Script" path="res://scripts/ui/level_card_data.gd" id="9"]
+[ext_resource type="Resource" path="res://resources/level/ventura_card.tres" id="10"]
 
 [sub_resource type="StyleBoxFlat" id="PanelStyle"]
 bg_color = Color(0.025, 0.045, 0.052, 0.96)
@@ -49,7 +50,7 @@ grow_horizontal = 2
 grow_vertical = 2
 theme = ExtResource("2")
 script = ExtResource("1")
-levels = Array[ExtResource("9")]([ExtResource("3"), ExtResource("4"), ExtResource("5"), ExtResource("6")])
+levels = Array[ExtResource("9")]([ExtResource("3"), ExtResource("4"), ExtResource("5"), ExtResource("6"), ExtResource("10")])
 
 [node name="Background" type="TextureRect" parent="."]
 layout_mode = 1
@@ -200,7 +201,7 @@ text = "DIFFICULTY DETAILS"
 autowrap_mode = 2
 
 [node name="CourseScroll" type="ScrollContainer" parent="SafeArea/Main"]
-custom_minimum_size = Vector2(0, 40)
+custom_minimum_size = Vector2(0, 46)
 layout_mode = 2
 horizontal_scroll_mode = 2
 vertical_scroll_mode = 0
