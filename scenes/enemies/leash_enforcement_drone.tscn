@@ -1,8 +1,10 @@
-[gd_scene load_steps=11 format=3]
+[gd_scene load_steps=13 format=3]
 
 [ext_resource type="Script" path="res://scripts/ai/leash_enforcement_drone.gd" id="1"]
 [ext_resource type="Resource" path="res://resources/enemies/leash_enforcement_drone.tres" id="2"]
 [ext_resource type="Texture2D" path="res://assets/sprites/enemies/leash_enforcement_drone.png" id="3_sprite"]
+[ext_resource type="Script" path="res://scripts/ai/enemy_sprite_presentation.gd" id="4_presentation"]
+[ext_resource type="Texture2D" path="res://assets/sprites/enemies/atlases/leash_enforcement_drone_atlas.png" id="5_atlas"]
 [sub_resource type="SphereShape3D" id="Shape"]
 radius = 0.58
 [sub_resource type="StandardMaterial3D" id="Metal"]
@@ -53,10 +55,16 @@ mesh = SubResource("LightMesh")
 [node name="DetailedSprite" type="Sprite3D" parent="Visual"]
 position = Vector3(0, 0.75, 0)
 texture = ExtResource("3_sprite")
-pixel_size = 0.00105
+pixel_size = 0.00315
 billboard = 1
 texture_filter = 1
 alpha_cut = 1
+[node name="EnemySpritePresentation" type="Node" parent="."]
+script = ExtResource("4_presentation")
+atlas_texture = ExtResource("5_atlas")
+animation_fps = 10.0
+motion_scale = 0.75
+attack_accent = Color(1, 0.16, 0.08, 1)
 [node name="AutoAimTarget" type="Marker3D" parent="."]
 [node name="Telegraph" type="MeshInstance3D" parent="."]
 position = Vector3(0, 0.05, -0.58)

@@ -5,4 +5,18 @@ script = ExtResource("1")
 id = &"salmon_shed"
 zone_id = &"equipment_shed"
 display_name = "EQUIPMENT SHED RESPONSE"
-spawns = Array[Dictionary]([{"scene":"res://scenes/enemies/mutant_groundskeeper.tscn","position":Vector3(-3,0,-31)}, {"scene":"res://scenes/enemies/leash_enforcement_drone.tscn","position":Vector3(3,2,-37)}])
+schema_version = 2
+waves = Array[Dictionary]([{
+"delay_seconds": 0.0,
+"spawns": [{"scene":"res://scenes/enemies/mutant_groundskeeper.tscn","position":Vector3(-3,0,-31)}, {"scene":"res://scenes/enemies/leash_enforcement_drone.tscn","position":Vector3(3,2,-37)}]
+}, {
+"delay_seconds": 0.65,
+"spawns": [{"scene":"res://scenes/enemies/squirrel_trooper.tscn","position":Vector3(-4,0,-39)}]
+}])
+enemy_budget = 3
+maximum_simultaneous_attackers = 2
+spawn_tags = Array[StringName]([&"close_range", &"shed_reinforcement"])
+entry_lock_id = &"shed_gate"
+exit_lock_id = &"tunnel_gate"
+music_intensity = 0.45
+reward_policy = &"authored_barkshot"

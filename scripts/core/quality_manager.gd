@@ -25,7 +25,7 @@ func apply_profile(profile: QualityProfile) -> void:
 	var viewport := get_viewport()
 	if viewport != null: viewport.scaling_3d_scale = profile.render_scale
 	var pressure := get_parent().get_node_or_null("CombatPressure") if get_parent() != null else null
-	if pressure != null: pressure.maximum_attackers = profile.maximum_attackers
+	if pressure != null: pressure.configure_limit(profile.maximum_attackers)
 	profile_changed.emit(profile)
 
 

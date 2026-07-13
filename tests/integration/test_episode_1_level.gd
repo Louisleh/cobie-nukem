@@ -85,7 +85,7 @@ func _initialize() -> void:
 	if fetch_guard != null:
 		check(fetch_guard.global_position.z > -112.0, "Fetch Guard spawned too far behind the launcher encounter")
 	check(level.spawned_zones.has(&"walker_arena"), "Boss encounter does not arm")
-	check(level.enemies_total == 12, "Complete route must count all 12 authored enemies without double-counting checkpoint respawns")
+	check(level.enemies_total == 12, "Route activation must count all 12 initial-wave actors without double-counting checkpoint respawns")
 	player.health_armor.invulnerable_remaining = 0.0
 	player.global_position.y = player.out_of_bounds_y - 1.0
 	check(player._check_out_of_bounds(), "Player crossing the kill plane triggers out-of-bounds death")

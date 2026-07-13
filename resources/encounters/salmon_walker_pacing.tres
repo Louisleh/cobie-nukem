@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="SalmonCreekPacingProfile" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/level/salmon_creek_pacing_profile.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+phase_ids = Array[StringName]([&"cannons", &"exposed_core", &"charge", &"golden_ball", &"defeated"])
+phase_cues = PackedStringArray("CANNONS ACTIVE — KEEP MOVING", "ARMOR PANELS BROKEN — HIT THE EXPOSED CORE", "CHARGE MODE — BREAK LINE AND KEEP MOVING", "FINAL VULNERABILITY — FETCH THE GOLDEN BALL", "WALKER DEFEATED")
+phase_recovery_pickups = PackedStringArray("", "res://scenes/pickups/premium_treat.tscn", "res://scenes/pickups/tennis_balls.tscn", "", "")
+phase_recovery_positions = Array[Vector3]([Vector3(0, 0.8, -145), Vector3(-8, 0.8, -145), Vector3(8, 0.8, -145), Vector3(0, 0.8, -140), Vector3(0, 0.8, -140)])
+summon_attack_interval = 3
+pressure_distance = Vector2(4.5, 12)

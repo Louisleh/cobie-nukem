@@ -26,6 +26,7 @@ const DeathScene = preload("res://scenes/ui/death_screen.tscn")
 const VictoryScene = preload("res://scenes/ui/victory_screen.tscn")
 const CombatAudioScene = preload("res://scenes/ui/combat_audio_bridge.tscn")
 const MobileControlsScene = preload("res://scenes/ui/mobile_controls.tscn")
+const SalmonCreekPacing = preload("res://resources/encounters/salmon_walker_pacing.tres")
 const ROUTE_PROGRESS := [
 	[-22.0, &"equipment_shed", "EQUIPMENT SHED"],
 	[-47.0, &"maintenance_tunnels", "MAINTENANCE TUNNELS"],
@@ -36,6 +37,7 @@ const NAVIGATION_SOURCE_LAYER := 1 << 19
 
 @export var metadata: LevelMetadata = preload("res://resources/level/episode_1_level_1.tres")
 @export var content_manifest: ContentManifest = preload("res://resources/content/salmon_creek_manifest.tres")
+@export var encounter_pacing: SalmonCreekPacingProfile = SalmonCreekPacing
 @export var spawn_player := true
 @export var start_run_automatically := true
 @export var setup_presentation := true
@@ -74,6 +76,10 @@ var _mission_runtime: MissionRuntime
 var _spawn_registry: MissionSpawnRegistry
 var _navigation_region: NavigationRegion3D
 var _navigation_sources: Array[StaticBody3D] = []
+var _walker_phase_rewards: Dictionary = {}
+var _walker_phase_pickups: Array[Node] = []
+var _walker_cannon_attacks := 0
+var _baseline_attack_budget := 3
 
 func _ready() -> void:
 	_run_started_ms = Time.get_ticks_msec()
@@ -106,6 +112,9 @@ func _setup_gameplay_systems() -> void:
 		objective_changed.emit(definition.title)
 	)
 	_encounter_runner = _mission_runtime.encounters
+	var pressure := get_node_or_null("/root/CombatPressure")
+	if pressure != null:
+		_baseline_attack_budget = pressure.maximum_attackers
 	_encounter_runner.actor_spawned.connect(_on_encounter_actor_spawned)
 	_encounter_runner.actor_defeated.connect(func(enemy: Node, definition: EncounterDefinition) -> void:
 		_on_enemy_died(enemy, definition.zone_id)
@@ -118,7 +127,8 @@ func _setup_gameplay_systems() -> void:
 	_opening_grace_timer = Timer.new()
 	_opening_grace_timer.name = "OpeningGraceTimer"
 	_opening_grace_timer.one_shot = true
-	_opening_grace_timer.wait_time = 12.0
+	var opening_definition := _encounter_runner.definitions.get(&"forbidden_field") as EncounterDefinition
+	_opening_grace_timer.wait_time = opening_definition.opening_grace_seconds if opening_definition != null else 12.0
 	_opening_grace_timer.timeout.connect(_activate_opening_encounter)
 	add_child(_opening_grace_timer)
 	_completion_timer = Timer.new()
@@ -344,7 +354,12 @@ func _enter_zone(zone_id: StringName, title: String, _actor: Node) -> void:
 
 func _spawn_wave(zone_id: StringName) -> void:
 	if not _spawn_registry.mark_zone_spawned(zone_id): return
-	if _encounter_runner.definitions.has(zone_id): _last_combat_zone = zone_id
+	if _encounter_runner.definitions.has(zone_id):
+		_last_combat_zone = zone_id
+		var definition := _encounter_runner.definitions[zone_id] as EncounterDefinition
+		var pressure := get_node_or_null("/root/CombatPressure")
+		if pressure != null:
+			pressure.configure_limit(mini(_baseline_attack_budget, definition.maximum_simultaneous_attackers))
 	_encounter_runner.activate_zone(zone_id, player)
 	if zone_id == &"walker_arena" and _walker == null:
 		# Development fallback: a missing boss scene must not trap QA in the level.
@@ -387,16 +402,59 @@ func _activate_opening_encounter(_weapon: WeaponBase = null, _secondary := false
 
 func _bind_walker(walker: Node) -> void:
 	_walker = walker
+	_walker_phase_rewards.clear()
+	_walker_phase_pickups.clear()
+	_walker_cannon_attacks = 0
+	# The generic chase path advances during attack cooldowns. Give this boss an
+	# authored orbit and retreat floor so it pressures from readable cannon range
+	# instead of collapsing into the player's collision capsule after every shot.
+	if encounter_pacing != null and walker is EnemyAgent and walker.definition != null:
+		walker.definition.preferred_distance = walker.definition.attack_range
+		walker.definition.retreat_distance = encounter_pacing.pressure_distance.x
+		walker.summon_attack_interval = encounter_pacing.summon_attack_interval
+		boss_state_changed.emit(encounter_pacing.phase_id(0), walker.health_fraction())
+		narrative_message.emit(encounter_pacing.phase_cue(0), 2.5)
 	if walker.has_signal("golden_ball_enabled"): walker.golden_ball_enabled.connect(func(target): _golden_ball.enable_for_boss(target); objective_changed.emit("FETCH THE GOLDEN TENNIS BALL"))
-	if walker.has_signal("boss_phase_changed"): walker.boss_phase_changed.connect(func(_old, phase): boss_state_changed.emit(StringName(str(phase)), walker.health_fraction()))
+	if walker.has_signal("boss_phase_changed"): walker.boss_phase_changed.connect(_on_walker_phase_changed.bind(walker))
+	if walker.has_signal("attack_fired"): walker.attack_fired.connect(_on_walker_attack_fired.bind(walker))
 	if walker.has_signal("walker_defeated"): walker.walker_defeated.connect(func():
 		boss_state_changed.emit(&"defeated", 0.0)
 		_objective_tracker.record(ObjectiveDefinition.Kind.DEFEAT, &"animal_control_walker")
 	)
 
 
+func _on_walker_phase_changed(_previous: int, phase: int, walker: Node) -> void:
+	if walker != _walker or encounter_pacing == null:
+		return
+	boss_state_changed.emit(encounter_pacing.phase_id(phase), walker.health_fraction())
+	var cue := encounter_pacing.phase_cue(phase)
+	if not cue.is_empty():
+		narrative_message.emit(cue, 3.0)
+	if _walker_phase_rewards.has(phase):
+		return
+	var recovery := encounter_pacing.recovery_drop(phase)
+	if recovery.is_empty():
+		return
+	_walker_phase_rewards[phase] = true
+	var pickup := _spawn_pickup(String(recovery.scene), recovery.position)
+	if pickup != null:
+		_walker_phase_pickups.append(pickup)
+	narrative_message.emit("ARENA RECOVERY DROP DEPLOYED", 2.0)
+
+
+func _on_walker_attack_fired(_kind: StringName, walker: Node) -> void:
+	if walker != _walker or encounter_pacing == null or int(walker.boss_phase) != 0:
+		return
+	_walker_cannon_attacks += 1
+	if _walker_cannon_attacks % encounter_pacing.summon_attack_interval == 0:
+		narrative_message.emit("DRONE REINFORCEMENT DEPLOYED", 2.0)
+
+
 func _on_enemy_died(enemy: Node, zone_id: StringName) -> void:
-	enemies_defeated += 1; enemy_defeated.emit(enemy, zone_id)
+	# Checkpoint retries rebuild an authored encounter without increasing its
+	# mission total. Clamp credited defeats to that total so retry kills cannot
+	# corrupt completion reports or produce impossible >100% enemy statistics.
+	enemies_defeated = mini(enemies_defeated + 1, enemies_total); enemy_defeated.emit(enemy, zone_id)
 	var game_state := get_node_or_null("/root/GameState")
 	if game_state: game_state.run_stats.enemies_defeated = enemies_defeated
 
@@ -449,6 +507,12 @@ func _reset_active_encounter_for_checkpoint() -> void:
 		_opening_encounter_active = false
 	if zone_id == &"walker_arena":
 		_walker = null
+		_walker_phase_rewards.clear()
+		for pickup in _walker_phase_pickups:
+			if is_instance_valid(pickup):
+				pickup.queue_free()
+		_walker_phase_pickups.clear()
+		_walker_cannon_attacks = 0
 		# The walker's summoned drones live outside the encounter runner's actor
 		# list; leaving them alive would greet the respawned player with stale
 		# pressure the reset just promised to remove.
@@ -599,6 +663,12 @@ func _spawn_scene(path: String, position_value: Vector3) -> Node:
 
 func _message(text: String) -> void:
 	narrative_message.emit(text, 2.5)
+
+
+func _exit_tree() -> void:
+	var pressure := get_node_or_null("/root/CombatPressure")
+	if pressure != null:
+		pressure.configure_limit(_baseline_attack_budget, true)
 
 
 func _sign(text: String, position_value: Vector3, rotation_y: float) -> void:

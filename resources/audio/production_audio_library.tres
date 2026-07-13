@@ -1,0 +1,370 @@
+[gd_resource type="Resource" script_class="AudioCueLibrary" load_steps=92 format=3]
+
+[ext_resource type="Script" path="res://scripts/audio/audio_cue_set.gd" id="1_script"]
+[ext_resource type="Script" path="res://scripts/audio/audio_cue_library.gd" id="2_library"]
+[ext_resource type="AudioStream" path="res://assets/audio/weapons/pawstol/shot_01.wav" id="w3"]
+[ext_resource type="AudioStream" path="res://assets/audio/weapons/pawstol/shot_02.wav" id="w4"]
+[ext_resource type="AudioStream" path="res://assets/audio/weapons/pawstol/mechanical_01.wav" id="w5"]
+[ext_resource type="AudioStream" path="res://assets/audio/weapons/pawstol/mechanical_02.wav" id="w6"]
+[ext_resource type="AudioStream" path="res://assets/audio/weapons/pawstol/empty_01.wav" id="w7"]
+[ext_resource type="AudioStream" path="res://assets/audio/weapons/pawstol/empty_02.wav" id="w8"]
+[ext_resource type="AudioStream" path="res://assets/audio/weapons/pawstol/switch_01.wav" id="w9"]
+[ext_resource type="AudioStream" path="res://assets/audio/weapons/pawstol/switch_02.wav" id="w10"]
+[ext_resource type="AudioStream" path="res://assets/audio/weapons/pawstol/reload_start_01.wav" id="w11"]
+[ext_resource type="AudioStream" path="res://assets/audio/weapons/pawstol/reload_step_01.wav" id="w12"]
+[ext_resource type="AudioStream" path="res://assets/audio/weapons/pawstol/reload_step_02.wav" id="w13"]
+[ext_resource type="AudioStream" path="res://assets/audio/weapons/pawstol/reload_complete_01.wav" id="w14"]
+[ext_resource type="AudioStream" path="res://assets/audio/weapons/barkshot/shot_01.wav" id="w15"]
+[ext_resource type="AudioStream" path="res://assets/audio/weapons/barkshot/shot_02.wav" id="w16"]
+[ext_resource type="AudioStream" path="res://assets/audio/weapons/barkshot/mechanical_01.wav" id="w17"]
+[ext_resource type="AudioStream" path="res://assets/audio/weapons/barkshot/mechanical_02.wav" id="w18"]
+[ext_resource type="AudioStream" path="res://assets/audio/weapons/barkshot/empty_01.wav" id="w19"]
+[ext_resource type="AudioStream" path="res://assets/audio/weapons/barkshot/empty_02.wav" id="w20"]
+[ext_resource type="AudioStream" path="res://assets/audio/weapons/barkshot/switch_01.wav" id="w21"]
+[ext_resource type="AudioStream" path="res://assets/audio/weapons/barkshot/switch_02.wav" id="w22"]
+[ext_resource type="AudioStream" path="res://assets/audio/weapons/barkshot/reload_start_01.wav" id="w23"]
+[ext_resource type="AudioStream" path="res://assets/audio/weapons/barkshot/reload_step_01.wav" id="w24"]
+[ext_resource type="AudioStream" path="res://assets/audio/weapons/barkshot/reload_step_02.wav" id="w25"]
+[ext_resource type="AudioStream" path="res://assets/audio/weapons/barkshot/reload_complete_01.wav" id="w26"]
+[ext_resource type="AudioStream" path="res://assets/audio/weapons/fetch_launcher/shot_01.wav" id="w27"]
+[ext_resource type="AudioStream" path="res://assets/audio/weapons/fetch_launcher/shot_02.wav" id="w28"]
+[ext_resource type="AudioStream" path="res://assets/audio/weapons/fetch_launcher/mechanical_01.wav" id="w29"]
+[ext_resource type="AudioStream" path="res://assets/audio/weapons/fetch_launcher/mechanical_02.wav" id="w30"]
+[ext_resource type="AudioStream" path="res://assets/audio/weapons/fetch_launcher/empty_01.wav" id="w31"]
+[ext_resource type="AudioStream" path="res://assets/audio/weapons/fetch_launcher/empty_02.wav" id="w32"]
+[ext_resource type="AudioStream" path="res://assets/audio/weapons/fetch_launcher/switch_01.wav" id="w33"]
+[ext_resource type="AudioStream" path="res://assets/audio/weapons/fetch_launcher/switch_02.wav" id="w34"]
+[ext_resource type="AudioStream" path="res://assets/audio/weapons/fetch_launcher/reload_start_01.wav" id="w35"]
+[ext_resource type="AudioStream" path="res://assets/audio/weapons/fetch_launcher/reload_step_01.wav" id="w36"]
+[ext_resource type="AudioStream" path="res://assets/audio/weapons/fetch_launcher/reload_step_02.wav" id="w37"]
+[ext_resource type="AudioStream" path="res://assets/audio/weapons/fetch_launcher/reload_complete_01.wav" id="w38"]
+[ext_resource type="AudioStream" path="res://assets/audio/enemies/shared/alert_01.wav" id="e39"]
+[ext_resource type="AudioStream" path="res://assets/audio/enemies/shared/alert_02.wav" id="e40"]
+[ext_resource type="AudioStream" path="res://assets/audio/enemies/shared/alert_03.wav" id="e41"]
+[ext_resource type="AudioStream" path="res://assets/audio/enemies/shared/hurt_01.wav" id="e42"]
+[ext_resource type="AudioStream" path="res://assets/audio/enemies/shared/hurt_02.wav" id="e43"]
+[ext_resource type="AudioStream" path="res://assets/audio/enemies/shared/hurt_03.wav" id="e44"]
+[ext_resource type="AudioStream" path="res://assets/audio/enemies/shared/death_01.wav" id="e45"]
+[ext_resource type="AudioStream" path="res://assets/audio/enemies/shared/death_02.wav" id="e46"]
+[ext_resource type="AudioStream" path="res://assets/audio/enemies/shared/death_03.wav" id="e47"]
+[ext_resource type="AudioStream" path="res://assets/audio/enemies/shared/attack_01.wav" id="e60"]
+[ext_resource type="AudioStream" path="res://assets/audio/enemies/shared/attack_02.wav" id="e61"]
+[ext_resource type="AudioStream" path="res://assets/audio/enemies/shared/attack_03.wav" id="e62"]
+[ext_resource type="AudioStream" path="res://assets/audio/footsteps/soil_01.wav" id="f48"]
+[ext_resource type="AudioStream" path="res://assets/audio/footsteps/soil_02.wav" id="f49"]
+[ext_resource type="AudioStream" path="res://assets/audio/footsteps/soil_03.wav" id="f50"]
+[ext_resource type="AudioStream" path="res://assets/audio/footsteps/concrete_01.wav" id="f51"]
+[ext_resource type="AudioStream" path="res://assets/audio/footsteps/concrete_02.wav" id="f52"]
+[ext_resource type="AudioStream" path="res://assets/audio/footsteps/concrete_03.wav" id="f53"]
+[ext_resource type="AudioStream" path="res://assets/audio/footsteps/wood_01.wav" id="f54"]
+[ext_resource type="AudioStream" path="res://assets/audio/footsteps/wood_02.wav" id="f55"]
+[ext_resource type="AudioStream" path="res://assets/audio/footsteps/wood_03.wav" id="f56"]
+[ext_resource type="AudioStream" path="res://assets/audio/footsteps/metal_01.wav" id="f57"]
+[ext_resource type="AudioStream" path="res://assets/audio/footsteps/metal_02.wav" id="f58"]
+[ext_resource type="AudioStream" path="res://assets/audio/footsteps/metal_03.wav" id="f59"]
+
+[sub_resource type="Resource" id="Cue1"]
+script = ExtResource("1_script")
+id = &"pawstol_shot"
+streams = Array[AudioStream]([ExtResource("w3"), ExtResource("w4")])
+bus = &"Weapons"
+volume_db = -3.0
+pitch_min = 0.97
+pitch_max = 1.03
+maximum_polyphony = 4
+
+[sub_resource type="Resource" id="Cue2"]
+script = ExtResource("1_script")
+id = &"pawstol_mechanical"
+streams = Array[AudioStream]([ExtResource("w5"), ExtResource("w6")])
+bus = &"Weapons"
+volume_db = -5.0
+pitch_min = 0.97
+pitch_max = 1.03
+maximum_polyphony = 2
+
+[sub_resource type="Resource" id="Cue3"]
+script = ExtResource("1_script")
+id = &"pawstol_empty"
+streams = Array[AudioStream]([ExtResource("w7"), ExtResource("w8")])
+bus = &"Weapons"
+volume_db = -5.0
+pitch_min = 0.97
+pitch_max = 1.03
+maximum_polyphony = 2
+
+[sub_resource type="Resource" id="Cue4"]
+script = ExtResource("1_script")
+id = &"pawstol_switch"
+streams = Array[AudioStream]([ExtResource("w9"), ExtResource("w10")])
+bus = &"Weapons"
+volume_db = -5.0
+pitch_min = 0.97
+pitch_max = 1.03
+maximum_polyphony = 2
+
+[sub_resource type="Resource" id="Cue5"]
+script = ExtResource("1_script")
+id = &"pawstol_reload_start"
+streams = Array[AudioStream]([ExtResource("w11")])
+bus = &"Weapons"
+volume_db = -5.0
+pitch_min = 0.97
+pitch_max = 1.03
+maximum_polyphony = 2
+
+[sub_resource type="Resource" id="Cue6"]
+script = ExtResource("1_script")
+id = &"pawstol_reload_step"
+streams = Array[AudioStream]([ExtResource("w12"), ExtResource("w13")])
+bus = &"Weapons"
+volume_db = -5.0
+pitch_min = 0.97
+pitch_max = 1.03
+maximum_polyphony = 2
+
+[sub_resource type="Resource" id="Cue7"]
+script = ExtResource("1_script")
+id = &"pawstol_reload_complete"
+streams = Array[AudioStream]([ExtResource("w14")])
+bus = &"Weapons"
+volume_db = -5.0
+pitch_min = 0.97
+pitch_max = 1.03
+maximum_polyphony = 2
+
+[sub_resource type="Resource" id="Cue8"]
+script = ExtResource("1_script")
+id = &"barkshot_shot"
+streams = Array[AudioStream]([ExtResource("w15"), ExtResource("w16")])
+bus = &"Weapons"
+volume_db = -1.5
+pitch_min = 0.97
+pitch_max = 1.03
+maximum_polyphony = 4
+
+[sub_resource type="Resource" id="Cue9"]
+script = ExtResource("1_script")
+id = &"barkshot_mechanical"
+streams = Array[AudioStream]([ExtResource("w17"), ExtResource("w18")])
+bus = &"Weapons"
+volume_db = -5.0
+pitch_min = 0.97
+pitch_max = 1.03
+maximum_polyphony = 2
+
+[sub_resource type="Resource" id="Cue10"]
+script = ExtResource("1_script")
+id = &"barkshot_empty"
+streams = Array[AudioStream]([ExtResource("w19"), ExtResource("w20")])
+bus = &"Weapons"
+volume_db = -5.0
+pitch_min = 0.97
+pitch_max = 1.03
+maximum_polyphony = 2
+
+[sub_resource type="Resource" id="Cue11"]
+script = ExtResource("1_script")
+id = &"barkshot_switch"
+streams = Array[AudioStream]([ExtResource("w21"), ExtResource("w22")])
+bus = &"Weapons"
+volume_db = -5.0
+pitch_min = 0.97
+pitch_max = 1.03
+maximum_polyphony = 2
+
+[sub_resource type="Resource" id="Cue12"]
+script = ExtResource("1_script")
+id = &"barkshot_reload_start"
+streams = Array[AudioStream]([ExtResource("w23")])
+bus = &"Weapons"
+volume_db = -5.0
+pitch_min = 0.97
+pitch_max = 1.03
+maximum_polyphony = 2
+
+[sub_resource type="Resource" id="Cue13"]
+script = ExtResource("1_script")
+id = &"barkshot_reload_step"
+streams = Array[AudioStream]([ExtResource("w24"), ExtResource("w25")])
+bus = &"Weapons"
+volume_db = -5.0
+pitch_min = 0.97
+pitch_max = 1.03
+maximum_polyphony = 2
+
+[sub_resource type="Resource" id="Cue14"]
+script = ExtResource("1_script")
+id = &"barkshot_reload_complete"
+streams = Array[AudioStream]([ExtResource("w26")])
+bus = &"Weapons"
+volume_db = -5.0
+pitch_min = 0.97
+pitch_max = 1.03
+maximum_polyphony = 2
+
+[sub_resource type="Resource" id="Cue15"]
+script = ExtResource("1_script")
+id = &"fetch_launcher_shot"
+streams = Array[AudioStream]([ExtResource("w27"), ExtResource("w28")])
+bus = &"Weapons"
+volume_db = -2.0
+pitch_min = 0.97
+pitch_max = 1.03
+maximum_polyphony = 4
+
+[sub_resource type="Resource" id="Cue16"]
+script = ExtResource("1_script")
+id = &"fetch_launcher_mechanical"
+streams = Array[AudioStream]([ExtResource("w29"), ExtResource("w30")])
+bus = &"Weapons"
+volume_db = -5.0
+pitch_min = 0.97
+pitch_max = 1.03
+maximum_polyphony = 2
+
+[sub_resource type="Resource" id="Cue17"]
+script = ExtResource("1_script")
+id = &"fetch_launcher_empty"
+streams = Array[AudioStream]([ExtResource("w31"), ExtResource("w32")])
+bus = &"Weapons"
+volume_db = -5.0
+pitch_min = 0.97
+pitch_max = 1.03
+maximum_polyphony = 2
+
+[sub_resource type="Resource" id="Cue18"]
+script = ExtResource("1_script")
+id = &"fetch_launcher_switch"
+streams = Array[AudioStream]([ExtResource("w33"), ExtResource("w34")])
+bus = &"Weapons"
+volume_db = -5.0
+pitch_min = 0.97
+pitch_max = 1.03
+maximum_polyphony = 2
+
+[sub_resource type="Resource" id="Cue19"]
+script = ExtResource("1_script")
+id = &"fetch_launcher_reload_start"
+streams = Array[AudioStream]([ExtResource("w35")])
+bus = &"Weapons"
+volume_db = -5.0
+pitch_min = 0.97
+pitch_max = 1.03
+maximum_polyphony = 2
+
+[sub_resource type="Resource" id="Cue20"]
+script = ExtResource("1_script")
+id = &"fetch_launcher_reload_step"
+streams = Array[AudioStream]([ExtResource("w36"), ExtResource("w37")])
+bus = &"Weapons"
+volume_db = -5.0
+pitch_min = 0.97
+pitch_max = 1.03
+maximum_polyphony = 2
+
+[sub_resource type="Resource" id="Cue21"]
+script = ExtResource("1_script")
+id = &"fetch_launcher_reload_complete"
+streams = Array[AudioStream]([ExtResource("w38")])
+bus = &"Weapons"
+volume_db = -5.0
+pitch_min = 0.97
+pitch_max = 1.03
+maximum_polyphony = 2
+
+[sub_resource type="Resource" id="Cue22"]
+script = ExtResource("1_script")
+id = &"enemy_alert"
+streams = Array[AudioStream]([ExtResource("e39"), ExtResource("e40"), ExtResource("e41")])
+bus = &"Enemies"
+volume_db = -3.0
+pitch_min = 0.94
+pitch_max = 1.06
+maximum_polyphony = 4
+spatial = true
+max_distance = 32.0
+unit_size = 3.0
+
+[sub_resource type="Resource" id="Cue23"]
+script = ExtResource("1_script")
+id = &"enemy_hurt"
+streams = Array[AudioStream]([ExtResource("e42"), ExtResource("e43"), ExtResource("e44")])
+bus = &"Enemies"
+volume_db = -3.0
+pitch_min = 0.94
+pitch_max = 1.06
+maximum_polyphony = 6
+spatial = true
+max_distance = 32.0
+unit_size = 3.0
+
+[sub_resource type="Resource" id="Cue24"]
+script = ExtResource("1_script")
+id = &"enemy_death"
+streams = Array[AudioStream]([ExtResource("e45"), ExtResource("e46"), ExtResource("e47")])
+bus = &"Enemies"
+volume_db = -1.5
+pitch_min = 0.94
+pitch_max = 1.06
+maximum_polyphony = 4
+spatial = true
+max_distance = 32.0
+unit_size = 3.0
+
+[sub_resource type="Resource" id="Cue29"]
+script = ExtResource("1_script")
+id = &"enemy_attack"
+streams = Array[AudioStream]([ExtResource("e60"), ExtResource("e61"), ExtResource("e62")])
+bus = &"Enemies"
+volume_db = -2.5
+pitch_min = 0.94
+pitch_max = 1.06
+maximum_polyphony = 5
+spatial = true
+max_distance = 32.0
+unit_size = 3.0
+
+[sub_resource type="Resource" id="Cue25"]
+script = ExtResource("1_script")
+id = &"footstep_soil"
+streams = Array[AudioStream]([ExtResource("f48"), ExtResource("f49"), ExtResource("f50")])
+bus = &"Player"
+volume_db = -6.0
+pitch_min = 0.94
+pitch_max = 1.07
+maximum_polyphony = 3
+
+[sub_resource type="Resource" id="Cue26"]
+script = ExtResource("1_script")
+id = &"footstep_concrete"
+streams = Array[AudioStream]([ExtResource("f51"), ExtResource("f52"), ExtResource("f53")])
+bus = &"Player"
+volume_db = -6.0
+pitch_min = 0.94
+pitch_max = 1.07
+maximum_polyphony = 3
+
+[sub_resource type="Resource" id="Cue27"]
+script = ExtResource("1_script")
+id = &"footstep_wood"
+streams = Array[AudioStream]([ExtResource("f54"), ExtResource("f55"), ExtResource("f56")])
+bus = &"Player"
+volume_db = -6.0
+pitch_min = 0.94
+pitch_max = 1.07
+maximum_polyphony = 3
+
+[sub_resource type="Resource" id="Cue28"]
+script = ExtResource("1_script")
+id = &"footstep_metal"
+streams = Array[AudioStream]([ExtResource("f57"), ExtResource("f58"), ExtResource("f59")])
+bus = &"Player"
+volume_db = -6.0
+pitch_min = 0.94
+pitch_max = 1.07
+maximum_polyphony = 3
+
+[resource]
+script = ExtResource("2_library")
+cues = Array[ExtResource("1_script")]([SubResource("Cue1"), SubResource("Cue2"), SubResource("Cue3"), SubResource("Cue4"), SubResource("Cue5"), SubResource("Cue6"), SubResource("Cue7"), SubResource("Cue8"), SubResource("Cue9"), SubResource("Cue10"), SubResource("Cue11"), SubResource("Cue12"), SubResource("Cue13"), SubResource("Cue14"), SubResource("Cue15"), SubResource("Cue16"), SubResource("Cue17"), SubResource("Cue18"), SubResource("Cue19"), SubResource("Cue20"), SubResource("Cue21"), SubResource("Cue22"), SubResource("Cue23"), SubResource("Cue24"), SubResource("Cue29"), SubResource("Cue25"), SubResource("Cue26"), SubResource("Cue27"), SubResource("Cue28")])

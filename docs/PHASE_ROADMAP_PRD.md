@@ -1,6 +1,6 @@
 # Cobie Nukem — Multi-Phase Production PRD
 
-**Status:** Active production source of truth; `0.6.0-alpha.5` production-navigation alpha shipped publicly
+**Status:** Active production source of truth; `0.6.0-alpha.5` public, `0.6.0-alpha.6` presentation/pacing candidate in validation
 
 **Created:** 2026-07-11
 
@@ -8,7 +8,7 @@
 
 **Current public baseline:** `0.6.0-alpha.5` (`4059174` gameplay/runtime revision; source integration `499eab2`; website deployment `f9065c4`)
 
-**Unreleased development baseline:** none; source and public runtime are synchronized at `0.6.0-alpha.5`
+**Unreleased development baseline:** `codex/alpha6-presentation-overhaul` — original enemy/audio production tranche plus encounter-v2 pacing; not public until the release evidence below is complete
 
 **Last playtest alpha:** `0.6.0-alpha.5` (`4059174`) — live at <https://www.louislehmann.fyi/games/cobie-nukem/>
 
@@ -21,11 +21,11 @@ This section is the first place a new Codex or external-auditor run should read.
 
 | Phase | Status | Completed | Explicitly remaining |
 | --- | --- | --- | --- |
-| 1. Gameplay systems foundation | **VERTICAL-SLICE FOUNDATION IMPLEMENTED — IN REVIEW** | Previous foundation plus `PlayerFeelProfile`, `WeaponFeelProfile`, terminal combat feedback events, damage reactions, pressure/attack tokens, group alert, weak-point metadata, multi-wave encounter schema v2, mission runtime/spawn registry extraction, event-driven interaction/aim registries, production ground navigation and bounded stuck recovery | Authored directional animation atlases, final feel/balance |
+| 1. Gameplay systems foundation | **VERTICAL-SLICE FOUNDATION IMPLEMENTED — IN REVIEW** | Previous foundation plus `PlayerFeelProfile`, `WeaponFeelProfile`, terminal combat feedback events, damage reactions, observable pressure/attack-token budgets, group alert, weak-point metadata, live multi-wave encounter schema v2, mission runtime/spawn registry extraction, event-driven interaction/aim registries, production ground navigation and bounded stuck recovery | Bespoke Hound/Walker directional atlases; final human feel/balance |
 | 2. Content-production pipeline | **FOUNDATION COMPLETE** | Versioned manifest, Salmon Creek content data, headless validator, release-gate integration, authoring guide, manifest template, critical-path rules, Mission 2 (Vancouver Waterfront) manifest/objective/encounter skeleton validating in CI with a locked card and non-public graybox | Visual editor tooling; spawn volumes/patrol paths; richer pickup/prop/zone schemas; automated nav/reachability analysis; Mission 2 full production |
 | 3. World and episode structure | **NOT STARTED — BRIEFS + TEASER ART ONLY** | Vancouver Waterfront, Mount Hood, Moon, and Ventura briefs/locked illustrated cards establish the campaign roadmap | No production geometry, mission routing, encounters, enemies, or playable level assets have been built |
-| 4. Combat and presentation expansion | **STARTED — SYSTEM CONTRACTS** | High-resolution 640×360 presentation baseline, surface-aware combat events, muzzle/impact/death feedback, enemy state motion, numeric elite/boss identity, imported-sample audio contract and expanded bus/limiter layout | Original sample library, directional sprite atlases, adaptive music, environmental kit/interaction density, final boss spectacle |
-| 5. Accessibility, persistence, observability | **IMPLEMENTED FOUNDATION — IN REVIEW** | Save schema v3 with v2 migration and objective/encounter/secret persistence; local-only frame/combat/damage/pickup metrics; objective HUD; reduced-flash integration; quality profiles | Complete settings UI for every assist, captions beyond current narrative text, visual regression gallery, 100-route/50-cycle expanded soak, physical devices |
+| 4. Combat and presentation expansion | **PRODUCTION TRANCHE IMPLEMENTED — IN VALIDATION** | High-resolution 640×360 baseline; surface-aware combat events; muzzle/impact/death feedback; three original directional/reaction enemy atlases; code-driven elite/boss states; 60 original imported WAVs across 29 bounded weapon/enemy/footstep cue families; staged encounters and resource-driven Walker pressure/phases/recovery/summons | Bespoke Hound/Walker atlases, adaptive music, authored ambience/Cobie voice, environmental kit/interaction density, human art/mix/boss review |
+| 5. Accessibility, persistence, observability | **IMPLEMENTED FOUNDATION — IN REVIEW** | Save schema v3 with v2 migration and objective/encounter/secret persistence; local-only frame/combat/damage/pickup metrics; objective HUD; reduced-flash integration; quality profiles; 100-route/100-checkpoint/100-touch-cancellation/500-weapon-transition soak | Complete settings UI for every assist, captions beyond current narrative text, visual regression gallery, physical devices |
 | 6. Alpha, beta, release | **NOT STARTED** | Existing development packaging and CI are available | Episode content completion, full human/device/browser matrices, signing/notarization, legal review, store readiness |
 
 ### Immediate next gate
@@ -52,6 +52,8 @@ This section is the first place a new Codex or external-auditor run should read.
 
 **Production-navigation checkpoint (`0.6.0-alpha.5`, shipped 2026-07-13):** Salmon Creek now bakes a Web-safe navigation map from temporary CPU-side collision sources before combat, then removes those sources. The bake contains 112 polygons/114 vertices and a deterministic 41-point route from the opening field through the Walker arena; a separate cover query proves lateral obstacle avoidance. Every grounded archetype receives a throttled `NavigationAgent3D`, flying drones retain authored flight steering, and three failed repaths produce one bounded, locally counted recovery. The pass also fixed a real half-metre Connector D seam that radius erosion exposed as a disconnected arena island. The release gate now runs this contract, the extended profiler reports seven agents at Walker density, and shared death VFX moved out of the 500-line enemy-controller boundary. The live PCK SHA-256 is `0249b13ca7036cd73d546c5923a927ce5c528591902947b3218a6e7203e86ac2`; physical feel remains a human gate.
 
+**Presentation and encounter checkpoint (`0.6.0-alpha.6` candidate, 2026-07-13):** three regular enemy archetypes now use original manifested 4×2 atlases with four directional locomotion views plus alert, attack, hurt/stagger, and death poses; Compliance Hound and Walker receive the same deterministic state vocabulary while bespoke atlases remain explicit future art. The procedural primary-combat path is replaced by 60 byte-distinct, deterministic, project-original imported WAVs grouped into 29 bounded cue families: all three weapon lifecycles, four footstep surfaces, and positional enemy alert/attack/hurt/death. Web quality caps concurrent imported voices at 16 and missed first-alert transitions are replayed once on binding. Every Salmon Creek encounter now uses schema-v2 waves: 12 initial-wave actors (including the boss) plus five delayed reinforcements, for 17 total, with peak authored density held at three. Walker pressure, phase cues, recovery drops, and third-cannon summon cadence are resource-driven and reset-safe; checkpoint replay cannot inflate defeated counts. Focused tests, 100-route soak, full native/Web export gate, and independent code review are green; final post-review export/browser/release evidence is still being completed. Human mix, encounter duration/balance, physical iPad, and target-Mac playthrough remain open.
+
 ### World-class vertical-slice delivery boundary
 
 Completed in the current integration checkpoint:
@@ -64,11 +66,11 @@ Completed in the current integration checkpoint:
 - 640×360 render/UI normalization, current-objective HUD, reduced-flash effects, expanded audio buses/limiter, and an imported-sample playback pipeline with bounded polyphony;
 - desktop and 4:3 tablet browser captures plus the complete headless regression matrix.
 
-Critical before `0.6.0-alpha`:
+Critical before the next public alpha:
 
 - production navigation and unreachable-actor recovery evidence (**automated gate shipped in `0.6.0-alpha.5`; human feel still required**);
-- original directional enemy animation and imported weapon/enemy/footstep sample packs with manifest provenance;
-- Salmon Creek encounter-v2 pacing authoring and Walker spectacle/balance playthrough;
+- original directional enemy animation and imported weapon/enemy/footstep sample packs with manifest provenance (**automated production tranche complete for three regular archetypes and all primary cue families; bespoke elite/boss art and human mix remain**);
+- Salmon Creek encounter-v2 pacing authoring and Walker spectacle/balance playthrough (**authoring and automated pressure/reset evidence complete; human duration/balance remains**);
 - physical-device verification of the surfaced accessibility controls (text scale, contrast, captions, control opacity/layout);
 - profiler evidence and target-Mac human playthrough (native/Web exports and the first seeded soak expansion are automated);
 - physical iPad Safari touch comfort/thermal/focus validation and human photosensitivity/difficulty review.

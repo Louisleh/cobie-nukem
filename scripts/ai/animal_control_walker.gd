@@ -14,6 +14,7 @@ const DRONE := preload("res://scenes/enemies/leash_enforcement_drone.tscn")
 var boss_phase := BossPhase.CANNONS
 var _attack_count := 0
 var _finishing_with_ball := false
+var summon_attack_interval := 3
 
 func _ready() -> void:
 	if definition != null:
@@ -45,7 +46,7 @@ func _perform_attack() -> void:
 	match boss_phase:
 		BossPhase.CANNONS:
 			_spawn_projectile(BOLT, 12.0)
-			if _attack_count % 3 == 0:
+			if _attack_count % maxi(1, summon_attack_interval) == 0:
 				_spawn_drone()
 		BossPhase.EXPOSED_CORE:
 			_spawn_projectile(BOLT, 14.0, 1.5)
