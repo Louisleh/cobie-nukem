@@ -8,7 +8,7 @@
 
 **Current public baseline:** `0.6.0-alpha.4` (`67a0ee4` gameplay/runtime revision; source integration `9539978`; website deployment `65863c8`)
 
-**Unreleased development baseline:** `0.6.0-alpha.5` (`9143a31` gameplay revision) adds production navigation; public remains `0.6.0-alpha.4` until deployment verification
+**Unreleased development baseline:** `0.6.0-alpha.5` (`4059174` gameplay revision) adds production navigation; public remains `0.6.0-alpha.4` until deployment verification
 
 **Last playtest alpha:** `0.6.0-alpha.4` (`67a0ee4`) — live at <https://www.louislehmann.fyi/games/cobie-nukem/>
 
