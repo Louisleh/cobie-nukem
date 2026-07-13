@@ -17,6 +17,9 @@ playthrough.
   server sync, and removes the temporary bodies.
 - No render-mesh GPU readback, runtime bridge, avoidance callback, gameplay
   rebake, or per-frame server force-update is used.
+- Bake and map synchronization use two deferred construction turns because
+  Linux headless queues the region assignment later than macOS. CI caught this
+  portability difference; both platforms must report map iteration 2.
 - Recovery requires three stationary samples, moves no more than three metres
   to a valid mesh point, resets interpolation, and increments local-only
   `navigation_recoveries`.
