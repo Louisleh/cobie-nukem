@@ -30,7 +30,7 @@ The alpha.7 phase uses a repo-committed GPT-5.6/Spark orchestration contract. GP
 | 4. Accessibility and presentation | Salmon Creek | **INTEGRATED — DEVICE GATES OPEN** | Bounded priority captions for narrative/objective/enemy/boss/checkpoint/PA; settings/aspect coverage; existing twin-stick focus/cancellation soaks remain green |
 | 5. Mission controller extraction | Salmon Creek | **INTEGRATED — FIRST RESPONSIBILITY SLICE** | `MissionInteractionRuntime` owns catalog validation, construction, stable identity, callbacks, restore, and reset; broader controller decomposition remains incremental technical work |
 | 6. Vancouver production foundation | Vancouver | **INTEGRATED — LOCKED/NON-PUBLIC** | Five-zone typed route, finite spawn volumes/patrols/surfaces/checkpoints/secrets, schema-v2 encounters, three-wave convoy, and deterministic route/reset simulation |
-| 7. Independent integration and release gate | Release | **QUEUED** | Full QA/export/browser matrix; alpha.7 only if green |
+| 7. Independent integration and release gate | Release | **IN PROGRESS — NON-EXPORT MATRIX GREEN** | Independent Spark review found no unequivocal release blocker; a root pass caught and fixed Walker-lane obstruction; full headless/soak/content matrix green; exports/browser/package identity remain |
 
 Human-only throughout: physical iPad Safari comfort/thermal/audio, family comprehension, boss and difficulty feel, mix, humor, and photosensitivity.
 
