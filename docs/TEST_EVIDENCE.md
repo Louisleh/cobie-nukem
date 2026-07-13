@@ -20,7 +20,8 @@ This is a durable evidence template, not a claim that every listed check has run
 | Native 1080p zone profile | Pass with retained outlier | p95 ≤22.09 ms and p99 ≤62.65 ms across menu/field/lab/tunnels/Walker/victory; peak 220 draw calls, 2,815 objects, 67.8 MB static memory; isolated Walker maximum 224 ms tracked in Known Issues |
 | Projectile first-render profile | Pass | Runtime visual/audio warmup plus bounded pool; four rendered spawn frames stay below 50 ms |
 | Complete release/export matrix | Pending final stamped tree | `QA_EXPORTS=1 bash tools/release_validate.sh` required before merge |
-| Packaged Web desktop/tablet/public | Pending final stamped artifact | Browser route required after packaging/deployment |
+| Packaged Web desktop/tablet | PASS | Cache-keyed alpha.4 payload; loading/warming/ready, menu, mission select, gameplay, combat input, and 1024×768 twin-stick HUD verified in the in-app Chromium browser |
+| Public deployment | Pending | Verify the exact deployed hashes and uncached public route after merge |
 | Physical iPad and human playthrough | Not run | Explicit human-only gate |
 
 ### Artifacts
