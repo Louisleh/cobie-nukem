@@ -1,0 +1,47 @@
+work_id: alpha7-salmon-interaction-catalog
+role: spark-content-author
+goal: Author a validated typed Salmon Creek interaction catalog with at least three meaningful environmental interactions in every major combat arena.
+baseline_revision: 5f589b4
+dependencies:
+  - alpha7-interaction-runtime
+owned_paths:
+  - scripts/gameplay/interaction_placement.gd
+  - scripts/gameplay/interaction_catalog.gd
+  - scripts/gameplay/content_manifest.gd
+  - resources/interactions/salmon_creek_interactions.tres
+  - resources/content/salmon_creek_manifest.tres
+  - tests/unit/interaction_catalog_test.gd
+read_only_context:
+  - scripts/gameplay/world_interaction_definition.gd
+  - scripts/level/world_interaction.gd
+  - scripts/level/episode_1_level_1.gd
+  - resources/encounters/salmon_*.tres
+  - scenes/pickups
+  - docs/CONTENT_AUTHORING.md
+forbidden_paths:
+  - scripts/core
+  - scripts/level
+  - scenes/levels
+  - project.godot
+  - export_presets.cfg
+  - tools/release_validate.sh
+  - docs/PHASE_ROADMAP_PRD.md
+behavioral_contract: ContentManifest optionally owns an InteractionCatalog. Placements use stable unique IDs, valid zone IDs, finite transforms, a validated typed definition, and no mission code. Salmon Creek authors at least three interactions in forbidden_field, equipment_shed, maintenance_tunnels, compliance_lab, and walker_arena. Assets are existing project-original primitives/pickups only.
+acceptance_criteria:
+  - Catalog validation rejects duplicate/empty placement IDs, missing zones/definitions, invalid definitions/transforms, and below-minimum zone density.
+  - Salmon Creek contains at least 15 placements total and three per required combat arena.
+  - The mix includes breakables, explosives, hazards, loot containers, and one optional secret trigger without replacing or confusing critical progression objects.
+  - Loot scenes exist and all definitions validate.
+  - ContentManifest.validate consumes the optional catalog.
+focused_tests:
+  - HOME=/tmp/cobie-alpha7-content-home /opt/homebrew/bin/godot --headless --editor --path repo --quit
+  - HOME=/tmp/cobie-alpha7-content-home /opt/homebrew/bin/godot --headless --path repo --script res://tests/unit/interaction_catalog_test.gd
+  - HOME=/tmp/cobie-alpha7-content-home /opt/homebrew/bin/godot --headless --path repo --script res://tools/validate_content.gd
+evidence_required:
+  - One externally verifiable commit whose parent is the packet baseline.
+  - Complete focused output with no attributable ERROR, leak, orphan, missing resource, or unmanifested external asset.
+out_of_scope:
+  - Runtime placement/spawning
+  - Save schema changes
+  - New external art, audio, names, logos, or legal claims
+time_limit_minutes: 40
