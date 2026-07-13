@@ -261,13 +261,19 @@ func _test_world_registry_player_index() -> void:
 		return
 	var indexed_player := Node3D.new()
 	indexed_player.add_to_group(&"player")
+	indexed_player.add_to_group(&"auto_aim_targets")
+	indexed_player.add_to_group(&"interactables")
 	get_root().add_child(indexed_player)
 	await process_frame
 	await process_frame
 	_expect(registry.primary_player() == indexed_player, "WorldRegistry indexes the primary player without hot-path SceneTree scans")
+	_expect(indexed_player in registry.targets_view(), "WorldRegistry exposes an allocation-free target view")
+	_expect(indexed_player in registry.interactables_view(), "WorldRegistry exposes an allocation-free interaction view")
 	indexed_player.queue_free()
 	await process_frame
 	_expect(registry.primary_player() == null, "WorldRegistry removes freed player entries")
+	_expect(registry.targets_view().all(func(node: Node) -> bool: return is_instance_valid(node)), "WorldRegistry removes freed targets from the hot-path view")
+	_expect(registry.interactables_view().all(func(node: Node) -> bool: return is_instance_valid(node)), "WorldRegistry removes freed interactables from the hot-path view")
 
 
 func _spawn_fake(_path: String, _position: Vector3) -> Node:

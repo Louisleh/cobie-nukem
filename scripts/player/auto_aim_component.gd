@@ -48,7 +48,7 @@ func _find_best_target(camera: Camera3D, effective_range: float) -> Node3D:
 	var best: Node3D
 	var best_score := INF
 	var registry := get_node_or_null("/root/WorldRegistry")
-	var candidates: Array[Node] = registry.targets() if registry != null else []
+	var candidates: Array[Node] = registry.targets_view() if registry != null else []
 	for candidate in candidates:
 		if candidate is not Node3D or not _candidate_valid(camera, candidate, effective_range):
 			continue

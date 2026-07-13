@@ -422,7 +422,7 @@ func _nearby_interactable() -> Node:
 	var best: Node
 	var best_score := INF
 	var registry := get_node_or_null("/root/WorldRegistry")
-	var candidates: Array[Node] = registry.interactables() if registry != null else []
+	var candidates: Array[Node] = registry.interactables_view() if registry != null else []
 	for node in candidates:
 		if not node is Node3D or not node.has_method("interact"):
 			continue
