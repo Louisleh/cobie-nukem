@@ -18,9 +18,17 @@ This is a durable evidence template, not a claim that every listed check has run
 | Parser and focused contracts | Pass | Title readiness, five-card previews, touch aim and adversarial lifecycle |
 | Expanded vertical-slice soak | Pass | 100 routes, 100 checkpoints, 100 twin-stick cancellations, 500 weapon transitions, 100 effects |
 | 1024×768 tablet browser | Pass | Title, menu, illustrated selector, aim options and gameplay HUD; no captured console warnings/errors |
-| Complete export/release matrix | Pending final stamp | `QA_EXPORTS=1 bash tools/release_validate.sh` |
+| Complete export/release matrix | Pass | `QA_EXPORTS=1 bash tools/release_validate.sh`, exit 0; Web and unsigned Universal macOS exports |
+| Headless stall smoke | Pass | 180 frames; 16.492 ms average, 24.486 ms maximum (not GPU evidence) |
 | True iPad multi-touch/comfort/thermal | Not run | Requires physical iPad Safari testing |
 | Human full playthrough and feel | Not run | Automated route evidence is not represented as human evidence |
+
+### Artifacts
+
+| Artifact | Bytes | SHA-256 |
+| --- | ---: | --- |
+| `cobie-nukem-0.6.0-alpha.2-itch.zip` | 21,365,147 | `1be13ee23464d28f2951bc04da14e5e53d25f2f25db5ca5150901b955cc42d16` |
+| `cobie-nukem-0.6.0-alpha.2-macos-unsigned.zip` | 70,729,118 | `5161b04e8d1f0d7088437acbc80444927368b8d7fb356a860b008a66e7a4361c` |
 
 ## Candidate 0.6.0-alpha.1 — 2026-07-12
 

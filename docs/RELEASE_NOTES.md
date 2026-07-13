@@ -21,8 +21,8 @@ Built on 2026-07-12 with Godot `4.7.stable.official.5b4e0cb0f` and matching offi
 
 ## Artifacts
 
-- `cobie-nukem-0.6.0-alpha.1-itch.zip` — 17,972,102 bytes; SHA-256 `0b459500a4f9521a5a08fcd224fbd002c6383866896f96c80b6a36dffe1ec35d`.
-- `cobie-nukem-0.6.0-alpha.1-macos-unsigned.zip` — 67,336,124 bytes; SHA-256 `ede455d76e362ad70d402f9f244efe2058de2f7c68dd3cb952268bb8dcb1aa26`.
+- `cobie-nukem-0.6.0-alpha.2-itch.zip` — 21,365,147 bytes; SHA-256 `1be13ee23464d28f2951bc04da14e5e53d25f2f25db5ca5150901b955cc42d16`.
+- `cobie-nukem-0.6.0-alpha.2-macos-unsigned.zip` — 70,729,118 bytes; SHA-256 `5161b04e8d1f0d7088437acbc80444927368b8d7fb356a860b008a66e7a4361c`.
 
 ---
 
