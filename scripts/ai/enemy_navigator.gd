@@ -9,6 +9,7 @@ const STUCK_SAMPLE_SECONDS := 0.35
 const STUCK_DISTANCE_SQUARED := 0.0025
 const REPATH_ATTEMPTS_BEFORE_RECOVERY := 3
 const MAX_RECOVERY_DISTANCE := 3.0
+const RECOVERY_COOLDOWN_SECONDS := 3.0
 
 var agent: NavigationAgent3D
 var actor: CharacterBody3D
@@ -20,6 +21,7 @@ var _last_requested_target := Vector3.INF
 var _sample_elapsed := 0.0
 var _sample_origin := Vector3.ZERO
 var _stuck_attempts := 0
+var _recovery_cooldown := 0.0
 
 
 func configure(owner: CharacterBody3D, navigation_radius: float, actor_height: float) -> void:
@@ -53,6 +55,10 @@ func steering_destination(requested: Vector3, delta: float) -> Vector3:
 func observe_motion(wants_motion: bool, delta: float) -> void:
 	if not enabled or not is_instance_valid(actor) or not _navigation_ready():
 		return
+	_recovery_cooldown = maxf(0.0, _recovery_cooldown - delta)
+	if _recovery_cooldown > 0.0:
+		_sample_origin = actor.global_position
+		return
 	_sample_elapsed += delta
 	if _sample_elapsed < STUCK_SAMPLE_SECONDS:
 		return
@@ -70,6 +76,7 @@ func observe_motion(wants_motion: bool, delta: float) -> void:
 	if _stuck_attempts < REPATH_ATTEMPTS_BEFORE_RECOVERY:
 		return
 	_stuck_attempts = 0
+	_recovery_cooldown = RECOVERY_COOLDOWN_SECONDS
 	var closest := NavigationServer3D.map_get_closest_point(agent.get_navigation_map(), actor.global_position)
 	if not closest.is_finite() or actor.global_position.distance_to(closest) > MAX_RECOVERY_DISTANCE:
 		recovery_requested.emit(&"path_unreachable", actor.global_position)
