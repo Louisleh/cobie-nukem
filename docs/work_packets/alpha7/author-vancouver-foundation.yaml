@@ -1,7 +1,7 @@
 work_id: alpha7-vancouver-production-foundation
 role: spark-content-author
 goal: Author a validated, locked Mission 2 route foundation and convert Vancouver encounters to schema-v2 multi-wave data without adding public routing or mission-specific gameplay forks.
-baseline_revision: 3d184e6
+baseline_revision: 34df30e
 dependencies:
   - encounter-schema-v2
 owned_paths:

@@ -1,7 +1,7 @@
 work_id: alpha7-integrate-salmon-interactions
 role: spark-gameplay-worker
 goal: Integrate the validated Salmon Creek interaction catalog through a reusable mission-owned runtime, with deterministic checkpoint resets and bounded loot/secret callbacks.
-baseline_revision: 3d184e6
+baseline_revision: 34df30e
 dependencies:
   - alpha7-interaction-runtime
   - alpha7-salmon-interaction-catalog
