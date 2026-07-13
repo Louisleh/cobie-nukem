@@ -30,3 +30,10 @@ The macOS ZIP is unsigned and unnotarized. The working title still requires clea
 - `cobie-nukem-0.6.0-alpha.4-itch.zip` — 21,429,209 bytes; SHA-256 `24f9468724b3396b843a67be793c6d2688728db0ff69e8b07eaac050e1c14430`.
 - `cobie-nukem-0.6.0-alpha.4-macos-unsigned.zip` — 70,793,257 bytes; SHA-256 `b7395cc96379b891c5246675cb3301eb449a339774079c6e2288a277823297dc`.
 - Web PCK — 11,482,536 bytes; SHA-256 `aaafdefdc9e649387a9bc070830dbb889eba13b66df96de1548e2779a2c2574d`.
+
+## Public deployment
+
+- Source integration: `9539978` on `Louisleh/cobie-nukem`.
+- Website deployment: `65863c8` on `Louisleh/louislehmann-site`.
+- Live route: <https://www.louislehmann.fyi/games/cobie-nukem/>.
+- The downloaded public PCK matched the packaged SHA-256 above; uncached desktop landing and 1024×768 twin-stick gameplay checks passed without new browser console warnings or errors.

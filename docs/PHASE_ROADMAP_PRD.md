@@ -1,16 +1,16 @@
 # Cobie Nukem — Multi-Phase Production PRD
 
-**Status:** Active production source of truth; `0.6.0-alpha.3` agentic-production checkpoint shipped publicly
+**Status:** Active production source of truth; `0.6.0-alpha.4` agentic-overhaul checkpoint shipped publicly
 
 **Created:** 2026-07-11
 
 **Last status review:** 2026-07-13
 
-**Current public baseline:** `0.6.0-alpha.3` (`b8795dc` gameplay/toolchain feature revision; source integration `7e83330`)
+**Current public baseline:** `0.6.0-alpha.4` (`67a0ee4` gameplay/runtime revision; source integration `9539978`; website deployment `65863c8`)
 
-**Unreleased development baseline:** `0.6.0-alpha.4` agentic-overhaul candidate on `codex/agentic-overhaul-completion`; public remains synchronized at `0.6.0-alpha.3` until the candidate gates and deploys
+**Unreleased development baseline:** none; `main` and the public artifact are synchronized at `0.6.0-alpha.4`
 
-**Last playtest alpha:** `0.6.0-alpha.3` (`b8795dc`) — live at <https://www.louislehmann.fyi/games/cobie-nukem/>
+**Last playtest alpha:** `0.6.0-alpha.4` (`67a0ee4`) — live at <https://www.louislehmann.fyi/games/cobie-nukem/>
 
 **Engine:** Godot 4.7 stable, GDScript, Compatibility renderer
 **Purpose:** Turn the family-playtest vertical slice into a sustainable, original multi-level game without sacrificing responsiveness, humor, Web support, or unusual-controller accessibility.
@@ -46,7 +46,7 @@ This section is the first place a new Codex or external-auditor run should read.
 
 **Agentic production checkpoint (`0.6.0-alpha.3`, shipped 2026-07-13):** Godot 4.7, a privacy-hardened Blender 5.1 MCP path, and focused Godot production skills are installed locally and governed by repository contracts. Three Godot MCP candidates, GdUnit4, and FuncGodot/TrenchBroom were piloted before adoption decisions; runtime bridges remain forbidden from source and exports. The release gate now rejects engine script/leak/orphan output, a 300-frame percentile/drift performance smoke replaces the average-only check, and player lookup is event-indexed for pickup/enemy hot paths. The first Blender-authored production prop replaces the procedural ball-return placeholder in Salmon Creek with manifested source/runtime assets and a gameplay contract test. The matching Web artifact is deployed at the public play URL with PCK SHA-256 `4d9ffb7714618d17357d364d8f51d9b8387c8567c6cf6547071b9815e7ab67d1`. This improves the production loop and one secret; it does not complete the remaining directional-animation, imported-audio, navigation, encounter-balance, or physical-device gates.
 
-**Agentic overhaul completion candidate (`0.6.0-alpha.4`, unreleased):** the Blender pipeline now reproducibly emits a five-category original kit plus four-direction/hit-reaction sentry frames, all with source, hashes, collisions, LOD vocabulary, automated Godot import contracts, and native/Web gallery evidence. A native route capture uncovered and fixed a typed-array failure in the real death screen. Gameplay callbacks now use node-owned timers, with an architecture gate preventing SceneTreeTimer regressions; combat audio WAVs are synthesized once during the explicit title WARMING phase and shared; hidden combat material variants are prewarmed; and enemy bolts use a bounded pool. The 1080p Compatibility-renderer profile now reports menu/field/lab/tunnels/Walker/victory p95/p99, draw calls, object counts, and memory. All p95 values are below 33 ms and p99 below 100 ms; one isolated 224 ms Walker attack wall-time sample remains visible as optimization work rather than being misreported as resolved. Physical iPad and subjective playtest gates remain unchanged.
+**Agentic overhaul checkpoint (`0.6.0-alpha.4`, shipped 2026-07-13):** the Blender pipeline now reproducibly emits a five-category original kit plus four-direction/hit-reaction sentry frames, all with source, hashes, collisions, LOD vocabulary, automated Godot import contracts, and native/Web gallery evidence. A native route capture uncovered and fixed a typed-array failure in the real death screen. Gameplay callbacks now use node-owned timers, with an architecture gate preventing SceneTreeTimer regressions; combat audio WAVs are synthesized once during the explicit title WARMING phase and shared; hidden combat material variants are prewarmed; and enemy bolts use a bounded pool. The 1080p Compatibility-renderer profile now reports menu/field/lab/tunnels/Walker/victory p95/p99, draw calls, object counts, and memory. All p95 values are below 33 ms and p99 below 100 ms; one isolated 224 ms Walker attack wall-time sample remains visible as optimization work rather than being misreported as resolved. The public artifact uses cache-keyed engine, PCK, WASM, and audio-worklet names; its PCK SHA-256 is `aaafdefdc9e649387a9bc070830dbb889eba13b66df96de1548e2779a2c2574d`. Physical iPad and subjective playtest gates remain unchanged.
 
 ### World-class vertical-slice delivery boundary
 
