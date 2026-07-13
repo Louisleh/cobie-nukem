@@ -6,6 +6,11 @@ All notable changes are recorded here. This project follows a lightweight form o
 
 ### Added
 
+- Repository-committed Spark orchestration with six explicitly pinned worker roles, isolated-writer contracts, validation, evidence, and independent review procedures.
+- Sixteen data-authored Salmon Creek breakable, explosive, hazard, loot, and secret interactions with unique IDs, grounded placement, bounded effects, and checkpoint-safe lifecycle behavior.
+- Typed Walker combat phases, phase damage floors, weak-point windows, summon limits, recovery drops, and Golden Ball-only defeat completion.
+- Priority-aware, bounded captions for narrative, objectives, enemy warnings, boss phases, checkpoints, and PA cues.
+- Locked Vancouver production foundation with five typed route zones, spawn volumes, patrol paths, surfaces, checkpoints, secrets, schema-v2 encounters, and a three-wave citation convoy contract.
 - Honest Web download and title-menu preload states; the continue prompt is readiness-gated and failed preloads can be retried.
 - Precision, Balanced, and Fast right-stick aim profiles with response curves, smoothing, delayed turn boost, and configurable target friction.
 - Original illustrated future-mission cards for Vancouver Waterfront, Mount Hood, the Moon, and Ventura Pier, plus a fifth locked Ventura mission.
@@ -26,11 +31,19 @@ All notable changes are recorded here. This project follows a lightweight form o
 
 ### Changed
 
+- Hot aim/player registry consumers now use stable read-only views instead of allocating arrays during physics ticks.
+- Salmon Creek interaction construction, stable identity, callbacks, restore, and reset now live in a reusable `MissionInteractionRuntime` instead of the mission controller.
 - Mission selection now uses illustrated, horizontally scrollable cards with explicit ACTIVE and COMING SOON states.
 - Touch dead-zone shaping is profile-driven and aim response state is isolated from the player controller.
 - Fable Phase 1–2 audit findings are triaged in the phase PRD; active encounters now reset at checkpoint retry with short spawn protection, authored enemy totals remain stable, and invalid encounters fail loudly.
 - Content validation now rejects duplicate difficulties, non-finite positions, and spawn scenes without the enemy contract; difficulty profiles are cached and objective activation signals emit once.
 - GitHub Actions now runs the complete repository validator, both exports, package verification, evidence upload, and immutable Pages-artifact deployment.
+
+### Fixed
+
+- Boss encounters now require and consume an explicit completion target; retry clears stale gameplay audio, timers, actors, summons, and phase rewards.
+- Continue restores sanitized checkpoint identity immediately, and catalog loot/secrets remain deterministic across checkpoint retry.
+- Authored interaction props no longer sink into floors or obstruct the Walker's central pressure lane.
 
 ## 0.1.0-rc — 2026-07-11
 
