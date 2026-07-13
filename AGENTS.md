@@ -9,6 +9,7 @@ These rules apply to the entire repository.
 3. Do not add copyrighted Duke Nukem assets, dialogue, code, map data, branding, or imitations. Record all asset provenance in `docs/ASSET_MANIFEST.md`.
 4. Never describe joystick hardware as verified without a recorded physical test.
 5. Read `docs/design/README.md` for the contract of any subsystem you touch.
+6. For agent-assisted game work, use the installed `cobie-godot-production` skill and follow `docs/design/agentic-toolchain.md`.
 
 ## Shared-file ownership
 
@@ -33,6 +34,7 @@ When a change crosses an ownership boundary, keep it small and explain its contr
 - Use collision-layer names from `project.godot`; do not hard-code unexplained masks.
 - User state belongs under `user://`; no telemetry, accounts, or network dependency.
 - Treat warnings as work to resolve, not noise to suppress globally.
+- Never commit or export a live-editor MCP bridge, development autoload, or generated Blender working file unless its production purpose and provenance are explicit.
 - Register nearby interactables and aim targets through `WorldRegistry`; do not add per-frame global group scans.
 - Temporary combat nodes must have a bounded lifetime or return to a pool.
 

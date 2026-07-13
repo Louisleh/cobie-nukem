@@ -459,7 +459,8 @@ func _target_valid() -> bool:
 func _acquire_target() -> void:
 	if _target_valid():
 		return
-	var candidate := get_tree().get_first_node_in_group(&"player") as Node3D
+	var registry := get_node_or_null("/root/WorldRegistry")
+	var candidate: Node3D = registry.primary_player() if registry != null else null
 	if candidate == null:
 		for node in get_tree().get_nodes_in_group(&"damageable_player"):
 			if node is Node3D:

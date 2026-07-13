@@ -29,11 +29,19 @@ func _initialize() -> void:
 	_check_cobie_portrait_contract()
 	if failures.is_empty():
 		print("UI SCENE TESTS: PASS")
-		quit(0)
+		call_deferred("_quit_after_cleanup", 0)
 	else:
 		for failure in failures:
 			push_error(failure)
-		quit(1)
+		call_deferred("_quit_after_cleanup", 1)
+
+
+func _quit_after_cleanup(exit_code: int) -> void:
+	# Let _initialize() return so coroutine locals and temporary Resources release
+	# before SceneTree teardown. Quitting inside the awaited initializer leaves one
+	# RefCounted alive during ObjectDB cleanup on Godot 4.7.
+	await process_frame
+	quit(exit_code)
 
 func _check_scene(path: String) -> void:
 	var packed := load(path) as PackedScene

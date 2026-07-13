@@ -5,6 +5,7 @@ extends Node
 
 var _interactables: Dictionary = {}
 var _targets: Dictionary = {}
+var _players: Dictionary = {}
 
 
 func _ready() -> void:
@@ -14,6 +15,8 @@ func _ready() -> void:
 		register_interactable(node)
 	for node in get_tree().get_nodes_in_group(&"auto_aim_targets"):
 		register_target(node)
+	for node in get_tree().get_nodes_in_group(&"player"):
+		register_player(node)
 
 
 func register_interactable(node: Node) -> void:
@@ -24,11 +27,16 @@ func register_target(node: Node) -> void:
 	if is_instance_valid(node): _targets[node.get_instance_id()] = node
 
 
+func register_player(node: Node) -> void:
+	if is_instance_valid(node): _players[node.get_instance_id()] = node
+
+
 func unregister(node: Node) -> void:
 	if not is_instance_valid(node): return
 	var id := node.get_instance_id()
 	_interactables.erase(id)
 	_targets.erase(id)
+	_players.erase(id)
 
 
 func interactables() -> Array[Node]:
@@ -39,9 +47,21 @@ func targets() -> Array[Node]:
 	return _valid_nodes(_targets)
 
 
+func players() -> Array[Node]:
+	return _valid_nodes(_players)
+
+
+func primary_player() -> Node3D:
+	for node in _valid_nodes(_players):
+		if node is Node3D:
+			return node
+	return null
+
+
 func clear_scene_indexes() -> void:
 	_interactables.clear()
 	_targets.clear()
+	_players.clear()
 
 
 func _on_node_added(node: Node) -> void:
@@ -54,6 +74,7 @@ func _consider_instance(instance_id: int) -> void:
 	if not is_instance_valid(node) or not node.is_inside_tree(): return
 	if node.is_in_group(&"interactables"): register_interactable(node)
 	if node.is_in_group(&"auto_aim_targets"): register_target(node)
+	if node.is_in_group(&"player"): register_player(node)
 
 
 func _on_node_removed(node: Node) -> void:

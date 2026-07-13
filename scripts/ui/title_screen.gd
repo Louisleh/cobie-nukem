@@ -11,6 +11,8 @@ var _accepting := false
 var _warmup_elapsed := 0.0
 var _stable_frames := 0
 var _prompt_tween: Tween
+var _preloaded_menu: PackedScene
+var _layout_frames_remaining := 2
 
 
 func _ready() -> void:
@@ -57,6 +59,12 @@ func _start_warmup() -> void:
 
 
 func _set_ready() -> void:
+	# Finalize the threaded request. Polling LOADED without retrieving the
+	# Resource leaves its loader request alive through SceneTree teardown.
+	_preloaded_menu = ResourceLoader.load_threaded_get(menu_scene_path) as PackedScene
+	if _preloaded_menu == null:
+		_set_failed()
+		return
 	readiness = Readiness.READY
 	%LoadingBar.visible = false
 	%Prompt.text = "TAP / PRESS A KEY TO DISOBEY" if OS.has_feature("web") else "PRESS ANY BUTTON TO DISOBEY"
@@ -88,14 +96,17 @@ func _resized() -> void:
 
 
 func _reveal_after_layout() -> void:
-	await get_tree().process_frame
-	await get_tree().process_frame
+	if _layout_frames_remaining > 0:
+		_layout_frames_remaining -= 1
+		get_tree().process_frame.connect(_reveal_after_layout, CONNECT_ONE_SHOT)
+		return
 	modulate.a = 1.0
 
 
 func _exit_tree() -> void:
 	if _prompt_tween != null:
 		_prompt_tween.kill()
+	_preloaded_menu = null
 
 
 func _unhandled_input(event: InputEvent) -> void:

@@ -34,6 +34,7 @@ This file distinguishes confirmed product limitations from unperformed validatio
 - `AudioCueSet` and bounded sample playback are implemented, but production still falls back to synthesized cues until original/licensed weapon, enemy, footstep, ambience, and music assets are authored and manifested.
 - Enemy state motion, hit/stagger/death reactions, attack tokens, group alert, and weak-point contracts are implemented; directional sprite atlases and production navigation meshes remain open content gates.
 - Headless performance smoke is green. Native GPU frame time, Web/iPad thermal behavior, draw calls, memory, download size, and audio-voice saturation are not yet measured release evidence.
+- The Salmon Creek ball-return machine is the first validated Blender-authored prop and has automated import/collision/puzzle coverage. Its final scale, lighting readability, projectile feel, and placement still need a rendered human playthrough; the rest of the environment remains a mixed prototype/production kit.
 
 ## Reporting policy
 

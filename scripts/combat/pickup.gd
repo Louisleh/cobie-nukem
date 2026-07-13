@@ -34,7 +34,8 @@ func _physics_process(_delta: float) -> void:
 	for body in get_overlapping_bodies():
 		if try_collect(body):
 			return
-	var player := get_tree().get_first_node_in_group(&"player") as Node3D
+	var registry := get_node_or_null("/root/WorldRegistry")
+	var player: Node3D = registry.primary_player() if registry != null else null
 	if player != null and global_position.distance_to(player.global_position) <= 1.35:
 		try_collect(player)
 

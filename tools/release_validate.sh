@@ -16,6 +16,14 @@ if [[ "$($GODOT_BIN --version)" != 4.7.* ]]; then
   exit 1
 fi
 
+# Live-editor automation is privileged development tooling. It is installed only
+# for an active local session and must never enter a source or release artifact.
+if [[ -e addons/godot_ai_bridge ]] \
+  || grep -q 'GodotAIBridgeRuntime\|godot_ai_bridge' project.godot; then
+  echo "ERROR: Godot AI bridge is enabled or present. Remove it before validation/export."
+  exit 1
+fi
+
 run_godot_test() {
   local script="$1"
   local log_file
@@ -35,6 +43,11 @@ run_godot_test() {
     rm -f "$log_file"
     return 1
   fi
+  if grep -Eq '^SCRIPT ERROR:|ObjectDB instances? (was|were) leaked at exit|resources? still in use at exit|orphan nodes?' "$log_file"; then
+    echo "ERROR: script errors, leaks, or orphan nodes were emitted by $script"
+    rm -f "$log_file"
+    return 1
+  fi
   rm -f "$log_file"
 }
 
@@ -45,6 +58,7 @@ run_godot_test res://tests/unit/input_system_test.gd
 run_godot_test res://tests/unit/combat_test_runner.gd
 run_godot_test res://tests/unit/enemy_contract_tests.gd
 run_godot_test res://tests/unit/ui_scene_test.gd
+run_godot_test res://tests/unit/asset_contract_test.gd
 run_godot_test res://tests/unit/gameplay_foundation_test.gd
 run_godot_test res://tests/unit/save_schema_test.gd
 run_godot_test res://tests/unit/mobile_controls_test.gd

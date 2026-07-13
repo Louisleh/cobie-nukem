@@ -66,7 +66,7 @@ Raw axis and button numbers stop at the input subsystem. Keyboard/mouse is the r
 
 ## Rendering
 
-The project viewport is 320×180 with `viewport` stretch and `keep` aspect. Compatibility (`gl_compatibility`) is configured for desktop and mobile rendering methods, and canvas textures default to nearest filtering. A presentation owner may offer 640×360, but the 320×180 mode remains the default and integer-scaled output is preferred.
+The project viewport is 640×360 with `canvas_items` stretch. Compatibility (`gl_compatibility`) is configured for desktop and mobile rendering methods, and canvas textures default to linear filtering. This preserves a crisp high-resolution-retro presentation without the visibly pixelated 320×180 prototype baseline.
 
 Low-poly 3D geometry, billboarded sprites, simple fog/unshaded materials, and limited dynamic lights are the performance baseline. Web export is single-threaded.
 

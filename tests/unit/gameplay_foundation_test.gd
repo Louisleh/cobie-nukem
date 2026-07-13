@@ -21,6 +21,7 @@ func _initialize() -> void:
 	_test_manifest()
 	_test_respawn_protection()
 	_test_quality_profiles()
+	await _test_world_registry_player_index()
 	if failures.is_empty():
 		print("GAMEPLAY FOUNDATION TESTS: PASS")
 		quit(0)
@@ -175,6 +176,22 @@ func _test_quality_profiles() -> void:
 	_expect(Engine.max_fps == quality.WEB.target_fps, "Web quality applies its frame cap")
 	quality.apply_profile(quality.NATIVE)
 	_expect(quality.current.id == &"native" and pressure.maximum_attackers == quality.NATIVE.maximum_attackers, "native quality applies its enhanced budget")
+
+
+func _test_world_registry_player_index() -> void:
+	var registry := get_root().get_node_or_null("WorldRegistry")
+	_expect(registry != null, "WorldRegistry autoload is available")
+	if registry == null:
+		return
+	var indexed_player := Node3D.new()
+	indexed_player.add_to_group(&"player")
+	get_root().add_child(indexed_player)
+	await process_frame
+	await process_frame
+	_expect(registry.primary_player() == indexed_player, "WorldRegistry indexes the primary player without hot-path SceneTree scans")
+	indexed_player.queue_free()
+	await process_frame
+	_expect(registry.primary_player() == null, "WorldRegistry removes freed player entries")
 
 
 func _spawn_fake(_path: String, _position: Vector3) -> Node:
