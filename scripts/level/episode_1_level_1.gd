@@ -86,8 +86,9 @@ var _baseline_attack_budget := 3
 func _ready() -> void:
 	_run_started_ms = Time.get_ticks_msec()
 	_apply_requested_checkpoint()
-	_build_level()
 	_setup_gameplay_systems()
+	_build_level()
+	_setup_interaction_runtime()
 	if spawn_player: _spawn_player()
 	if setup_presentation: _setup_presentation()
 	if start_run_automatically and get_node_or_null("/root/GameState"):
@@ -125,7 +126,6 @@ func _setup_gameplay_systems() -> void:
 		_on_enemy_died(enemy, definition.zone_id)
 	)
 	_restore_mission_snapshot()
-	_setup_interaction_runtime()
 	# Level-owned timers die with the scene, so a pending opening-grace or
 	# completion callback can never fire into a freed level, and restarting the
 	# opening encounter replaces the pending grace window instead of stacking a
@@ -514,7 +514,9 @@ func _on_checkpoint(id: StringName, position_value: Vector3) -> void:
 
 func restart_from_checkpoint() -> void:
 	if _interaction_runtime != null:
-		_interaction_runtime.reset_for_checkpoint(_restored_checkpoint)
+		# Secrets are permanent for the current run even when the player dies;
+		# checkpoint saves persist the same dictionary across app restarts.
+		_interaction_runtime.reset_for_checkpoint({"secrets": secrets})
 	if _combat_audio != null:
 		_combat_audio.reset_gameplay_audio()
 	_reset_active_encounter_for_checkpoint()

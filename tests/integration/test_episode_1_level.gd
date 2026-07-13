@@ -172,7 +172,7 @@ func _initialize() -> void:
 		actor.process_mode = Node.PROCESS_MODE_DISABLED
 	player.free()
 	var summary := level.get_level_summary()
-	check(summary.secrets_total == 3, "Summary secret total incorrect")
+	check(summary.secrets_total == 4, "Summary secret total incorrect")
 	check(summary.level_id == &"episode_1_level_1", "Summary level id incorrect")
 	if game_state != null and save_manager != null:
 		game_state.continue_requested = true

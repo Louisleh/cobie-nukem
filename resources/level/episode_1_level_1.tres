@@ -9,7 +9,7 @@ title = "NO DOGS ALLOWED"
 subtitle = "The Salmon Creek Incident"
 target_minutes_min = 12
 target_minutes_max = 20
-total_secrets = 3
+total_secrets = 4
 opening_objective = "RECOVER THE GOLDEN TENNIS BALL"
 zones = Array[Dictionary]([{
 "id": &"forbidden_field",
