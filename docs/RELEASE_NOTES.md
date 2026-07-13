@@ -28,12 +28,13 @@ The macOS ZIP is unsigned and unnotarized. The working title still requires clea
 
 ## Artifacts
 
-- `cobie-nukem-0.6.0-alpha.5-itch.zip` — 21,435,476 bytes; SHA-256 `4ed71e5745c1b5f6162fd5c4c4082d55166245a7baf69af78d00f5d15e72190e`.
-- `cobie-nukem-0.6.0-alpha.5-macos-unsigned.zip` — 70,799,482 bytes; SHA-256 `78b603eec3a5a2e864340df8a21daca799e93b2f43cac337b572c0283c1a6f62`.
+- `cobie-nukem-0.6.0-alpha.5-itch.zip` — 21,435,476 bytes; SHA-256 `c9045d978f1813f573563b1eccf7a489eebb2c6c8848cd496f9aac89443f9442`.
+- `cobie-nukem-0.6.0-alpha.5-macos-unsigned.zip` — 70,799,482 bytes; SHA-256 `3349967becde835e38bcbdc745b207cb4f5b60ce4555f7988af7b01357ab819c`.
 - Web PCK — 11,489,896 bytes; SHA-256 `0249b13ca7036cd73d546c5923a927ce5c528591902947b3218a6e7203e86ac2`.
 
 ## Integration
 
 - Gameplay integration: `64ee96f` on `Louisleh/cobie-nukem` through PR #25.
-- Release metadata: PR #26.
-- Live route after deployment: <https://www.louislehmann.fyi/games/cobie-nukem/>.
+- Release integration: `499eab2` through PR #26.
+- Website deployment: `f9065c4` through `Louisleh/louislehmann-site` PR #96.
+- Live route: <https://www.louislehmann.fyi/games/cobie-nukem/>. The uncached public landing, truthful loader, 1024×768 title screen, clean browser console, and downloaded PCK hash were verified after deployment.
