@@ -60,6 +60,7 @@ func _ready() -> void:
 	_setup_runtime()
 	_build_world()
 	_setup_interactions()
+	_rehydrate_restored_gameplay()
 	if spawn_player:
 		_spawn_player()
 	if setup_presentation:
@@ -227,6 +228,22 @@ func _restore_runtime_state() -> void:
 		_route_runtime.restore(route_snapshot)
 	else:
 		_restore_route_from_checkpoint(StringName(_restored_checkpoint.get("checkpoint_id", "")))
+	current_zone = _route_runtime.current_zone
+
+
+func _rehydrate_restored_gameplay() -> void:
+	if _restored_checkpoint.is_empty() or _route_runtime == null:
+		return
+	current_zone = _route_runtime.current_zone
+	var convoy_complete := _mission_runtime.objectives.completed.has(&"stop_citation_convoy")
+	if _world_builder != null and _world_builder.departure_switch != null:
+		_world_builder.departure_switch.set_enabled(convoy_complete)
+	if current_zone == &"harbour_pier" and not convoy_complete:
+		_last_combat_zone = &"harbour_pier"
+		if _set_piece_runtime != null and not bool(_set_piece_runtime.current_state().get("has_actor", false)):
+			_set_piece_runtime.start()
+	elif current_zone != &"" and not _mission_runtime.encounters.completed.has(current_zone):
+		_activate_zone_encounter(current_zone)
 
 
 func _restore_route_from_checkpoint(checkpoint_id: StringName) -> void:
@@ -278,11 +295,23 @@ func _on_route_zone_entered(zone_id: StringName, title: String) -> void:
 	var game_state := get_node_or_null("/root/GameState")
 	if game_state != null:
 		game_state.run_stats["last_zone"] = String(zone_id)
+	_clear_abandoned_encounters(zone_id)
 	if zone_id != &"harbour_pier":
 		_activate_zone_encounter(zone_id)
 	elif _set_piece_runtime != null and _set_piece_runtime.current_state().get("has_actor", false) == false:
 		_last_combat_zone = &"harbour_pier"
 		_set_piece_runtime.start()
+
+
+func _clear_abandoned_encounters(entering_zone: StringName) -> void:
+	if _mission_runtime == null or _mission_runtime.encounters == null:
+		return
+	for raw_zone_id: Variant in _mission_runtime.encounters.active.keys().duplicate():
+		var zone_id := StringName(raw_zone_id)
+		if zone_id == entering_zone:
+			continue
+		_spawn_registry.clear_zone(zone_id)
+		_mission_runtime.reset_zone(zone_id)
 
 
 func _activate_zone_encounter(zone_id: StringName) -> void:
@@ -402,6 +431,8 @@ func _on_objective_activated(definition: ObjectiveDefinition) -> void:
 
 
 func _on_objective_completed(definition: ObjectiveDefinition) -> void:
+	if definition.id == &"stop_citation_convoy" and _world_builder != null and _world_builder.departure_switch != null:
+		_world_builder.departure_switch.set_enabled(true)
 	if definition.id == &"complete_harbour_pier":
 		_begin_completion()
 

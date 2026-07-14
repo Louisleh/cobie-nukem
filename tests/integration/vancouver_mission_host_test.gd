@@ -41,22 +41,29 @@ func _run() -> void:
 		center.y = 1.0
 		mission._submit_route_position(center)
 		_expect(mission.current_zone == zone_id, "mission progresses into %s" % zone_id)
+		if zone_id != &"harbour_pier":
+			_expect(mission._mission_runtime.encounters.active.has(zone_id), "route zone %s activates only its current encounter" % zone_id)
 
-	_expect(mission._mission_runtime.encounters.active.has(&"downtown_alley") or mission._mission_runtime.encounters.completed.has(&"downtown_alley"), "first route zone activates its encounter")
+	_expect(mission._mission_runtime.encounters.active.size() <= 1, "advancing the route clears abandoned prior-zone encounters")
 	_expect(not mission._mission_runtime.encounters.active.has(&"harbour_pier"), "convoy encounter waits for set-piece coordination")
 	_expect(mission._route_runtime.current_checkpoint_id == &"checkpoint_harbour_pier", "route exposes ordered harbour checkpoint")
 	_expect(mission._world_builder.terminal_switch != null, "terminal objective switch exists")
 	_expect(mission._world_builder.departure_switch != null, "harbour departure switch exists")
+	mission._world_builder.departure_switch.interact(null)
+	_expect(not mission._world_builder.departure_switch.is_active, "departure switch cannot be consumed before convoy completion")
+	_expect(not mission._mission_runtime.objectives.completed.has(&"complete_harbour_pier"), "early departure interaction cannot bypass prerequisites")
 	mission._mission_runtime.record_objective(ObjectiveDefinition.Kind.ACTIVATE, &"terminal_power")
 	_expect(mission._mission_runtime.objectives.completed.has(&"restore_terminal"), "terminal objective completes before convoy")
 	await _exercise_convoy(mission)
 	_expect(mission._mission_runtime.objectives.completed.has(&"stop_citation_convoy"), "convoy completion satisfies objective exactly once")
 	_expect(mission._route_runtime.current_checkpoint_id == &"checkpoint_harbour_clear", "convoy completion promotes the clear checkpoint")
-	mission._mission_runtime.record_objective(ObjectiveDefinition.Kind.ACTIVATE, &"harbour_departure")
+	mission._world_builder.departure_switch.interact(null)
+	_expect(mission._world_builder.departure_switch.is_active, "departure switch unlocks after convoy completion")
 	_expect(mission._mission_runtime.objectives.completed.has(&"complete_harbour_pier"), "harbour departure completes the mission chain")
 
 	mission.queue_free()
 	await process_frame
+	await _test_harbour_checkpoint_rehydration()
 	if failures.is_empty():
 		print("VANCOUVER MISSION HOST TEST: PASS")
 		quit(0)
@@ -64,6 +71,36 @@ func _run() -> void:
 		for failure in failures:
 			push_error(failure)
 		quit(1)
+
+
+func _test_harbour_checkpoint_rehydration() -> void:
+	var mission := MissionScene.instantiate() as EpisodeOneVancouverWaterfront
+	mission.spawn_player = false
+	mission.start_run_automatically = false
+	mission.setup_presentation = false
+	mission._restored_checkpoint = {
+		"objective_snapshot": {
+			"progress": {"reach_waterfront": 1, "restore_terminal": 1},
+			"completed": ["reach_waterfront", "restore_terminal"],
+		},
+		"encounter_snapshot": {"completed": [], "active": {}},
+		"route_snapshot": {
+			"route_id": "vancouver_mission2_route",
+			"current_zone": "harbour_pier",
+			"current_index": 4,
+			"visited_zones": ["downtown_alley", "ruse_block", "waterfront_seawall", "terminal_service", "harbour_pier"],
+			"checkpoint_id": "checkpoint_harbour_pier",
+			"is_completed": true,
+		},
+		"secrets": {},
+	}
+	root.add_child(mission)
+	await process_frame
+	_expect(mission.current_zone == &"harbour_pier", "harbour Continue restores controller zone truth")
+	_expect(mission._set_piece_runtime != null and bool(mission._set_piece_runtime.current_state().get("has_actor", false)), "harbour Continue rehydrates the citation convoy")
+	_expect(not mission._world_builder.departure_switch.enabled, "restored departure remains locked until convoy objective completes")
+	mission.queue_free()
+	await process_frame
 
 
 func _exercise_convoy(mission: EpisodeOneVancouverWaterfront) -> void:

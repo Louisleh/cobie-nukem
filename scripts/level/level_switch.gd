@@ -7,6 +7,7 @@ signal activated(switch_id: StringName, actor: Node)
 @export var prompt := "USE SWITCH"
 @export var one_shot := true
 @export var target_path: NodePath
+@export var enabled := true
 var is_active := false
 
 
@@ -18,17 +19,25 @@ func _ready() -> void:
 
 
 func get_interaction_label() -> String:
-	return "" if is_active and one_shot else prompt
+	return "" if not enabled or (is_active and one_shot) else prompt
 
 
 func interact(actor: Node) -> void:
-	if is_active and one_shot: return
+	if not enabled or (is_active and one_shot): return
 	is_active = true
 	var target := get_node_or_null(target_path)
 	if target:
 		if target.has_method("unlock"): target.unlock()
 		if target.has_method("open"): target.open(actor)
 	activated.emit(switch_id, actor)
+
+
+func set_enabled(value: bool) -> void:
+	enabled = value
+	if not enabled and not is_active:
+		set_meta(&"interaction_locked", true)
+	else:
+		remove_meta(&"interaction_locked")
 
 
 func _build_visual() -> void:

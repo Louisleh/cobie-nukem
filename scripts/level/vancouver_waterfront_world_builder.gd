@@ -169,6 +169,7 @@ func _build_story_objects() -> void:
 	departure_switch.name = "HarbourDeparture"
 	departure_switch.switch_id = &"harbour_departure"
 	departure_switch.prompt = "DEPART RAIN CITY"
+	departure_switch.enabled = false
 	departure_switch.position = Vector3(0.0, 1.2, -173.0)
 	departure_switch.activated.connect(_on_switch_activated)
 	interactables.add_child(departure_switch)
