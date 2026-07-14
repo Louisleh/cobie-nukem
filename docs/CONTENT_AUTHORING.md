@@ -50,18 +50,18 @@ Enemy definitions contain base balance. `DifficultyProfile` applies independent 
 - Every secret is optional and cannot consume a required item.
 - New props and references are recorded in `docs/ASSET_MANIFEST.md`.
 
-## Mission 2 production proof (authored, locked)
+## Mission 2 production preview (authored, public beta)
 
 The Mission 2 skeleton now exists as real content and validates in CI without any change to shared gameplay code — the Phase 2 scaling proof:
 
 - Manifest: `resources/content/vancouver_waterfront_manifest.tres` (`episode_1_vancouver_waterfront`)
-- Level scene: `scenes/levels/vancouver_waterfront_graybox.tscn` — a non-public graybox of the five-zone route; it is not routed by any card and must stay that way until production
+- Level scene: `scenes/levels/episode_1_vancouver_waterfront.tscn` — the shared-system production preview routed by the public beta card; `vancouver_waterfront_graybox.tscn` remains a disposable authoring fixture
 - Objectives: `resources/objectives/vancouver_*.tres` — `reach_waterfront` → `restore_terminal` → `stop_citation_convoy` → `complete_harbour_pier`
 - Route: `resources/routes/vancouver_route_definition.tres` — ordered typed zone bounds, spawn volumes, patrol paths, surfaces, checkpoints, secrets, and directed edges for deterministic authoring validation
 - Encounters: `resources/encounters/vancouver_*.tres` — schema-v2 waves for each route zone (`downtown_alley`, `ruse_block`, `waterfront_seawall`, `terminal_service`, `harbour_pier`) using existing enemy contracts
-- Level card: `resources/level/rain_city_card.tres` stays locked with an empty `scene_path`; `ui_scene_test` enforces exactly one unlocked card and `gameplay_foundation_test` enforces the manifest/card contract
+- Level card: `resources/level/rain_city_card.tres` routes publicly with a `BETA` badge and work-in-progress notice; `ui_scene_test` enforces two playable cards, one beta card, and three unroutable future cards
 
-The harbour-pier citation convoy is authored as a reusable three-wave encounter contract. Its enemies and graybox placement remain non-public production placeholders until rendered geometry, performance evidence, and human pacing review exist.
+The harbour-pier citation convoy is authored as a reusable three-wave encounter contract. It is publicly testable but remains production-preview content until rendered geometry, performance evidence, and human pacing review exist.
 
 ### Mission 2 asset and landmark list (all original art; no copied logos, trade dress, or map geometry)
 

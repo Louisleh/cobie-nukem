@@ -6,7 +6,7 @@
 **Primary platform:** macOS, especially Apple-silicon Mac mini  
 **Secondary platform:** Browser-playable Web export  
 **Engine:** Godot 4.7 stable, standard/GDScript build  
-**Product scope:** Salmon Creek is the definitive public vertical slice; the campaign roadmap and locked internal Vancouver production preview extend this original brief
+**Product scope:** Salmon Creek is the definitive vertical slice; Vancouver is an explicitly labeled public beta preview, while later campaign missions remain locked teasers
 **Core fantasy:** Play as Cobie, an aviator-sunglasses-and-leather-jacket labradoodle action hero, in an original 1990s-style retro FPS designed to feel unusually good on a low-cost flight stick.
 
 ---
@@ -21,9 +21,9 @@ The vertical slice opens at a stormy Pacific Northwest sports field beside a sig
 
 The primary control novelty is a **flight-stick mode** with exaggerated auto-aim and a 1990s-style control philosophy. Keyboard/mouse remains fully supported. A standard gamepad is a fallback.
 
-## 1.1 Alpha.8 implementation checkpoint
+## 1.1 Alpha.9 public-beta checkpoint
 
-The Rain City Forge candidate preserves the Salmon Creek requirements below while adding reusable mission hosting, save schema v4 and separate campaign progress, original Hound/Walker directional atlases, production environment materials/landmarks, adaptive mission audio, nonverbal Cobie bark events, and a complete development-only five-zone Vancouver mission. Vancouver remains locked in the public selector pending human Alpha.9 approval. The detailed completed/remaining ledger, evidence, and human gates live only in `docs/PHASE_ROADMAP_PRD.md`.
+Alpha.9 preserves the Rain City Forge systems and exposes Vancouver through an unmistakable `BETA` mission card and work-in-progress warning so source and public development remain closely aligned. Browser pointer capture is scene-owned, requested from the trusted mission-launch gesture, recoverable with one non-firing click, and backed by a visible HUD prompt plus activation safety protection. Vancouver adds a ten-second opening protection window but remains a rough production preview without a claimed human end-to-end playthrough. The detailed completed/remaining ledger, evidence, and human gates live only in `docs/PHASE_ROADMAP_PRD.md`.
 
 ---
 

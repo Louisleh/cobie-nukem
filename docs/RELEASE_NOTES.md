@@ -1,39 +1,30 @@
-# Release Notes — 0.6.0-alpha.8 Rain City Forge
+# Release Notes — 0.6.0-alpha.9 Public Beta Focus
 
-Built on 2026-07-14 with Godot `4.7.stable.official.5b4e0cb0f`. Packaged source: `b566dce`; runtime feature revision: `06fa2d1`.
+Built on 2026-07-14 with Godot `4.7.stable.official.5b4e0cb0f`. Runtime feature revision: `c00d54c`.
 
 ## Player-visible changes
 
-- Salmon Creek gains an original low-poly production material and landmark kit plus manifested 8×4 directional/reaction atlases for Compliance Hound and Walker.
-- Mission-scoped adaptive exploration, tension, combat, boss, victory, and zone ambience now reacts to real gameplay events; Cobie secret/victory moments trigger original nonverbal barks.
-- Touch HUD adds a dedicated `ALT` secondary-fire button while preserving independent move/aim joystick ownership and cancellation.
-- Campaign progress is separate from save-v4 checkpoints, with deterministic migration and route restoration.
-- Vancouver Waterfront is a complete five-zone internal production preview with twenty interactions, four secrets, Umbrella Shield Enforcers, and a three-stop citation convoy. Its public mission card remains intentionally locked.
+- Vancouver Waterfront is now playable from the normal mission selector as a clearly marked `BETA` preview.
+- The Vancouver card, launch action, status message, and opening caption all state that the mission is a public work in progress.
+- Browser mouse aiming is requested directly from the mission-launch gesture instead of waiting until the new player scene is already loading.
+- If a browser releases or declines pointer lock, the HUD shows `CLICK TO AIM • ESC FOR MENU`; the activation click is consumed and never doubles as a shot.
+- Web canvas pointer-down restores keyboard focus, reducing silent menu/input disconnection after tab or window changes.
+- Vancouver grants a ten-second opening/retry protection window. Desktop Web players also remain protected while the game is visibly waiting for pointer activation.
 
-## Production improvements
+## Engineering and regression coverage
 
-- Shared mission runtime, route, spawn, presentation, audio, campaign, shield, and moving-set-piece contracts reduce mission-specific coupling; Salmon Creek's controller is 445 lines.
-- The release gate directly exercises the new Alpha.8 Resources, Vancouver route/content/host, Continue rehydration, departure gating, shields, convoy, campaign saves, audio, and touch secondary fire.
-- A release-gate-discovered mission-audio teardown race was fixed by restoring single ownership to normal Godot child teardown; 20 consecutive performance smoke runs were leak-free afterward.
-- An exact `gpt-5.3-codex-spark` independent read-only review found no Blocker, Critical, or Major defects. GPT-5.6 retained integration and release ownership.
+- Pointer-lock ownership moved into a dedicated scene-owned `PointerCaptureController`, keeping the player controller below the repository's 500-line responsibility gate.
+- Level-card release state is data-driven through `release_badge`, `launch_notice`, `status_badge()`, and `is_preview_release()` rather than a Vancouver-specific UI branch.
+- UI, input, gameplay-foundation, Vancouver content/host, and adversarial suites cover the beta route, badge/warning, touch isolation, rejected-capture behavior, first-click request, protection window, and prompt click-through.
+- Packaged Web browser evidence covers title readiness, menu navigation, the visible `BETA` card, `START BETA`, work-in-progress status, Vancouver launch, and the recovery prompt. Physical-device and full human-route claims remain open.
 
 ## Validation boundary
 
-- Full native/Web export validation passed with 100 Salmon routes, 100 checkpoint cycles, 100 touch cancellations, 500 weapon transitions, 100 effects, and 150 staged convoy reset scenarios.
-- Native 1080p Compatibility gameplay p95 was 16.907–18.183 ms and p99 17.339–24.872 ms; static memory remained below 78 MB. One isolated tunnel maximum reached 94.584 ms.
-- The packaged landing and cache-keyed PCK/WASM/JS assets return successfully over HTTP and identify Alpha.8. Browser-control initialization failed in the local automation host, so no new Alpha.8 interactive browser claim is made from that attempt.
-- Physical iPad Safari comfort/thermal/audio, full human playthrough, boss/difficulty/interaction feel, art, mix, humor, and photosensitivity remain human-only gates.
+- Salmon Creek remains the definitive polished slice. Vancouver is intentionally public and unfinished; its art, encounter feel, pacing, navigation clarity, mix, and complete human playthrough are not claimed complete.
+- Browser pointer lock still requires a trusted user gesture by platform policy. Alpha.9 makes that state explicit, safe, and one-click recoverable rather than attempting to bypass it.
+- Physical iPad Safari comfort/thermal/audio, full Chrome/Safari routes, boss/difficulty/interaction feel, art, mix, humor, and photosensitivity remain human-only gates.
 - The macOS ZIP is unsigned and unnotarized. The working title still requires clearance before commercial distribution.
 
-## Artifacts
+## Artifacts and integration
 
-- `cobie-nukem-0.6.0-alpha.8-itch.zip` — 33,403,347 bytes; SHA-256 `2c54836bdb32b7361e6c5cb5633d24e78c7f622e30c2875e06934b28c55e59ad`.
-- `cobie-nukem-0.6.0-alpha.8-macos-unsigned.zip` — 82,768,233 bytes; SHA-256 `3dd13a7cc3c8ae99417d2d6c9ccd034358c19fdaa4da52c36e70c9c6362894ae`.
-- Web PCK — 23,797,272 bytes; SHA-256 `a6ac552600d488963b83fa69a235b51aaecb70dd11b56a5b98f082407114debc`.
-
-## Integration
-
-- Source integration: `6939005` through [PR #31](https://github.com/Louisleh/cobie-nukem/pull/31).
-- GitHub prerelease: [v0.6.0-alpha.8](https://github.com/Louisleh/cobie-nukem/releases/tag/v0.6.0-alpha.8).
-- Website deployment: `46ff03c` through `Louisleh/louislehmann-site` [PR #99](https://github.com/Louisleh/louislehmann-site/pull/99).
-- Live route: <https://www.louislehmann.fyi/games/cobie-nukem/>. The ordinary and uncached landing identify Alpha.8/`06fa2d1`; the downloaded public PCK matches the packaged SHA-256 exactly.
+Final package sizes, SHA-256 hashes, source integration, GitHub prerelease, website deployment, and public PCK identity are recorded after the green release/deployment gate.

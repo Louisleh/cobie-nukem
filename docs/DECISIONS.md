@@ -10,9 +10,13 @@ Blender MCP is pinned locally with telemetry and all external asset services dis
 
 The right stick remains a rate-based aiming control: displacement controls angular speed, not an unbounded swipe delta. Fine aim uses a configurable response curve and time-based smoothing; sustained outer-ring input receives a delayed, bounded turn boost; visible targets may reduce angular rate through configurable friction. No gyro or swipe-look is added in this pass. Profiles live in typed Resources and transient response state lives outside the player controller.
 
-## D-010 — Future levels are illustrated promises, not false routes
+## D-010 — Future levels are illustrated promises, not false routes (superseded for Vancouver by D-012)
 
-Vancouver Waterfront, Mount Hood, Moon, and Ventura Pier appear as original illustrated mission cards. They remain locked, contain no scene route, and say COMING SOON. This builds campaign anticipation and validates the presentation pipeline without overstating Phase 3 production readiness.
+Mount Hood, Moon, and Ventura Pier appear as original illustrated mission cards. They remain locked, contain no scene route, and say COMING SOON. Vancouver followed this rule through Alpha.8 and is now governed by D-012.
+
+## D-012 — Public development uses explicit beta routes
+
+Vancouver Waterfront is public from Alpha.9 onward because its shared mission/runtime contracts, complete route, persistence, encounters, and reset behavior pass automated gates. Its card, action, status, and opening caption all say `BETA` or public work in progress. Public accessibility is not a claim of finished art, balance, pacing, hardware validation, or human completion. Later missions stay locked until they reach an equivalent minimum contract.
 
 ## D-008 — iPad uses fixed twin-stick rate aiming
 
@@ -62,7 +66,7 @@ Use Godot's `canvas_items` stretch mode with original, camera-facing high-resolu
 Objectives, encounters, difficulty profiles, and each mission's content inventory use typed custom Resources under `resources/`. Reusable runtime behavior lives in `scripts/gameplay`; mission controllers translate local signals into semantic objective/encounter events. This avoids a new autoload, keeps Web compatibility, allows headless validation, and prevents future missions from copying Salmon Creek's hard-coded wave and progression tables.
 ## D-007 — World-class vertical-slice foundation
 
-- Salmon Creek remains the definitive slice; Vancouver stays locked.
+- Salmon Creek remains the definitive slice; Vancouver stayed locked through Alpha.8 and is public only under D-012's explicit beta contract.
 - Internal rendering moves from 320×180 nearest-filtered output to 640×360 with linear canvas filtering. UI keeps the original proportions through a 2× theme scale and normalized fixed panels.
 - Checkpoints use schema v3 and persist objective, completed-encounter, and secret snapshots. Live actors/timers/projectiles intentionally restart from authored state.
 - Frequent interaction and auto-aim queries use event-maintained registries. A 250 ms route-recovery timer replaces per-physics-frame fallback checks.
