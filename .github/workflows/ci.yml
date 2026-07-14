@@ -36,7 +36,9 @@ jobs:
         env:
           GODOT_BIN: godot
           QA_EXPORTS: "1"
-        run: bash tools/release_validate.sh | tee validation.log
+        run: |
+          set -o pipefail
+          bash tools/release_validate.sh | tee validation.log
 
       - name: Package Web, itch.io, and unsigned macOS deliverables
         env:

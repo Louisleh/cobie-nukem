@@ -300,13 +300,16 @@ func _test_external_actor_parent_cleanup() -> void:
 		var started := await _wait_for_next_actor(parent)
 		_expect(started, "external parent receives actor")
 		_expect(parent.get_child_count() == 1, "external parent receives one actor")
-		runtime.call_deferred("queue_free")
-		await physics_frame
+		runtime.queue_free()
+		await process_frame
+		await process_frame
 		_expect(parent.get_child_count() == 0, "external parent cleaned on runtime exit")
 	else:
 		failures.append("runtime.start() for external parent cleanup")
-	runtime.call_deferred("queue_free")
+	if is_instance_valid(runtime):
+		runtime.queue_free()
 	parent.queue_free()
+	await process_frame
 
 
 func _test_reset_cycles_keep_actor_count() -> void:
