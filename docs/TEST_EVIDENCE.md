@@ -33,7 +33,7 @@ This is a durable evidence template, not a claim that every listed check has run
 | `cobie-nukem-0.6.0-alpha.9-macos-unsigned.zip` | 82,771,158 | `1bbd378daffcffec5a872f335f1002edcf701b3872859fa173115a53e2fd9d74` |
 | Web PCK | 23,801,320 | `a44af5d67ca30ccc3c69b315ae09286e5e299a0bd0a0dc3a1f31a918dea6e98c` |
 
-Publication state: source integration, GitHub prerelease, website deployment, ordinary/uncached URLs, and downloaded public PCK identity remain pending until publication completes.
+Publication state: source integration `7326ff6` through [PR #34](https://github.com/Louisleh/cobie-nukem/pull/34); [GitHub prerelease `v0.6.0-alpha.9`](https://github.com/Louisleh/cobie-nukem/releases/tag/v0.6.0-alpha.9); website deployment `13eba81` through `Louisleh/louislehmann-site` [PR #100](https://github.com/Louisleh/louislehmann-site/pull/100). The ordinary and cache-busted landing identify Alpha.9 and reference its cache-keyed JS/WASM/PCK. The public 23,801,320-byte PCK re-download matched SHA-256 `a44af5d67ca30ccc3c69b315ae09286e5e299a0bd0a0dc3a1f31a918dea6e98c`; WASM returned HTTP 200 with `application/wasm`.
 
 Human-only: complete Vancouver and Salmon Creek playthroughs, physical iPad Safari, Chrome/Safari mouse feel, difficulty/encounter pacing, art, audio mix, humor, and photosensitivity.
 

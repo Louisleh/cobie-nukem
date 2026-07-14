@@ -35,4 +35,4 @@ The exact stamped candidate at source revision `08e24deb25930dfae8b6f2a1eafe0de3
 | `cobie-nukem-0.6.0-alpha.9-macos-unsigned.zip` | 82,771,158 | `1bbd378daffcffec5a872f335f1002edcf701b3872859fa173115a53e2fd9d74` |
 | Web PCK | 23,801,320 | `a44af5d67ca30ccc3c69b315ae09286e5e299a0bd0a0dc3a1f31a918dea6e98c` |
 
-Source integration, GitHub prerelease, website deployment, and downloaded public PCK identity are recorded after publication.
+Published through source [PR #34](https://github.com/Louisleh/cobie-nukem/pull/34) at integration `7326ff6`, [GitHub prerelease `v0.6.0-alpha.9`](https://github.com/Louisleh/cobie-nukem/releases/tag/v0.6.0-alpha.9), and `Louisleh/louislehmann-site` [PR #100](https://github.com/Louisleh/louislehmann-site/pull/100) at deployment `13eba81`. Ordinary and cache-busted public URLs identify Alpha.9 and its cache-keyed assets. The downloaded public 23,801,320-byte PCK matched SHA-256 `a44af5d67ca30ccc3c69b315ae09286e5e299a0bd0a0dc3a1f31a918dea6e98c` exactly.
