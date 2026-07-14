@@ -10,9 +10,10 @@ signal load_completed(slot: StringName, data: Dictionary)
 #   1 — envelope {version, saved_at, payload}; checkpoint payloads carried
 #       scene_path/level_id/checkpoint_id/position and no difficulty.
 #   2 — checkpoint payloads additionally record difficulty_id.
-#   3 — current. Checkpoints persist objective, completed-encounter, and secret
+#   3 — checkpoint payloads persist objective, completed-encounter, and secret
 #       snapshots. Active actors are intentionally rebuilt by the mission.
-const SAVE_VERSION := 3
+#   4 — campaign payloads are canonicalized in a new envelope-compatible shape.
+const SAVE_VERSION := 4
 const SAVE_DIRECTORY := "user://saves"
 
 func save_slot(slot: StringName, payload: Dictionary) -> Error:
@@ -81,17 +82,33 @@ func _migrate(version: int, payload: Dictionary) -> Dictionary:
 			0, 1:
 				# v2 makes difficulty_id canonical for checkpoint payloads.
 				# Only checkpoint-shaped payloads receive the safe default.
-				if migrated.has("scene_path") and not migrated.has("difficulty_id"):
+				if _is_checkpoint_payload(migrated) and not migrated.has("difficulty_id"):
 					migrated["difficulty_id"] = "classic"
 			2:
-				if migrated.has("scene_path"):
+				if _is_checkpoint_payload(migrated):
 					if not migrated.has("objective_snapshot"):
 						migrated["objective_snapshot"] = {"progress": {}, "completed": []}
 					if not migrated.has("encounter_snapshot"):
 						migrated["encounter_snapshot"] = {"completed": []}
 					if not migrated.has("secrets"):
 						migrated["secrets"] = {}
+			3:
+				# v4 canonicalizes campaign payload collections while leaving
+				# checkpoint payloads semantically unchanged.
+				if _is_campaign_payload(migrated):
+					if not migrated.has("completed_missions"):
+						migrated["completed_missions"] = []
+					if not migrated.has("unlocked_missions"):
+						migrated["unlocked_missions"] = []
+					if not migrated.has("mission_records"):
+						migrated["mission_records"] = {}
 	return migrated
+
+func _is_checkpoint_payload(payload: Dictionary) -> bool:
+	return payload.has("scene_path") or payload.has("level_id") or payload.has("checkpoint_id")
+
+func _is_campaign_payload(payload: Dictionary) -> bool:
+	return payload.has("completed_missions") or payload.has("unlocked_missions") or payload.has("mission_records")
 
 func _slot_path(slot: StringName) -> String:
 	var safe_slot := String(slot).validate_filename()

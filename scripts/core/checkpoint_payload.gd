@@ -1,7 +1,7 @@
 class_name CheckpointPayload
 extends RefCounted
 
-## Canonical v3 checkpoint payload contract.
+## Canonical v3 checkpoint payload contract (v4 envelope-compatible).
 ##
 ## {
 ##   "scene_path": "res://…​.tscn"    — must exist as a PackedScene

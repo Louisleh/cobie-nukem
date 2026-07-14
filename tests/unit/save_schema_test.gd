@@ -5,6 +5,7 @@ extends SceneTree
 ## read as "no checkpoint" rather than invented progression.
 
 const SLOT := &"qa_schema"
+const CAMPAIGN_SLOT := &"qa_schema_campaign"
 const CHECKPOINT_SCENE := "res://scenes/levels/episode_1_level_1.tscn"
 
 var failures := PackedStringArray()
@@ -19,6 +20,10 @@ func _initialize() -> void:
 		return
 	_test_new_save_creation()
 	_test_current_version_round_trip()
+	_test_campaign_round_trip()
+	_test_campaign_migration_from_v3()
+	_test_campaign_sanitize_shape()
+	_test_checkpoint_and_campaign_slot_isolation()
 	_test_unversioned_legacy_payload()
 	_test_v1_schema_migration()
 	_test_v2_schema_migration()
@@ -30,6 +35,7 @@ func _initialize() -> void:
 	_test_future_schema_version()
 	_test_sanitize_canonical_shape()
 	save_manager.delete_slot(SLOT)
+	save_manager.delete_slot(CAMPAIGN_SLOT)
 	if failures.is_empty():
 		print("SAVE SCHEMA TESTS: PASS")
 		quit(0)
@@ -55,6 +61,72 @@ func _test_current_version_round_trip() -> void:
 	var sanitized := CheckpointPayload.sanitize(loaded)
 	_expect(sanitized.get("difficulty_id") == "mayhem", "round trip preserves a valid selected difficulty")
 	_expect(sanitized.get("position") == [1.0, 2.0, 3.0], "round trip preserves the respawn position")
+
+
+func _test_campaign_round_trip() -> void:
+	var payload := _campaign_payload()
+	save_manager.save_slot(CAMPAIGN_SLOT, payload)
+	var loaded: Dictionary = save_manager.load_slot(CAMPAIGN_SLOT)
+	_expect(CampaignProgressPayload.sanitize(loaded) == CampaignProgressPayload.sanitize(payload), "campaign payload round trips to canonical shape")
+
+
+func _test_campaign_migration_from_v3() -> void:
+	var checkpoint_payload := _checkpoint_payload()
+	var checkpoint_pre := CheckpointPayload.sanitize(checkpoint_payload)
+	_write_raw(JSON.stringify({"version": 3, "payload": checkpoint_payload}), SLOT)
+	var checkpoint_loaded: Dictionary = CheckpointPayload.sanitize(save_manager.load_slot(SLOT))
+	_expect(checkpoint_loaded == checkpoint_pre, "v3 checkpoint payload is migration semantic no-op")
+
+	var raw_payload := {
+		"completed_missions": ["mission_2", "mission_1", "mission_2"],
+		"mission_records": {"mission_1": {"best_time_msec": 742000.0, "difficulty": "mayhem", "rank": "S", "best_secrets": 3, "total_secrets": 3}},
+	}
+	_write_raw(JSON.stringify({"version": 3, "payload": raw_payload}), CAMPAIGN_SLOT)
+	var loaded: Dictionary = save_manager.load_slot(CAMPAIGN_SLOT)
+	var expected := CampaignProgressPayload.sanitize(raw_payload)
+	_expect(CampaignProgressPayload.sanitize(loaded) == expected, "v3 campaign migration preserves values")
+
+
+func _test_campaign_sanitize_shape() -> void:
+	var noisy := {
+		"completed_missions": ["mission_b", "mission_a", "mission_a", 7],
+		"unlocked_missions": ["unlock_2", "unlock_1", "", 9],
+		"mission_records": {
+			"mission_a": {"best_time_msec": 120.75, "rank": "s", "difficulty": "story", "best_secrets": 9, "total_secrets": 5},
+			"mission_b": {"best_time_msec": -11.0, "rank": "Q", "difficulty": "ultra", "best_secrets": -2, "total_secrets": 4},
+			"mission_c": "bad record",
+			"mission_d": {"best_time_msec": 400.0, "difficulty": "classic", "best_secrets": 5, "total_secrets": 3},
+		},
+		"telemetry": {"bad": true},
+	}
+	var sanitized := CampaignProgressPayload.sanitize(noisy)
+	_expect(sanitized.get("completed_missions") == ["mission_a", "mission_b"], "campaign sanitizer uniques and sorts completed missions")
+	_expect(sanitized.get("unlocked_missions") == ["unlock_1", "unlock_2"], "campaign sanitizer uniques and sorts unlocked missions")
+	var records: Dictionary = sanitized["mission_records"]
+	_expect(records is Dictionary and records.size() == 3, "campaign sanitizer keeps only known top-level keys and mission ids")
+	_expect(records["mission_a"]["best_time_msec"] == 120 and records["mission_a"]["rank"] == "S" and records["mission_a"]["difficulty"] == "story", "campaign sanitizer validates rank and difficulty")
+	_expect(records["mission_a"]["best_secrets"] == 5 and records["mission_a"]["total_secrets"] == 5, "campaign sanitizer clamps best_secrets by total_secrets")
+	var mission_b: Dictionary = records["mission_b"]
+	_expect(not records.has("mission_c"), "malformed mission dictionary payloads are dropped")
+	_expect(mission_b.get("total_secrets") == 4 and not mission_b.has("best_time_msec") and not mission_b.has("best_secrets") and not mission_b.has("rank") and not mission_b.has("difficulty"), "campaign sanitizer drops malformed mission values instead of inventing zero defaults")
+	_expect(records["mission_d"]["best_time_msec"] == 400 and records["mission_d"]["best_secrets"] == 3 and records["mission_d"]["difficulty"] == "classic", "campaign sanitizer normalizes mission record values")
+
+
+func _test_checkpoint_and_campaign_slot_isolation() -> void:
+	var checkpoint := _checkpoint_payload()
+	var campaign := _campaign_payload()
+	save_manager.save_slot(SLOT, checkpoint)
+	save_manager.save_slot(CAMPAIGN_SLOT, campaign)
+
+	var checkpoint_loaded := CheckpointPayload.sanitize(save_manager.load_slot(SLOT))
+	var campaign_loaded := CampaignProgressPayload.sanitize(save_manager.load_slot(CAMPAIGN_SLOT))
+	var checkpoint_as_campaign := CampaignProgressPayload.sanitize(save_manager.load_slot(SLOT))
+	var campaign_as_checkpoint := CheckpointPayload.sanitize(save_manager.load_slot(CAMPAIGN_SLOT))
+
+	_expect(not checkpoint_loaded.is_empty(), "checkpoint slot remains readable as checkpoint")
+	_expect(campaign_loaded == CampaignProgressPayload.sanitize(campaign), "campaign slot remains readable as campaign")
+	_expect(campaign_as_checkpoint.is_empty(), "campaign data does not contaminate checkpoint restore")
+	_expect(checkpoint_as_campaign.get("completed_missions") == [] and checkpoint_as_campaign.get("unlocked_missions") == [] and checkpoint_as_campaign.get("mission_records") == {}, "checkpoint payload does not inflate campaign state")
 
 
 func _test_unversioned_legacy_payload() -> void:
@@ -169,15 +241,26 @@ func _checkpoint_payload() -> Dictionary:
 	}
 
 
-func _write_raw(text: String) -> void:
+func _campaign_payload() -> Dictionary:
+	return {
+		"completed_missions": ["mission_2", "mission_1", "mission_2"],
+		"unlocked_missions": ["mission_1", "mission_3"],
+		"mission_records": {
+			"mission_1": {"best_time_msec": 742000.0, "rank": "B", "difficulty": "story", "best_secrets": 2, "total_secrets": 5},
+			"mission_2": {"best_time_msec": 120000.0, "rank": "A", "difficulty": "mayhem", "best_secrets": 1, "total_secrets": 3},
+		},
+	}
+
+
+func _write_raw(text: String, slot: StringName = SLOT) -> void:
 	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path("user://saves"))
-	var file := FileAccess.open("user://saves/%s.json" % String(SLOT).validate_filename(), FileAccess.WRITE)
+	var file := FileAccess.open("user://saves/%s.json" % String(slot).validate_filename(), FileAccess.WRITE)
 	file.store_string(text)
 	file.close()
 
 
-func _read_raw() -> String:
-	var file := FileAccess.open("user://saves/%s.json" % String(SLOT).validate_filename(), FileAccess.READ)
+func _read_raw(slot: StringName = SLOT) -> String:
+	var file := FileAccess.open("user://saves/%s.json" % String(slot).validate_filename(), FileAccess.READ)
 	if file == null: return ""
 	return file.get_as_text()
 
