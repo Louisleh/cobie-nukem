@@ -96,9 +96,11 @@ func _ready() -> void:
 		game_state.begin_run(metadata.level_id)
 		if not _restored_checkpoint.is_empty():
 			game_state.run_stats["checkpoint_id"] = String(_restored_checkpoint.get("checkpoint_id", "start"))
-	objective_changed.emit(metadata.opening_objective)
 	narrative_message.emit("EPISODE 1, LEVEL 1: %s\n%s" % [metadata.title, metadata.subtitle], 4.0)
 	level_ready.emit(player)
+	var announced := _mission_runtime.announce_available_objectives()
+	if announced.is_empty():
+		objective_changed.emit(metadata.opening_objective)
 	# Ensure the opening encounter exists even when body-enter events settle before connections.
 	_enter_zone(&"forbidden_field", "FORBIDDEN FIELD", player)
 
@@ -114,17 +116,14 @@ func _setup_gameplay_systems() -> void:
 	add_child(_mission_runtime)
 	_mission_runtime.configure(content_manifest, _spawn_scene)
 	_objective_tracker = _mission_runtime.objectives
-	_objective_tracker.objective_activated.connect(func(definition: ObjectiveDefinition) -> void:
-		objective_changed.emit(definition.title)
-	)
 	_encounter_runner = _mission_runtime.encounters
+	_mission_runtime.objective_activated.connect(_on_mission_objective_activated)
+	_mission_runtime.actor_spawned.connect(_on_encounter_actor_spawned)
+	_mission_runtime.actor_defeated.connect(_on_mission_actor_defeated)
+	_mission_runtime.encounter_failed.connect(_on_mission_encounter_failed)
 	var pressure := get_node_or_null("/root/CombatPressure")
 	if pressure != null:
 		_baseline_attack_budget = pressure.maximum_attackers
-	_encounter_runner.actor_spawned.connect(_on_encounter_actor_spawned)
-	_encounter_runner.actor_defeated.connect(func(enemy: Node, definition: EncounterDefinition) -> void:
-		_on_enemy_died(enemy, definition.zone_id)
-	)
 	_restore_mission_snapshot()
 	# Level-owned timers die with the scene, so a pending opening-grace or
 	# completion callback can never fire into a freed level, and restarting the
@@ -373,25 +372,44 @@ func _enter_zone(zone_id: StringName, title: String, _actor: Node) -> void:
 	var game_state := get_node_or_null("/root/GameState")
 	if game_state:
 		game_state.run_stats["last_zone"] = String(zone_id)
-	_objective_tracker.record(ObjectiveDefinition.Kind.REACH_ZONE, zone_id)
+	_mission_runtime.record_objective(ObjectiveDefinition.Kind.REACH_ZONE, zone_id)
 	_spawn_wave(zone_id)
 
 
 func _spawn_wave(zone_id: StringName) -> void:
-	if not _spawn_registry.mark_zone_spawned(zone_id): return
+	if _spawn_registry.completed_zones.has(zone_id):
+		return
 	if _encounter_runner.definitions.has(zone_id):
 		_last_combat_zone = zone_id
 		var definition := _encounter_runner.definitions[zone_id] as EncounterDefinition
 		var pressure := get_node_or_null("/root/CombatPressure")
 		if pressure != null:
 			pressure.configure_limit(mini(_baseline_attack_budget, definition.maximum_simultaneous_attackers))
-	_encounter_runner.activate_zone(zone_id, player)
+		var spawned_actors := _mission_runtime.activate_zone(zone_id, player)
+		if spawned_actors.size() > 0 or _encounter_runner.active.has(zone_id) or _encounter_runner.completed.has(zone_id):
+			_spawn_registry.mark_zone_spawned(zone_id)
+		elif _encounter_runner.failed.has(zone_id):
+			_spawn_registry.clear_zone(zone_id)
+	else:
+		_spawn_registry.mark_zone_spawned(zone_id)
 	if zone_id == &"walker_arena" and _walker == null:
 		# Development fallback: a missing boss scene must not trap QA in the level.
 		_golden_ball.enable_for_boss(null)
 		narrative_message.emit("BOSS ASSET MISSING — GOLDEN BALL QA FALLBACK ENABLED.", 4.0)
 	if zone_id == &"forbidden_field":
 		_opening_grace_timer.start()
+
+
+func _on_mission_objective_activated(definition: ObjectiveDefinition) -> void:
+	objective_changed.emit(definition.title)
+
+
+func _on_mission_actor_defeated(enemy: Node, definition: EncounterDefinition) -> void:
+	_on_enemy_died(enemy, definition.zone_id)
+
+
+func _on_mission_encounter_failed(definition: EncounterDefinition, _reason: String) -> void:
+	_spawn_registry.clear_zone(definition.zone_id)
 
 
 func _on_encounter_actor_spawned(enemy: Node, definition: EncounterDefinition) -> void:
@@ -507,9 +525,27 @@ func _on_checkpoint(id: StringName, position_value: Vector3) -> void:
 	if _hud != null:
 		_hud.show_checkpoint_caption("CHECKPOINT: GOOD DOG STATUS TEMPORARILY RESTORED.", 2.5)
 	narrative_message.emit("CHECKPOINT: GOOD DOG STATUS TEMPORARILY RESTORED.", 2.5)
+	_save_checkpoint_payload(id, position_value)
 	var game_state := get_node_or_null("/root/GameState")
 	if game_state:
 		game_state.run_stats["checkpoint_id"] = String(id)
+
+
+func _save_checkpoint_payload(id: StringName, position_value: Vector3) -> void:
+	var save_manager := get_node_or_null("/root/SaveManager")
+	if save_manager == null:
+		return
+	var difficulty_state := get_node_or_null("/root/GameState")
+	save_manager.save_slot(&"checkpoint", {
+		"scene_path": "res://scenes/levels/episode_1_level_1.tscn",
+		"level_id": String(metadata.level_id),
+		"checkpoint_id": String(id),
+		"position": [position_value.x, position_value.y, position_value.z],
+		"difficulty_id": String(difficulty_state.difficulty_id) if difficulty_state != null else CheckpointPayload.DEFAULT_DIFFICULTY,
+		"objective_snapshot": _mission_runtime.snapshot().objective_snapshot,
+		"encounter_snapshot": _mission_runtime.snapshot().encounter_snapshot,
+		"secrets": secrets.duplicate(true),
+	})
 
 
 func restart_from_checkpoint() -> void:
@@ -536,7 +572,7 @@ func restart_from_checkpoint() -> void:
 func _reset_active_encounter_for_checkpoint() -> void:
 	if _encounter_runner == null or _last_combat_zone == &"" or not _encounter_runner.definitions.has(_last_combat_zone): return
 	var zone_id := _last_combat_zone
-	_encounter_runner.reset_zone(zone_id)
+	_mission_runtime.reset_zone(zone_id)
 	_spawn_registry.clear_zone(zone_id)
 	if zone_id == &"forbidden_field":
 		_opening_enemies.clear()
@@ -632,23 +668,7 @@ func _setup_presentation() -> void:
 		_hud.show_notification("OBJECTIVE: " + text)
 		_hud.show_objective_caption(text, 2.0)
 	)
-	_hud.show_objective(metadata.opening_objective)
 	secret_found.connect(func(_id: StringName, title: String, found: int, total: int): _hud.show_secret("SECRET: %s (%d/%d)" % [title, found, total]))
-	checkpoint_activated.connect(func(id: StringName, position_value: Vector3):
-		var save_manager := get_node_or_null("/root/SaveManager")
-		if save_manager:
-			var difficulty_state := get_node_or_null("/root/GameState")
-			save_manager.save_slot(&"checkpoint", {
-				"scene_path": "res://scenes/levels/episode_1_level_1.tscn",
-				"level_id": String(metadata.level_id),
-				"checkpoint_id": String(id),
-				"position": [position_value.x, position_value.y, position_value.z],
-				"difficulty_id": String(difficulty_state.difficulty_id) if difficulty_state != null else CheckpointPayload.DEFAULT_DIFFICULTY,
-				"objective_snapshot": _mission_runtime.snapshot().objective_snapshot,
-				"encounter_snapshot": _mission_runtime.snapshot().encounter_snapshot,
-				"secrets": secrets.duplicate(true),
-			})
-	)
 	var game_state := get_node_or_null("/root/GameState")
 	if game_state:
 		game_state.run_ended.connect(func(summary: Dictionary):

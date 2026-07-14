@@ -21,6 +21,8 @@ func _initialize() -> void:
 
 
 func _run() -> void:
+	await _test_reconfigure_idempotence()
+	await _teardown_runtime()
 	await _test_configure_and_objective_contract()
 	await _test_encounter_completion_snapshot()
 	await _test_restore_idempotence_and_teardown()
@@ -43,33 +45,57 @@ func _test_configure_and_objective_contract() -> void:
 
 	var activated: Array[StringName] = []
 	var completed: Array[StringName] = []
-	runtime.objectives.objective_activated.connect(func(definition: ObjectiveDefinition) -> void: activated.append(definition.id))
-	runtime.objectives.objective_completed.connect(func(definition: ObjectiveDefinition) -> void: completed.append(definition.id))
+	runtime.objective_activated.connect(func(definition: ObjectiveDefinition) -> void: activated.append(definition.id))
+	runtime.objective_completed.connect(func(definition: ObjectiveDefinition) -> void: completed.append(definition.id))
+	runtime.announce_available_objectives()
 
 	await process_frame
+	_assert(activated == [&"reach_forbidden_zone"], "runtime announces initial objective to post-wiring consumers")
 	_assert(_active_objective_ids() == [&"reach_forbidden_zone"], "configure exposes exactly one prerequisite-free objective")
 
-	var first_wave: Array[StringName] = runtime.objectives.record(ObjectiveDefinition.Kind.REACH_ZONE, TEST_GOAL_ID)
+	var first_wave := runtime.record_objective(ObjectiveDefinition.Kind.REACH_ZONE, TEST_GOAL_ID)
 	_assert(first_wave == [&"reach_forbidden_zone"], "first objective reaches required count and emits completed")
 	_assert(activated.has(&"collect_two_tokens"), "completing prerequisite objective activates dependent objective")
 
-	var first_progress := runtime.objectives.record(ObjectiveDefinition.Kind.COLLECT_ITEM, TEST_COIN_ID)
+	var first_progress := runtime.record_objective(ObjectiveDefinition.Kind.COLLECT_ITEM, TEST_COIN_ID)
 	_assert(first_progress.is_empty(), "partially completed dependent objective does not emit completion")
 	_assert(
 		int(runtime.objectives.snapshot().progress.get("collect_two_tokens", 0)) == 1,
 		"objective progress advances when action target matches"
 	)
 
-	var second_progress := runtime.objectives.record(ObjectiveDefinition.Kind.COLLECT_ITEM, TEST_COIN_ID)
+	var second_progress := runtime.record_objective(ObjectiveDefinition.Kind.COLLECT_ITEM, TEST_COIN_ID)
 	_assert(second_progress == [&"collect_two_tokens"], "dependent objective completes when its second progress point lands")
 	_assert(runtime.objectives.is_complete(), "objective graph reaches terminal complete state")
+
+
+func _test_reconfigure_idempotence() -> void:
+	runtime = _new_runtime(_make_manifest(true))
+	if runtime == null:
+		_fail("runtime could not be configured for idempotence coverage")
+		return
+	var base_snapshot := _normalize_snapshot(runtime.snapshot())
+	runtime.configure(_make_manifest(true), Callable(self, "_spawn_encounter_actor"))
+	await process_frame
+	_assert(runtime.get_children().size() == 2, "reconfigure replaces old runtime children synchronously")
+	_assert(runtime.objectives != null, "configure preserves objective tracker reference")
+	_assert(runtime.encounters != null, "configure preserves encounter runner reference")
+	var reconfigured_snapshot := _normalize_snapshot(runtime.snapshot())
+	_assert(base_snapshot == reconfigured_snapshot, "configure-reconfiguration starts from a clean deterministic snapshot")
+	_assert(runtime.objectives.active_objectives().size() >= 1, "reconfigured runtime exposes objective seed data")
 
 
 func _test_encounter_completion_snapshot() -> void:
 	var snapshot_before_runtime: Dictionary = runtime.snapshot()
 	var zone_id := TEST_ZONE_ID
+	var actor_spawned_events: Array[bool] = []
+	var actor_defeated_events: Array[bool] = []
+	var encounter_completed_events: Array[bool] = []
+	runtime.actor_spawned.connect(func(_actor: Node, _definition: EncounterDefinition) -> void: actor_spawned_events.append(true))
+	runtime.actor_defeated.connect(func(_actor: Node, _definition: EncounterDefinition) -> void: actor_defeated_events.append(true))
+	runtime.encounter_completed.connect(func(_definition: EncounterDefinition) -> void: encounter_completed_events.append(true))
 
-	var active_actors := runtime.encounters.activate_zone(zone_id)
+	var active_actors := runtime.activate_zone(zone_id)
 	_assert(active_actors.size() == 2, "encounter activation spawns the authored wave actor count")
 	_assert(runtime.encounters.active.has(zone_id), "activated encounter appears in active state map")
 
@@ -88,6 +114,9 @@ func _test_encounter_completion_snapshot() -> void:
 	_assert(encounter_snapshot is Dictionary, "encounter snapshot is dictionary")
 	var completed_ids: Array = encounter_snapshot.get("completed", [])
 	_assert(completed_ids.has(String(zone_id)) or completed_ids.has(StringName(zone_id)), "completed encounter persists in checkpoint snapshot")
+	_assert(actor_spawned_events.size() == 2, "runtime forwards actor_spawned events")
+	_assert(actor_defeated_events.size() == 2, "runtime forwards actor_defeated events")
+	_assert(encounter_completed_events.size() == 1, "runtime forwards encounter_completed events")
 	_assert(snapshot_before_runtime != snapshot_after_runtime, "objective progress and encounter completion change snapshot between pre/post runtime states")
 
 
@@ -100,9 +129,9 @@ func _test_restore_idempotence_and_teardown() -> void:
 	var restored_snapshot := _normalize_snapshot(runtime.snapshot())
 	_assert(restored_snapshot == baseline_snapshot, "restoring identical snapshot twice is idempotent")
 
-	var replay := runtime.encounters.activate_zone(TEST_ZONE_ID)
+	var replay := runtime.activate_zone(TEST_ZONE_ID)
 	_assert(replay.is_empty(), "restored completed encounter is correctly suppressed")
-	var completed_progress := runtime.objectives.record(ObjectiveDefinition.Kind.REACH_ZONE, TEST_GOAL_ID)
+	var completed_progress := runtime.record_objective(ObjectiveDefinition.Kind.REACH_ZONE, TEST_GOAL_ID)
 	_assert(completed_progress.is_empty(), "restored completed objectives cannot be re-progressed")
 
 func _new_runtime(manifest: ContentManifest) -> MissionRuntime:
