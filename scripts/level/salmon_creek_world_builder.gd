@@ -9,6 +9,11 @@ const CheckpointScene = preload("res://scenes/interactables/level_checkpoint.tsc
 const ZoneScene = preload("res://scenes/interactables/zone_trigger.tscn")
 const BallReturnScene = preload("res://scenes/interactables/ball_return_secret.tscn")
 const GoldenBallScene = preload("res://scenes/interactables/golden_ball_finale.tscn")
+const EnvironmentKitScript = preload("res://scripts/level/salmon_creek_environment_kit.gd")
+const WetTurfTexture = preload("res://assets/textures/salmon_creek/wet_turf.png")
+const UtilityConcreteTexture = preload("res://assets/textures/salmon_creek/utility_concrete.png")
+const LabPanelTexture = preload("res://assets/textures/salmon_creek/lab_panels.png")
+const ArenaPlatingTexture = preload("res://assets/textures/salmon_creek/arena_plating.png")
 
 const NAVIGATION_SOURCE_LAYER := 1 << 19
 
@@ -31,6 +36,7 @@ var _navigation_sources: Array[StaticBody3D] = []
 var _build_parent: Node
 var _is_built := false
 var _pickups_populated := false
+var _surface_materials: Dictionary = {}
 
 
 func build(owner: Node) -> void:
@@ -98,11 +104,11 @@ func _build_lighting() -> void:
 func _build_route_geometry() -> void:
 	_box("WetSportsField", Vector3(0, -0.5, 0), Vector3(26, 1, 36), Color("315448"), &"soil")
 	_box("ShedFloor", Vector3(0, -0.5, -32), Vector3(15, 1, 25), Color("495057"), &"wood")
-	_box("TunnelFloor", Vector3(0, -0.5, -64), Vector3(10, 1, 39), Color("37474f"))
-	_box("LabFloor", Vector3(0, -0.5, -103), Vector3(24, 1, 38), Color("56636a"))
+	_box("TunnelFloor", Vector3(0, -0.5, -64), Vector3(10, 1, 39), Color("7e898c"), &"tunnel")
+	_box("LabFloor", Vector3(0, -0.5, -103), Vector3(24, 1, 38), Color("8798a3"), &"lab")
 	_box("DogParkFloor", Vector3(22, -0.5, -103), Vector3(18, 1, 22), Color("3d6b45"))
 	_box("SecretDogParkBridge", Vector3(12.5, -0.5, -103), Vector3(2, 1, 6), Color("46634f"))
-	_box("ArenaFloor", Vector3(0, -0.5, -147), Vector3(36, 1, 40), Color("514444"))
+	_box("ArenaFloor", Vector3(0, -0.5, -147), Vector3(36, 1, 40), Color("80736b"), &"arena")
 	_box("ConnectorA", Vector3(0, -0.5, -20), Vector3(8, 1, 5), Color("555b60"))
 	_box("ConnectorB", Vector3(0, -0.5, -45), Vector3(8, 1, 4), Color("414b50"))
 	_box("ConnectorC", Vector3(0, -0.5, -84), Vector3(8, 1, 4), Color("4b575d"))
@@ -120,8 +126,8 @@ func _build_route_geometry() -> void:
 	_box("LabEastBoundaryFront", Vector3(12, 2, -92.25), Vector3(0.6, 4, 15.5), Color("34434a"))
 	_wall_pair(18, -147, 40)
 	# Tunnels and lab receive low ceilings; exterior zones remain storm-open.
-	_box("TunnelCeiling", Vector3(0, 4.2, -64), Vector3(10, 0.5, 39), Color("29353a"))
-	_box("LabCeiling", Vector3(0, 5.0, -103), Vector3(24, 0.5, 38), Color("39464c"))
+	_box("TunnelCeiling", Vector3(0, 4.2, -64), Vector3(10, 0.5, 39), Color("6e7779"), &"tunnel")
+	_box("LabCeiling", Vector3(0, 5.0, -103), Vector3(24, 0.5, 38), Color("7b8a92"), &"lab")
 	_box("ShedRoof", Vector3(0, 4.5, -32), Vector3(15, 0.45, 25), Color("293338"))
 	# Arena cover makes the boss readable under flight-stick auto-aim.
 	for pos in [Vector3(-10, 1, -140), Vector3(10, 1, -140), Vector3(-10, 1, -156), Vector3(10, 1, -156)]:
@@ -187,6 +193,9 @@ func _build_field_dressing() -> void:
 		_prop_box("SafetyCone", Vector3(x, 0.28, 7.5), Vector3(0.28, 0.56, 0.28), Color("e67924"))
 	for row in 3:
 		_prop_box("Bleacher", Vector3(9.8, 0.35 + row * 0.38, 6.5 + row * 0.55), Vector3(4.2, 0.18, 0.65), Color("68777a"))
+	var production_kit := EnvironmentKitScript.new() as SalmonCreekEnvironmentKit
+	production_kit.name = "SalmonCreekProductionKit"
+	production_kit.build(geometry)
 
 
 func _build_story_objects() -> void:
@@ -322,9 +331,7 @@ func _box(node_name: String, center: Vector3, size: Vector3, color: Color, surfa
 	box.size = size
 	box.use_collision = true
 	box.set_meta(&"surface_type", surface_type)
-	var material := StandardMaterial3D.new()
-	material.albedo_color = color
-	material.roughness = 0.95
+	var material := _surface_material(surface_type, color)
 	box.material = material
 	geometry.add_child(box)
 	# A temporary CPU-side collider avoids copying CSG render meshes back from
@@ -344,6 +351,34 @@ func _box(node_name: String, center: Vector3, size: Vector3, color: Color, surfa
 	geometry.add_child(navigation_source)
 	_navigation_sources.append(navigation_source)
 	return box
+
+
+func _surface_material(surface_type: StringName, color: Color) -> StandardMaterial3D:
+	var texture: Texture2D
+	match surface_type:
+		&"soil": texture = WetTurfTexture
+		&"tunnel", &"concrete": texture = UtilityConcreteTexture
+		&"lab": texture = LabPanelTexture
+		&"arena": texture = ArenaPlatingTexture
+		_: texture = null
+	var key := "%s:%s" % [surface_type, color.to_html()]
+	if _surface_materials.has(key):
+		return _surface_materials[key]
+	var material := StandardMaterial3D.new()
+	material.albedo_color = color
+	material.roughness = 0.88
+	if texture != null:
+		material.albedo_texture = texture
+		material.texture_filter = BaseMaterial3D.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS_ANISOTROPIC
+		material.texture_repeat = true
+		material.uv1_triplanar = true
+		material.uv1_world_triplanar = true
+		material.uv1_scale = Vector3(0.22, 0.22, 0.22)
+	if surface_type in [&"lab", &"arena"]:
+		material.metallic = 0.42
+		material.roughness = 0.48
+	_surface_materials[key] = material
+	return material
 
 
 func _prop_box(node_name: String, center: Vector3, size: Vector3, color: Color) -> MeshInstance3D:

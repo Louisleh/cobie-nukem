@@ -63,7 +63,7 @@ func _run() -> void:
 	for scene_path in REGULAR_SCENES:
 		await _test_production_scene(scene_path, true)
 	for scene_path in ELITE_BOSS_SCENES:
-		await _test_production_scene(scene_path, false)
+		await _test_production_scene(scene_path, true, true)
 	if failures.is_empty():
 		print("PASS: authored enemy atlases, deterministic direction/state selection, elite/boss vocabulary")
 		quit(0)
@@ -211,7 +211,7 @@ func _build_profile() -> Profile:
 	return profile
 
 
-func _test_production_scene(scene_path: String, expects_atlas: bool) -> void:
+func _test_production_scene(scene_path: String, expects_atlas: bool, expects_profile := false) -> void:
 	var packed := load(scene_path) as PackedScene
 	_expect(packed != null, "Enemy scene loads: %s" % scene_path)
 	if packed == null:
@@ -223,10 +223,13 @@ func _test_production_scene(scene_path: String, expects_atlas: bool) -> void:
 	var sprite := enemy.get_node_or_null("Visual/DetailedSprite") as Sprite3D
 	_expect(presentation != null and sprite != null, "Production enemy presentation is complete: %s" % scene_path)
 	if presentation != null and sprite != null:
-		if expects_atlas:
+		if expects_profile:
+			_expect(presentation.presentation_profile != null, "Elite/boss owns production presentation profile: %s" % scene_path)
+			_expect(sprite.hframes == 8 and sprite.vframes == 4, "Elite/boss production atlas is 8x4: %s" % scene_path)
+			if presentation.presentation_profile != null:
+				_expect(presentation.presentation_profile.validate().is_empty(), "Elite/boss profile validates: %s" % scene_path)
+		elif expects_atlas:
 			_expect(presentation.atlas_texture != null and sprite.hframes == 4 and sprite.vframes == 2, "Legacy production atlas remains 4x2: %s" % scene_path)
-		else:
-			_expect(presentation.atlas_texture == null, "Elite/boss retains canonical texture until profile asset integration: %s" % scene_path)
 		enemy._set_state(EnemyAgent.State.ATTACK)
 		_expect(presentation.debug_current_pose() == &"attack", "Production enemy exposes attack pose: %s" % scene_path)
 	enemy.free()

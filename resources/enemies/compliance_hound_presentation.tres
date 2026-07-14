@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="EnemyPresentationProfile" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/ai/enemy_presentation_profile.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/sprites/enemies/atlases/compliance_hound_atlas.png" id="2"]
+
+[resource]
+script = ExtResource("1")
+id = &"compliance_hound_production"
+atlas_texture = ExtResource("2")
+animation_fps = 9.0
+far_animation_fps = 3.0
+far_distance = 25.0
+telegraph_hold_seconds = 0.32
+attack_hold_seconds = 0.2
+milestone_hold_seconds = 0.34
+alert_hold_seconds = 0.18
+phase_accent_colors = Array[Color]([Color(0.3059, 0.8627, 0.9569, 1), Color(1, 0.6118, 0.2078, 1), Color(1, 0.3294, 0.2078, 1)])
+fragment_count_web = 12
+fragment_count_native = 20
