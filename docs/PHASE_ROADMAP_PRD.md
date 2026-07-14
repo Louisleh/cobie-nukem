@@ -1,16 +1,16 @@
 # Cobie Nukem — Multi-Phase Production PRD
 
-**Status:** Active production source of truth; `0.6.0-alpha.9` public-beta candidate
+**Status:** Active production source of truth; `0.6.0-alpha.9` public beta
 
 **Created:** 2026-07-11
 
 **Last status review:** 2026-07-14
 
-**Current public baseline:** `0.6.0-alpha.8` (`06fa2d1` gameplay/runtime revision; source integration `6939005`; website deployment `46ff03c`; PCK SHA-256 `a6ac552600d488963b83fa69a235b51aaecb70dd11b56a5b98f082407114debc`)
+**Current public baseline:** `0.6.0-alpha.9` (`c00d54c` gameplay/runtime revision; source integration `7326ff6`; website deployment `13eba81`; PCK SHA-256 `a44af5d67ca30ccc3c69b315ae09286e5e299a0bd0a0dc3a1f31a918dea6e98c`)
 
-**Unreleased development baseline:** `0.6.0-alpha.9` candidate (`c00d54c` runtime feature revision) — Vancouver public-beta card plus browser pointer-activation reliability
+**Unreleased development baseline:** none; `main` and the deployed public artifact are synchronized at Alpha.9
 
-**Last playtest alpha:** `0.6.0-alpha.8` (`06fa2d1`) — live at <https://www.louislehmann.fyi/games/cobie-nukem/>
+**Last released alpha:** `0.6.0-alpha.9` (`c00d54c`) — live at <https://www.louislehmann.fyi/games/cobie-nukem/>; human full-route validation remains open
 
 **Engine:** Godot 4.7 stable, GDScript, Compatibility renderer
 **Purpose:** Turn the family-playtest vertical slice into a sustainable, original multi-level game without sacrificing responsiveness, humor, Web support, or unusual-controller accessibility.
@@ -23,12 +23,12 @@ Alpha.9 deliberately narrows the difference between public and internal developm
 
 | Workstream | Status | Acceptance evidence |
 | --- | --- | --- |
-| Vancouver public beta | **PACKAGED — PUBLICATION IN PROGRESS** | Routable production-preview scene, explicit `BETA` card/status/action/caption, stable mission ID, public-route regression contracts, and green Web/macOS exports |
-| Browser pointer readiness | **PACKAGED — PUBLICATION IN PROGRESS** | Scene-owned capture policy, trusted launch gesture, pre-GUI first-click fallback, visible recovery prompt, canvas focus hook, headless rejection semantics, adversarial coverage, and packaged local Web evidence |
+| Vancouver public beta | **PUBLIC — HUMAN PLAYTHROUGH OPEN** | Routable production-preview scene, explicit `BETA` card/status/action/caption, stable mission ID, green Web/macOS exports, source PR #34, website PR #100, and byte-identical public PCK |
+| Browser pointer readiness | **PUBLIC — HUMAN FEEL OPEN** | Scene-owned capture policy, trusted launch gesture, pre-GUI first-click fallback, visible recovery prompt, canvas focus hook, headless rejection semantics, adversarial coverage, packaged local Web evidence, and public artifact identity |
 | Opening safety | **INTEGRATED** | Pointer-wait protection plus ten-second Vancouver initial/retry protection; mission-host and adversarial tests cover both contracts |
 | Human validation | **OPEN** | Physical iPad Safari, Chrome/Safari full routes, Vancouver pacing/fairness/art/mix, and family comprehension remain human-only |
 
-Alpha.8 remains the current public rollback baseline until Alpha.9 source, artifacts, website deployment, and PCK identity are verified below.
+Alpha.9 is the current public baseline. Alpha.8 remains the retained rollback release and artifact set.
 
 ### Alpha.8 Rain City Forge ledger
 
