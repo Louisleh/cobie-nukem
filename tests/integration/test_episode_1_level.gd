@@ -125,7 +125,7 @@ func _initialize() -> void:
 	root.add_child(audio_level)
 	await process_frame
 	await process_frame
-	var audio_bridge: CombatAudioBridge = audio_level._combat_audio
+	var audio_bridge: CombatAudioBridge = audio_level._mission_presentation.get_combat_audio_bridge()
 	check(audio_bridge != null, "Episode level restores runtime audio bridge in presentation setup")
 	if audio_bridge != null:
 		audio_bridge.sounds.play(ProceduralAudio.Cue.PAWSTOL)

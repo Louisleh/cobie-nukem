@@ -152,6 +152,11 @@ func on_checkpoint_caption(message: String) -> void:
 		_hud.show_checkpoint_caption(message)
 
 
+func on_boss_phase_caption(message: String, duration: float) -> void:
+	if _hud != null:
+		_hud.show_boss_phase_caption(message, duration)
+
+
 func on_player_died(_source: Node) -> void:
 	if _mobile_controls != null:
 		_mobile_controls.release_all()
@@ -335,6 +340,8 @@ func _connect_level(level: Node) -> void:
 		level.objective_changed.connect(on_objective_changed)
 	if level.has_signal("secret_found"):
 		level.secret_found.connect(on_secret_found)
+	if level.has_signal("boss_phase_caption"):
+		level.boss_phase_caption.connect(on_boss_phase_caption)
 	_level_connected = true
 
 
