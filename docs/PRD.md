@@ -1,12 +1,12 @@
 # Cobie Nukem: Retro Mayhem 3D
 ## Research-Informed Product Requirements Document + Codex Autonomous Build Goal
 
-**Document status:** Build-ready v1.0  
+**Document status:** Original vertical-slice requirements; implementation status is maintained in `docs/PHASE_ROADMAP_PRD.md`
 **Working title:** *Cobie Nukem: Retro Mayhem 3D*  
 **Primary platform:** macOS, especially Apple-silicon Mac mini  
 **Secondary platform:** Browser-playable Web export  
 **Engine:** Godot 4.7 stable, standard/GDScript build  
-**Product scope:** A polished 12–20 minute vertical slice, not a full commercial game  
+**Product scope:** Salmon Creek is the definitive public vertical slice; the campaign roadmap and locked internal Vancouver production preview extend this original brief
 **Core fantasy:** Play as Cobie, an aviator-sunglasses-and-leather-jacket labradoodle action hero, in an original 1990s-style retro FPS designed to feel unusually good on a low-cost flight stick.
 
 ---
@@ -20,6 +20,10 @@ The game must not reproduce or distribute Duke Nukem code, maps, characters, dia
 The vertical slice opens at a stormy Pacific Northwest sports field beside a sign reading **“NO ANIMALS ON SPORTS FIELD.”** Cobie, wearing sunglasses and a black leather jacket, immediately ignores it. An alien-mechanical occupation has converted the grounds, nearby maintenance tunnels, and an underground “Animal Compliance” facility into a hostile zone. Cobie must recover the stolen **Golden Tennis Ball**, expose the facility, defeat the Animal Control Walker, and leave through a spectacularly unnecessary explosion.
 
 The primary control novelty is a **flight-stick mode** with exaggerated auto-aim and a 1990s-style control philosophy. Keyboard/mouse remains fully supported. A standard gamepad is a fallback.
+
+## 1.1 Alpha.8 implementation checkpoint
+
+The Rain City Forge candidate preserves the Salmon Creek requirements below while adding reusable mission hosting, save schema v4 and separate campaign progress, original Hound/Walker directional atlases, production environment materials/landmarks, adaptive mission audio, nonverbal Cobie bark events, and a complete development-only five-zone Vancouver mission. Vancouver remains locked in the public selector pending human Alpha.9 approval. The detailed completed/remaining ledger, evidence, and human gates live only in `docs/PHASE_ROADMAP_PRD.md`.
 
 ---
 

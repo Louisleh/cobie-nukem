@@ -18,7 +18,11 @@ Run from the repository root with Godot 4.7 stable:
 /opt/homebrew/bin/godot --headless --path . --script res://tests/unit/enemy_contract_tests.gd
 /opt/homebrew/bin/godot --headless --path . --script res://tests/unit/navigation_contract_test.gd
 /opt/homebrew/bin/godot --headless --path . --script res://tests/unit/save_schema_test.gd
+/opt/homebrew/bin/godot --headless --path . --script res://tests/unit/alpha8_resource_contract_test.gd
+/opt/homebrew/bin/godot --headless --path . --script res://tests/unit/mission_audio_director_test.gd
+/opt/homebrew/bin/godot --headless --path . --script res://tests/unit/moving_set_piece_encounter_coordinator_test.gd
 /opt/homebrew/bin/godot --headless --path . --script res://tests/integration/integration_test_runner.gd
+/opt/homebrew/bin/godot --headless --path . --script res://tests/integration/vancouver_mission_host_test.gd
 /opt/homebrew/bin/godot --headless --path . --script res://tests/integration/adversarial_state_test.gd
 /opt/homebrew/bin/godot --headless --path . --script res://tests/smoke/smoke_test_runner.gd
 /opt/homebrew/bin/godot --headless --path . --script res://tests/smoke/performance_smoke.gd
@@ -40,9 +44,14 @@ bash tools/asset_ip_scan.sh
 | Multi-zone navmesh, ground/flying split, arena-cover routing, bounded stuck recovery | `tests/unit/navigation_contract_test.gd` |
 | Save/load, profile JSON, auto-aim filtering, FSM, secrets, finale | `tests/integration/integration_test_runner.gd` |
 | Save-schema versioning, migrations, corrupt/legacy/future payload recovery | `tests/unit/save_schema_test.gd` |
+| Save-v4 route snapshots and separate campaign progression | `tests/unit/save_schema_test.gd`, `tests/unit/campaign_progress_runtime_test.gd`, `tests/integration/mission_runtime_contract_test.gd` |
+| Mission audio crossfades, presentation cues, route ownership, and spawn ownership | `tests/unit/mission_audio_director_test.gd`, `tests/unit/mission_presentation_test.gd`, `tests/unit/mission_route_runtime_test.gd`, `tests/unit/mission_spawn_registry_test.gd` |
+| Moving-set-piece lifecycle, external waves, 150 stage/reset cycles, and bounded cleanup | `tests/unit/moving_set_piece_runtime_test.gd`, `tests/unit/moving_set_piece_encounter_coordinator_test.gd`, `tests/unit/external_wave_encounter_test.gd` |
+| Directional shield, Umbrella Shield Enforcer behavior, and authored content | `tests/unit/directional_shield_component_test.gd`, `tests/unit/umbrella_shield_enforcer_test.gd`, `tests/integration/umbrella_shield_content_test.gd` |
+| Alpha.8 typed Resource validation and invalid-reference rejection | `tests/unit/alpha8_resource_contract_test.gd` |
 | Difficulty selector contract, resource-driven labels, Classic default | `tests/unit/ui_scene_test.gd` |
 | Grace-timer lifecycle, restart pressure, pause suppression, stuck touch input, reload interruption, double level lifecycle, enemy drops | `tests/integration/adversarial_state_test.gd` |
-| Locked Vancouver route graph, spawn/patrol/checkpoint data, three-wave convoy, reset simulation | `tests/integration/vancouver_route_foundation_test.gd` |
+| Locked Vancouver route graph, production content, interactions, shield enemy, three-wave convoy, Continue rehydration, and departure gating | `tests/integration/vancouver_route_foundation_test.gd`, `tests/integration/vancouver_content_contract_test.gd`, `tests/integration/vancouver_interaction_catalog_test.gd`, `tests/integration/vancouver_mission_host_test.gd` |
 | Every scene loads/instantiates; boot/diagnostics survive entry | `tests/smoke/smoke_test_runner.gd` |
 | Catastrophic main-loop stalls | `tests/smoke/performance_smoke.gd` |
 | Asset manifest coverage and obvious protected-source indicators | `tools/asset_ip_scan.sh` |

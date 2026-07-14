@@ -2,18 +2,18 @@
 
 This file distinguishes confirmed product limitations from unperformed validation. Update it for every release candidate; do not silently convert “not tested” into “passed.”
 
-## `0.6.0-alpha.7` candidate human gates
+## `0.6.0-alpha.8` candidate human gates
 
 - Right-stick profiles are automated for response, frame-rate stability, cancellation, and settings wiring, but final friction/boost strength and thumb comfort require physical iPad Safari testing.
 - The Web bootstrap and title preload are browser-tested; slow real-world mobile networks still need a physical first-load timing pass.
-- Vancouver Waterfront, Mount Hood, Moon, and Ventura are illustrated locked teasers only. Their art is not playable-level completion.
-- Three regular archetypes have directional/reaction atlases. Compliance Hound and Walker still use their canonical illustrations with deterministic motion, tint, telegraph, hit/stagger, phase, and death presentation; bespoke directional atlases are a future art upgrade, not claimed complete here.
-- The 60 imported primary-combat WAVs and their timing/routing are contract-tested, but loudness, tonal character, repetition, spatial mix, and perceived weapon/enemy weight require human listening. Ambience, adaptive music, and Cobie voice remain future authored-audio work.
+- Vancouver Waterfront is now a complete internal five-zone production preview with objectives, checkpoints, interactions, a shield enemy, and a three-stop convoy finale. It remains deliberately locked in the public UI and has not had a human end-to-end playthrough. Mount Hood, Moon, and Ventura remain illustrated locked teasers only.
+- Three regular archetypes plus Compliance Hound and Walker have original directional/reaction atlases and typed presentation profiles. The generated Walker source produced three distinct authored rows, so its alternate locomotion slot intentionally reuses the primary gait; this is manifested provenance, not a claim of eight unique animation families.
+- Imported primary-combat audio, Salmon Creek ambience, adaptive mission music states, and nonverbal Cobie bark events are contract-tested. Loudness, tonal character, repetition, spatial mix, emotional timing, and perceived weapon/enemy weight still require human listening.
 - Salmon Creek now contains 17 required actors across staged waves while limiting peak authored density to three. Encounter completion, reset, pressure distance, boss phases, summons, and recovery are automated; 12–20 minute route pacing, fairness by difficulty, and spectacle remain human gates.
 - Salmon Creek now instantiates 16 data-authored breakable, explosive, hazard, loot, and secret interactions across five arenas. Their collision, grounding, reset, bounded effects, and route safety are automated; visual density, discoverability, and whether each placement feels meaningfully useful require a human playthrough.
 - Walker weak-point phase floors, Golden Ball defeat, summon caps, recovery drops, and repeated reset behavior are automated. Boss telegraph fairness, perceived speed, spectacle, and the approximately 1,000-HP pacing target still require human play.
-- Vancouver has a locked typed route and three-wave citation-convoy production foundation only. It remains unrouted and non-public; none of this data is a claim of finished geometry or playability.
-- The new native 1080p zone profiler passes its p95/p99 gates. The alpha.7 candidate recorded gameplay p95 17.175–19.581 ms, a 38.401 ms tunnel p99 with one 104.345 ms sample, and one isolated 165.351 ms Walker sample. These are preserved as profiler-driven optimization evidence rather than described as resolved ordinary-combat smoothness.
+- Vancouver uses intentionally original low-poly preview geometry and authored route contracts; it is internally launchable for automated evaluation but is not presented as final environment art or public mission completion.
+- Alpha.8 native 1080p Compatibility profiling passes: gameplay p95 is 16.907–18.183 ms and p99 is 17.339–24.872 ms, with one isolated 94.584 ms tunnel maximum; observed static memory remained below 78 MB. Exported Web/tablet performance and physical-device thermals remain release/human gates rather than being inferred from native results.
 
 ## Distribution and legal
 
@@ -39,10 +39,10 @@ This file distinguishes confirmed product limitations from unperformed validatio
 ## World-class vertical-slice open gates
 
 - The 640×360 desktop and 1024×768 tablet layouts have visual automation evidence. Fixed twin-stick rendering, target sizing, onboarding, settings, and left-handed transforms are automated, but physical iPad comfort, reach, simultaneous real-touch behavior, Safari focus recovery, and thermal validation remain open.
-- Original, imported, bounded weapon lifecycle, enemy reaction/attack, and four-surface footstep samples are primary. Procedural audio remains an emergency fallback plus a source for still-unauthored UI/secondary cues; ambience, adaptive music, Cobie voice, and human mix review remain open.
-- Enemy state motion, hit/stagger/death reactions, attack tokens, group alert, weak-point contracts, production navigation, bounded stuck recovery, and three regular directional sprite atlases are implemented. Bespoke Hound/Walker atlases and human combat-path feel remain open.
+- Original, imported, bounded weapon lifecycle, enemy reaction/attack, four-surface footsteps, ambience, adaptive music, and event-driven nonverbal Cobie barks are primary. Procedural audio remains an emergency fallback plus a source for still-unauthored secondary cues; human mix review remains open.
+- Enemy state motion, hit/stagger/death reactions, attack tokens, group alert, weak-point contracts, production navigation, bounded stuck recovery, and five directional sprite atlases including Hound/Walker are implemented. Human combat-path and animation-readability review remain open.
 - Headless drift smoke and native 1080p Compatibility-renderer zone profiling are green, including draw calls, object/node counts, and static memory. Compatibility/OpenGL does not expose useful GPU task timing here; Web/iPad thermal behavior and audio-voice saturation remain unmeasured hardware evidence.
-- The Salmon Creek ball-return machine is the first validated Blender-authored prop and has automated import/collision/puzzle coverage. Its final scale, lighting readability, projectile feel, and placement still need a rendered human playthrough; the rest of the environment remains a mixed prototype/production kit.
+- Salmon Creek now combines the validated Blender-authored ball-return prop with an original low-poly production material and landmark kit. Final scale, lighting readability, visual cohesion, projectile feel, and placement still need a rendered human playthrough; some structural geometry remains intentionally simple.
 
 ## Reporting policy
 

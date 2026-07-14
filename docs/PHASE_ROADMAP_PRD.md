@@ -1,6 +1,6 @@
 # Cobie Nukem — Multi-Phase Production PRD
 
-**Status:** Active production source of truth; `0.6.0-alpha.7` Spark interaction alpha public
+**Status:** Active production source of truth; `0.6.0-alpha.8` Rain City Forge release candidate under validation
 
 **Created:** 2026-07-11
 
@@ -8,7 +8,7 @@
 
 **Current public baseline:** `0.6.0-alpha.7` (`eb66cf8` gameplay/runtime revision; source integration `4161363`; website deployment `0854ef4`; PCK SHA-256 `f9f11d5e419519b2fde01b57d2f46c8c56c1fe0e8baddd02176d3ee2835d0af6`)
 
-**Unreleased development baseline:** none; alpha.7 integration and public identity evidence complete
+**Unreleased development baseline:** Alpha.8 feature integration on `codex/alpha8-rain-city-forge`; public Alpha.7 remains the rollback baseline until the stamped artifact is merged and verified
 
 **Last playtest alpha:** `0.6.0-alpha.7` (`eb66cf8`) — live at <https://www.louislehmann.fyi/games/cobie-nukem/>
 
@@ -16,6 +16,21 @@
 **Purpose:** Turn the family-playtest vertical slice into a sustainable, original multi-level game without sacrificing responsiveness, humor, Web support, or unusual-controller accessibility.
 
 ## 0. Current status dashboard
+
+### Alpha.8 Rain City Forge ledger
+
+Alpha.8 advances the definitive Salmon Creek slice and produces a complete, development-only Vancouver mission. Vancouver source development is public, but its mission card remains locked in the public build until Alpha.9 human approval. GPT-5.6 retained architecture, integration, art/taste, evidence, and release ownership; explicitly pinned GPT-5.3-Codex-Spark workers contributed bounded UI, gameplay, testing, and review packets. Incomplete or unverifiable worker output was rejected rather than counted as evidence.
+
+| Workstream | Status | Acceptance evidence |
+| --- | --- | --- |
+| Reusable mission host | **INTEGRATED** | `MissionRuntime`, route, spawn, presentation, audio, campaign, checkpoint, and moving-set-piece contracts are shared; Salmon Creek controller reduced to 445 lines; characterization and route tests remain green |
+| Definitive Salmon Creek presentation | **INTEGRATED — HUMAN ART REVIEW OPEN** | Original production material/landmark kit; manifested 8×4 Compliance Hound and Walker atlases; typed presentation profiles; authored ambience/adaptive audio and event-driven Cobie barks |
+| Vancouver production preview | **INTEGRATED — LOCKED/NON-PUBLIC** | Five connected zones, upper/lower routes, four checkpoint-safe objectives, four secrets, twenty interactions, Umbrella Shield Enforcer, three-stop citation convoy, post-convoy departure, and Continue rehydration |
+| Persistence and durability | **INTEGRATED** | Save schema v4 with deterministic v3 migration; separate campaign progress; strict route snapshots; bounded reset/cleanup and checkpoint restoration |
+| Touch and accessibility | **INTEGRATED — PHYSICAL DEVICE OPEN** | Dedicated touch `ALT` secondary-fire action, twin-stick ownership/cancellation, captions and presentation cues, responsive contracts, and focus-loss soak |
+| Release evidence | **IN VALIDATION** | Full non-export matrix and native 1080p profile green: gameplay p95 16.907–18.183 ms, p99 17.339–24.872 ms; 100 Salmon routes, 100 checkpoint cycles, 100 touch cancellations, 500 weapon transitions, 100 effects, and 150 staged convoy resets green; Web/macOS exports and public identity remain |
+
+Human-only throughout: physical iPad Safari comfort/thermal/audio, target-Mac full playthrough, family comprehension, boss/difficulty/interaction feel, music mix, humor, visual art direction, and photosensitivity.
 
 ### Alpha.7 Spark acceleration ledger
 
@@ -44,11 +59,11 @@ This section is the first place a new Codex or external-auditor run should read.
 
 | Phase | Status | Completed | Explicitly remaining |
 | --- | --- | --- | --- |
-| 1. Gameplay systems foundation | **VERTICAL-SLICE FOUNDATION IMPLEMENTED — IN REVIEW** | Previous foundation plus `PlayerFeelProfile`, `WeaponFeelProfile`, terminal combat feedback events, damage reactions, observable pressure/attack-token budgets, group alert, weak-point metadata, live multi-wave encounter schema v2, mission runtime/spawn registry extraction, event-driven interaction/aim registries, production ground navigation and bounded stuck recovery | Bespoke Hound/Walker directional atlases; final human feel/balance |
-| 2. Content-production pipeline | **FOUNDATION COMPLETE + MISSION 2 ROUTE PROOF** | Versioned manifest, Salmon Creek interaction catalog, headless validator, release-gate integration, authoring guide, manifest template, critical-path rules, and a locked Mission 2 manifest with typed route zones, spawn volumes, patrol paths, surfaces, checkpoints, secrets, schema-v2 encounters, and deterministic route/reset simulation | Visual editor tooling; production geometry/assets; rendered navigation/reachability; Mission 2 human pacing and full production |
-| 3. World and episode structure | **NOT STARTED — BRIEFS + TEASER ART ONLY** | Vancouver Waterfront, Mount Hood, Moon, and Ventura briefs/locked illustrated cards establish the campaign roadmap | No production geometry, mission routing, encounters, enemies, or playable level assets have been built |
-| 4. Combat and presentation expansion | **PRODUCTION TRANCHE IMPLEMENTED — IN VALIDATION** | High-resolution 640×360 baseline; surface-aware combat events; muzzle/impact/death feedback; three original directional/reaction enemy atlases; code-driven elite/boss states; 60 original imported WAVs across 29 bounded weapon/enemy/footstep cue families; staged encounters and resource-driven Walker pressure/phases/recovery/summons | Bespoke Hound/Walker atlases, adaptive music, authored ambience/Cobie voice, environmental kit/interaction density, human art/mix/boss review |
-| 5. Accessibility, persistence, observability | **IMPLEMENTED FOUNDATION — IN REVIEW** | Save schema v3 with v2 migration and objective/encounter/secret persistence; local-only frame/combat/damage/pickup metrics; objective HUD; reduced-flash integration; quality profiles; 100-route/100-checkpoint/100-touch-cancellation/500-weapon-transition soak | Complete settings UI for every assist, captions beyond current narrative text, visual regression gallery, physical devices |
+| 1. Gameplay systems foundation | **VERTICAL-SLICE FOUNDATION IMPLEMENTED — IN REVIEW** | Previous foundation plus profile-driven feel/combat, encounter schema v2, shared mission host, event registries, navigation, reusable directional shields, and reusable moving set pieces | Final human feel/balance and broader mission-host adoption |
+| 2. Content-production pipeline | **PRODUCTION PIPELINE EXERCISED BY TWO MISSIONS** | Versioned manifests, validators, authoring guides, provenance gates, Salmon interaction/environment content, and a locked Vancouver production mission with stable authored data | Visual editor tooling, final Vancouver art/navigation bake, and human pacing review |
+| 3. World and episode structure | **MISSION 2 INTERNAL PREVIEW COMPLETE — PUBLIC LOCKED** | Vancouver has five connected authored zones, route/objectives/checkpoints/secrets, a new enemy, interactions, and a citation-convoy finale; Mount Hood, Moon, and Ventura remain illustrated briefs | Vancouver human production review and public-unlock gate; later missions remain unbuilt |
+| 4. Combat and presentation expansion | **ALPHA.8 PRODUCTION TRANCHE IN VALIDATION** | Existing combat/audio plus bespoke Hound/Walker atlases, Salmon environment materials/landmarks, adaptive mission audio, ambience, event-driven Cobie barks, shield enemy, and convoy spectacle | Human art, animation, mix, boss, encounter, and effects review |
+| 5. Accessibility, persistence, observability | **SAVE V4 + TOUCH FOUNDATION IMPLEMENTED** | Save schema v4 with v3 migration, campaign progress separated from checkpoints, route snapshots, local metrics, objective/caption HUD, reduced-flash/quality profiles, and dedicated touch alternate fire | Complete settings coverage, visual regression gallery, and physical devices |
 | 6. Alpha, beta, release | **NOT STARTED** | Existing development packaging and CI are available | Episode content completion, full human/device/browser matrices, signing/notarization, legal review, store readiness |
 
 ### Immediate next gate
