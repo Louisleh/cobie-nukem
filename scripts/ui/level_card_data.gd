@@ -11,4 +11,17 @@ extends Resource
 @export var encounter := "UNKNOWN THREAT"
 @export var unlocked := false
 @export_file("*.tscn") var scene_path := ""
+@export var release_badge := ""
+@export_multiline var launch_notice := ""
 @export var preview: Texture2D
+
+
+func status_badge() -> String:
+	if not unlocked:
+		return "LOCKED"
+	var configured := release_badge.strip_edges().to_upper()
+	return configured if not configured.is_empty() else "ACTIVE"
+
+
+func is_preview_release() -> bool:
+	return unlocked and status_badge() != "ACTIVE"

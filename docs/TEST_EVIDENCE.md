@@ -2,6 +2,41 @@
 
 This is a durable evidence template, not a claim that every listed check has run against the current working tree. Add one section per candidate; never overwrite older evidence.
 
+## Candidate 0.6.0-alpha.9 Public Beta Focus — 2026-07-14
+
+| Field | Value |
+| --- | --- |
+| Version | `0.6.0-alpha.9` / build `2026-07-14-public-beta-focus` |
+| Runtime feature revision | `c00d54c` (`Open Vancouver beta and harden browser pointer capture`) |
+| Packaged source | `08e24de` (`Stamp Alpha 9 public beta candidate`) |
+| Godot | `4.7.stable.official.5b4e0cb0f` |
+| Platform | macOS M4 native Compatibility renderer plus Web and unsigned Universal macOS release targets; no physical-device claim |
+
+### Gates
+
+| Check | Result | Evidence |
+| --- | --- | --- |
+| Public Vancouver beta contract | Pass | Normal level select exposes exactly two playable cards; Vancouver routes to its production-preview scene with `BETA`, `START BETA`, a work-in-progress status, and a public-beta opening caption |
+| Pointer-capture architecture | Pass | Dedicated scene-owned controller; trusted mission-launch request; canvas pointer-down focus; pre-GUI activation fallback; consumed non-firing click; explicit HUD recovery state; player controller remains 494 lines |
+| Input safety | Pass | Headless rejection keeps recovery state visible; touch never requests pointer lock; pointer-wait protection and ten-second Vancouver opening/retry protection are contract-tested |
+| Focused regression | Pass | Input, UI, gameplay foundation, Vancouver content/host, adversarial state, parser/import, and architecture checks green |
+| Packaged Web interaction | Pass with scope | Title reaches honest ready state; keyboard navigation reaches the `BETA` card, work-in-progress notice, and Vancouver gameplay; recovery prompt is visible when capture is unavailable. Full route and physical Safari/Chrome remain human gates |
+| Complete release/export matrix | Pass | `QA_EXPORTS=1 bash tools/release_validate.sh`, exit 0; parser/import, all unit/integration/route/adversarial/content/smoke suites, 100-route/focus soaks, architecture/IP gates, Web export, and unsigned Universal macOS export green |
+| Performance smoke | Pass | Headless stall detector: average 16.661 ms, p95 19.825 ms, p99 20.600 ms, maximum 21.064 ms; no node drift. This is not rendered GPU evidence |
+| Candidate artifacts | Pass | Exact package sizes and SHA-256 values recorded below; public identity awaits deployment |
+
+### Candidate artifacts
+
+| Artifact | Bytes | SHA-256 |
+| --- | ---: | --- |
+| `cobie-nukem-0.6.0-alpha.9-itch.zip` | 33,406,380 | `66070b5495b8d601310c05e9a9124a3dacc7a034693e085b9cadc37a34f6d969` |
+| `cobie-nukem-0.6.0-alpha.9-macos-unsigned.zip` | 82,771,158 | `1bbd378daffcffec5a872f335f1002edcf701b3872859fa173115a53e2fd9d74` |
+| Web PCK | 23,801,320 | `a44af5d67ca30ccc3c69b315ae09286e5e299a0bd0a0dc3a1f31a918dea6e98c` |
+
+Publication state: source integration, GitHub prerelease, website deployment, ordinary/uncached URLs, and downloaded public PCK identity remain pending until publication completes.
+
+Human-only: complete Vancouver and Salmon Creek playthroughs, physical iPad Safari, Chrome/Safari mouse feel, difficulty/encounter pacing, art, audio mix, humor, and photosensitivity.
+
 ## Shipped 0.6.0-alpha.8 Rain City Forge — 2026-07-14
 
 | Field | Value |

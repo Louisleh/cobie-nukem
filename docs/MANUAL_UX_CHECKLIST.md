@@ -32,6 +32,7 @@ Record build/commit: __________  Godot: __________  OS/device: __________  Teste
 - [ ] Pickups remain anchored above the floor, grounded enemies cannot fall below y=0, and drones hover without gravity jitter.
 - [ ] Breaking the cracked lab wall removes all collision and reveals a continuous floor bridge into the Secret Dog Park.
 - [ ] Losing browser/native pointer capture is recoverable with one click; that click does not fire.
+- [ ] Starting either mission by mouse enters with aiming captured; keyboard launch shows `CLICK TO AIM` when required, and waiting for that click cannot kill the player.
 - [ ] Pawstol, Barkshot, and Fetch Launcher have distinct fire/alternate fire, ammo, recoil, impact, and enemy reaction.
 - [ ] On touch, the dedicated `ALT` button activates secondary fire without stealing either joystick finger; releasing, focus loss, pause, death, or app switching clears it.
 - [ ] Up/Down changes exactly one weapon per press without flicker; 1/2/3 selects unlocked weapons directly; mouse wheel changes one step per debounced gesture.
@@ -60,9 +61,10 @@ Record build/commit: __________  Godot: __________  OS/device: __________  Teste
 - [ ] Sign read three times, cracked wall, and ball-return secrets each count once and reward the player.
 - [ ] Victory totals and rank reflect the run; enemies/secrets cannot exceed declared totals.
 
-## Locked Vancouver development preview
+## Public Vancouver beta preview
 
-- [ ] Launch only through the explicit development/evaluation route; the public mission card remains locked.
+- [ ] The normal mission selector shows `BETA`, `START BETA`, and a visible work-in-progress warning before launch.
+- [ ] The opening grants enough time to establish mouse/touch control without a spawn death and announces `PUBLIC BETA PREVIEW`.
 - [ ] Downtown alley, Rain City Slice block, waterfront lanes, terminal service, and harbour pier form one continuous readable route.
 - [ ] Four objectives and their checkpoints cannot be consumed early or restored into a dead end.
 - [ ] All twenty authored interactions are grounded, discoverable, reset-safe, and tactically useful; all four secrets count once.

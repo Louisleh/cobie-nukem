@@ -1,14 +1,14 @@
 # Cobie Nukem — Multi-Phase Production PRD
 
-**Status:** Active production source of truth; `0.6.0-alpha.8` Rain City Forge public
+**Status:** Active production source of truth; `0.6.0-alpha.9` public-beta candidate
 
 **Created:** 2026-07-11
 
-**Last status review:** 2026-07-13
+**Last status review:** 2026-07-14
 
 **Current public baseline:** `0.6.0-alpha.8` (`06fa2d1` gameplay/runtime revision; source integration `6939005`; website deployment `46ff03c`; PCK SHA-256 `a6ac552600d488963b83fa69a235b51aaecb70dd11b56a5b98f082407114debc`)
 
-**Unreleased development baseline:** none; Alpha.8 source, prerelease, website artifact, and public PCK identity evidence complete
+**Unreleased development baseline:** `0.6.0-alpha.9` candidate (`c00d54c` runtime feature revision) — Vancouver public-beta card plus browser pointer-activation reliability
 
 **Last playtest alpha:** `0.6.0-alpha.8` (`06fa2d1`) — live at <https://www.louislehmann.fyi/games/cobie-nukem/>
 
@@ -16,6 +16,19 @@
 **Purpose:** Turn the family-playtest vertical slice into a sustainable, original multi-level game without sacrificing responsiveness, humor, Web support, or unusual-controller accessibility.
 
 ## 0. Current status dashboard
+
+### Alpha.9 public-beta and input-readiness ledger
+
+Alpha.9 deliberately narrows the difference between public and internal development. Vancouver is now launchable from the normal mission selector with a `BETA` card badge, `START BETA` action, persistent work-in-progress notice, and public-beta mission caption. It remains visually and mechanically unfinished and has no claimed human full-playthrough approval. Browser mouse readiness is owned by a dedicated `PointerCaptureController`: launch requests occur inside the trusted mission-selection gesture, Web canvas pointer-down restores DOM focus, a first gameplay click reacquires released pointer lock before GUI handling and is consumed rather than fired, and the HUD explains the required action. While capture is unavailable, desktop Web players receive bounded renewable protection; Vancouver also grants ten seconds of opening/respawn protection so activation latency cannot become a spawn death.
+
+| Workstream | Status | Acceptance evidence |
+| --- | --- | --- |
+| Vancouver public beta | **PACKAGED — PUBLICATION IN PROGRESS** | Routable production-preview scene, explicit `BETA` card/status/action/caption, stable mission ID, public-route regression contracts, and green Web/macOS exports |
+| Browser pointer readiness | **PACKAGED — PUBLICATION IN PROGRESS** | Scene-owned capture policy, trusted launch gesture, pre-GUI first-click fallback, visible recovery prompt, canvas focus hook, headless rejection semantics, adversarial coverage, and packaged local Web evidence |
+| Opening safety | **INTEGRATED** | Pointer-wait protection plus ten-second Vancouver initial/retry protection; mission-host and adversarial tests cover both contracts |
+| Human validation | **OPEN** | Physical iPad Safari, Chrome/Safari full routes, Vancouver pacing/fairness/art/mix, and family comprehension remain human-only |
+
+Alpha.8 remains the current public rollback baseline until Alpha.9 source, artifacts, website deployment, and PCK identity are verified below.
 
 ### Alpha.8 Rain City Forge ledger
 
@@ -25,7 +38,7 @@ Alpha.8 advances the definitive Salmon Creek slice and produces a complete, deve
 | --- | --- | --- |
 | Reusable mission host | **INTEGRATED** | `MissionRuntime`, route, spawn, presentation, audio, campaign, checkpoint, and moving-set-piece contracts are shared; Salmon Creek controller reduced to 445 lines; characterization and route tests remain green |
 | Definitive Salmon Creek presentation | **INTEGRATED — HUMAN ART REVIEW OPEN** | Original production material/landmark kit; manifested 8×4 Compliance Hound and Walker atlases; typed presentation profiles; authored ambience/adaptive audio and event-driven Cobie barks |
-| Vancouver production preview | **INTEGRATED — LOCKED/NON-PUBLIC** | Five connected zones, upper/lower routes, four checkpoint-safe objectives, four secrets, twenty interactions, Umbrella Shield Enforcer, three-stop citation convoy, post-convoy departure, and Continue rehydration |
+| Vancouver production preview | **INTEGRATED — SUPERSEDED BY ALPHA.9 PUBLIC BETA** | Five connected zones, upper/lower routes, four checkpoint-safe objectives, four secrets, twenty interactions, Umbrella Shield Enforcer, three-stop citation convoy, post-convoy departure, and Continue rehydration |
 | Persistence and durability | **INTEGRATED** | Save schema v4 with deterministic v3 migration; separate campaign progress; strict route snapshots; bounded reset/cleanup and checkpoint restoration |
 | Touch and accessibility | **INTEGRATED — PHYSICAL DEVICE OPEN** | Dedicated touch `ALT` secondary-fire action, twin-stick ownership/cancellation, captions and presentation cues, responsive contracts, and focus-loss soak |
 | Release evidence | **COMPLETE — ALPHA.8 PUBLIC** | Full matrix, native 1080p profile, Web/macOS exports, source PR #31, prerelease `v0.6.0-alpha.8`, website PR #99, and public PCK byte identity green; gameplay p95 16.907–18.183 ms, p99 17.339–24.872 ms |
@@ -60,11 +73,11 @@ This section is the first place a new Codex or external-auditor run should read.
 | Phase | Status | Completed | Explicitly remaining |
 | --- | --- | --- | --- |
 | 1. Gameplay systems foundation | **VERTICAL-SLICE FOUNDATION IMPLEMENTED — IN REVIEW** | Previous foundation plus profile-driven feel/combat, encounter schema v2, shared mission host, event registries, navigation, reusable directional shields, and reusable moving set pieces | Final human feel/balance and broader mission-host adoption |
-| 2. Content-production pipeline | **PRODUCTION PIPELINE EXERCISED BY TWO MISSIONS** | Versioned manifests, validators, authoring guides, provenance gates, Salmon interaction/environment content, and a locked Vancouver production mission with stable authored data | Visual editor tooling, final Vancouver art/navigation bake, and human pacing review |
-| 3. World and episode structure | **MISSION 2 INTERNAL PREVIEW COMPLETE — PUBLIC LOCKED** | Vancouver has five connected authored zones, route/objectives/checkpoints/secrets, a new enemy, interactions, and a citation-convoy finale; Mount Hood, Moon, and Ventura remain illustrated briefs | Vancouver human production review and public-unlock gate; later missions remain unbuilt |
+| 2. Content-production pipeline | **PRODUCTION PIPELINE EXERCISED BY TWO MISSIONS** | Versioned manifests, validators, authoring guides, provenance gates, Salmon interaction/environment content, and a public-beta Vancouver production mission with stable authored data | Visual editor tooling, final Vancouver art/navigation bake, and human pacing review |
+| 3. World and episode structure | **MISSION 2 PUBLIC BETA — HUMAN REVIEW OPEN** | Vancouver has five connected authored zones, route/objectives/checkpoints/secrets, a new enemy, interactions, and a citation-convoy finale; Mount Hood, Moon, and Ventura remain illustrated briefs | Vancouver human production review and polish; later missions remain unbuilt |
 | 4. Combat and presentation expansion | **ALPHA.8 PRODUCTION TRANCHE IN VALIDATION** | Existing combat/audio plus bespoke Hound/Walker atlases, Salmon environment materials/landmarks, adaptive mission audio, ambience, event-driven Cobie barks, shield enemy, and convoy spectacle | Human art, animation, mix, boss, encounter, and effects review |
 | 5. Accessibility, persistence, observability | **SAVE V4 + TOUCH FOUNDATION IMPLEMENTED** | Save schema v4 with v3 migration, campaign progress separated from checkpoints, route snapshots, local metrics, objective/caption HUD, reduced-flash/quality profiles, and dedicated touch alternate fire | Complete settings coverage, visual regression gallery, and physical devices |
-| 6. Alpha, beta, release | **NOT STARTED** | Existing development packaging and CI are available | Episode content completion, full human/device/browser matrices, signing/notarization, legal review, store readiness |
+| 6. Alpha, beta, release | **PUBLIC ALPHA PROGRAM ACTIVE** | Reproducible CI/export/package/deploy gates and public Alpha.3–Alpha.8 evidence; Alpha.9 public-beta candidate in validation | Human/device/browser matrices, content completion, signing/notarization, legal review, store readiness |
 
 ### Immediate next gate
 

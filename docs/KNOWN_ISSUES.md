@@ -2,17 +2,17 @@
 
 This file distinguishes confirmed product limitations from unperformed validation. Update it for every release candidate; do not silently convert “not tested” into “passed.”
 
-## `0.6.0-alpha.8` shipped human gates
+## `0.6.0-alpha.9` candidate human gates
 
 - Right-stick profiles are automated for response, frame-rate stability, cancellation, and settings wiring, but final friction/boost strength and thumb comfort require physical iPad Safari testing.
 - The Web bootstrap and title preload are browser-tested; slow real-world mobile networks still need a physical first-load timing pass.
-- Vancouver Waterfront is now a complete internal five-zone production preview with objectives, checkpoints, interactions, a shield enemy, and a three-stop convoy finale. It remains deliberately locked in the public UI and has not had a human end-to-end playthrough. Mount Hood, Moon, and Ventura remain illustrated locked teasers only.
+- Vancouver Waterfront is now a public `BETA` preview with objectives, checkpoints, interactions, a shield enemy, and a three-stop convoy finale. It has not had a human end-to-end playthrough; art, pacing, balance, navigation clarity, and convoy feel remain explicitly unfinished. Mount Hood, Moon, and Ventura remain illustrated locked teasers only.
 - Three regular archetypes plus Compliance Hound and Walker have original directional/reaction atlases and typed presentation profiles. The generated Walker source produced three distinct authored rows, so its alternate locomotion slot intentionally reuses the primary gait; this is manifested provenance, not a claim of eight unique animation families.
 - Imported primary-combat audio, Salmon Creek ambience, adaptive mission music states, and nonverbal Cobie bark events are contract-tested. Loudness, tonal character, repetition, spatial mix, emotional timing, and perceived weapon/enemy weight still require human listening.
 - Salmon Creek now contains 17 required actors across staged waves while limiting peak authored density to three. Encounter completion, reset, pressure distance, boss phases, summons, and recovery are automated; 12–20 minute route pacing, fairness by difficulty, and spectacle remain human gates.
 - Salmon Creek now instantiates 16 data-authored breakable, explosive, hazard, loot, and secret interactions across five arenas. Their collision, grounding, reset, bounded effects, and route safety are automated; visual density, discoverability, and whether each placement feels meaningfully useful require a human playthrough.
 - Walker weak-point phase floors, Golden Ball defeat, summon caps, recovery drops, and repeated reset behavior are automated. Boss telegraph fairness, perceived speed, spectacle, and the approximately 1,000-HP pacing target still require human play.
-- Vancouver uses intentionally original low-poly preview geometry and authored route contracts; it is internally launchable for automated evaluation but is not presented as final environment art or public mission completion.
+- Vancouver uses intentionally original low-poly preview geometry and authored route contracts. Its public badge and launch notice identify it as unfinished rather than final mission completion.
 - Alpha.8 native 1080p Compatibility profiling passes: gameplay p95 is 16.907–18.183 ms and p99 is 17.339–24.872 ms, with one isolated 94.584 ms tunnel maximum; observed static memory remained below 78 MB. Exported Web/tablet performance and physical-device thermals remain release/human gates rather than being inferred from native results.
 
 ## Distribution and legal
@@ -25,7 +25,7 @@ This file distinguishes confirmed product limitations from unperformed validatio
 
 - Keyboard/mouse and the fixed twin-stick touch layout are supported Web input paths. Browser hardware-joystick identity and mappings remain experimental and vary by browser.
 - The Thrustmaster USB Joystick model 2960623 has not been physically verified on the target Mac and adapter/hub. Software diagnostics are not hardware evidence.
-- Browser audio and pointer lock require a user gesture. The landing/game copy must remain explicit about the first click.
+- Browser audio and pointer lock require a user gesture. Alpha.9 requests capture from mission launch, restores canvas focus on pointer-down, and shows `CLICK TO AIM` if a browser still requires a fresh gesture; that activation click is consumed and the player is protected while waiting. Physical Safari/Chrome focus behavior remains a human-device gate.
 
 ## Validation still requiring real hardware
 

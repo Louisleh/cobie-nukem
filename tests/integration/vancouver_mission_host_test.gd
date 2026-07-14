@@ -63,6 +63,7 @@ func _run() -> void:
 
 	mission.queue_free()
 	await process_frame
+	await _test_opening_safety_window()
 	await _test_harbour_checkpoint_rehydration()
 	if failures.is_empty():
 		print("VANCOUVER MISSION HOST TEST: PASS")
@@ -99,6 +100,20 @@ func _test_harbour_checkpoint_rehydration() -> void:
 	_expect(mission.current_zone == &"harbour_pier", "harbour Continue restores controller zone truth")
 	_expect(mission._set_piece_runtime != null and bool(mission._set_piece_runtime.current_state().get("has_actor", false)), "harbour Continue rehydrates the citation convoy")
 	_expect(not mission._world_builder.departure_switch.enabled, "restored departure remains locked until convoy objective completes")
+	mission.queue_free()
+	await process_frame
+
+
+func _test_opening_safety_window() -> void:
+	var mission := MissionScene.instantiate() as EpisodeOneVancouverWaterfront
+	mission.start_run_automatically = false
+	mission.setup_presentation = false
+	root.add_child(mission)
+	await process_frame
+	var player := mission.player as CobiePlayer
+	_expect(player != null, "public Vancouver beta spawns its player")
+	if player != null:
+		_expect(player.health_armor.invulnerable_remaining >= mission.opening_protection_seconds - 0.1, "public beta grants time to establish pointer or touch control before opening damage")
 	mission.queue_free()
 	await process_frame
 

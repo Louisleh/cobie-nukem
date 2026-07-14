@@ -23,7 +23,7 @@ var failures: Array[String] = []
 
 
 func _initialize() -> void:
-	_test_public_lock_contract()
+	_test_public_beta_contract()
 	_test_manifest_and_stable_identity()
 	_test_route_geometry_contract()
 	_test_encounter_spawn_contract()
@@ -31,14 +31,16 @@ func _initialize() -> void:
 	_finish()
 
 
-func _test_public_lock_contract() -> void:
+func _test_public_beta_contract() -> void:
 	_expect(LEVEL_CARD != null, "Rain City mission card loads")
 	if LEVEL_CARD == null:
 		return
 	_expect(LEVEL_CARD.level_id == &"episode_1_vancouver_waterfront", "Mission card keeps stable level id")
 	_expect(LEVEL_CARD.title == "RAIN CITY SLICE", "Mission card uses the fictionalized Rain City Slice title")
-	_expect(not LEVEL_CARD.unlocked, "Vancouver remains locked in public level selection")
-	_expect(LEVEL_CARD.scene_path.is_empty(), "Locked Vancouver card has no routable public scene")
+	_expect(LEVEL_CARD.unlocked, "Vancouver is playable from the public level selection")
+	_expect(LEVEL_CARD.scene_path == "res://scenes/levels/episode_1_vancouver_waterfront.tscn", "Vancouver beta card routes to the production preview scene")
+	_expect(LEVEL_CARD.status_badge() == "BETA", "Vancouver is explicitly labeled BETA")
+	_expect(not LEVEL_CARD.launch_notice.strip_edges().is_empty(), "Vancouver beta declares its work-in-progress status")
 
 
 func _test_manifest_and_stable_identity() -> void:

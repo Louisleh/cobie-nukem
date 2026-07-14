@@ -29,6 +29,7 @@ const CHECKPOINT_POSITIONS: Dictionary = {
 @export var spawn_player := true
 @export var start_run_automatically := true
 @export var setup_presentation := true
+@export var opening_protection_seconds := 10.0
 
 var player: Node3D
 var current_zone: StringName = &""
@@ -69,7 +70,7 @@ func _ready() -> void:
 		var game_state := get_node_or_null("/root/GameState")
 		if game_state != null:
 			game_state.begin_run(metadata.level_id)
-	narrative_message.emit("EPISODE 1, MISSION 2: RAIN CITY RUN\nINTERNAL PRODUCTION PREVIEW", 4.0)
+	narrative_message.emit("EPISODE 1, MISSION 2: RAIN CITY RUN\nPUBLIC BETA PREVIEW", 4.0)
 	level_ready.emit(player)
 	var announced := _mission_runtime.announce_available_objectives()
 	if announced.is_empty():
@@ -193,6 +194,8 @@ func _spawn_player() -> void:
 	player = _spawn_scene(PLAYER_SCENE, checkpoint_position) as Node3D
 	if player == null:
 		return
+	if player is CobiePlayer:
+		(player as CobiePlayer).health_armor.grant_invulnerability(opening_protection_seconds)
 	if _mission_presentation != null:
 		_mission_presentation.set_player(player)
 	if player.has_signal("died"):
@@ -379,7 +382,7 @@ func restart_from_checkpoint() -> void:
 		_resetting_encounter = false
 	if is_instance_valid(player):
 		if player.has_method("respawn"):
-			player.respawn(checkpoint_position)
+			player.respawn(checkpoint_position, opening_protection_seconds)
 		else:
 			player.global_position = checkpoint_position
 			player.reset_physics_interpolation()
