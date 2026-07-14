@@ -23,6 +23,7 @@ func _run() -> void:
 	await _test_repeated_fall_death_and_restart()
 	await _test_pause_suppression_during_death_and_victory()
 	await _test_mobile_input_release_on_exit_and_focus_loss()
+	await _test_desktop_pointer_capture_recovery()
 	await _test_weapon_switch_spam_during_reload()
 	await _test_pause_freezes_reload_and_grace()
 	await _test_level_lifecycle_twice_in_one_process()
@@ -192,6 +193,33 @@ func _test_mobile_input_release_on_exit_and_focus_loss() -> void:
 	_expect(not Input.is_action_pressed(&"fire_primary"), "leaving the tree releases held synthetic fire")
 	controls.free()
 	player.free()
+	await process_frame
+
+
+func _test_desktop_pointer_capture_recovery() -> void:
+	var player := PlayerScene.instantiate() as CobiePlayer
+	root.add_child(player)
+	await process_frame
+	var pointer_capture := player.get_node("PointerCapture") as PointerCaptureController
+	var capture_requests := [0]
+	pointer_capture.capture_requested.connect(func() -> void: capture_requests[0] += 1)
+	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+	pointer_capture._sync_capture_state()
+	_expect(pointer_capture.capture_required, "released desktop pointer exposes the click-to-aim recovery state")
+	player.health_armor.invulnerable_remaining = 0.0
+	pointer_capture._process(0.016)
+	_expect(player.health_armor.invulnerable_remaining >= 0.2, "click-to-aim state protects the player until browser input is active")
+	var activation := InputEventMouseButton.new()
+	activation.button_index = MOUSE_BUTTON_LEFT
+	activation.pressed = true
+	pointer_capture._input(activation)
+	_expect(capture_requests[0] == 1, "first desktop click issues exactly one pointer-capture request before UI can consume it")
+	# A headless display server cannot grant OS pointer capture. Keeping the
+	# required state visible is the correct rejection behavior; packaged-browser
+	# validation covers the successful grant and resulting prompt dismissal.
+	_expect(pointer_capture.capture_required, "rejected headless capture keeps the recovery prompt active")
+	player.free()
+	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 	await process_frame
 
 

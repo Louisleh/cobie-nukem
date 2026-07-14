@@ -63,9 +63,10 @@ func _check_level_select_contract() -> void:
 	var instance := packed.instantiate()
 	var levels: Array = instance.get("levels")
 	if levels.size() != 5:
-		failures.append("Level select needs one active and four future cards")
+		failures.append("Level select needs two playable and three future cards")
 	else:
 		var unlocked := 0
+		var beta_cards := 0
 		for data in levels:
 			if data.preview == null:
 				failures.append("Every level card needs illustrated preview art: %s" % data.level_id)
@@ -73,10 +74,16 @@ func _check_level_select_contract() -> void:
 				unlocked += 1
 				if data.scene_path.is_empty():
 					failures.append("Unlocked level card has no route")
+				if data.status_badge() == "BETA":
+					beta_cards += 1
+					if data.launch_notice.strip_edges().is_empty():
+						failures.append("Beta level card needs a visible work-in-progress notice")
 			elif not data.scene_path.is_empty():
 				failures.append("Locked level card must not route to a scene")
-		if unlocked != 1:
-			failures.append("Exactly one level must be unlocked in the release candidate")
+		if unlocked != 2:
+			failures.append("Exactly two levels must be playable in the public beta")
+		if beta_cards != 1:
+			failures.append("Exactly one playable level must carry the BETA badge")
 	var scroll := instance.get_node_or_null("SafeArea/Main/CourseScroll") as ScrollContainer
 	if scroll == null or scroll.horizontal_scroll_mode == ScrollContainer.SCROLL_MODE_DISABLED:
 		failures.append("Level cards must remain reachable in narrow viewports")
@@ -222,6 +229,11 @@ func _check_caption_contracts() -> void:
 	var old_subtitles := bool(settings.get_value("accessibility", "subtitles", true))
 	var old_text_scale := float(settings.get_value("accessibility", "text_scale", 1.0))
 	var hud := packed.instantiate()
+	var pointer_prompt := hud.get_node_or_null("Root/PointerCapturePrompt") as Control
+	if pointer_prompt == null:
+		failures.append("HUD needs a click-to-aim pointer recovery prompt")
+	elif pointer_prompt.mouse_filter != Control.MOUSE_FILTER_IGNORE:
+		failures.append("Pointer recovery prompt must not consume its activation click")
 	root.add_child(hud)
 	await process_frame
 	hud.show_caption("storyline cue", 0, 0.05, "caption-story")

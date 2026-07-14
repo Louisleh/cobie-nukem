@@ -87,7 +87,6 @@ func _ready() -> void:
 		_touch_aim.turn_boost = _touch_turn_boost
 		_touch_aim_friction = TouchAimProfile.friction_strength(String(settings.call("get_value", &"gameplay", &"touch_aim_friction", "standard")))
 		if settings.has_signal("setting_changed"): settings.setting_changed.connect(_on_setting_changed)
-	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE if MobileControls.touchscreen_expected() else Input.MOUSE_MODE_CAPTURED
 	health_armor.died.connect(_on_died)
 	health_armor.damaged.connect(_on_damaged)
 	health_armor.damaged.connect(func(amount: float, _health_damage: float, _armor_damage: float, source: Node) -> void:
@@ -157,12 +156,6 @@ func _unhandled_input(event: InputEvent) -> void:
 	if is_dead:
 		if event.is_action_pressed("fire_primary") or event.is_action_pressed("jump") or event.is_action_pressed("use"):
 			restart_requested.emit()
-		return
-	# Browsers can release pointer lock when focus changes. A fresh click is the
-	# user gesture required to reacquire it; consume that click so it cannot fire.
-	if event is InputEventMouseButton and event.pressed and Input.mouse_mode != Input.MOUSE_MODE_CAPTURED:
-		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
-		get_viewport().set_input_as_handled()
 		return
 	if event is InputEventMouseMotion and Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
 		var relative: Vector2 = event.relative.limit_length(180.0)
@@ -289,7 +282,10 @@ func respawn(at_position: Vector3, protection_seconds := 1.5) -> void:
 	health_armor.restore_full()
 	health_armor.grant_invulnerability(protection_seconds)
 	collision_shape.set_deferred("disabled", false)
-	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE if MobileControls.touchscreen_expected() else Input.MOUSE_MODE_CAPTURED
+	if MobileControls.touchscreen_expected():
+		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+	else:
+		$PointerCapture.request_capture()
 
 func add_ammo(ammo_type: String, amount: int) -> int:
 	var added := 0

@@ -75,6 +75,10 @@ func bind_player(player: Node) -> void:
 		player.shot_resolved.connect(func(kind: StringName, _position: Vector3) -> void: crosshair.show_shot_result(kind))
 	if player.has_signal("access_item_changed"):
 		player.access_item_changed.connect(set_access_item)
+	var pointer_capture := player.get_node_or_null("PointerCapture") as PointerCaptureController
+	if pointer_capture != null:
+		pointer_capture.capture_required_changed.connect(set_pointer_capture_required)
+		set_pointer_capture_required(pointer_capture.capture_required)
 	set_access_item("ACCESS COLLAR" if player.is_in_group(&"has_access_collar") else "NO ACCESS COLLAR")
 	var health_component := player.get_node_or_null("HealthArmor")
 	if health_component != null:
@@ -256,6 +260,10 @@ func _update_caption_layout() -> void:
 
 func set_access_item(label: String) -> void:
 	%AccessLabel.text = label
+
+
+func set_pointer_capture_required(required: bool) -> void:
+	%PointerCapturePrompt.visible = required
 
 func _on_health_changed(current: float, maximum: float) -> void:
 	health_label.text = "%03d" % int(ceil(current))

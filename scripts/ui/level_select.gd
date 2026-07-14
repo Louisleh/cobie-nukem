@@ -45,7 +45,7 @@ func _build_cards() -> void:
 		var card := Button.new()
 		card.custom_minimum_size = Vector2(105.0, 43.0)
 		card.add_theme_font_size_override("font_size", 6)
-		card.text = "%02d  %s\n%s" % [index + 1, "ACTIVE" if data.unlocked else "LOCKED", data.title]
+		card.text = "%02d  %s\n%s" % [index + 1, data.status_badge(), data.title]
 		card.icon = data.preview
 		card.expand_icon = true
 		card.tooltip_text = data.description
@@ -142,8 +142,13 @@ func _select(index: int) -> void:
 	preview.texture = data.preview
 	play_button.disabled = not data.unlocked
 	play_button.focus_mode = Control.FOCUS_NONE if play_button.disabled else Control.FOCUS_ALL
-	play_button.text = "START MISSION" if data.unlocked else "LOCKED"
-	status_label.text = "READY" if data.unlocked else "COMING SOON // FUTURE MISSION"
+	play_button.text = ("START %s" % data.status_badge()) if data.is_preview_release() else ("START MISSION" if data.unlocked else "LOCKED")
+	if not data.unlocked:
+		status_label.text = "COMING SOON // FUTURE MISSION"
+	elif data.is_preview_release():
+		status_label.text = data.launch_notice if not data.launch_notice.strip_edges().is_empty() else "%s // PUBLIC WORK IN PROGRESS" % data.status_badge()
+	else:
+		status_label.text = "READY"
 
 func _activate_selected() -> void:
 	_activate(_selected)
@@ -159,8 +164,16 @@ func _activate(index: int) -> void:
 	SaveManager.delete_slot(&"checkpoint")
 	GameState.continue_requested = false
 	GameState.begin_run(data.level_id)
+	# Browser pointer lock must be requested synchronously from a trusted click or
+	# key activation. Player._ready() runs after that gesture has expired, which
+	# made a pause/resume round trip appear to "fix" mouse aiming. Capture here,
+	# while the Start button gesture is still active; the player retains a safe
+	# click-to-aim fallback for focus loss and keyboard-only launches.
+	if not MobileControls.touchscreen_expected():
+		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 	var result := SceneRouter.go_to(data.scene_path)
 	if result != OK:
+		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 		status_label.text = "MISSION ROUTE OFFLINE"
 		sounds.play(ProceduralAudio.Cue.ERROR)
 

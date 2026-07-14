@@ -15,6 +15,7 @@ func _initialize() -> void:
 	check_profile_round_trip()
 	check_default_profiles()
 	check_diagnostics_scene()
+	check_pointer_capture_policy()
 	if failures.is_empty():
 		print("PASS: input profiles, calibration math, and diagnostics scene")
 		quit(0)
@@ -69,6 +70,17 @@ func check_diagnostics_scene() -> void:
 	var instance := packed.instantiate()
 	if instance == null: failures.append("Diagnostics scene does not instantiate")
 	else: instance.free()
+
+
+func check_pointer_capture_policy() -> void:
+	if PointerCaptureController.needs_capture(true, Input.MOUSE_MODE_VISIBLE):
+		failures.append("Touch gameplay must never request desktop pointer capture")
+	if PointerCaptureController.needs_capture(false, Input.MOUSE_MODE_CAPTURED):
+		failures.append("Captured desktop pointer must not request another activation")
+	if not PointerCaptureController.needs_capture(false, Input.MOUSE_MODE_VISIBLE):
+		failures.append("Visible desktop pointer must request click-to-aim activation")
+	if not PointerCaptureController.needs_capture(false, Input.MOUSE_MODE_CONFINED):
+		failures.append("Confined desktop pointer is not sufficient for relative mouse aiming")
 
 
 func check_close(label: String, actual: float, expected: float, tolerance := 0.0001) -> void:
