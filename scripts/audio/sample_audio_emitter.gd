@@ -3,6 +3,7 @@ extends Node
 
 @export var cues: Array[AudioCueSet] = []
 @export var library: AudioCueLibrary
+@export var extra_libraries: Array[AudioCueLibrary] = []
 var _by_id: Dictionary = {}
 var _voices: Dictionary = {}
 var _spatial_voices: Dictionary = {}
@@ -13,6 +14,9 @@ func _ready() -> void:
 	registered.append_array(cues)
 	if library != null:
 		registered.append_array(library.cues)
+	for extra_library in extra_libraries:
+		if extra_library != null:
+			registered.append_array(extra_library.cues)
 	for cue in registered:
 		if cue != null and cue.id != &"": _by_id[cue.id] = cue
 

@@ -1,0 +1,185 @@
+[gd_resource type="Resource" script_class="AudioCueLibrary" load_steps=39 format=3]
+
+[ext_resource type="Script" path="res://scripts/audio/audio_cue_set.gd" id="1"]
+[ext_resource type="Script" path="res://scripts/audio/audio_cue_library.gd" id="2"]
+[ext_resource type="AudioStream" path="res://assets/audio/music/salmon_exploration.wav" id="m1"]
+[ext_resource type="AudioStream" path="res://assets/audio/music/salmon_tension.wav" id="m2"]
+[ext_resource type="AudioStream" path="res://assets/audio/music/salmon_combat.wav" id="m3"]
+[ext_resource type="AudioStream" path="res://assets/audio/music/salmon_boss.wav" id="m4"]
+[ext_resource type="AudioStream" path="res://assets/audio/music/salmon_victory.wav" id="m5"]
+[ext_resource type="AudioStream" path="res://assets/audio/ambience/salmon_exterior.wav" id="a1"]
+[ext_resource type="AudioStream" path="res://assets/audio/ambience/salmon_tunnel.wav" id="a2"]
+[ext_resource type="AudioStream" path="res://assets/audio/ambience/salmon_lab.wav" id="a3"]
+[ext_resource type="AudioStream" path="res://assets/audio/ambience/salmon_arena.wav" id="a4"]
+[ext_resource type="AudioStream" path="res://assets/audio/ambience/vancouver_rain.wav" id="a5"]
+[ext_resource type="AudioStream" path="res://assets/audio/ambience/vancouver_terminal.wav" id="a6"]
+[ext_resource type="AudioStream" path="res://assets/audio/ambience/vancouver_harbour.wav" id="a7"]
+[ext_resource type="AudioStream" path="res://assets/audio/characters/cobie_bark_01.wav" id="c1"]
+[ext_resource type="AudioStream" path="res://assets/audio/characters/cobie_bark_02.wav" id="c2"]
+[ext_resource type="AudioStream" path="res://assets/audio/characters/cobie_bark_03.wav" id="c3"]
+[ext_resource type="AudioStream" path="res://assets/audio/characters/hound_01.wav" id="h1"]
+[ext_resource type="AudioStream" path="res://assets/audio/characters/hound_02.wav" id="h2"]
+[ext_resource type="AudioStream" path="res://assets/audio/characters/hound_03.wav" id="h3"]
+[ext_resource type="AudioStream" path="res://assets/audio/characters/walker_01.wav" id="w1"]
+[ext_resource type="AudioStream" path="res://assets/audio/characters/walker_02.wav" id="w2"]
+[ext_resource type="AudioStream" path="res://assets/audio/characters/walker_03.wav" id="w3"]
+
+[sub_resource type="Resource" id="MusicExplore"]
+script = ExtResource("1")
+id = &"salmon_music_exploration"
+streams = Array[AudioStream]([ExtResource("m1")])
+bus = &"Music"
+volume_db = -9.0
+pitch_min = 1.0
+pitch_max = 1.0
+maximum_polyphony = 1
+
+[sub_resource type="Resource" id="MusicTension"]
+script = ExtResource("1")
+id = &"salmon_music_tension"
+streams = Array[AudioStream]([ExtResource("m2")])
+bus = &"Music"
+volume_db = -8.0
+pitch_min = 1.0
+pitch_max = 1.0
+maximum_polyphony = 1
+
+[sub_resource type="Resource" id="MusicCombat"]
+script = ExtResource("1")
+id = &"salmon_music_combat"
+streams = Array[AudioStream]([ExtResource("m3")])
+bus = &"Music"
+volume_db = -6.0
+pitch_min = 1.0
+pitch_max = 1.0
+maximum_polyphony = 1
+
+[sub_resource type="Resource" id="MusicBoss"]
+script = ExtResource("1")
+id = &"salmon_music_boss"
+streams = Array[AudioStream]([ExtResource("m4")])
+bus = &"Music"
+volume_db = -5.0
+pitch_min = 1.0
+pitch_max = 1.0
+maximum_polyphony = 1
+
+[sub_resource type="Resource" id="MusicVictory"]
+script = ExtResource("1")
+id = &"salmon_music_victory"
+streams = Array[AudioStream]([ExtResource("m5")])
+bus = &"Music"
+volume_db = -5.0
+pitch_min = 1.0
+pitch_max = 1.0
+maximum_polyphony = 1
+
+[sub_resource type="Resource" id="AmbExterior"]
+script = ExtResource("1")
+id = &"salmon_ambience_exterior"
+streams = Array[AudioStream]([ExtResource("a1")])
+bus = &"Ambience"
+volume_db = -13.0
+pitch_min = 1.0
+pitch_max = 1.0
+maximum_polyphony = 1
+
+[sub_resource type="Resource" id="AmbTunnel"]
+script = ExtResource("1")
+id = &"salmon_ambience_tunnel"
+streams = Array[AudioStream]([ExtResource("a2")])
+bus = &"Ambience"
+volume_db = -12.0
+pitch_min = 1.0
+pitch_max = 1.0
+maximum_polyphony = 1
+
+[sub_resource type="Resource" id="AmbLab"]
+script = ExtResource("1")
+id = &"salmon_ambience_lab"
+streams = Array[AudioStream]([ExtResource("a3")])
+bus = &"Ambience"
+volume_db = -12.0
+pitch_min = 1.0
+pitch_max = 1.0
+maximum_polyphony = 1
+
+[sub_resource type="Resource" id="AmbArena"]
+script = ExtResource("1")
+id = &"salmon_ambience_arena"
+streams = Array[AudioStream]([ExtResource("a4")])
+bus = &"Ambience"
+volume_db = -10.0
+pitch_min = 1.0
+pitch_max = 1.0
+maximum_polyphony = 1
+
+[sub_resource type="Resource" id="AmbVanRain"]
+script = ExtResource("1")
+id = &"vancouver_ambience_dock"
+streams = Array[AudioStream]([ExtResource("a5")])
+bus = &"Ambience"
+volume_db = -11.0
+pitch_min = 1.0
+pitch_max = 1.0
+maximum_polyphony = 1
+
+[sub_resource type="Resource" id="AmbVanTerminal"]
+script = ExtResource("1")
+id = &"vancouver_ambience_terminal"
+streams = Array[AudioStream]([ExtResource("a6")])
+bus = &"Ambience"
+volume_db = -11.0
+pitch_min = 1.0
+pitch_max = 1.0
+maximum_polyphony = 1
+
+[sub_resource type="Resource" id="AmbVanHarbour"]
+script = ExtResource("1")
+id = &"vancouver_ambience_harbour"
+streams = Array[AudioStream]([ExtResource("a7")])
+bus = &"Ambience"
+volume_db = -11.0
+pitch_min = 1.0
+pitch_max = 1.0
+maximum_polyphony = 1
+
+[sub_resource type="Resource" id="CobieBark"]
+script = ExtResource("1")
+id = &"cobie_bark"
+streams = Array[AudioStream]([ExtResource("c1"), ExtResource("c2"), ExtResource("c3")])
+bus = &"SFX"
+volume_db = -7.0
+pitch_min = 0.97
+pitch_max = 1.03
+maximum_polyphony = 2
+
+[sub_resource type="Resource" id="HoundVocal"]
+script = ExtResource("1")
+id = &"hound_vocal"
+streams = Array[AudioStream]([ExtResource("h1"), ExtResource("h2"), ExtResource("h3")])
+bus = &"SFX"
+volume_db = -5.0
+pitch_min = 0.94
+pitch_max = 1.04
+maximum_polyphony = 2
+spatial = true
+max_distance = 34.0
+unit_size = 4.0
+
+[sub_resource type="Resource" id="WalkerVocal"]
+script = ExtResource("1")
+id = &"walker_vocal"
+streams = Array[AudioStream]([ExtResource("w1"), ExtResource("w2"), ExtResource("w3")])
+bus = &"SFX"
+volume_db = -3.0
+pitch_min = 0.97
+pitch_max = 1.02
+maximum_polyphony = 2
+spatial = true
+max_distance = 52.0
+unit_size = 6.0
+
+[resource]
+script = ExtResource("2")
+cues = Array[ExtResource("1")]([SubResource("MusicExplore"), SubResource("MusicTension"), SubResource("MusicCombat"), SubResource("MusicBoss"), SubResource("MusicVictory"), SubResource("AmbExterior"), SubResource("AmbTunnel"), SubResource("AmbLab"), SubResource("AmbArena"), SubResource("AmbVanRain"), SubResource("AmbVanTerminal"), SubResource("AmbVanHarbour"), SubResource("CobieBark"), SubResource("HoundVocal"), SubResource("WalkerVocal")])

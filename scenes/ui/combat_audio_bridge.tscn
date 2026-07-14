@@ -1,8 +1,9 @@
-[gd_scene load_steps=5 format=3]
+[gd_scene load_steps=6 format=3]
 [ext_resource type="Script" path="res://scripts/ui/combat_audio_bridge.gd" id="1"]
 [ext_resource type="Script" path="res://scripts/ui/procedural_audio.gd" id="2"]
 [ext_resource type="Script" path="res://scripts/audio/sample_audio_emitter.gd" id="3"]
 [ext_resource type="Resource" path="res://resources/audio/production_audio_library.tres" id="4_library"]
+[ext_resource type="Resource" path="res://resources/audio/mission_audio_library.tres" id="5_mission_library"]
 [node name="CombatAudioBridge" type="Node"]
 script = ExtResource("1")
 [node name="ProceduralAudio" type="Node" parent="."]
@@ -10,3 +11,4 @@ script = ExtResource("2")
 [node name="SampleAudioEmitter" type="Node" parent="."]
 script = ExtResource("3")
 library = ExtResource("4_library")
+extra_libraries = Array[AudioCueLibrary]([ExtResource("5_mission_library")])

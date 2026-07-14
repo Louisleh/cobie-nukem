@@ -1,6 +1,7 @@
 extends SceneTree
 
 const LIBRARY_PATH := "res://resources/audio/production_audio_library.tres"
+const MISSION_LIBRARY_PATH := "res://resources/audio/mission_audio_library.tres"
 const BRIDGE_SCENE := preload("res://scenes/ui/combat_audio_bridge.tscn")
 const WEAPON_SCENES := [
 	"res://scenes/weapons/pawstol.tscn",
@@ -49,6 +50,22 @@ func _run() -> void:
 			_expect(not hashes.has(digest), "variation is byte-distinct: %s" % stream.resource_path)
 			hashes[digest] = stream.resource_path
 	_expect(stream_count == 60, "all 60 authored variations are imported")
+	var mission_library := load(MISSION_LIBRARY_PATH) as AudioCueLibrary
+	_expect(mission_library != null, "mission audio library loads")
+	if mission_library != null:
+		_expect(mission_library.validation_errors().is_empty(), "mission cue contracts are valid: %s" % [mission_library.validation_errors()])
+		var mission_ids := mission_library.cue_ids()
+		for cue_id in [&"salmon_music_exploration", &"salmon_music_tension", &"salmon_music_combat", &"salmon_music_boss", &"salmon_music_victory", &"salmon_ambience_exterior", &"salmon_ambience_tunnel", &"salmon_ambience_lab", &"salmon_ambience_arena", &"vancouver_ambience_dock", &"vancouver_ambience_terminal", &"vancouver_ambience_harbour", &"cobie_bark", &"hound_vocal", &"walker_vocal"]:
+			_expect(cue_id in mission_ids, "mission cue is authored: %s" % cue_id)
+		for cue in mission_library.cues:
+			_expect(cue.maximum_polyphony <= 2, "%s has a strict mission voice bound" % cue.id)
+			for stream in cue.streams:
+				_expect(stream is AudioStreamWAV, "%s uses imported WAV playback" % cue.id)
+				if stream is AudioStreamWAV:
+					var mission_wav := stream as AudioStreamWAV
+					_expect(not mission_wav.stereo, "%s remains mono" % stream.resource_path)
+					_expect(mission_wav.mix_rate == 44100, "%s uses 44.1 kHz" % stream.resource_path)
+					_expect(mission_wav.get_length() <= 10.0, "%s stays within the Web mission-bed budget" % stream.resource_path)
 
 	# Exercise the real bridge callbacks rather than only proving files exist.
 	var bridge := BRIDGE_SCENE.instantiate() as CombatAudioBridge
@@ -76,7 +93,10 @@ func _run() -> void:
 	_expect(bridge.samples.voice_count(&"enemy_alert", true) == 1, "enemy playback uses a bounded 3D voice")
 	_expect(bridge.samples.play_at(&"enemy_attack", Vector3(2.0, 1.0, -3.0)), "enemy attacks use authored positional playback")
 	_expect(bridge.samples.voice_count(&"enemy_attack", true) == 1, "enemy attack playback uses a bounded 3D voice")
-	_expect(bridge.samples.registered_cue_count() == required.size(), "scene installs the complete production library")
+	_expect(bridge.samples.registered_cue_count() == required.size() + 15, "scene installs production and mission cue libraries")
+	_expect(bridge.play_cobie_bark(), "bridge routes original nonverbal Cobie barks")
+	_expect(bridge.samples.play_at(&"hound_vocal", Vector3.ZERO), "Hound family uses bounded positional playback")
+	_expect(bridge.samples.play_at(&"walker_vocal", Vector3.ZERO), "Walker family uses bounded positional playback")
 	for weapon in weapon_nodes:
 		weapon.queue_free()
 	bridge.queue_free()
