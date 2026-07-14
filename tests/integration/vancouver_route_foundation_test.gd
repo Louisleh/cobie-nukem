@@ -284,6 +284,9 @@ func _drain_encounter_to_completion(runner: EncounterRunner, zone_id: StringName
 		for actor in Array(active_state.get("actors", [])):
 			if is_instance_valid(actor):
 				actor.died.emit(actor, null)
+		var definition: EncounterDefinition = runner.definitions.get(zone_id, null) as EncounterDefinition
+		if definition != null and definition.wave_progression == EncounterDefinition.WaveProgression.EXTERNAL and bool(active_state.get("pending_external_advance", false)):
+			assert_true(runner.advance_external_wave(zone_id), "External encounter %s advances after its cleared wave" % zone_id)
 	if not runner.completed.has(zone_id):
 		report_failure("Zone %s did not complete in bounded simulation steps" % zone_id)
 

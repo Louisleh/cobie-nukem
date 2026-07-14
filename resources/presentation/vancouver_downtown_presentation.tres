@@ -15,4 +15,4 @@ fog_color = Color(0.43, 0.52, 0.62, 1.0)
 fog_density = 0.14
 fog_enabled = true
 landmark_ids = [&"vancouver_downtown_waypoint"]
-ambience_cue_id = &"vancouver_downtown_ambience"
+ambience_cue_id = &"vancouver_ambience_dock"

@@ -15,4 +15,4 @@ fog_color = Color(0.28, 0.34, 0.44, 1.0)
 fog_density = 0.27
 fog_enabled = true
 landmark_ids = [&"vancouver_harbour_mast", &"vancouver_harbour_fogbank"]
-ambience_cue_id = &"vancouver_harbour_ambience"
+ambience_cue_id = &"vancouver_ambience_harbour"

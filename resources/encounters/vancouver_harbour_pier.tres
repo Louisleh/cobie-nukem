@@ -26,3 +26,4 @@ enemy_budget = 6
 maximum_simultaneous_attackers = 2
 music_intensity = 0.9
 reward_policy = &"authored"
+wave_progression = 1
