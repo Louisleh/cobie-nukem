@@ -51,7 +51,10 @@ func current_state() -> Dictionary:
 		"moving": _moving,
 		"waiting_for_stop": _waiting_for_stop,
 		"path_completed": _path_completed,
+		"completion_emitted": _completion_emitted,
 		"next_stop_index": _next_stop_index,
+		"encounter_gates": _encounter_completed.duplicate(),
+		"module_gates": _module_destroyed.duplicate(),
 	}
 
 
