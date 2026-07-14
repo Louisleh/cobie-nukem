@@ -33,5 +33,7 @@ Built on 2026-07-14 with Godot `4.7.stable.official.5b4e0cb0f`. Packaged source:
 
 ## Integration
 
-- Source PR, merge commit, prerelease, website deployment, and public PCK verification are recorded after successful publication in `docs/PHASE_ROADMAP_PRD.md` and `docs/TEST_EVIDENCE.md`.
-- Live route: <https://www.louislehmann.fyi/games/cobie-nukem/>.
+- Source integration: `6939005` through [PR #31](https://github.com/Louisleh/cobie-nukem/pull/31).
+- GitHub prerelease: [v0.6.0-alpha.8](https://github.com/Louisleh/cobie-nukem/releases/tag/v0.6.0-alpha.8).
+- Website deployment: `46ff03c` through `Louisleh/louislehmann-site` [PR #99](https://github.com/Louisleh/louislehmann-site/pull/99).
+- Live route: <https://www.louislehmann.fyi/games/cobie-nukem/>. The ordinary and uncached landing identify Alpha.8/`06fa2d1`; the downloaded public PCK matches the packaged SHA-256 exactly.

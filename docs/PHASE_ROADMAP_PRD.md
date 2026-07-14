@@ -1,16 +1,16 @@
 # Cobie Nukem — Multi-Phase Production PRD
 
-**Status:** Active production source of truth; `0.6.0-alpha.8` Rain City Forge release candidate under validation
+**Status:** Active production source of truth; `0.6.0-alpha.8` Rain City Forge public
 
 **Created:** 2026-07-11
 
 **Last status review:** 2026-07-13
 
-**Current public baseline:** `0.6.0-alpha.7` (`eb66cf8` gameplay/runtime revision; source integration `4161363`; website deployment `0854ef4`; PCK SHA-256 `f9f11d5e419519b2fde01b57d2f46c8c56c1fe0e8baddd02176d3ee2835d0af6`)
+**Current public baseline:** `0.6.0-alpha.8` (`06fa2d1` gameplay/runtime revision; source integration `6939005`; website deployment `46ff03c`; PCK SHA-256 `a6ac552600d488963b83fa69a235b51aaecb70dd11b56a5b98f082407114debc`)
 
-**Unreleased development baseline:** Alpha.8 feature integration on `codex/alpha8-rain-city-forge`; public Alpha.7 remains the rollback baseline until the stamped artifact is merged and verified
+**Unreleased development baseline:** none; Alpha.8 source, prerelease, website artifact, and public PCK identity evidence complete
 
-**Last playtest alpha:** `0.6.0-alpha.7` (`eb66cf8`) — live at <https://www.louislehmann.fyi/games/cobie-nukem/>
+**Last playtest alpha:** `0.6.0-alpha.8` (`06fa2d1`) — live at <https://www.louislehmann.fyi/games/cobie-nukem/>
 
 **Engine:** Godot 4.7 stable, GDScript, Compatibility renderer
 **Purpose:** Turn the family-playtest vertical slice into a sustainable, original multi-level game without sacrificing responsiveness, humor, Web support, or unusual-controller accessibility.
@@ -28,7 +28,7 @@ Alpha.8 advances the definitive Salmon Creek slice and produces a complete, deve
 | Vancouver production preview | **INTEGRATED — LOCKED/NON-PUBLIC** | Five connected zones, upper/lower routes, four checkpoint-safe objectives, four secrets, twenty interactions, Umbrella Shield Enforcer, three-stop citation convoy, post-convoy departure, and Continue rehydration |
 | Persistence and durability | **INTEGRATED** | Save schema v4 with deterministic v3 migration; separate campaign progress; strict route snapshots; bounded reset/cleanup and checkpoint restoration |
 | Touch and accessibility | **INTEGRATED — PHYSICAL DEVICE OPEN** | Dedicated touch `ALT` secondary-fire action, twin-stick ownership/cancellation, captions and presentation cues, responsive contracts, and focus-loss soak |
-| Release evidence | **IN VALIDATION** | Full non-export matrix and native 1080p profile green: gameplay p95 16.907–18.183 ms, p99 17.339–24.872 ms; 100 Salmon routes, 100 checkpoint cycles, 100 touch cancellations, 500 weapon transitions, 100 effects, and 150 staged convoy resets green; Web/macOS exports and public identity remain |
+| Release evidence | **COMPLETE — ALPHA.8 PUBLIC** | Full matrix, native 1080p profile, Web/macOS exports, source PR #31, prerelease `v0.6.0-alpha.8`, website PR #99, and public PCK byte identity green; gameplay p95 16.907–18.183 ms, p99 17.339–24.872 ms |
 
 Human-only throughout: physical iPad Safari comfort/thermal/audio, target-Mac full playthrough, family comprehension, boss/difficulty/interaction feel, music mix, humor, visual art direction, and photosensitivity.
 

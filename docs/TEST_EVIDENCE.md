@@ -2,7 +2,7 @@
 
 This is a durable evidence template, not a claim that every listed check has run against the current working tree. Add one section per candidate; never overwrite older evidence.
 
-## 0.6.0-alpha.8 Rain City Forge candidate — 2026-07-14
+## Shipped 0.6.0-alpha.8 Rain City Forge — 2026-07-14
 
 | Field | Value |
 | --- | --- |
@@ -35,7 +35,7 @@ This is a durable evidence template, not a claim that every listed check has run
 | `cobie-nukem-0.6.0-alpha.8-macos-unsigned.zip` | 82,768,233 | `3dd13a7cc3c8ae99417d2d6c9ccd034358c19fdaa4da52c36e70c9c6362894ae` |
 | Web PCK | 23,797,272 | `a6ac552600d488963b83fa69a235b51aaecb70dd11b56a5b98f082407114debc` |
 
-Publication state: pending source PR/merge, GitHub prerelease, website deployment, and public PCK re-download verification.
+Publication state: source integration `6939005` through [PR #31](https://github.com/Louisleh/cobie-nukem/pull/31); [GitHub prerelease `v0.6.0-alpha.8`](https://github.com/Louisleh/cobie-nukem/releases/tag/v0.6.0-alpha.8); website deployment `46ff03c` through `Louisleh/louislehmann-site` [PR #99](https://github.com/Louisleh/louislehmann-site/pull/99). The ordinary and uncached landing identify Alpha.8/`06fa2d1`; the public 23,797,272-byte PCK re-download matched SHA-256 `a6ac552600d488963b83fa69a235b51aaecb70dd11b56a5b98f082407114debc`.
 
 ## Shipped 0.6.0-alpha.7 — 2026-07-13
 
