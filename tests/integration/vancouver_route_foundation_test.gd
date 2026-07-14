@@ -29,10 +29,10 @@ const OBJECTIVE_CHECKPOINT_BY_ID: Dictionary = {
 	&"reach_waterfront": &"checkpoint_waterfront_seawall",
 	&"restore_terminal": &"checkpoint_terminal_service",
 	&"stop_citation_convoy": &"checkpoint_harbour_pier",
-	&"complete_harbour_pier": &"checkpoint_harbour_pier",
+	&"complete_harbour_pier": &"checkpoint_harbour_clear",
 }
 
-const MANIFEST: ContentManifest = preload("res://resources/content/vancouver_waterfront_manifest.tres")
+const MANIFEST = preload("res://resources/content/vancouver_waterfront_manifest.tres")
 
 var failures: Array[String] = []
 var failure_count: int = 0
@@ -61,6 +61,7 @@ func _run() -> void:
 		return
 
 	_check_route_shape(route)
+	_check_zone_profile_contract(manifest)
 	_check_encounter_alignment(manifest, route)
 	_check_objective_and_checkpoint_contract(manifest, route)
 	_check_non_rendered_route_simulation(manifest)
@@ -107,6 +108,30 @@ func _check_route_shape(route: MissionRouteDefinition) -> void:
 	for index in range(EXPECTED_ROUTE_ZONES.size() - 1):
 		assert_true(route.can_reach(EXPECTED_ROUTE_ZONES[index], EXPECTED_ROUTE_ZONES[index + 1]), "Route can progress %s -> %s" % [EXPECTED_ROUTE_ZONES[index], EXPECTED_ROUTE_ZONES[index + 1]])
 	assert_true(route.can_reach(route.entry_zone_id, EXPECTED_ROUTE_ZONES.back()), "Route reaches final zone")
+
+	var final_zone := route.zone_for_id(&"harbour_pier")
+	assert_not_null(final_zone, "Harbour zone resolves")
+	if final_zone != null:
+		assert_true(final_zone.checkpoint_ids.has(&"checkpoint_harbour_clear"), "Harbour zone has checkpoint_harbour_clear")
+
+
+func _check_zone_profile_contract(manifest: ContentManifest) -> void:
+	assert_not_null(manifest.audio_profile, "Vancouver manifest has audio profile")
+	assert_true(manifest.moving_set_pieces.size() == 1, "Vancouver manifest has one moving set piece")
+	assert_true(manifest.zone_presentations.size() == 5, "Vancouver manifest has five zone presentations")
+	var zone_profile_ids: Dictionary = {}
+	for zone_presentation in manifest.zone_presentations:
+		var z := zone_presentation as ZonePresentationProfile
+		assert_not_null(z, "Zone presentation entry is non-null")
+		if z == null:
+			continue
+		assert_true(z.validate().is_empty(), "Zone presentation %s validates" % z.id)
+		if not zone_profile_ids.has(String(z.id)):
+			zone_profile_ids[String(z.id)] = true
+		else:
+			report_failure("Duplicate zone presentation id %s" % z.id)
+	assert_true(zone_profile_ids.size() == 5, "Vancouver zone presentations are uniquely identified")
+	assert_true(manifest.audio_profile.validate().is_empty(), "Vancouver mission audio profile validates")
 
 
 func _check_encounter_alignment(manifest: ContentManifest, route: MissionRouteDefinition) -> void:
@@ -182,6 +207,9 @@ func _check_objective_and_checkpoint_contract(manifest: ContentManifest, route: 
 		assert_true(objective != null, "Objective %s exists" % objective_id)
 		if objective == null:
 			continue
+		if objective_id == &"complete_harbour_pier":
+			assert_true(objective.kind == ObjectiveDefinition.Kind.ACTIVATE, "Final objective is ACTIVATE kind")
+			assert_true(objective.target_id == &"harbour_departure", "Final objective target is harbour_departure")
 		var zone_id: StringName = OBJECTIVE_ZONE_BY_ID.get(objective_id, &"")
 		assert_true(zone_id != &"", "Objective %s has route zone contract" % objective_id)
 		var zone_index: int = route_indices.get(zone_id, -1)
@@ -204,7 +232,11 @@ func _check_non_rendered_route_simulation(manifest: ContentManifest) -> void:
 		if encounter != null:
 			encounter_by_zone[encounter.zone_id] = encounter
 
-	runner.configure(manifest.encounters, _spawn_probe)
+	var typed_encounters: Array[EncounterDefinition] = []
+	for encounter in manifest.encounters:
+		if encounter is EncounterDefinition:
+			typed_encounters.append(encounter as EncounterDefinition)
+	runner.configure(typed_encounters, _spawn_probe)
 
 	for zone_id in EXPECTED_ROUTE_ZONES:
 		var definition: EncounterDefinition = encounter_by_zone.get(zone_id, null) as EncounterDefinition

@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="ZonePresentationProfile" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/gameplay/zone_presentation_profile.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = &"vancouver_rain_city_slice_presentation"
+zone_id = &"ruse_block"
+palette_id = &"vancouver_rain_city_slice_palette"
+lighting_budget = 5
+decal_budget = 16
+particle_budget = 48
+weather = &"rain"
+fog_color = Color(0.46, 0.54, 0.64, 1.0)
+fog_density = 0.17
+fog_enabled = true
+landmark_ids = [&"vancouver_rain_city_slice_sign", &"vancouver_rain_city_slice_streetlight"]
+ambience_cue_id = &"vancouver_rain_city_slice_ambience"

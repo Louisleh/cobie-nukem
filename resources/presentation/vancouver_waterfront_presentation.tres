@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="ZonePresentationProfile" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/gameplay/zone_presentation_profile.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = &"vancouver_waterfront_presentation"
+zone_id = &"waterfront_seawall"
+palette_id = &"vancouver_waterfront_palette"
+lighting_budget = 5
+decal_budget = 18
+particle_budget = 56
+weather = &"storm"
+fog_color = Color(0.31, 0.38, 0.46, 1.0)
+fog_density = 0.22
+fog_enabled = true
+landmark_ids = [&"vancouver_waterfront_lighthouse", &"vancouver_waterfront_pier"]
+ambience_cue_id = &"vancouver_waterfront_ambience"

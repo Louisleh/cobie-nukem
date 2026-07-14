@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="ZonePresentationProfile" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/gameplay/zone_presentation_profile.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = &"vancouver_terminal_presentation"
+zone_id = &"terminal_service"
+palette_id = &"vancouver_terminal_palette"
+lighting_budget = 4
+decal_budget = 12
+particle_budget = 42
+weather = &"overcast"
+fog_color = Color(0.53, 0.56, 0.58, 1.0)
+fog_density = 0.12
+fog_enabled = true
+landmark_ids = [&"vancouver_terminal_gate", &"vancouver_terminal_hazard"]
+ambience_cue_id = &"vancouver_terminal_ambience"
