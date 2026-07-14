@@ -33,6 +33,7 @@ Record build/commit: __________  Godot: __________  OS/device: __________  Teste
 - [ ] Breaking the cracked lab wall removes all collision and reveals a continuous floor bridge into the Secret Dog Park.
 - [ ] Losing browser/native pointer capture is recoverable with one click; that click does not fire.
 - [ ] Pawstol, Barkshot, and Fetch Launcher have distinct fire/alternate fire, ammo, recoil, impact, and enemy reaction.
+- [ ] On touch, the dedicated `ALT` button activates secondary fire without stealing either joystick finger; releasing, focus loss, pause, death, or app switching clears it.
 - [ ] Up/Down changes exactly one weapon per press without flicker; 1/2/3 selects unlocked weapons directly; mouse wheel changes one step per debounced gesture.
 - [ ] Pawstol produces readable light knockback, Barkshot produces controlled aggregate knockback, and Fetch balls rebound from enemies.
 - [ ] Every weapon has a visible muzzle burst; enemy hits, surface impacts, and misses have distinct feedback.
@@ -49,6 +50,7 @@ Record build/commit: __________  Godot: __________  OS/device: __________  Teste
 
 - [ ] Drone bolt, Groundskeeper charge, and Squirrel acorn have readable audiovisual telegraphs.
 - [ ] Compliance Hound dash/shield/weak point are understandable and armor drop appears.
+- [ ] Compliance Hound and Walker directional atlases read consistently in idle, alert, locomotion, attack, hurt/stagger, phase, and death states without obvious row/angle popping.
 - [ ] Entering the Compliance Lab always spawns the named Fetch Guard beside the Fetch Launcher route.
 - [ ] Walker phases are readable with flight-stick-friendly aim windows.
 - [ ] Enemy labels show calibrated live HP (30/40/80/220/1000), and the Walker actively closes to approximately seven metres.
@@ -57,6 +59,17 @@ Record build/commit: __________  Godot: __________  OS/device: __________  Teste
 - [ ] The full route spawns all 17 required actors: 12 initial-wave actors plus five delayed shed/tunnel/lab reinforcements, including the arena boss; peak authored active density remains three.
 - [ ] Sign read three times, cracked wall, and ball-return secrets each count once and reward the player.
 - [ ] Victory totals and rank reflect the run; enemies/secrets cannot exceed declared totals.
+
+## Locked Vancouver development preview
+
+- [ ] Launch only through the explicit development/evaluation route; the public mission card remains locked.
+- [ ] Downtown alley, Rain City Slice block, waterfront lanes, terminal service, and harbour pier form one continuous readable route.
+- [ ] Four objectives and their checkpoints cannot be consumed early or restored into a dead end.
+- [ ] All twenty authored interactions are grounded, discoverable, reset-safe, and tactically useful; all four secrets count once.
+- [ ] Umbrella Shield Enforcer communicates brace, attack opening, shield break, hurt/stagger, and death; flanking, Barkshot, explosives, and Fetch ricochet remain viable counters.
+- [ ] All three citation-convoy stops change cover and spawn the intended wave; module destruction, death, Continue, restart, and exit reset exactly once.
+- [ ] Completing the convoy unlocks the departure control and campaign result; no earlier interaction can consume the departure switch.
+- [ ] Route target: ______ minutes (15–22); human pacing, landmark, humor, art, and mix findings recorded separately.
 
 ## Accessibility and presentation
 

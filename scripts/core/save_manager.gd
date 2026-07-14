@@ -10,15 +10,19 @@ signal load_completed(slot: StringName, data: Dictionary)
 #   1 — envelope {version, saved_at, payload}; checkpoint payloads carried
 #       scene_path/level_id/checkpoint_id/position and no difficulty.
 #   2 — checkpoint payloads additionally record difficulty_id.
-#   3 — current. Checkpoints persist objective, completed-encounter, and secret
+#   3 — checkpoint payloads persist objective, completed-encounter, and secret
 #       snapshots. Active actors are intentionally rebuilt by the mission.
-const SAVE_VERSION := 3
+#   4 — campaign payloads are canonicalized in a new envelope-compatible shape.
+const SAVE_VERSION := 4
 const SAVE_DIRECTORY := "user://saves"
 
 func save_slot(slot: StringName, payload: Dictionary) -> Error:
 	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(SAVE_DIRECTORY))
 	var path := _slot_path(slot)
-	var file := FileAccess.open(path, FileAccess.WRITE)
+	var temp_path := _temp_path(path)
+	var backup_path := _backup_path(path)
+	_remove_if_present(temp_path)
+	var file := FileAccess.open(temp_path, FileAccess.WRITE)
 	if file == null:
 		return FileAccess.get_open_error()
 	var envelope := {
@@ -27,14 +31,35 @@ func save_slot(slot: StringName, payload: Dictionary) -> Error:
 		"payload": payload.duplicate(true),
 	}
 	file.store_string(JSON.stringify(envelope, "\t"))
+	file.flush()
+	file.close()
+
+	# Godot cannot replace an existing file portably with a single rename. Keep
+	# the previous complete file as a transaction backup until the new complete
+	# file is in place. load_slot() can read that backup if the process exits in
+	# the narrow interval between the two same-directory renames.
+	_remove_if_present(backup_path)
+	if FileAccess.file_exists(path):
+		var backup_error := DirAccess.rename_absolute(path, backup_path)
+		if backup_error != OK:
+			_remove_if_present(temp_path)
+			return backup_error
+	var commit_error := DirAccess.rename_absolute(temp_path, path)
+	if commit_error != OK:
+		_remove_if_present(temp_path)
+		if FileAccess.file_exists(backup_path):
+			DirAccess.rename_absolute(backup_path, path)
+		return commit_error
+	_remove_if_present(backup_path)
 	save_completed.emit(slot)
 	return OK
 
 func load_slot(slot: StringName) -> Dictionary:
 	var path := _slot_path(slot)
-	if not FileAccess.file_exists(path):
+	var readable_path := _readable_slot_path(path)
+	if readable_path.is_empty():
 		return {}
-	var file := FileAccess.open(path, FileAccess.READ)
+	var file := FileAccess.open(readable_path, FileAccess.READ)
 	if file == null:
 		return {}
 	# Instance parsing keeps a corrupt save from spamming engine errors at boot;
@@ -60,9 +85,14 @@ func load_slot(slot: StringName) -> Dictionary:
 
 func delete_slot(slot: StringName) -> Error:
 	var path := _slot_path(slot)
-	if not FileAccess.file_exists(path):
-		return OK
-	return DirAccess.remove_absolute(path)
+	var result := OK
+	for candidate: String in [path, _temp_path(path), _backup_path(path)]:
+		if not FileAccess.file_exists(candidate):
+			continue
+		var remove_error := DirAccess.remove_absolute(candidate)
+		if result == OK and remove_error != OK:
+			result = remove_error
+	return result
 
 func _envelope_version(parsed: Dictionary) -> int:
 	# Version 0 means "unversioned legacy": the dictionary itself is the payload.
@@ -81,18 +111,56 @@ func _migrate(version: int, payload: Dictionary) -> Dictionary:
 			0, 1:
 				# v2 makes difficulty_id canonical for checkpoint payloads.
 				# Only checkpoint-shaped payloads receive the safe default.
-				if migrated.has("scene_path") and not migrated.has("difficulty_id"):
+				if _is_checkpoint_payload(migrated) and not migrated.has("difficulty_id"):
 					migrated["difficulty_id"] = "classic"
 			2:
-				if migrated.has("scene_path"):
+				if _is_checkpoint_payload(migrated):
 					if not migrated.has("objective_snapshot"):
 						migrated["objective_snapshot"] = {"progress": {}, "completed": []}
 					if not migrated.has("encounter_snapshot"):
 						migrated["encounter_snapshot"] = {"completed": []}
 					if not migrated.has("secrets"):
 						migrated["secrets"] = {}
+			3:
+				# v4 canonicalizes campaign payload collections while leaving
+				# checkpoint payloads semantically unchanged.
+				if _is_campaign_payload(migrated):
+					if not migrated.has("completed_missions"):
+						migrated["completed_missions"] = []
+					if not migrated.has("unlocked_missions"):
+						migrated["unlocked_missions"] = []
+					if not migrated.has("mission_records"):
+						migrated["mission_records"] = {}
 	return migrated
+
+func _is_checkpoint_payload(payload: Dictionary) -> bool:
+	return payload.has("scene_path") or payload.has("level_id") or payload.has("checkpoint_id")
+
+func _is_campaign_payload(payload: Dictionary) -> bool:
+	return payload.has("completed_missions") or payload.has("unlocked_missions") or payload.has("mission_records")
 
 func _slot_path(slot: StringName) -> String:
 	var safe_slot := String(slot).validate_filename()
 	return "%s/%s.json" % [SAVE_DIRECTORY, safe_slot]
+
+func _temp_path(path: String) -> String:
+	return "%s.tmp" % path
+
+func _backup_path(path: String) -> String:
+	return "%s.bak" % path
+
+func _readable_slot_path(path: String) -> String:
+	if FileAccess.file_exists(path):
+		return path
+	var backup_path := _backup_path(path)
+	if not FileAccess.file_exists(backup_path):
+		return ""
+	# Complete a transaction interrupted after live -> backup. If restoration
+	# itself fails, reading the complete backup still preserves player progress.
+	if DirAccess.rename_absolute(backup_path, path) == OK:
+		return path
+	return backup_path
+
+func _remove_if_present(path: String) -> void:
+	if FileAccess.file_exists(path):
+		DirAccess.remove_absolute(path)

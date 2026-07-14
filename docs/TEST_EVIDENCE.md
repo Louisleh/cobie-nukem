@@ -2,6 +2,41 @@
 
 This is a durable evidence template, not a claim that every listed check has run against the current working tree. Add one section per candidate; never overwrite older evidence.
 
+## 0.6.0-alpha.8 Rain City Forge candidate — 2026-07-14
+
+| Field | Value |
+| --- | --- |
+| Version | `0.6.0-alpha.8` / build `2026-07-13-rain-city-forge` |
+| Runtime feature revision | `06fa2d1` (`Eliminate mission audio teardown race`) |
+| Packaged source | `b566dce` (`Restamp Alpha 8 after audio lifecycle fix`) |
+| Godot | `4.7.stable.official.5b4e0cb0f` |
+| Platform | macOS M4 native Compatibility renderer plus exported Web and unsigned Universal macOS artifacts; no physical-device claim |
+
+### Gates
+
+| Check | Result | Evidence |
+| --- | --- | --- |
+| Reusable mission host/save v4 | Pass | Mission/runtime/route/spawn/presentation/audio/campaign contracts, deterministic v3 migration, strict checkpoint route snapshots, and separate campaign progress |
+| Salmon Creek presentation/audio | Pass with human gates | Production material/landmark kit, original Hound/Walker 8×4 atlases, adaptive mission audio, ambience, and event-driven nonverbal Cobie barks; human art/mix remains open |
+| Locked Vancouver preview | Pass, non-public | Five connected zones, four objectives/checkpoints/secrets, twenty interactions, shield enemy, three-stop external-wave convoy, Continue rehydration, and departure gating |
+| Complete regression/soak | Pass | 100 Salmon routes, 100 checkpoint cycles, 100 touch cancellations, 500 weapon transitions, 100 effects, and 150 staged convoy resets; content/IP/architecture gates green |
+| Audio lifecycle regression | Pass | Release gate reproduced an intermittent teardown race; single ownership restored; audio unit suite plus 20 consecutive performance-smoke processes emitted no leak/resource/orphan errors |
+| Exact Spark review | Pass | Explicit `gpt-5.3-codex-spark` read-only full-diff review against `origin/main`; no Blocker/Critical/Major findings; no repository mutations |
+| Complete release/export matrix | Pass | `QA_EXPORTS=1 bash tools/release_validate.sh`, exit 0; Web and unsigned Universal macOS exports regenerated after the lifecycle fix |
+| Native 1080p zone profile | Pass | Gameplay p95 16.907–18.183 ms, p99 17.339–24.872 ms, memory below 78 MB; one isolated 94.584 ms tunnel maximum retained |
+| Packaged HTTP/identity | Pass | Landing identifies Alpha.8; cache-keyed PCK/WASM/JS return 200 with expected lengths; local interactive browser automation unavailable due host bootstrap failure, so no interactive Alpha.8 browser claim |
+| Physical iPad and human playthrough/art/mix | Not run | Explicit human-only gates |
+
+### Candidate artifacts
+
+| Artifact | Bytes | SHA-256 |
+| --- | ---: | --- |
+| `cobie-nukem-0.6.0-alpha.8-itch.zip` | 33,403,347 | `2c54836bdb32b7361e6c5cb5633d24e78c7f622e30c2875e06934b28c55e59ad` |
+| `cobie-nukem-0.6.0-alpha.8-macos-unsigned.zip` | 82,768,233 | `3dd13a7cc3c8ae99417d2d6c9ccd034358c19fdaa4da52c36e70c9c6362894ae` |
+| Web PCK | 23,797,272 | `a6ac552600d488963b83fa69a235b51aaecb70dd11b56a5b98f082407114debc` |
+
+Publication state: pending source PR/merge, GitHub prerelease, website deployment, and public PCK re-download verification.
+
 ## Shipped 0.6.0-alpha.7 — 2026-07-13
 
 | Field | Value |

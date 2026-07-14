@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="ContentManifest" load_steps=18 format=3]
+[gd_resource type="Resource" script_class="ContentManifest" load_steps=19 format=3]
 [ext_resource type="Script" path="res://scripts/gameplay/content_manifest.gd" id="1"]
 [ext_resource type="Resource" path="res://resources/difficulty/story.tres" id="2"]
 [ext_resource type="Resource" path="res://resources/difficulty/classic.tres" id="3"]
@@ -16,6 +16,7 @@
 [ext_resource type="Script" path="res://scripts/gameplay/objective_definition.gd" id="15"]
 [ext_resource type="Script" path="res://scripts/gameplay/encounter_definition.gd" id="16"]
 [ext_resource type="Resource" path="res://resources/interactions/salmon_creek_interactions.tres" id="17"]
+[ext_resource type="Resource" path="res://resources/audio/salmon_mission_audio.tres" id="18"]
 [resource]
 script = ExtResource("1")
 content_version = 1
@@ -25,3 +26,4 @@ difficulty_profiles = Array[ExtResource("14")]([ExtResource("2"), ExtResource("3
 objectives = Array[ExtResource("15")]([ExtResource("5"), ExtResource("6"), ExtResource("7"), ExtResource("8")])
 encounters = Array[ExtResource("16")]([ExtResource("9"), ExtResource("10"), ExtResource("11"), ExtResource("12"), ExtResource("13")])
 interaction_catalog = ExtResource("17")
+audio_profile = ExtResource("18")

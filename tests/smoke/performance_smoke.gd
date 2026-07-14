@@ -63,7 +63,12 @@ func _run() -> void:
 	instance.free()
 	instance = null
 	packed = null
-	await process_frame
+	# AudioServer releases stopped playback objects on its next mix boundary, not
+	# necessarily the first headless process frame. Give scene-owned audio voices
+	# a bounded drain window so the smoke test measures real lifetime cleanup
+	# instead of intermittently quitting between stop and mixer release.
+	for _cleanup_frame in 4:
+		await process_frame
 	quit(0 if timing_ok and lifetime_ok else 1)
 
 

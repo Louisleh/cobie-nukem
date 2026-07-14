@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="MissionAudioProfile" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/gameplay/mission_audio_profile.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = &"salmon_creek_mission_audio"
+exploration_ambience_cue_id = &"salmon_music_exploration"
+tension_ambience_cue_id = &"salmon_music_tension"
+combat_ambience_cue_id = &"salmon_music_combat"
+boss_ambience_cue_id = &"salmon_music_boss"
+victory_ambience_cue_id = &"salmon_music_victory"
+crossfade_seconds = 0.75
+web_voice_cap = 12
+native_voice_cap = 24
+ambience_cue_ids = [&"salmon_ambience_exterior", &"salmon_ambience_tunnel", &"salmon_ambience_lab", &"salmon_ambience_arena"]

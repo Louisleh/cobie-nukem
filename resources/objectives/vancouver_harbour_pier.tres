@@ -4,6 +4,6 @@
 script = ExtResource("1")
 id = &"complete_harbour_pier"
 title = "TAKE THE HARBOUR PIER"
-kind = 0
-target_id = &"harbour_pier"
+kind = 2
+target_id = &"harbour_departure"
 prerequisite_ids = Array[StringName]([&"stop_citation_convoy"])

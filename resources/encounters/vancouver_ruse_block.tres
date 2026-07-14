@@ -4,7 +4,7 @@
 script = ExtResource("1")
 id = &"vancouver_ruse_block_watch"
 zone_id = &"ruse_block"
-display_name = "RUSE BLOCK WATCH"
+display_name = "RAIN CITY WATCH"
 schema_version = 2
 spawns = []
 waves = Array[Dictionary]([{

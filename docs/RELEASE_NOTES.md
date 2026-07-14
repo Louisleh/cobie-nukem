@@ -1,38 +1,37 @@
-# Release Notes — 0.6.0-alpha.7 Spark Interaction Slice
+# Release Notes — 0.6.0-alpha.8 Rain City Forge
 
-Built on 2026-07-13 with Godot `4.7.stable.official.5b4e0cb0f`. Runtime feature revision: `eb66cf8`.
+Built on 2026-07-14 with Godot `4.7.stable.official.5b4e0cb0f`. Packaged source: `b566dce`; runtime feature revision: `06fa2d1`.
 
 ## Player-visible changes
 
-- Salmon Creek now contains 16 authored environmental interactions across its major arenas: breakables, explosive props, hazards, loot containers, and a persistent secret.
-- The Walker fight has explicit phase floors, weak-point windows, bounded summons, recovery drops, a clear pressure lane, and deterministic reset behavior.
-- Critical narrative, objective, enemy-warning, boss-phase, checkpoint, and PA cues use a bounded priority-caption system.
-- The full twin-stick tablet layout remains first-class: left movement, right aiming, action controls, focus recovery, cancellation, handedness, opacity, and responsive layout contracts.
-- Vancouver Waterfront now has a typed production route and three-wave citation-convoy foundation, but remains intentionally locked and non-public.
+- Salmon Creek gains an original low-poly production material and landmark kit plus manifested 8×4 directional/reaction atlases for Compliance Hound and Walker.
+- Mission-scoped adaptive exploration, tension, combat, boss, victory, and zone ambience now reacts to real gameplay events; Cobie secret/victory moments trigger original nonverbal barks.
+- Touch HUD adds a dedicated `ALT` secondary-fire button while preserving independent move/aim joystick ownership and cancellation.
+- Campaign progress is separate from save-v4 checkpoints, with deterministic migration and route restoration.
+- Vancouver Waterfront is a complete five-zone internal production preview with twenty interactions, four secrets, Umbrella Shield Enforcers, and a three-stop citation convoy. Its public mission card remains intentionally locked.
 
 ## Production improvements
 
-- A committed Spark orchestration skill and six pinned `gpt-5.3-codex-spark` roles make bounded implementation, testing, content, audit, accessibility, and review work reproducible while root retains architecture and release ownership.
-- Salmon Creek interaction construction, stable IDs, callbacks, restore, and reset moved into `MissionInteractionRuntime`.
-- Interaction and Walker tuning are typed Resources with content validation and focused regression coverage.
-- The release matrix covers 100 routes, 100 checkpoint/death/restarts, 100 touch/focus cancellations, 500 weapon transitions, low-frame projectile behavior, content/IP/architecture gates, Web export, and Universal macOS export.
+- Shared mission runtime, route, spawn, presentation, audio, campaign, shield, and moving-set-piece contracts reduce mission-specific coupling; Salmon Creek's controller is 445 lines.
+- The release gate directly exercises the new Alpha.8 Resources, Vancouver route/content/host, Continue rehydration, departure gating, shields, convoy, campaign saves, audio, and touch secondary fire.
+- A release-gate-discovered mission-audio teardown race was fixed by restoring single ownership to normal Godot child teardown; 20 consecutive performance smoke runs were leak-free afterward.
+- An exact `gpt-5.3-codex-spark` independent read-only review found no Blocker, Critical, or Major defects. GPT-5.6 retained integration and release ownership.
 
 ## Validation boundary
 
-- Native rendered gameplay p95 is 17.175–19.581 ms on the target M4 Mac. One 104.345 ms tunnel sample and one 165.351 ms Walker sample remain explicitly tracked.
-- The exact packaged build passed desktop and 1024×768 forced-touch browser checks through title, menu, mission selection, gameplay, full twin-stick layout, and live right-stick aim response.
-- Physical iPad Safari comfort/thermal/audio, full human playthrough, boss/difficulty feel, interaction usefulness, mix, humor, and photosensitivity remain human-only gates.
+- Full native/Web export validation passed with 100 Salmon routes, 100 checkpoint cycles, 100 touch cancellations, 500 weapon transitions, 100 effects, and 150 staged convoy reset scenarios.
+- Native 1080p Compatibility gameplay p95 was 16.907–18.183 ms and p99 17.339–24.872 ms; static memory remained below 78 MB. One isolated tunnel maximum reached 94.584 ms.
+- The packaged landing and cache-keyed PCK/WASM/JS assets return successfully over HTTP and identify Alpha.8. Browser-control initialization failed in the local automation host, so no new Alpha.8 interactive browser claim is made from that attempt.
+- Physical iPad Safari comfort/thermal/audio, full human playthrough, boss/difficulty/interaction feel, art, mix, humor, and photosensitivity remain human-only gates.
 - The macOS ZIP is unsigned and unnotarized. The working title still requires clearance before commercial distribution.
 
 ## Artifacts
 
-- `cobie-nukem-0.6.0-alpha.7-itch.zip` — 26,183,196 bytes; SHA-256 `7e50a546f75cc8cb7432e8653537549be49809325fcc5d246469d5f7f68bd59a`.
-- `cobie-nukem-0.6.0-alpha.7-macos-unsigned.zip` — 75,547,579 bytes; SHA-256 `35a35380b659ddf031db3442adc1d5e1a5b7591d5eef3c86d34609d7d34eabde`.
-- Web PCK — 16,323,388 bytes; SHA-256 `f9f11d5e419519b2fde01b57d2f46c8c56c1fe0e8baddd02176d3ee2835d0af6`.
+- `cobie-nukem-0.6.0-alpha.8-itch.zip` — 33,403,347 bytes; SHA-256 `2c54836bdb32b7361e6c5cb5633d24e78c7f622e30c2875e06934b28c55e59ad`.
+- `cobie-nukem-0.6.0-alpha.8-macos-unsigned.zip` — 82,768,233 bytes; SHA-256 `3dd13a7cc3c8ae99417d2d6c9ccd034358c19fdaa4da52c36e70c9c6362894ae`.
+- Web PCK — 23,797,272 bytes; SHA-256 `a6ac552600d488963b83fa69a235b51aaecb70dd11b56a5b98f082407114debc`.
 
 ## Integration
 
-- Source integration: `4161363` through [PR #29](https://github.com/Louisleh/cobie-nukem/pull/29).
-- GitHub prerelease: [v0.6.0-alpha.7](https://github.com/Louisleh/cobie-nukem/releases/tag/v0.6.0-alpha.7).
-- Website deployment: `0854ef4` through `Louisleh/louislehmann-site` [PR #98](https://github.com/Louisleh/louislehmann-site/pull/98).
-- Live route: <https://www.louislehmann.fyi/games/cobie-nukem/>. The uncached public landing, stamped title, 1024×768 twin-stick gameplay, and downloaded PCK hash were verified after deployment with no browser warnings/errors.
+- Source PR, merge commit, prerelease, website deployment, and public PCK verification are recorded after successful publication in `docs/PHASE_ROADMAP_PRD.md` and `docs/TEST_EVIDENCE.md`.
+- Live route: <https://www.louislehmann.fyi/games/cobie-nukem/>.

@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="ContentManifest" load_steps=18 format=3]
+[gd_resource type="Resource" script_class="ContentManifest" load_steps=26 format=3]
 [ext_resource type="Script" path="res://scripts/gameplay/content_manifest.gd" id="1"]
 [ext_resource type="Resource" path="res://resources/difficulty/story.tres" id="2"]
 [ext_resource type="Resource" path="res://resources/difficulty/classic.tres" id="3"]
@@ -16,12 +16,24 @@
 [ext_resource type="Script" path="res://scripts/gameplay/difficulty_profile.gd" id="14"]
 [ext_resource type="Script" path="res://scripts/gameplay/objective_definition.gd" id="15"]
 [ext_resource type="Script" path="res://scripts/gameplay/encounter_definition.gd" id="16"]
+[ext_resource type="Resource" path="res://resources/audio/vancouver_mission_audio.tres" id="18"]
+[ext_resource type="Resource" path="res://resources/presentation/vancouver_downtown_presentation.tres" id="19"]
+[ext_resource type="Resource" path="res://resources/presentation/vancouver_rain_city_slice_presentation.tres" id="20"]
+[ext_resource type="Resource" path="res://resources/presentation/vancouver_waterfront_presentation.tres" id="21"]
+[ext_resource type="Resource" path="res://resources/presentation/vancouver_terminal_presentation.tres" id="22"]
+[ext_resource type="Resource" path="res://resources/presentation/vancouver_harbour_presentation.tres" id="23"]
+[ext_resource type="Resource" path="res://resources/set_pieces/vancouver_citation_convoy.tres" id="24"]
+[ext_resource type="Resource" path="res://resources/interactions/vancouver_waterfront_interactions.tres" id="25"]
 [resource]
 script = ExtResource("1")
 content_version = 1
 level_id = &"episode_1_vancouver_waterfront"
-level_scene = "res://scenes/levels/vancouver_waterfront_graybox.tscn"
+level_scene = "res://scenes/levels/episode_1_vancouver_waterfront.tscn"
 difficulty_profiles = Array[DifficultyProfile]([ExtResource("2"), ExtResource("3"), ExtResource("4")])
 objectives = Array[ObjectiveDefinition]([ExtResource("5"), ExtResource("6"), ExtResource("7"), ExtResource("8")])
 encounters = Array[EncounterDefinition]([ExtResource("9"), ExtResource("10"), ExtResource("11"), ExtResource("12"), ExtResource("13")])
+interaction_catalog = ExtResource("25")
 route_definition = ExtResource("17")
+audio_profile = ExtResource("18")
+zone_presentations = Array[ZonePresentationProfile]([ExtResource("19"), ExtResource("20"), ExtResource("21"), ExtResource("22"), ExtResource("23")])
+moving_set_pieces = Array[MovingSetPieceDefinition]([ExtResource("24")])

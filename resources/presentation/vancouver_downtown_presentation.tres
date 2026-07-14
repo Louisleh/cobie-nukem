@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="ZonePresentationProfile" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/gameplay/zone_presentation_profile.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = &"vancouver_downtown_presentation"
+zone_id = &"downtown_alley"
+palette_id = &"vancouver_downtown_palette"
+lighting_budget = 4
+decal_budget = 14
+particle_budget = 40
+weather = &"overcast"
+fog_color = Color(0.43, 0.52, 0.62, 1.0)
+fog_density = 0.14
+fog_enabled = true
+landmark_ids = [&"vancouver_downtown_waypoint"]
+ambience_cue_id = &"vancouver_ambience_dock"

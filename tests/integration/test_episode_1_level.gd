@@ -61,6 +61,15 @@ func _initialize() -> void:
 			drone_origins_ok = drone_origins_ok and actor._base_height > 1.5 and not actor.uses_gravity
 	check(hover_origins_ok, "Pickup hover origins were captured before spawn placement")
 	check(combat_pickup_count == 10, "Salmon Creek should author exactly 10 pickups")
+	var world_builder := level.get("_world_builder") as SalmonCreekWorldBuilder
+	check(world_builder != null, "Salmon Creek exposes its extracted world builder to characterization tests")
+	if world_builder != null:
+		world_builder.populate_pickups()
+	var pickup_count_after_repeat := 0
+	for actor in level.get_node("Actors").get_children():
+		if actor is CombatPickup:
+			pickup_count_after_repeat += 1
+	check(pickup_count_after_repeat == combat_pickup_count, "World builder pickup population is idempotent")
 	check(drone_origins_ok, "Drone hover height was captured before spawn placement")
 	var doors := 0; var signs := 0; var checkpoints := 0; var finale := 0
 	for child in level.get_node("Interactables").get_children():
@@ -116,7 +125,7 @@ func _initialize() -> void:
 	root.add_child(audio_level)
 	await process_frame
 	await process_frame
-	var audio_bridge: CombatAudioBridge = audio_level._combat_audio
+	var audio_bridge: CombatAudioBridge = audio_level._mission_presentation.get_combat_audio_bridge()
 	check(audio_bridge != null, "Episode level restores runtime audio bridge in presentation setup")
 	if audio_bridge != null:
 		audio_bridge.sounds.play(ProceduralAudio.Cue.PAWSTOL)

@@ -22,4 +22,7 @@ threat_value = 12
 navigation_radius = 1.4
 weak_point_multiplier = 2.0
 reaction_profile = ExtResource("2")
+alert_sound = &"walker_vocal"
+attack_sound_set = &"walker_vocal"
+death_sound_set = &"walker_vocal"
 score_value = 2500

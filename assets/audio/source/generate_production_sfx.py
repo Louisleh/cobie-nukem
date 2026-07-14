@@ -145,6 +145,88 @@ def footstep(surface: str, variant: int) -> tuple[float, Callable[[float, random
     return duration, synth
 
 
+def mission_ambience(kind: str) -> tuple[float, Callable[[float, random.Random], float]]:
+    """Original, periodic ambience beds designed for seamless imported looping."""
+    duration = 4.0
+    settings = {
+        "salmon_exterior": (42.0, 0.08, 0.28),
+        "salmon_tunnel": (55.0, 0.035, 0.18),
+        "salmon_lab": (72.0, 0.06, 0.15),
+        "salmon_arena": (38.0, 0.045, 0.24),
+        "vancouver_rain": (48.0, 0.10, 0.34),
+        "vancouver_terminal": (66.0, 0.055, 0.20),
+        "vancouver_harbour": (36.0, 0.075, 0.30),
+    }
+    base, pulse, noise_amount = settings[kind]
+    filtered = _noise_filter(0.018 if "rain" not in kind else 0.09)
+
+    def synth(t: float, rng: random.Random) -> float:
+        phase = t / duration
+        bed = math.sin(math.tau * base * t) * 0.16
+        bed += math.sin(math.tau * (base * 0.503) * t + math.sin(math.tau * phase)) * 0.11
+        motion = 0.72 + pulse * math.sin(math.tau * phase * 2.0)
+        texture = filtered(rng) * noise_amount
+        if "rain" in kind or "exterior" in kind or "harbour" in kind:
+            texture += rng.uniform(-1.0, 1.0) * 0.055
+        return (bed + texture) * motion
+
+    return duration, synth
+
+
+def adaptive_music(state: str, theme: str = "salmon") -> tuple[float, Callable[[float, random.Random], float]]:
+    """Short original industrial surf-rock loops; no sampled performances."""
+    duration = 8.0
+    settings = {
+        "exploration": (88.0, (0, 3, 5, 7), 0.16),
+        "tension": (96.0, (0, 1, 5, 6), 0.20),
+        "combat": (112.0, (0, 3, 7, 10), 0.28),
+        "boss": (124.0, (0, 1, 6, 8), 0.34),
+        "victory": (104.0, (0, 4, 7, 12), 0.24),
+    }
+    bpm, notes, intensity = settings[state]
+    if theme == "vancouver":
+        # Rain City uses a brighter suspended motif and syncopated transit pulse,
+        # remaining entirely deterministic synthesis with no sampled performance.
+        bpm += 6.0
+        notes = tuple(note + (2 if index % 2 else 0) for index, note in enumerate(notes))
+        intensity *= 0.92
+    beat = 60.0 / bpm
+    root = (61.735 if state != "victory" else 73.416) if theme == "vancouver" else (55.0 if state != "victory" else 65.406)
+
+    def synth(t: float, rng: random.Random) -> float:
+        step = int(t / (beat * 0.5)) % len(notes)
+        local = t % (beat * 0.5)
+        frequency = root * (2.0 ** (notes[step] / 12.0))
+        bass = math.sin(math.tau * frequency * t + 0.32 * math.sin(math.tau * frequency * 2.0 * t))
+        gate = math.exp(-local * (5.5 if state in ("combat", "boss") else 3.2))
+        kick_phase = t % beat
+        kick = math.sin(math.tau * (82.0 - 42.0 * min(kick_phase / beat, 1.0)) * kick_phase) * math.exp(-kick_phase * 10.0)
+        hat_phase = t % (beat * 0.5)
+        hat = rng.uniform(-1.0, 1.0) * math.exp(-hat_phase * 35.0)
+        lead_ratio = 2.5 if theme == "vancouver" else 2.0
+        lead = math.sin(math.tau * frequency * lead_ratio * t) * gate
+        rain_chime = math.sin(math.tau * frequency * 4.0 * t) * gate * 0.035 if theme == "vancouver" else 0.0
+        return bass * gate * intensity + kick * intensity * 0.72 + hat * intensity * 0.18 + lead * intensity * 0.16 + rain_chime
+
+    return duration, synth
+
+
+def character_cue(kind: str, variant: int) -> tuple[float, Callable[[float, random.Random], float]]:
+    duration = 0.42 if kind == "cobie_bark" else (0.58 if kind == "hound" else 0.82)
+    base = {"cobie_bark": 132.0, "hound": 78.0, "walker": 46.0}[kind]
+    filtered = _noise_filter(0.12)
+
+    def synth(t: float, rng: random.Random) -> float:
+        progress = t / duration
+        pitch = base * (1.0 + 0.18 * math.sin(math.tau * progress * (1.0 + variant * 0.15)))
+        voice = math.sin(math.tau * pitch * t + 2.8 * math.sin(math.tau * pitch * 0.47 * t))
+        grit = filtered(rng)
+        mechanical = math.sin(math.tau * (pitch * 3.1) * t) if kind == "walker" else 0.0
+        return (voice * 0.54 + grit * 0.32 + mechanical * 0.22) * _decay(t, duration, 1.1)
+
+    return duration, synth
+
+
 def main() -> None:
     generated: list[Path] = []
     for weapon_index, kind in enumerate(("pawstol", "barkshot", "fetch_launcher")):
@@ -165,6 +247,29 @@ def main() -> None:
             duration, synth = footstep(surface, variant)
             relative = f"footsteps/{surface}_{variant:02d}.wav"
             _render(relative, duration, synth, 0xF0075 + surface_index * 100 + variant)
+            generated.append(ROOT / relative)
+    for ambience_index, kind in enumerate((
+        "salmon_exterior", "salmon_tunnel", "salmon_lab", "salmon_arena",
+        "vancouver_rain", "vancouver_terminal", "vancouver_harbour",
+    )):
+        duration, synth = mission_ambience(kind)
+        relative = f"ambience/{kind}.wav"
+        _render(relative, duration, synth, 0xA8B1E + ambience_index * 101)
+        generated.append(ROOT / relative)
+    for music_index, state in enumerate(("exploration", "tension", "combat", "boss", "victory")):
+        duration, synth = adaptive_music(state)
+        relative = f"music/salmon_{state}.wav"
+        _render(relative, duration, synth, 0xA8D10 + music_index * 211)
+        generated.append(ROOT / relative)
+        duration, synth = adaptive_music(state, "vancouver")
+        relative = f"music/vancouver_{state}.wav"
+        _render(relative, duration, synth, 0xB8D10 + music_index * 211)
+        generated.append(ROOT / relative)
+    for family_index, family in enumerate(("cobie_bark", "hound", "walker")):
+        for variant in range(1, 4):
+            duration, synth = character_cue(family, variant)
+            relative = f"characters/{family}_{variant:02d}.wav"
+            _render(relative, duration, synth, 0xA8C0B + family_index * 100 + variant)
             generated.append(ROOT / relative)
     checksums = [f"{hashlib.sha256(path.read_bytes()).hexdigest()}  {path.relative_to(ROOT)}" for path in sorted(generated)]
     (ROOT / "SHA256SUMS.txt").write_text("\n".join(checksums) + "\n", encoding="utf-8")

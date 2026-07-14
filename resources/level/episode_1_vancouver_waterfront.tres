@@ -1,0 +1,34 @@
+[gd_resource type="Resource" script_class="LevelMetadata" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/level/level_metadata.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+level_id = &"episode_1_vancouver_waterfront"
+title = "RAIN CITY RUN"
+subtitle = "The Vancouver Waterfront Citation"
+target_minutes_min = 15
+target_minutes_max = 22
+total_secrets = 4
+opening_objective = "REACH THE WATERFRONT SEAWALL"
+zones = Array[Dictionary]([{
+"id": &"downtown_alley",
+"title": "DOWNTOWN SERVICE ALLEY",
+"target_minutes": 3.0
+}, {
+"id": &"ruse_block",
+"title": "RAIN CITY SLICE",
+"target_minutes": 3.0
+}, {
+"id": &"waterfront_seawall",
+"title": "WATERFRONT SEAWALL",
+"target_minutes": 4.0
+}, {
+"id": &"terminal_service",
+"title": "TERMINAL SERVICE",
+"target_minutes": 4.0
+}, {
+"id": &"harbour_pier",
+"title": "HARBOUR PIER",
+"target_minutes": 5.0
+}])

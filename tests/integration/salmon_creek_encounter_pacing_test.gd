@@ -214,7 +214,7 @@ func _test_walker_pressure_phases_summons_and_recovery() -> void:
 	level._reset_active_encounter_for_checkpoint()
 	await process_frame
 	_expect(level._walker != walker and is_instance_valid(level._walker), "Boss reset replaces the Walker with a clean instance")
-	_expect(level._walker_phase_rewards.is_empty(), "Boss reset clears phase-reward cadence state")
+	_expect(level._boss_runtime.phase_rewards.is_empty(), "Boss reset clears phase-reward cadence state")
 	_expect(_count_pickups(level) == pickups_before, "Boss reset removes uncollected phase recovery without duplicating it")
 	_expect(get_nodes_in_group(&"boss_summons").is_empty(), "Boss reset clears all summoned pressure actors")
 	_expect(level.enemies_defeated <= level.enemies_total, "Checkpoint replay never reports more credited defeats than authored enemies")

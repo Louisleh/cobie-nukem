@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="MovingSetPieceDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/gameplay/moving_set_piece_definition.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = &"citation_convoy"
+actor_scene_path = "res://scenes/set_pieces/citation_convoy.tscn"
+path_points = Array[Vector3]([Vector3(0.0, 0.0, -132.0), Vector3(-4.0, 0.0, -143.0), Vector3(3.0, 0.0, -154.0), Vector3(0.0, 0.0, -166.0)])
+speed = 4
+stop_markers = [0.22, 0.55, 0.85]
+encounter_trigger_ids = [&"vancouver_convoy_showdown"]
+destructible_module_ids = [&"citation_drive_left", &"citation_drive_right"]
+completion_event = &"citation_convoy_stopped"
+reset_policy = 1

@@ -19,12 +19,14 @@ func _initialize() -> void:
 func _run() -> void:
 	await _test_opening_grace_timer_lifecycle()
 	await _test_finale_completion_and_checkpoint_clear()
+	await _test_checkpoint_save_without_presentation()
 	await _test_repeated_fall_death_and_restart()
 	await _test_pause_suppression_during_death_and_victory()
 	await _test_mobile_input_release_on_exit_and_focus_loss()
 	await _test_weapon_switch_spam_during_reload()
 	await _test_pause_freezes_reload_and_grace()
 	await _test_level_lifecycle_twice_in_one_process()
+	await _test_failed_encounter_retry_marker_clear()
 	await _test_enemy_drop_contract()
 	if failures.is_empty():
 		print("ADVERSARIAL STATE TESTS: PASS")
@@ -90,6 +92,28 @@ func _test_finale_completion_and_checkpoint_clear() -> void:
 	await create_timer(1.5).timeout
 	_expect(completions[0] == 1, "double finale claims complete the level exactly once")
 	_expect(game_state.phase == game_state.Phase.VICTORY, "finale finishes the run")
+	level.free()
+	await process_frame
+
+
+func _test_checkpoint_save_without_presentation() -> void:
+	var game_state := root.get_node("GameState")
+	var save_manager := root.get_node("SaveManager")
+	var level := _make_level()
+	await process_frame
+	game_state.begin_run(&"episode_1_level_1")
+	level._on_checkpoint(&"lab_entry", Vector3(0.0, 1.5, -87.0))
+	await process_frame
+	var checkpoint: Dictionary = save_manager.load_slot(&"checkpoint") if save_manager != null else {}
+	_expect(not checkpoint.is_empty(), "checkpoint saves while setup_presentation is false")
+	if checkpoint != {}:
+		_expect(checkpoint.get("scene_path", "") == "res://scenes/levels/episode_1_level_1.tscn", "checkpoint saves the expected scene path")
+		_expect(checkpoint.has("objective_snapshot"), "checkpoint save includes objective snapshot")
+		_expect(checkpoint.has("encounter_snapshot"), "checkpoint save includes encounter snapshot")
+		_expect(checkpoint.has("position"), "checkpoint save includes position payload")
+		_expect(int(checkpoint.get("position")[0]) == 0, "checkpoint payload preserves integer position x")
+	if save_manager != null:
+		save_manager.delete_slot(&"checkpoint")
 	level.free()
 	await process_frame
 
@@ -257,11 +281,53 @@ func _test_enemy_drop_contract() -> void:
 	await process_frame
 
 
+func _test_failed_encounter_retry_marker_clear() -> void:
+	var level := _make_level()
+	await process_frame
+	var zone_id := &"maintenance_tunnels"
+	if not level._encounter_runner.definitions.has(zone_id):
+		_expect(false, "maintenance_tunnels encounter exists for failure-retry coverage")
+		level.free()
+		await process_frame
+		return
+	var original_definition: EncounterDefinition = level._encounter_runner.definitions[zone_id] as EncounterDefinition
+	level._encounter_runner.definitions[zone_id] = _make_missing_scene_encounter(zone_id)
+	level.spawned_zones.erase(zone_id)
+	level._spawn_registry.clear_zone(zone_id)
+	level._enter_zone(zone_id, "MAINTENANCE TUNNELS", null)
+	await process_frame
+	_expect(not level.spawned_zones.has(zone_id), "zone suppression is rolled back after encounter activation failure")
+	level._enter_zone(zone_id, "MAINTENANCE TUNNELS", null)
+	await process_frame
+	_expect(not level.spawned_zones.has(zone_id), "failed encounter can be retried on subsequent entry")
+	level._encounter_runner.definitions[zone_id] = original_definition
+	level.free()
+	await process_frame
+
+
 func _count_pickups(level: EpisodeOneLevel) -> int:
 	var count := 0
 	for actor in level.get_node("Actors").get_children():
 		if actor is CombatPickup: count += 1
 	return count
+
+
+func _make_missing_scene_encounter(zone_id: StringName) -> EncounterDefinition:
+	var encounter := EncounterDefinition.new()
+	encounter.id = &"adversarial_missing_scene"
+	encounter.zone_id = zone_id
+	encounter.schema_version = 2
+	encounter.maximum_simultaneous_attackers = 1
+	encounter.waves = [
+		{
+			"spawns": [
+				{"scene": "res://does_not_exist__mission_runtime_bug.tscn", "position": Vector3(0.0, 1.0, 0.0)},
+			],
+		},
+	]
+	encounter.completion_policy = EncounterDefinition.CompletionPolicy.ALL_DEFEATED
+	encounter.enemy_budget = 1
+	return encounter
 
 
 func _expect(condition: bool, label: String) -> void:

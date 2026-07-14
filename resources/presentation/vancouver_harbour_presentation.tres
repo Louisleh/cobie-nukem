@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="ZonePresentationProfile" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/gameplay/zone_presentation_profile.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = &"vancouver_harbour_presentation"
+zone_id = &"harbour_pier"
+palette_id = &"vancouver_harbour_palette"
+lighting_budget = 6
+decal_budget = 20
+particle_budget = 64
+weather = &"fog"
+fog_color = Color(0.28, 0.34, 0.44, 1.0)
+fog_density = 0.27
+fog_enabled = true
+landmark_ids = [&"vancouver_harbour_mast", &"vancouver_harbour_fogbank"]
+ambience_cue_id = &"vancouver_ambience_harbour"

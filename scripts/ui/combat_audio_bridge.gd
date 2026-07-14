@@ -18,6 +18,10 @@ func reset_gameplay_audio() -> void:
 	if sounds != null:
 		sounds.stop_all()
 
+
+func play_cobie_bark() -> bool:
+	return samples != null and samples.play(&"cobie_bark")
+
 func bind_player(player: Node) -> void:
 	_player = player
 	_last_weapon_index = int(player.get("current_weapon_index")) if player.get("current_weapon_index") != null else -1

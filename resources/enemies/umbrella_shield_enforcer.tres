@@ -1,0 +1,32 @@
+[gd_resource type="Resource" script_class="EnemyDefinition" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/ai/enemy_definition.gd" id="1"]
+[ext_resource type="Resource" path="res://resources/enemies/reaction_light.tres" id="2"]
+
+[resource]
+script = ExtResource("1")
+id = &"umbrella_shield_enforcer"
+display_name = "RAIN CITY ENFORCER"
+archetype = 2
+warning_text = "UNAUTHORIZED ENTRY. CITESHIELD ENGAGED."
+max_health = 150.0
+move_speed = 4.6
+acceleration = 30.0
+detection_range = 34.0
+attack_range = 15.0
+attack_damage = 12.0
+attack_cooldown = 1.95
+telegraph_seconds = 0.72
+threat_weight = 1.35
+threat_value = 6
+navigation_radius = 0.58
+weak_point_multiplier = 1.2
+reaction_profile = ExtResource("2")
+alert_sound = &"enemy_alert"
+attack_sound_set = &"enemy_attack"
+death_sound_set = &"enemy_death"
+score_value = 740
+preferred_distance = 10.5
+retreat_distance = 7.0
+drop_id = &""
+

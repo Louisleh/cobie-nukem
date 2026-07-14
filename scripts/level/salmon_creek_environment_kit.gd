@@ -1,0 +1,154 @@
+class_name SalmonCreekEnvironmentKit
+extends Node3D
+
+## Static, Web-safe production dressing layered over Salmon Creek's proven
+## collision route. The kit owns visuals only: no progression or navigation.
+
+var _materials: Dictionary = {}
+
+
+func build(parent: Node3D) -> void:
+	if parent == null or get_child_count() > 0:
+		return
+	parent.add_child(self)
+	_build_field_landmarks()
+	_build_shed_landmarks()
+	_build_tunnel_landmarks()
+	_build_lab_landmarks()
+	_build_arena_landmarks()
+
+
+func _build_field_landmarks() -> void:
+	_box("ScoreboardFrame", Vector3(-10.5, 2.8, -12.5), Vector3(0.45, 5.6, 3.8), &"painted_metal", Color("243036"))
+	_box("ScoreboardFace", Vector3(-10.2, 3.4, -12.5), Vector3(0.12, 2.4, 3.3), &"display", Color("101a1d"))
+	_label("SALMON CREEK\nHOME  0  •  DOGS  1", Vector3(-10.08, 3.45, -12.5), Vector3(0, -90, 0), 52, Color("ffd05a"))
+	for x in [-10.5, 10.5]:
+		for z in [-13.5, 12.5]:
+			_cylinder("FloodlightMast", Vector3(x, 4.2, z), 0.13, 8.4, &"painted_metal", Color("58676c"))
+			_box("FloodlightBank", Vector3(x, 8.1, z), Vector3(0.5, 0.9, 2.8), &"lamp", Color("cde8d8"))
+	_build_evergreen_multimesh([
+		Vector3(-17, 0, 12), Vector3(-18, 0, 1), Vector3(-16, 0, -10),
+		Vector3(17, 0, 10), Vector3(18, 0, -3), Vector3(17, 0, -15),
+	])
+	_build_fence_multimesh()
+
+
+func _build_shed_landmarks() -> void:
+	for z in [-42.0, -36.0, -30.0, -24.0]:
+		for x in [-6.5, 6.5]:
+			_box("ShedPost", Vector3(x, 2.0, z), Vector3(0.35, 4.0, 0.35), &"wood", Color("76563c"))
+		_box("ShedRoofBeam", Vector3(0, 4.05, z), Vector3(13.4, 0.28, 0.38), &"wood", Color("76563c"))
+	_box("EquipmentCage", Vector3(4.6, 1.4, -34.0), Vector3(3.0, 2.8, 4.0), &"painted_metal", Color("39484c"))
+	_box("Generator", Vector3(-4.7, 0.8, -36.5), Vector3(2.6, 1.6, 1.8), &"hazard", Color("d2912b"))
+	for index in 3:
+		_cylinder("VentStack", Vector3(-5.4 + index * 1.0, 2.0, -36.5), 0.12, 2.4, &"metal", Color("839095"))
+
+
+func _build_tunnel_landmarks() -> void:
+	for z in range(-80, -47, 5):
+		_box("TunnelRibLeft", Vector3(-4.6, 2.0, z), Vector3(0.32, 4.0, 0.45), &"metal", Color("4b5b60"))
+		_box("TunnelRibRight", Vector3(4.6, 2.0, z), Vector3(0.32, 4.0, 0.45), &"metal", Color("4b5b60"))
+		_box("TunnelRibTop", Vector3(0, 3.85, z), Vector3(9.5, 0.3, 0.45), &"metal", Color("4b5b60"))
+		_box("TunnelLight", Vector3(0, 3.62, z + 0.5), Vector3(2.2, 0.08, 0.28), &"lamp", Color("b7e1d3"))
+	for z in [-76.0, -61.0, -50.0]:
+		_cylinder("UtilityPipe", Vector3(3.9, 2.6, z), 0.18, 8.0, &"hazard", Color("d08d28"), Vector3(90, 0, 0))
+
+
+func _build_lab_landmarks() -> void:
+	for z in [-116.0, -106.0, -96.0, -88.0]:
+		_box("LabLight", Vector3(0, 4.58, z), Vector3(5.8, 0.08, 0.35), &"lamp", Color("d7f2ea"))
+	for x in [-9.0, 9.0]:
+		for z in [-112.0, -101.0, -90.0]:
+			_box("LabConsole", Vector3(x, 0.9, z), Vector3(2.4, 1.8, 1.2), &"painted_metal", Color("415057"))
+			_box("LabConsoleGlow", Vector3(x + (-1.22 if x > 0 else 1.22), 1.15, z), Vector3(0.06, 0.65, 0.85), &"display", Color("55d3c4"))
+	_box("ComplianceScanner", Vector3(0, 2.2, -110.0), Vector3(5.2, 4.4, 0.55), &"hazard", Color("bf7c25"))
+	_sphere("ScannerLens", Vector3(0, 2.35, -109.65), 0.75, &"display", Color("ff5c38"))
+	_label("CANINE COMPLIANCE\nLAB 01", Vector3(0, 3.85, -109.62), Vector3.ZERO, 46, Color("f4dda0"))
+
+
+func _build_arena_landmarks() -> void:
+	for x in [-14.0, 14.0]:
+		_box("ArenaGantryPost", Vector3(x, 4.0, -148), Vector3(0.7, 8.0, 0.7), &"hazard", Color("b77625"))
+	_box("ArenaGantry", Vector3(0, 7.6, -148), Vector3(28.5, 0.65, 0.8), &"hazard", Color("b77625"))
+	for x in [-11.0, -5.5, 0.0, 5.5, 11.0]:
+		_box("ArenaWarningLamp", Vector3(x, 7.15, -147.5), Vector3(0.42, 0.42, 0.3), &"warning", Color("ff3e24"))
+	for z in [-136.0, -148.0, -160.0]:
+		for x in [-16.5, 16.5]:
+			_box("ArenaBarrier", Vector3(x, 0.65, z), Vector3(1.4, 1.3, 5.0), &"hazard", Color("c18127"))
+	_label("ANIMAL CONTROL\nFINAL REVIEW", Vector3(0, 6.85, -147.55), Vector3.ZERO, 54, Color("ffd05a"))
+
+
+func _build_evergreen_multimesh(positions: Array[Vector3]) -> void:
+	var trunk_mesh := CylinderMesh.new()
+	trunk_mesh.top_radius = 0.22
+	trunk_mesh.bottom_radius = 0.34
+	trunk_mesh.height = 3.8
+	trunk_mesh.material = _material(&"wood", Color("49382d"))
+	var trunks := MultiMesh.new()
+	trunks.transform_format = MultiMesh.TRANSFORM_3D
+	trunks.mesh = trunk_mesh
+	trunks.instance_count = positions.size()
+	var crown_mesh := SphereMesh.new()
+	crown_mesh.radius = 1.35
+	crown_mesh.height = 4.8
+	crown_mesh.radial_segments = 12
+	crown_mesh.rings = 6
+	crown_mesh.material = _material(&"vegetation", Color("173f32"))
+	var crowns := MultiMesh.new()
+	crowns.transform_format = MultiMesh.TRANSFORM_3D
+	crowns.mesh = crown_mesh
+	crowns.instance_count = positions.size()
+	for index in positions.size():
+		trunks.set_instance_transform(index, Transform3D(Basis.IDENTITY, positions[index] + Vector3.UP * 1.9))
+		crowns.set_instance_transform(index, Transform3D(Basis.IDENTITY, positions[index] + Vector3.UP * 4.6))
+	var trunk_node := MultiMeshInstance3D.new(); trunk_node.name = "EvergreenTrunks"; trunk_node.multimesh = trunks; add_child(trunk_node)
+	var crown_node := MultiMeshInstance3D.new(); crown_node.name = "EvergreenCrowns"; crown_node.multimesh = crowns; add_child(crown_node)
+
+
+func _build_fence_multimesh() -> void:
+	var transforms: Array[Transform3D] = []
+	for z in range(-17, 18, 3):
+		transforms.append(Transform3D(Basis.IDENTITY, Vector3(-12.2, 1.0, z)))
+		transforms.append(Transform3D(Basis.IDENTITY, Vector3(12.2, 1.0, z)))
+	var mesh := BoxMesh.new(); mesh.size = Vector3(0.12, 2.0, 0.12); mesh.material = _material(&"metal", Color("687a7a"))
+	var multi := MultiMesh.new(); multi.transform_format = MultiMesh.TRANSFORM_3D; multi.mesh = mesh; multi.instance_count = transforms.size()
+	for index in transforms.size(): multi.set_instance_transform(index, transforms[index])
+	var node := MultiMeshInstance3D.new(); node.name = "FieldFencePosts"; node.multimesh = multi; add_child(node)
+
+
+func _box(node_name: String, position_value: Vector3, size: Vector3, surface: StringName, color: Color) -> void:
+	var node := MeshInstance3D.new(); node.name = node_name; node.position = position_value
+	var mesh := BoxMesh.new(); mesh.size = size; mesh.material = _material(surface, color); node.mesh = mesh; add_child(node)
+
+
+func _cylinder(node_name: String, position_value: Vector3, radius: float, height: float, surface: StringName, color: Color, rotation_value := Vector3.ZERO) -> void:
+	var node := MeshInstance3D.new(); node.name = node_name; node.position = position_value; node.rotation_degrees = rotation_value
+	var mesh := CylinderMesh.new(); mesh.top_radius = radius; mesh.bottom_radius = radius * 1.12; mesh.height = height; mesh.radial_segments = 12; mesh.material = _material(surface, color); node.mesh = mesh; add_child(node)
+
+
+func _sphere(node_name: String, position_value: Vector3, radius: float, surface: StringName, color: Color) -> void:
+	var node := MeshInstance3D.new(); node.name = node_name; node.position = position_value
+	var mesh := SphereMesh.new(); mesh.radius = radius; mesh.height = radius * 2.0; mesh.radial_segments = 16; mesh.rings = 8; mesh.material = _material(surface, color); node.mesh = mesh; add_child(node)
+
+
+func _label(text: String, position_value: Vector3, rotation_value: Vector3, font_size: int, color: Color) -> void:
+	var label := Label3D.new(); label.text = text; label.position = position_value; label.rotation_degrees = rotation_value; label.font_size = font_size; label.pixel_size = 0.0028; label.modulate = color; label.outline_size = 6; add_child(label)
+
+
+func _material(surface: StringName, color: Color) -> StandardMaterial3D:
+	var key := "%s:%s" % [surface, color.to_html()]
+	if _materials.has(key):
+		return _materials[key]
+	var material := StandardMaterial3D.new()
+	material.albedo_color = color
+	material.roughness = 0.92
+	if surface in [&"metal", &"painted_metal", &"hazard"]:
+		material.metallic = 0.58
+		material.roughness = 0.38
+	if surface in [&"display", &"lamp", &"warning"]:
+		material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+		material.emission_enabled = true
+		material.emission = color
+		material.emission_energy_multiplier = 1.8 if surface != &"warning" else 3.0
+	_materials[key] = material
+	return material
