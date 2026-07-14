@@ -23,8 +23,8 @@ Alpha.9 deliberately narrows the difference between public and internal developm
 
 | Workstream | Status | Acceptance evidence |
 | --- | --- | --- |
-| Vancouver public beta | **INTEGRATED — RELEASE VALIDATION IN PROGRESS** | Routable production-preview scene, explicit `BETA` card/status/action/caption, stable mission ID, and public-route regression contracts |
-| Browser pointer readiness | **INTEGRATED — PACKAGED BROWSER CHECK IN PROGRESS** | Scene-owned capture policy, trusted launch gesture, pre-GUI first-click fallback, visible recovery prompt, canvas focus hook, headless rejection semantics, and adversarial coverage |
+| Vancouver public beta | **PACKAGED — PUBLICATION IN PROGRESS** | Routable production-preview scene, explicit `BETA` card/status/action/caption, stable mission ID, public-route regression contracts, and green Web/macOS exports |
+| Browser pointer readiness | **PACKAGED — PUBLICATION IN PROGRESS** | Scene-owned capture policy, trusted launch gesture, pre-GUI first-click fallback, visible recovery prompt, canvas focus hook, headless rejection semantics, adversarial coverage, and packaged local Web evidence |
 | Opening safety | **INTEGRATED** | Pointer-wait protection plus ten-second Vancouver initial/retry protection; mission-host and adversarial tests cover both contracts |
 | Human validation | **OPEN** | Physical iPad Safari, Chrome/Safari full routes, Vancouver pacing/fairness/art/mix, and family comprehension remain human-only |
 

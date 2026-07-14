@@ -27,4 +27,12 @@ Built on 2026-07-14 with Godot `4.7.stable.official.5b4e0cb0f`. Runtime feature 
 
 ## Artifacts and integration
 
-Final package sizes, SHA-256 hashes, source integration, GitHub prerelease, website deployment, and public PCK identity are recorded after the green release/deployment gate.
+The exact stamped candidate at source revision `08e24deb25930dfae8b6f2a1eafe0de38ab40565` passed `QA_EXPORTS=1 bash tools/release_validate.sh` and produced:
+
+| Artifact | Bytes | SHA-256 |
+| --- | ---: | --- |
+| `cobie-nukem-0.6.0-alpha.9-itch.zip` | 33,406,380 | `66070b5495b8d601310c05e9a9124a3dacc7a034693e085b9cadc37a34f6d969` |
+| `cobie-nukem-0.6.0-alpha.9-macos-unsigned.zip` | 82,771,158 | `1bbd378daffcffec5a872f335f1002edcf701b3872859fa173115a53e2fd9d74` |
+| Web PCK | 23,801,320 | `a44af5d67ca30ccc3c69b315ae09286e5e299a0bd0a0dc3a1f31a918dea6e98c` |
+
+Source integration, GitHub prerelease, website deployment, and downloaded public PCK identity are recorded after publication.
