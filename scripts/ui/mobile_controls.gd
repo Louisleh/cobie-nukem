@@ -27,6 +27,7 @@ const STICK_CENTERS := {
 }
 const BUTTONS := {
 	&"fire_primary": {"center": Vector2(292, 111), "radius": 20.0, "label": "FIRE"},
+	&"fire_secondary": {"center": Vector2(292, 152), "radius": 11.0, "label": "ALT"},
 	&"use": {"center": Vector2(257, 92), "radius": 12.0, "label": "USE"},
 	&"jump": {"center": Vector2(291, 71), "radius": 13.0, "label": "JUMP"},
 	&"reload": {"center": Vector2(259, 61), "radius": 11.0, "label": "R"},
@@ -189,7 +190,7 @@ func _draw() -> void:
 	_draw_stick(_from_design(centers[1]), _look_value, "AIM", scale_value)
 	var font := ThemeDB.fallback_font
 	if _onboarding_remaining > 0.0:
-		var hint := "LEFT: MOVE   RIGHT: AIM   FIRE TO FETCH"
+		var hint := "LEFT: MOVE   RIGHT: AIM   FIRE=PRIMARY / ALT=SECONDARY"
 		var hint_size := maxi(7, roundi(8.0 * scale_value)); var measured := font.get_string_size(hint, HORIZONTAL_ALIGNMENT_LEFT, -1, hint_size)
 		var hint_center := _from_design(Vector2(160, 17))
 		draw_rect(Rect2(hint_center - Vector2(measured.x * 0.5 + 6.0 * scale_value, measured.y * 0.65), Vector2(measured.x + 12.0 * scale_value, measured.y + 5.0 * scale_value)), Color(0.02, 0.04, 0.04, 0.72 * control_opacity), true)
