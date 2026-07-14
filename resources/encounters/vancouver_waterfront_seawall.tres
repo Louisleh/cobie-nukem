@@ -11,7 +11,7 @@ waves = Array[Dictionary]([{
 "spawns": [
 	{"scene":"res://scenes/enemies/leash_enforcement_drone.tscn","position":Vector3(-6,2,-62)},
 	{"scene":"res://scenes/enemies/leash_enforcement_drone.tscn","position":Vector3(6,2,-68)},
-	{"scene":"res://scenes/enemies/mutant_groundskeeper.tscn","position":Vector3(0,0,-72)}
+	{"scene":"res://scenes/enemies/umbrella_shield_enforcer.tscn","position":Vector3(0,0,-72)}
 ]}])
 enemy_budget = 6
 maximum_simultaneous_attackers = 2
