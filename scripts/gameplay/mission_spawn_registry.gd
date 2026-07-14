@@ -16,10 +16,14 @@ var critical_objects: Dictionary = {}
 var _drop_connected_actors: Dictionary = {}
 var _opening_enemies: Array[Node] = []
 var _opening_enemies_awake := false
+var _opening_target: Node3D
+var _staged_zone_id: StringName = &""
 var enemies_total := 0
 var enemies_defeated := 0
 var retry_encounter_spawns: Dictionary = {}
 var zone_author_spawns: Dictionary = {}
+var _counted_spawn_slots: Dictionary = {}
+var _retry_zones: Dictionary = {}
 var _scene_cache: Dictionary = {}
 var _counted_encounter_enemies: Dictionary = {}
 
@@ -32,6 +36,24 @@ func configure(parent: Node3D = null, encounter_definitions: Array[EncounterDefi
 	actor_parent = parent
 	_clear_runtime_state()
 	prewarm_encounters(encounter_definitions)
+
+
+func configure_staged_zone(zone_id: StringName) -> void:
+	_staged_zone_id = zone_id
+
+
+func prepare_encounter(definition: EncounterDefinition, is_retry: bool) -> void:
+	if definition == null:
+		return
+	var zone_id := definition.zone_id
+	if is_retry:
+		_retry_zones[zone_id] = true
+		return
+	_retry_zones.erase(zone_id)
+
+
+func finish_encounter(zone_id: StringName) -> void:
+	_retry_zones.erase(zone_id)
 
 
 func clear_runtime_state() -> void:
@@ -68,8 +90,6 @@ func mark_zone_spawned(zone_id: StringName) -> bool:
 
 func clear_zone(zone_id: StringName) -> void:
 	completed_zones.erase(zone_id)
-	retry_encounter_spawns.erase(String(zone_id))
-	zone_author_spawns.erase(String(zone_id))
 
 
 func register_actor(actor: Node) -> bool:
@@ -100,7 +120,8 @@ func register_encounter_actor(actor: Node, definition: EncounterDefinition, is_r
 		return
 	register_actor(actor)
 	var zone_id := String(definition.zone_id if definition != null else &"")
-	if is_retry:
+	var effective_retry := is_retry or _retry_zones.has(definition.zone_id if definition != null else &"")
+	if effective_retry:
 		retry_encounter_spawns[zone_id] = int(retry_encounter_spawns.get(zone_id, 0)) + 1
 	if actor is EnemyAgent:
 		var enemy_key := actor.get_instance_id()
@@ -108,10 +129,15 @@ func register_encounter_actor(actor: Node, definition: EncounterDefinition, is_r
 		_bind_enemy_drop_once(actor)
 		if not was_counted:
 			_counted_encounter_enemies[enemy_key] = true
-		if not is_retry and not was_counted:
+		var spawn_slot := String(actor.get_meta(&"encounter_spawn_slot", ""))
+		if not spawn_slot.is_empty() and not _counted_spawn_slots.has(spawn_slot):
+			_counted_spawn_slots[spawn_slot] = true
 			enemies_total += 1
 			zone_author_spawns[zone_id] = int(zone_author_spawns.get(zone_id, 0)) + 1
-	if actor is EnemyAgent and definition != null and definition.zone_id == &"forbidden_field":
+	if actor is EnemyAgent and definition != null and definition.zone_id == _staged_zone_id:
+		if _opening_enemies_awake:
+			_activate_opening_enemy(actor, _opening_target)
+			return
 		if actor is Node3D:
 			(actor as Node3D).process_mode = Node.PROCESS_MODE_DISABLED
 		_stage_opening_enemy(actor)
@@ -152,7 +178,7 @@ func spawn_enemy_drop(drop_id: StringName, position_value: Vector3) -> Node:
 	if not ResourceLoader.exists(path, "PackedScene"):
 		push_warning("Enemy drop has no pickup scene: %s" % drop_id)
 		return null
-	return spawn_pickup(path, Vector3(position_value.x, 0.8, position_value.z))
+	return spawn_pickup(path, position_value + Vector3.UP * 0.8)
 
 
 func spawn_loot_burst(loot_scene: String, count: int, actor: Node3D, fallback_player: Node3D = null) -> Array[Node]:
@@ -179,17 +205,14 @@ func activate_staged_enemies(target: Node3D) -> void:
 	if _opening_enemies_awake:
 		return
 	_opening_enemies_awake = true
+	_opening_target = target
 	for enemy in _opening_enemies:
-		if not is_instance_valid(enemy):
-			continue
-		if enemy is Node3D:
-			(enemy as Node3D).process_mode = Node.PROCESS_MODE_INHERIT
-			if is_instance_valid(target) and enemy.has_method("set_target"):
-				enemy.set_target(target)
+		_activate_opening_enemy(enemy, target)
 
 
 func reset_staged_enemies() -> void:
 	_opening_enemies_awake = false
+	_opening_target = null
 	_opening_enemies.clear()
 
 
@@ -273,20 +296,31 @@ func _stage_opening_enemy(enemy: Node) -> void:
 		_opening_enemies.append(enemy)
 
 
+func _activate_opening_enemy(enemy: Node, target: Node3D) -> void:
+	if not is_instance_valid(enemy):
+		return
+	enemy.process_mode = Node.PROCESS_MODE_INHERIT
+	if is_instance_valid(target) and enemy.has_method("set_target"):
+		enemy.set_target(target)
+
+
 func _on_pickup_collected(_pickup: CombatPickup, _collector: Node, message: String) -> void:
 	pickup_collected.emit(message)
 
 
 func _clear_runtime_state() -> void:
-	completed_zones = {}
-	_drop_connected_actors = {}
-	_counted_encounter_enemies = {}
-	_opening_enemies = []
+	completed_zones.clear()
+	_drop_connected_actors.clear()
+	_counted_encounter_enemies.clear()
+	_counted_spawn_slots.clear()
+	_retry_zones.clear()
+	_opening_enemies.clear()
 	_opening_enemies_awake = false
-	enemies = {}
-	pickups = {}
-	critical_objects = {}
-	retry_encounter_spawns = {}
-	zone_author_spawns = {}
+	_opening_target = null
+	enemies.clear()
+	pickups.clear()
+	critical_objects.clear()
+	retry_encounter_spawns.clear()
+	zone_author_spawns.clear()
 	enemies_total = 0
 	enemies_defeated = 0

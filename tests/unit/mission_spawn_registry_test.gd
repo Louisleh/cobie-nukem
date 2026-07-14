@@ -134,6 +134,8 @@ func _test_drop_binding_once() -> void:
 	enemy.trigger_drop()
 	var after_second_drop := int(registry.temporary_counts().get("pickups", 0))
 	_expect(after_second_drop == 2, "drop signal remains single-bound after duplicate registration")
+	var elevated_drop := registry.spawn_enemy_drop(&"treat", Vector3(2.0, 6.0, -3.0)) as Node3D
+	_expect(elevated_drop != null and is_equal_approx(elevated_drop.position.y, 6.8), "enemy drops preserve elevated lane height before pickup grounding")
 	enemy.free()
 
 
@@ -154,6 +156,7 @@ func _test_loot_burst_clamp_and_spacing() -> void:
 
 func _test_opening_staging_activation_reset() -> void:
 	var registry := _new_registry(_new_parent())
+	registry.configure_staged_zone(&"forbidden_field")
 	var definition := EncounterDefinition.new()
 	definition.zone_id = &"forbidden_field"
 	var enemy := FakeOpeningEnemy.new()
@@ -167,10 +170,15 @@ func _test_opening_staging_activation_reset() -> void:
 	_expect(enemy.set_target_calls == 1, "opening enemy receives target exactly once when staged actors wake")
 	registry.activate_staged_enemies(player)
 	_expect(enemy.set_target_calls == 1, "re-activating opening enemy does not re-wake or re-target")
+	var late_enemy := FakeOpeningEnemy.new()
+	registry.register_encounter_actor(late_enemy, definition)
+	_expect(late_enemy.process_mode == Node.PROCESS_MODE_INHERIT, "late staged-zone actor is not stranded disabled after release")
+	_expect(late_enemy.set_target_calls == 1, "late staged-zone actor immediately receives the active target")
 	registry.reset_staged_enemies()
 	_expect(registry.opening_enemies_snapshot().is_empty(), "opening-stage reset clears staged list")
 	_expect(not registry.opening_enemies_active(), "opening-stage reset clears awaken flag")
 	enemy.free()
+	late_enemy.free()
 	player.free()
 
 
@@ -182,19 +190,37 @@ func _test_authored_retry_counts() -> void:
 	var first_author := FakeEnemy.new()
 	var second_author := FakeEnemy.new()
 	var retry_actor := FakeEnemy.new()
+	var delayed_retry_actor := FakeEnemy.new()
+	var repeated_delayed_retry_actor := FakeEnemy.new()
+	first_author.set_meta(&"encounter_spawn_slot", "retry_contract:0:0")
+	second_author.set_meta(&"encounter_spawn_slot", "retry_contract:0:1")
+	retry_actor.set_meta(&"encounter_spawn_slot", "retry_contract:0:0")
+	delayed_retry_actor.set_meta(&"encounter_spawn_slot", "retry_contract:1:0")
+	repeated_delayed_retry_actor.set_meta(&"encounter_spawn_slot", "retry_contract:1:0")
+	registry.prepare_encounter(definition, false)
 	registry.register_encounter_actor(first_author, definition)
 	registry.register_encounter_actor(second_author, definition)
+	registry.prepare_encounter(definition, true)
 	registry.register_encounter_actor(retry_actor, definition, true)
 	_expect(registry.enemies_total == 2, "non-retry authored enemy registrations advance total")
 	_expect(registry.zone_author_count(zone_id) == 2, "author zone spawn contract tracks non-retry waves")
-	_expect(registry.zone_retry_count(zone_id) == 1, "retry zone spawn contract tracks retry wave attempts")
+	_expect(registry.zone_retry_count(zone_id) == 1, "retry zone spawn contract tracks retry wave actors")
+	registry.register_encounter_actor(delayed_retry_actor, definition)
+	registry.register_encounter_actor(repeated_delayed_retry_actor, definition)
+	_expect(registry.enemies_total == 3, "a delayed authored slot first seen during retry counts exactly once")
+	_expect(registry.zone_retry_count(zone_id) == 3, "retry accounting spans delayed waves until encounter completion")
+	registry.clear_zone(zone_id)
+	_expect(registry.zone_author_count(zone_id) == 3, "zone reset preserves authored accounting diagnostics")
+	_expect(registry.zone_retry_count(zone_id) == 3, "zone reset preserves retry accounting diagnostics")
 	_expect(registry.record_enemy_defeat() == 1, "first enemy defeat is counted")
 	_expect(registry.record_enemy_defeat() == 2, "second enemy defeat is counted")
-	_expect(registry.record_enemy_defeat() == 2, "third recorded enemy defeat reaches authored total")
-	_expect(registry.record_enemy_defeat() == 2, "defeat clamp holds at authored total")
+	_expect(registry.record_enemy_defeat() == 3, "third recorded enemy defeat reaches authored total")
+	_expect(registry.record_enemy_defeat() == 3, "defeat clamp holds at authored total")
 	first_author.free()
 	second_author.free()
 	retry_actor.free()
+	delayed_retry_actor.free()
+	repeated_delayed_retry_actor.free()
 
 
 func _test_defeat_clamp_and_dead_pruning() -> void:

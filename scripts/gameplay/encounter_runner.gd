@@ -43,7 +43,9 @@ func _spawn_wave(definition: EncounterDefinition, wave_index: int) -> Array[Node
 	var state: Dictionary = active[definition.zone_id]
 	var target: Node3D = state.target
 	var actors: Array[Node] = []
-	for spawn in wave.get("spawns", []):
+	var wave_spawns: Array = wave.get("spawns", [])
+	for spawn_index in wave_spawns.size():
+		var spawn: Dictionary = wave_spawns[spawn_index]
 		var actor: Node = spawn_callable.call(String(spawn.scene), spawn.position) if spawn_callable.is_valid() else null
 		if actor == null:
 			_fail(definition, "spawn returned null for %s" % String(spawn.get("scene", "<missing>")))
@@ -53,6 +55,7 @@ func _spawn_wave(definition: EncounterDefinition, wave_index: int) -> Array[Node
 			_fail(definition, "spawned actor %s does not expose required died signal" % actor.name)
 			return []
 		actors.append(actor)
+		actor.set_meta(&"encounter_spawn_slot", "%s:%d:%d" % [definition.id, wave_index, spawn_index])
 		state.actors.append(actor)
 		state.remaining = int(state.remaining) + 1
 		if definition.completion_policy == EncounterDefinition.CompletionPolicy.BOSS_DEFEATED and _is_boss_target_spawn(spawn):

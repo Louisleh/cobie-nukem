@@ -102,6 +102,7 @@ func _setup_gameplay_systems() -> void:
 	_spawn_registry.name = "MissionSpawnRegistry"
 	add_child(_spawn_registry)
 	_spawn_registry.prewarm_encounters(content_manifest.encounters)
+	_spawn_registry.configure_staged_zone(&"forbidden_field")
 	_spawn_registry.pickup_collected.connect(_on_spawn_registry_pickup_collected)
 	spawned_zones = _spawn_registry.completed_zones
 	_mission_runtime = MissionRuntime.new()
@@ -113,6 +114,7 @@ func _setup_gameplay_systems() -> void:
 	_mission_runtime.objective_activated.connect(_on_mission_objective_activated)
 	_mission_runtime.actor_spawned.connect(_on_encounter_actor_spawned)
 	_mission_runtime.actor_defeated.connect(_on_mission_actor_defeated)
+	_mission_runtime.encounter_completed.connect(_on_mission_encounter_completed)
 	_mission_runtime.encounter_failed.connect(_on_mission_encounter_failed)
 	var pressure := get_node_or_null("/root/CombatPressure")
 	if pressure != null:
@@ -242,6 +244,7 @@ func _spawn_wave(zone_id: StringName) -> void:
 		var pressure := get_node_or_null("/root/CombatPressure")
 		if pressure != null:
 			pressure.configure_limit(mini(_baseline_attack_budget, definition.maximum_simultaneous_attackers))
+		_spawn_registry.prepare_encounter(definition, _resetting_encounter)
 		var spawned_actors := _mission_runtime.activate_zone(zone_id, player)
 		if spawned_actors.size() > 0 or _encounter_runner.active.has(zone_id) or _encounter_runner.completed.has(zone_id):
 			_spawn_registry.mark_zone_spawned(zone_id)
@@ -266,7 +269,12 @@ func _on_mission_actor_defeated(enemy: Node, definition: EncounterDefinition) ->
 
 
 func _on_mission_encounter_failed(definition: EncounterDefinition, _reason: String) -> void:
+	_spawn_registry.finish_encounter(definition.zone_id)
 	_spawn_registry.clear_zone(definition.zone_id)
+
+
+func _on_mission_encounter_completed(definition: EncounterDefinition) -> void:
+	_spawn_registry.finish_encounter(definition.zone_id)
 
 
 func _on_encounter_actor_spawned(enemy: Node, definition: EncounterDefinition) -> void:
