@@ -13,12 +13,6 @@ signal boss_state_changed(state: StringName, fraction: float)
 signal level_completed(summary: Dictionary)
 
 const SalmonCreekWorldBuilderScene = preload("res://scripts/level/salmon_creek_world_builder.gd")
-const HUDScene = preload("res://scenes/ui/hud.tscn")
-const PauseScene = preload("res://scenes/ui/pause_menu.tscn")
-const DeathScene = preload("res://scenes/ui/death_screen.tscn")
-const VictoryScene = preload("res://scenes/ui/victory_screen.tscn")
-const CombatAudioScene = preload("res://scenes/ui/combat_audio_bridge.tscn")
-const MobileControlsScene = preload("res://scenes/ui/mobile_controls.tscn")
 const SalmonCreekPacing = preload("res://resources/encounters/salmon_walker_pacing.tres")
 const MissionInteractionRuntimeScript = preload("res://scripts/gameplay/mission_interaction_runtime.gd")
 const ROUTE_PROGRESS := [
@@ -27,6 +21,13 @@ const ROUTE_PROGRESS := [
 	[-87.0, &"compliance_lab", "ANIMAL COMPLIANCE LAB"],
 	[-127.0, &"walker_arena", "ANIMAL CONTROL WALKER"],
 ]
+const ZONE_AMBIENCE: Dictionary = {
+	&"forbidden_field": &"salmon_ambience_exterior",
+	&"equipment_shed": &"salmon_ambience_exterior",
+	&"maintenance_tunnels": &"salmon_ambience_tunnel",
+	&"compliance_lab": &"salmon_ambience_lab",
+	&"walker_arena": &"salmon_ambience_arena",
+}
 
 @export var metadata: LevelMetadata = preload("res://resources/level/episode_1_level_1.tres")
 @export var content_manifest: ContentManifest = preload("res://resources/content/salmon_creek_manifest.tres")
@@ -67,6 +68,7 @@ var _completion_timer: Timer
 var _route_recovery_timer: Timer
 var _restored_checkpoint: Dictionary = {}
 var _mission_runtime: MissionRuntime
+var _mission_presentation: MissionPresentation
 var _spawn_registry: MissionSpawnRegistry
 var _navigation_region: NavigationRegion3D
 var _world_builder: SalmonCreekWorldBuilder
@@ -287,11 +289,9 @@ func _on_encounter_actor_spawned(enemy: Node, definition: EncounterDefinition) -
 
 
 func _bind_enemy_captions(enemy: Node) -> void:
-	if _hud == null or not enemy.has_signal("telegraph_started") or enemy.has_meta(&"caption_bound"): return
-	enemy.set_meta(&"caption_bound", true)
-	enemy.telegraph_started.connect(func(kind: StringName, _duration: float) -> void:
-		_hud.show_caption("%s WARNING" % String(kind).replace("_", " "))
-	)
+	if _mission_presentation == null:
+		return
+	_mission_presentation.bind_warning_enemy(enemy)
 
 
 func _activate_opening_encounter(_weapon: WeaponBase = null, _secondary := false) -> void:
@@ -379,7 +379,9 @@ func _on_sign_read(_id: StringName, text: String, _actor: Node, times: int) -> v
 
 func _on_checkpoint(id: StringName, position_value: Vector3) -> void:
 	checkpoint_position = position_value; checkpoint_activated.emit(id, position_value)
-	if _hud != null:
+	if _mission_presentation != null:
+		_mission_presentation.on_checkpoint_caption("CHECKPOINT: GOOD DOG STATUS TEMPORARILY RESTORED.")
+	elif _hud != null:
 		_hud.show_checkpoint_caption("CHECKPOINT: GOOD DOG STATUS TEMPORARILY RESTORED.", 2.5)
 	narrative_message.emit("CHECKPOINT: GOOD DOG STATUS TEMPORARILY RESTORED.", 2.5)
 	_save_checkpoint_payload(id, position_value)
@@ -410,7 +412,9 @@ func restart_from_checkpoint() -> void:
 		# Secrets are permanent for the current run even when the player dies;
 		# checkpoint saves persist the same dictionary across app restarts.
 		_interaction_runtime.reset_for_checkpoint({"secrets": secrets})
-	if _combat_audio != null:
+	if _mission_presentation != null:
+		_mission_presentation.reset_for_checkpoint()
+	elif _combat_audio != null:
 		_combat_audio.reset_gameplay_audio()
 	_reset_active_encounter_for_checkpoint()
 	if player:
@@ -483,64 +487,45 @@ func get_level_summary() -> Dictionary:
 func _spawn_player() -> void:
 	player = _spawn_scene("res://scenes/player/cobie_player.tscn", checkpoint_position) as Node3D
 	if player:
-		_add_weather_to_player()
+		if _mission_presentation != null:
+			_mission_presentation.set_player(player)
+		else:
+			_add_weather_to_player()
 		for weapon in player.weapons:
 			weapon.fired.connect(_activate_opening_encounter)
 		if player.has_signal("died"): player.died.connect(func(_source):
 			narrative_message.emit("GOOD DOG DOWN. PRESS FIRE TO RESTART.", 3.0)
 			var game_state := get_node_or_null("/root/GameState")
 			if game_state: game_state.run_stats["deaths"] = int(game_state.run_stats.get("deaths", 0)) + 1
+			_on_player_died_for_ui(_source)
 		)
 		if player.has_signal("restart_requested"): player.restart_requested.connect(restart_from_checkpoint)
 
 
 func _setup_presentation() -> void:
-	_hud = HUDScene.instantiate() as GameHUD
-	_pause_menu = PauseScene.instantiate() as PauseMenu
-	_death_screen = DeathScene.instantiate() as DeathScreen
-	_victory_screen = VictoryScene.instantiate() as VictoryScreen
-	_combat_audio = CombatAudioScene.instantiate() as CombatAudioBridge
-	_mobile_controls = MobileControlsScene.instantiate() as MobileControls
-	add_child(_hud)
-	add_child(_pause_menu)
-	add_child(_death_screen)
-	add_child(_victory_screen)
-	add_child(_combat_audio)
-	_hud.get_node("Root").add_child(_mobile_controls)
-	if player:
-		_hud.bind_player(player)
-		_combat_audio.bind_player(player)
-		_mobile_controls.bind_player(player)
-		if player.has_signal("died"):
-			player.died.connect(_on_player_died_for_ui)
-	for actor in _actors.get_children(): _bind_enemy_captions(actor)
-	_pause_menu.restart_requested.connect(restart_from_checkpoint)
-	_death_screen.retry_requested.connect(restart_from_checkpoint)
-	narrative_message.connect(func(text: String, duration: float):
-		_hud.show_notification(text)
-		_hud.show_caption(text, GameHUD.CaptionCategory.NARRATIVE, duration)
-	)
-	objective_changed.connect(func(text: String):
-		_hud.show_objective(text)
-		_hud.show_notification("OBJECTIVE: " + text)
-		_hud.show_objective_caption(text, 2.0)
-	)
-	secret_found.connect(func(_id: StringName, title: String, found: int, total: int): _hud.show_secret("SECRET: %s (%d/%d)" % [title, found, total]))
-	var game_state := get_node_or_null("/root/GameState")
-	if game_state:
-		game_state.run_ended.connect(func(summary: Dictionary):
-			_hud.visible = false
-			_pause_menu.set_suppressed(true)
-			_pause_menu.visible = false
-			_victory_screen.show_summary(summary)
-		, CONNECT_ONE_SHOT)
+	if _mission_presentation == null:
+		_mission_presentation = MissionPresentation.new()
+		_mission_presentation.name = "MissionPresentation"
+		add_child(_mission_presentation)
+	_mission_presentation.configure(self, content_manifest, _actors, _encounter_runner, _mission_runtime, player, get_node_or_null("/root/GameState"), &"forbidden_field", &"walker_arena", ZONE_AMBIENCE)
+	_hud = _mission_presentation.get_hud()
+	_pause_menu = _mission_presentation.get_pause_menu()
+	_death_screen = _mission_presentation.get_death_screen()
+	_victory_screen = _mission_presentation.get_victory_screen()
+	_combat_audio = _mission_presentation.get_combat_audio_bridge()
+	_mobile_controls = _mission_presentation.get_mobile_controls()
+	_mission_presentation.bind_restart_requests(restart_from_checkpoint)
 
 
 func _on_player_died_for_ui(_source: Node) -> void:
-	if _mobile_controls != null: _mobile_controls.release_all()
-	if _pause_menu != null:
-		_pause_menu.close_for_death()
-	_death_screen.show_death()
+	if _mission_presentation != null:
+		_mission_presentation.on_player_died(_source)
+	else:
+		if _mobile_controls != null: _mobile_controls.release_all()
+		if _pause_menu != null:
+			_pause_menu.close_for_death()
+		if _death_screen != null:
+			_death_screen.show_death()
 
 
 func _spawn_enemy_drop(drop_id: StringName, position_value: Vector3) -> Node:
@@ -587,10 +572,6 @@ func _exit_tree() -> void:
 
 
 func _add_weather_to_player() -> void:
-	var quality := get_node_or_null("/root/QualityManager")
-	var rain_amount := 420 if quality == null or quality.current == null else mini(420, quality.current.particle_budget)
-	var rain := GPUParticles3D.new(); rain.name = "StormRain"; rain.position.y = 8.0; rain.amount = rain_amount; rain.lifetime = 1.25; rain.visibility_aabb = AABB(Vector3(-16, -12, -16), Vector3(32, 24, 32))
-	var process := ParticleProcessMaterial.new(); process.emission_shape = ParticleProcessMaterial.EMISSION_SHAPE_BOX; process.emission_box_extents = Vector3(14, 1, 14); process.direction = Vector3(0.12, -1, 0.05); process.spread = 4.0; process.initial_velocity_min = 15.0; process.initial_velocity_max = 20.0; rain.process_material = process
-	var drop := QuadMesh.new(); drop.size = Vector2(0.018, 0.48)
-	var drop_material := StandardMaterial3D.new(); drop_material.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA; drop_material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED; drop_material.billboard_mode = BaseMaterial3D.BILLBOARD_ENABLED; drop_material.albedo_color = Color(0.58, 0.76, 0.86, 0.5); drop.material = drop_material; rain.draw_pass_1 = drop
-	player.add_child(rain)
+	if _mission_presentation == null:
+		return
+	_mission_presentation.add_player_rain()
