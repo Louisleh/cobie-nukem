@@ -91,9 +91,13 @@ func _test_encounter_completion_snapshot() -> void:
 	var actor_spawned_events: Array[bool] = []
 	var actor_defeated_events: Array[bool] = []
 	var encounter_completed_events: Array[bool] = []
+	var wave_started_events: Array[int] = []
+	var wave_completed_events: Array[int] = []
 	runtime.actor_spawned.connect(func(_actor: Node, _definition: EncounterDefinition) -> void: actor_spawned_events.append(true))
 	runtime.actor_defeated.connect(func(_actor: Node, _definition: EncounterDefinition) -> void: actor_defeated_events.append(true))
 	runtime.encounter_completed.connect(func(_definition: EncounterDefinition) -> void: encounter_completed_events.append(true))
+	runtime.wave_started.connect(func(_definition: EncounterDefinition, wave_index: int) -> void: wave_started_events.append(wave_index))
+	runtime.wave_completed.connect(func(_definition: EncounterDefinition, wave_index: int) -> void: wave_completed_events.append(wave_index))
 
 	var active_actors := runtime.activate_zone(zone_id)
 	_assert(active_actors.size() == 2, "encounter activation spawns the authored wave actor count")
@@ -116,6 +120,8 @@ func _test_encounter_completion_snapshot() -> void:
 	_assert(completed_ids.has(String(zone_id)) or completed_ids.has(StringName(zone_id)), "completed encounter persists in checkpoint snapshot")
 	_assert(actor_spawned_events.size() == 2, "runtime forwards actor_spawned events")
 	_assert(actor_defeated_events.size() == 2, "runtime forwards actor_defeated events")
+	_assert(wave_started_events == [0], "runtime forwards encounter wave_started events for the active wave")
+	_assert(wave_completed_events == [0], "runtime forwards encounter wave_completed events for the active wave")
 	_assert(encounter_completed_events.size() == 1, "runtime forwards encounter_completed events")
 	_assert(snapshot_before_runtime != snapshot_after_runtime, "objective progress and encounter completion change snapshot between pre/post runtime states")
 
@@ -235,6 +241,16 @@ func _normalize_snapshot(data: Dictionary) -> Dictionary:
 	for raw_id: Variant in encounter_data.get("completed", []):
 		normalized_encounter_completed.append(String(raw_id))
 	normalized_encounter_completed.sort()
+	var active_states: Dictionary = encounter_data.get("active", {})
+	var normalized_encounter_active: Dictionary = {}
+	for zone_key: Variant in active_states:
+		var state: Dictionary = active_states[zone_key] as Dictionary
+		normalized_encounter_active[String(zone_key)] = {
+			"wave": int(state.get("wave", 0)),
+			"remaining": int(state.get("remaining", 0)),
+			"next_wave": int(state.get("next_wave", -1)),
+			"pending_external_advance": bool(state.get("pending_external_advance", false)),
+		}
 
 	return {
 		"objective_snapshot": {
@@ -243,6 +259,7 @@ func _normalize_snapshot(data: Dictionary) -> Dictionary:
 		},
 		"encounter_snapshot": {
 			"completed": normalized_encounter_completed,
+			"active": normalized_encounter_active,
 		},
 	}
 

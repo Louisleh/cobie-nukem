@@ -10,6 +10,8 @@ signal actor_spawned(actor: Node, definition: EncounterDefinition)
 signal actor_defeated(actor: Node, definition: EncounterDefinition)
 signal encounter_completed(definition: EncounterDefinition)
 signal encounter_failed(definition: EncounterDefinition, reason: String)
+signal wave_started(definition: EncounterDefinition, wave_index: int)
+signal wave_completed(definition: EncounterDefinition, wave_index: int)
 
 var objectives: ObjectiveTracker
 var encounters: EncounterRunner
@@ -67,6 +69,12 @@ func reset_zone(zone_id: StringName) -> bool:
 	return encounters.reset_zone(zone_id)
 
 
+func advance_external_wave(zone_id: StringName) -> bool:
+	if encounters == null:
+		return false
+	return encounters.advance_external_wave(zone_id)
+
+
 func snapshot() -> Dictionary:
 	if objectives == null or encounters == null:
 		return {"objective_snapshot": {}, "encounter_snapshot": {}}
@@ -92,6 +100,8 @@ func _bind_signal_forwards() -> void:
 	objectives.objective_completed.connect(_on_objective_completed)
 	encounters.actor_spawned.connect(_on_actor_spawned)
 	encounters.actor_defeated.connect(_on_actor_defeated)
+	encounters.wave_started.connect(_on_encounter_wave_started)
+	encounters.wave_completed.connect(_on_encounter_wave_completed)
 	encounters.encounter_completed.connect(_on_encounter_completed)
 	encounters.encounter_failed.connect(_on_encounter_failed)
 
@@ -115,6 +125,14 @@ func _on_actor_spawned(actor: Node, definition: EncounterDefinition) -> void:
 
 func _on_actor_defeated(actor: Node, definition: EncounterDefinition) -> void:
 	actor_defeated.emit(actor, definition)
+
+
+func _on_encounter_wave_started(definition: EncounterDefinition, wave_index: int) -> void:
+	wave_started.emit(definition, wave_index)
+
+
+func _on_encounter_wave_completed(definition: EncounterDefinition, wave_index: int) -> void:
+	wave_completed.emit(definition, wave_index)
 
 
 func _on_encounter_completed(definition: EncounterDefinition) -> void:

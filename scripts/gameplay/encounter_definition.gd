@@ -2,6 +2,7 @@ class_name EncounterDefinition
 extends Resource
 
 enum CompletionPolicy { ALL_DEFEATED, BOSS_DEFEATED, FIRE_AND_FORGET }
+enum WaveProgression { AUTO, EXTERNAL }
 const BOSS_COMPLETION_MARKER := &"boss"
 
 @export var id: StringName = &"encounter"
@@ -19,6 +20,7 @@ const BOSS_COMPLETION_MARKER := &"boss"
 @export var entry_lock_id: StringName = &""
 @export var exit_lock_id: StringName = &""
 @export var recovery_policy: StringName = &"restart_wave"
+@export var wave_progression: WaveProgression = WaveProgression.AUTO
 @export_range(0.0, 1.0, 0.05) var music_intensity := 0.5
 @export var reward_policy: StringName = &"authored"
 
@@ -34,6 +36,8 @@ func validate() -> PackedStringArray:
 	var errors := PackedStringArray()
 	if id == &"": errors.append("encounter id is empty")
 	if zone_id == &"": errors.append("encounter %s has no zone_id" % id)
+	if wave_progression < WaveProgression.AUTO or wave_progression > WaveProgression.EXTERNAL:
+		errors.append("encounter %s has invalid wave progression" % id)
 	var all_waves: Array[Dictionary] = effective_waves()
 	if all_waves.is_empty(): errors.append("encounter %s has no waves or spawns" % id)
 	var completion_marker_count := 0
