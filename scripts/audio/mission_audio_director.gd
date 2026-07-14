@@ -96,12 +96,10 @@ func _exit_tree() -> void:
 	# removed. Release voices synchronously so rapid restart/quit and headless soak
 	# runs do not leave WAV playback resources behind.
 	reset()
-	for player in _music_players:
-		if is_instance_valid(player):
-			player.free()
+	# Do not free child players from their parent's exit callback. Godot tears down
+	# children immediately after this callback; manually freeing them here can race
+	# the audio mixer's playback release and intermittently retain a WAV resource.
 	_music_players.clear()
-	if is_instance_valid(_ambience_player):
-		_ambience_player.free()
 	_ambience_player = null
 	_cues.clear()
 	_profile = null
