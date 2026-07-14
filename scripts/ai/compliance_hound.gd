@@ -3,27 +3,25 @@ extends EnemyAgent
 
 signal shield_broken
 
-@export var shield_health := 70.0
-var shield_active := true
+@onready var directional_shield := $DirectionalShieldComponent as DirectionalShieldComponent
+
 
 func _ready() -> void:
 	super._ready()
 	attack_kind = &"hound_dash"
+	if directional_shield != null:
+		directional_shield.shield_broken.connect(_on_directional_shield_broken)
 
-func _damage_multiplier(hit_position: Vector3) -> float:
-	if not shield_active:
-		return 1.0
-	var local_hit := to_local(hit_position)
-	if local_hit.z > 0.15:
-		shield_health -= 35.0
-		if shield_health <= 0.0:
-			shield_active = false
-			shield_broken.emit()
-			var shield := get_node_or_null("Visual/Shield") as Node3D
-			if shield != null:
-				shield.visible = false
-		return 1.35
-	return 0.25
+
+func apply_damage(amount: float, source: Node = null, hit_position := Vector3.ZERO) -> float:
+	var multiplier := 1.0
+	if directional_shield != null:
+		multiplier = directional_shield.damage_multiplier(self, hit_position, amount)
+	return super.apply_damage(amount * multiplier, source, hit_position)
+
+
+func _on_directional_shield_broken() -> void:
+	shield_broken.emit()
 
 func _perform_attack() -> void:
 	if not _target_valid():
@@ -33,4 +31,3 @@ func _perform_attack() -> void:
 	move_and_slide()
 	if global_position.distance_to(target.global_position) < definition.attack_range * 1.7 and target.has_method("apply_damage"):
 		target.apply_damage(definition.attack_damage, self, target.global_position)
-

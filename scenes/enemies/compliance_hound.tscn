@@ -1,9 +1,10 @@
-[gd_scene load_steps=15 format=3]
+[gd_scene load_steps=16 format=3]
 
 [ext_resource type="Script" path="res://scripts/ai/compliance_hound.gd" id="1"]
 [ext_resource type="Resource" path="res://resources/enemies/compliance_hound.tres" id="2"]
 [ext_resource type="Texture2D" path="res://assets/sprites/enemies/compliance_hound.png" id="3_sprite"]
 [ext_resource type="Script" path="res://scripts/ai/enemy_sprite_presentation.gd" id="4_presentation"]
+[ext_resource type="Script" path="res://scripts/ai/directional_shield_component.gd" id="5"]
 [sub_resource type="CapsuleShape3D" id="Shape"]
 radius = 0.62
 height = 1.28
@@ -108,3 +109,11 @@ position = Vector3(0, 1.0, 0)
 position = Vector3(0, 0.03, -1.3)
 mesh = SubResource("TelegraphMesh")
 visible = false
+
+[node name="DirectionalShieldComponent" type="Node" parent="."]
+script = ExtResource("5")
+maximum_shield_health = 70.0
+shield_arc_degrees = 162.74
+blocked_damage_multiplier = 0.25
+break_damage_multiplier = 1.35
+shield_hit_cost = 35.0

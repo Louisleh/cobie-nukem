@@ -78,9 +78,67 @@ func _test_hound_shield() -> void:
 	var hound := preload("res://scenes/enemies/compliance_hound.tscn").instantiate() as ComplianceHound
 	root.add_child(hound)
 	await process_frame
-	var front_damage := hound.apply_damage(20.0, null, hound.global_position + Vector3.FORWARD)
-	var back_damage := hound.apply_damage(20.0, null, hound.global_position + Vector3.BACK)
-	_expect(back_damage > front_damage, "Hound rear weak point bypasses shield")
+
+	var directional_shield := hound.get_node("DirectionalShieldComponent") as DirectionalShieldComponent
+	_expect(directional_shield != null, "Hound has directional shield component")
+	if directional_shield == null:
+		hound.free()
+		return
+
+	var broken_signals: Array[bool] = []
+	var reset_signals: Array[bool] = []
+	directional_shield.shield_broken.connect(func() -> void: broken_signals.append(true))
+	directional_shield.shield_reset.connect(func() -> void: reset_signals.append(true))
+
+	var arc_half := deg_to_rad(directional_shield.shield_arc_degrees * 0.5)
+	var arc_inside := Vector3(-sin(arc_half - deg_to_rad(0.25)), 0.0, -cos(arc_half - deg_to_rad(0.25)))
+	var arc_outside := Vector3(-sin(arc_half + deg_to_rad(0.25)), 0.0, -cos(arc_half + deg_to_rad(0.25)))
+	var arc_probe_health := directional_shield.current_shield_health
+	directional_shield.reset()
+	_expect(reset_signals.size() == 1, "Hound shield reset emits once")
+
+	var inside_multiplier := directional_shield.damage_multiplier(hound, hound.global_position + arc_inside, 20.0)
+	var flank_multiplier := directional_shield.damage_multiplier(hound, hound.global_position + arc_outside, 20.0)
+	var rear_multiplier := directional_shield.damage_multiplier(hound, hound.global_position + Vector3.BACK, 20.0)
+	_expect(is_equal_approx(inside_multiplier, directional_shield.blocked_damage_multiplier), "Hound directional shield includes arc interior")
+	_expect(is_equal_approx(directional_shield.current_shield_health, arc_probe_health - directional_shield.shield_hit_cost), "Shield quantum drains on first blocked hit")
+	_expect(flank_multiplier == directional_shield.break_damage_multiplier, "Hound flank bypasses shield arc")
+	_expect(rear_multiplier > directional_shield.blocked_damage_multiplier, "Hound rear weak point bypass multiplier is higher than front")
+	_expect(flank_multiplier == directional_shield.break_damage_multiplier and rear_multiplier == directional_shield.break_damage_multiplier, "Both flank and rear bypass multiplier are bypass mode")
+	_expect(broken_signals.size() == 0, "Arc probes do not break shield")
+
+	directional_shield.reset()
+	_expect(reset_signals.size() == 2, "Hound shield reset emits exactly once per shield probe sequence")
+	_expect(is_equal_approx(directional_shield.current_shield_health, directional_shield.maximum_shield_health), "Hound shield reset restores full health before frontal sequence")
+
+	var blocked_damage := directional_shield.blocked_damage_multiplier * 20.0
+	var first_front_hit := hound.apply_damage(20.0, null, hound.global_position + Vector3.FORWARD)
+	var second_front_hit := hound.apply_damage(20.0, null, hound.global_position + Vector3.FORWARD)
+	var third_front_hit := hound.apply_damage(20.0, null, hound.global_position + Vector3.FORWARD)
+	var fourth_front_hit := hound.apply_damage(20.0, null, hound.global_position + Vector3.FORWARD)
+	_expect(first_front_hit == blocked_damage and second_front_hit == blocked_damage, "Shield blocked first two frontal hits before break")
+	_expect(broken_signals.size() == 1, "Shield emits broken exactly once after repeated frontal hits")
+	_expect(not directional_shield.shield_active, "Shield deactivates after repeated frontal shield hits")
+	_expect(third_front_hit == 20.0 and fourth_front_hit == 20.0, "Post-break frontal hit keeps full incoming damage")
+	var shield_node := hound.get_node("Visual/Shield") as Node3D
+	_expect(shield_node != null, "Hound shield visual exists for reset lifecycle")
+	if shield_node != null:
+		_expect(shield_node.visible == false, "Hound shield hides when broken")
+	_expect(broken_signals.size() == 1, "Hound shield keeps broken emission to one across post-break hits")
+
+	directional_shield.reset()
+	_expect(reset_signals.size() == 3, "Shield reset emits exactly once per reset cycle")
+	_expect(is_equal_approx(directional_shield.current_shield_health, directional_shield.maximum_shield_health), "Hound shield reset restores full health")
+	_expect(shield_node != null and shield_node.visible == true, "Hound shield reset restores visual")
+
+	var front_hit_after_reset := hound.apply_damage(20.0, null, hound.global_position + Vector3.FORWARD)
+	var front_hit_after_reset_still_blocked := hound.apply_damage(20.0, null, hound.global_position + Vector3.FORWARD)
+	var front_hit_after_reset_break := hound.apply_damage(20.0, null, hound.global_position + Vector3.FORWARD)
+	_expect(front_hit_after_reset == blocked_damage and front_hit_after_reset_still_blocked == blocked_damage, "Shield absorbs two blocked hits after reset")
+	_expect(front_hit_after_reset_break == 20.0, "Post-break hit after reset keeps full damage")
+	_expect(not directional_shield.shield_active, "Hound shield can break again after reset")
+	_expect(broken_signals.size() == 2, "Shield emits broken exactly one time after reset cycle")
+
 	hound.free()
 
 func _test_walker_phases() -> void:
