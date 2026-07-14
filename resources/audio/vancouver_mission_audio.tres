@@ -5,11 +5,11 @@
 [resource]
 script = ExtResource("1")
 id = &"vancouver_mission_audio"
-exploration_ambience_cue_id = &"vancouver_ambience_dock"
-tension_ambience_cue_id = &"vancouver_ambience_terminal"
-combat_ambience_cue_id = &"vancouver_ambience_harbour"
-boss_ambience_cue_id = &"vancouver_ambience_harbour"
-victory_ambience_cue_id = &"vancouver_ambience_dock"
+exploration_ambience_cue_id = &"vancouver_music_exploration"
+tension_ambience_cue_id = &"vancouver_music_tension"
+combat_ambience_cue_id = &"vancouver_music_combat"
+boss_ambience_cue_id = &"vancouver_music_boss"
+victory_ambience_cue_id = &"vancouver_music_victory"
 crossfade_seconds = 1.0
 web_voice_cap = 12
 native_voice_cap = 24

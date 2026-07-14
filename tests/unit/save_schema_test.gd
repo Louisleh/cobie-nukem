@@ -33,6 +33,7 @@ func _initialize() -> void:
 	_test_truncated_json()
 	_test_non_dictionary_json()
 	_test_future_schema_version()
+	_test_route_snapshot_sanitization()
 	_test_sanitize_canonical_shape()
 	save_manager.delete_slot(SLOT)
 	save_manager.delete_slot(CAMPAIGN_SLOT)
@@ -220,12 +221,30 @@ func _test_sanitize_canonical_shape() -> void:
 	noisy["telemetry"] = {"clicks": 9000}
 	noisy["cloud_id"] = "nope"
 	var sanitized := CheckpointPayload.sanitize(noisy)
-	var expected_keys := ["scene_path", "level_id", "checkpoint_id", "difficulty_id", "position", "objective_snapshot", "encounter_snapshot", "secrets"]
+	var expected_keys := ["scene_path", "level_id", "checkpoint_id", "difficulty_id", "position", "objective_snapshot", "encounter_snapshot", "route_snapshot", "secrets"]
 	for key: String in sanitized:
 		_expect(key in expected_keys, "sanitize drops unknown key: %s" % key)
 	var missing_scene := _checkpoint_payload()
 	missing_scene["scene_path"] = "res://scenes/levels/deleted_level.tscn"
 	_expect(CheckpointPayload.sanitize(missing_scene) == {}, "payload naming a missing scene is not resumable")
+
+
+func _test_route_snapshot_sanitization() -> void:
+	var payload := _checkpoint_payload()
+	payload["route_snapshot"] = {
+		"route_id": "vancouver_mission2_route",
+		"current_zone": "terminal_service",
+		"current_index": 3,
+		"visited_zones": ["downtown_alley", "ruse_block", "waterfront_seawall", "terminal_service"],
+		"checkpoint_id": "checkpoint_terminal_service",
+		"is_completed": false,
+		"injected": true,
+	}
+	var sanitized := CheckpointPayload.sanitize(payload)
+	_expect(sanitized.route_snapshot.visited_zones == ["downtown_alley", "ruse_block", "waterfront_seawall", "terminal_service"], "route sanitizer preserves authored order")
+	_expect(not sanitized.route_snapshot.has("injected"), "route sanitizer drops unknown fields")
+	payload.route_snapshot["visited_zones"] = ["downtown_alley", "downtown_alley"]
+	_expect(CheckpointPayload.sanitize(payload).route_snapshot == {}, "route sanitizer rejects duplicate visited zones")
 
 
 func _checkpoint_payload() -> Dictionary:

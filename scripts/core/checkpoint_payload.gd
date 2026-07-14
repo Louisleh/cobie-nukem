@@ -11,6 +11,7 @@ extends RefCounted
 ##   "difficulty_id": String         — key of GameState.DIFFICULTY_PATHS
 ##   "objective_snapshot": Dictionary — sanitized ObjectiveTracker state
 ##   "encounter_snapshot": Dictionary — completed encounter ids only
+##   "route_snapshot": Dictionary     — strict ordered-route restore state
 ##   "secrets": Dictionary            — discovered secret id → title
 ## }
 ##
@@ -39,6 +40,7 @@ static func sanitize(raw: Dictionary) -> Dictionary:
 		"difficulty_id": valid_difficulty(raw.get("difficulty_id")),
 		"objective_snapshot": _objective_snapshot(raw.get("objective_snapshot", {})),
 		"encounter_snapshot": _encounter_snapshot(raw.get("encounter_snapshot", {})),
+		"route_snapshot": _route_snapshot(raw.get("route_snapshot", {})),
 		"secrets": _secrets(raw.get("secrets", {})),
 	}
 	var position := _finite_position(raw.get("position"))
@@ -90,6 +92,32 @@ static func _encounter_snapshot(value: Variant) -> Dictionary:
 		return {"completed": []}
 	return {"completed": _string_array(value.get("completed", []))}
 
+
+static func _route_snapshot(value: Variant) -> Dictionary:
+	if value is not Dictionary or value.is_empty():
+		return {}
+	var route_id := _string_field(value, "route_id")
+	var current_zone := _string_field(value, "current_zone")
+	var checkpoint_id := _string_field(value, "checkpoint_id")
+	var raw_index: Variant = value.get("current_index", -1)
+	var raw_completed: Variant = value.get("is_completed", false)
+	var raw_visited: Variant = value.get("visited_zones", [])
+	if route_id.is_empty() or raw_index is not int or raw_completed is not bool or raw_visited is not Array:
+		return {}
+	var visited: Variant = _ordered_string_array(raw_visited)
+	if visited == null:
+		return {}
+	# MissionRouteRuntime performs route-ownership, order, checkpoint, and
+	# completion validation atomically against the currently configured manifest.
+	return {
+		"route_id": route_id,
+		"current_zone": current_zone,
+		"current_index": raw_index,
+		"visited_zones": visited,
+		"checkpoint_id": checkpoint_id,
+		"is_completed": raw_completed,
+	}
+
 static func _secrets(value: Variant) -> Dictionary:
 	var result := {}
 	if value is not Dictionary:
@@ -111,4 +139,18 @@ static func _string_array(value: Variant) -> Array[String]:
 			if not text.is_empty() and text not in result:
 				result.append(text)
 	result.sort()
+	return result
+
+
+static func _ordered_string_array(value: Variant) -> Variant:
+	var result: Array[String] = []
+	if value is not Array:
+		return null
+	for entry: Variant in value:
+		if entry is not String and entry is not StringName:
+			return null
+		var text := String(entry).strip_edges()
+		if text.is_empty() or text in result:
+			return null
+		result.append(text)
 	return result

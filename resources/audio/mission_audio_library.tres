@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="AudioCueLibrary" load_steps=39 format=3]
+[gd_resource type="Resource" script_class="AudioCueLibrary" load_steps=49 format=3]
 
 [ext_resource type="Script" path="res://scripts/audio/audio_cue_set.gd" id="1"]
 [ext_resource type="Script" path="res://scripts/audio/audio_cue_library.gd" id="2"]
@@ -7,6 +7,11 @@
 [ext_resource type="AudioStream" path="res://assets/audio/music/salmon_combat.wav" id="m3"]
 [ext_resource type="AudioStream" path="res://assets/audio/music/salmon_boss.wav" id="m4"]
 [ext_resource type="AudioStream" path="res://assets/audio/music/salmon_victory.wav" id="m5"]
+[ext_resource type="AudioStream" path="res://assets/audio/music/vancouver_exploration.wav" id="vm1"]
+[ext_resource type="AudioStream" path="res://assets/audio/music/vancouver_tension.wav" id="vm2"]
+[ext_resource type="AudioStream" path="res://assets/audio/music/vancouver_combat.wav" id="vm3"]
+[ext_resource type="AudioStream" path="res://assets/audio/music/vancouver_boss.wav" id="vm4"]
+[ext_resource type="AudioStream" path="res://assets/audio/music/vancouver_victory.wav" id="vm5"]
 [ext_resource type="AudioStream" path="res://assets/audio/ambience/salmon_exterior.wav" id="a1"]
 [ext_resource type="AudioStream" path="res://assets/audio/ambience/salmon_tunnel.wav" id="a2"]
 [ext_resource type="AudioStream" path="res://assets/audio/ambience/salmon_lab.wav" id="a3"]
@@ -68,6 +73,56 @@ maximum_polyphony = 1
 script = ExtResource("1")
 id = &"salmon_music_victory"
 streams = Array[AudioStream]([ExtResource("m5")])
+bus = &"Music"
+volume_db = -5.0
+pitch_min = 1.0
+pitch_max = 1.0
+maximum_polyphony = 1
+
+[sub_resource type="Resource" id="VancouverMusicExplore"]
+script = ExtResource("1")
+id = &"vancouver_music_exploration"
+streams = Array[AudioStream]([ExtResource("vm1")])
+bus = &"Music"
+volume_db = -9.0
+pitch_min = 1.0
+pitch_max = 1.0
+maximum_polyphony = 1
+
+[sub_resource type="Resource" id="VancouverMusicTension"]
+script = ExtResource("1")
+id = &"vancouver_music_tension"
+streams = Array[AudioStream]([ExtResource("vm2")])
+bus = &"Music"
+volume_db = -8.0
+pitch_min = 1.0
+pitch_max = 1.0
+maximum_polyphony = 1
+
+[sub_resource type="Resource" id="VancouverMusicCombat"]
+script = ExtResource("1")
+id = &"vancouver_music_combat"
+streams = Array[AudioStream]([ExtResource("vm3")])
+bus = &"Music"
+volume_db = -6.0
+pitch_min = 1.0
+pitch_max = 1.0
+maximum_polyphony = 1
+
+[sub_resource type="Resource" id="VancouverMusicBoss"]
+script = ExtResource("1")
+id = &"vancouver_music_boss"
+streams = Array[AudioStream]([ExtResource("vm4")])
+bus = &"Music"
+volume_db = -5.0
+pitch_min = 1.0
+pitch_max = 1.0
+maximum_polyphony = 1
+
+[sub_resource type="Resource" id="VancouverMusicVictory"]
+script = ExtResource("1")
+id = &"vancouver_music_victory"
+streams = Array[AudioStream]([ExtResource("vm5")])
 bus = &"Music"
 volume_db = -5.0
 pitch_min = 1.0
@@ -182,4 +237,4 @@ unit_size = 6.0
 
 [resource]
 script = ExtResource("2")
-cues = Array[ExtResource("1")]([SubResource("MusicExplore"), SubResource("MusicTension"), SubResource("MusicCombat"), SubResource("MusicBoss"), SubResource("MusicVictory"), SubResource("AmbExterior"), SubResource("AmbTunnel"), SubResource("AmbLab"), SubResource("AmbArena"), SubResource("AmbVanRain"), SubResource("AmbVanTerminal"), SubResource("AmbVanHarbour"), SubResource("CobieBark"), SubResource("HoundVocal"), SubResource("WalkerVocal")])
+cues = Array[ExtResource("1")]([SubResource("MusicExplore"), SubResource("MusicTension"), SubResource("MusicCombat"), SubResource("MusicBoss"), SubResource("MusicVictory"), SubResource("VancouverMusicExplore"), SubResource("VancouverMusicTension"), SubResource("VancouverMusicCombat"), SubResource("VancouverMusicBoss"), SubResource("VancouverMusicVictory"), SubResource("AmbExterior"), SubResource("AmbTunnel"), SubResource("AmbLab"), SubResource("AmbArena"), SubResource("AmbVanRain"), SubResource("AmbVanTerminal"), SubResource("AmbVanHarbour"), SubResource("CobieBark"), SubResource("HoundVocal"), SubResource("WalkerVocal")])

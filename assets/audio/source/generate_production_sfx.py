@@ -173,7 +173,7 @@ def mission_ambience(kind: str) -> tuple[float, Callable[[float, random.Random],
     return duration, synth
 
 
-def adaptive_music(state: str) -> tuple[float, Callable[[float, random.Random], float]]:
+def adaptive_music(state: str, theme: str = "salmon") -> tuple[float, Callable[[float, random.Random], float]]:
     """Short original industrial surf-rock loops; no sampled performances."""
     duration = 8.0
     settings = {
@@ -184,8 +184,14 @@ def adaptive_music(state: str) -> tuple[float, Callable[[float, random.Random], 
         "victory": (104.0, (0, 4, 7, 12), 0.24),
     }
     bpm, notes, intensity = settings[state]
+    if theme == "vancouver":
+        # Rain City uses a brighter suspended motif and syncopated transit pulse,
+        # remaining entirely deterministic synthesis with no sampled performance.
+        bpm += 6.0
+        notes = tuple(note + (2 if index % 2 else 0) for index, note in enumerate(notes))
+        intensity *= 0.92
     beat = 60.0 / bpm
-    root = 55.0 if state != "victory" else 65.406
+    root = (61.735 if state != "victory" else 73.416) if theme == "vancouver" else (55.0 if state != "victory" else 65.406)
 
     def synth(t: float, rng: random.Random) -> float:
         step = int(t / (beat * 0.5)) % len(notes)
@@ -197,8 +203,10 @@ def adaptive_music(state: str) -> tuple[float, Callable[[float, random.Random], 
         kick = math.sin(math.tau * (82.0 - 42.0 * min(kick_phase / beat, 1.0)) * kick_phase) * math.exp(-kick_phase * 10.0)
         hat_phase = t % (beat * 0.5)
         hat = rng.uniform(-1.0, 1.0) * math.exp(-hat_phase * 35.0)
-        lead = math.sin(math.tau * frequency * 2.0 * t) * gate
-        return bass * gate * intensity + kick * intensity * 0.72 + hat * intensity * 0.18 + lead * intensity * 0.16
+        lead_ratio = 2.5 if theme == "vancouver" else 2.0
+        lead = math.sin(math.tau * frequency * lead_ratio * t) * gate
+        rain_chime = math.sin(math.tau * frequency * 4.0 * t) * gate * 0.035 if theme == "vancouver" else 0.0
+        return bass * gate * intensity + kick * intensity * 0.72 + hat * intensity * 0.18 + lead * intensity * 0.16 + rain_chime
 
     return duration, synth
 
@@ -252,6 +260,10 @@ def main() -> None:
         duration, synth = adaptive_music(state)
         relative = f"music/salmon_{state}.wav"
         _render(relative, duration, synth, 0xA8D10 + music_index * 211)
+        generated.append(ROOT / relative)
+        duration, synth = adaptive_music(state, "vancouver")
+        relative = f"music/vancouver_{state}.wav"
+        _render(relative, duration, synth, 0xB8D10 + music_index * 211)
         generated.append(ROOT / relative)
     for family_index, family in enumerate(("cobie_bark", "hound", "walker")):
         for variant in range(1, 4):

@@ -374,6 +374,8 @@ func _finalize_level_completion() -> void:
 	var summary := get_level_summary(); level_completed.emit(summary)
 	var game_state := get_node_or_null("/root/GameState")
 	if game_state: game_state.finish_run(summary)
+	var save_manager := get_node_or_null("/root/SaveManager")
+	if save_manager != null: _mission_runtime.record_campaign_completion(metadata.level_id, summary, save_manager, game_state.difficulty_id if game_state != null else &"classic", [&"episode_1_vancouver_waterfront"])
 
 func get_level_summary() -> Dictionary:
 	return {
