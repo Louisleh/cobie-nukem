@@ -61,6 +61,12 @@ func _initialize() -> void:
 			drone_origins_ok = drone_origins_ok and actor._base_height > 1.5 and not actor.uses_gravity
 	check(hover_origins_ok, "Pickup hover origins were captured before spawn placement")
 	check(combat_pickup_count == 10, "Salmon Creek should author exactly 10 pickups")
+	level._world_builder.populate_pickups()
+	var pickup_count_after_repeat := 0
+	for actor in level.get_node("Actors").get_children():
+		if actor is CombatPickup:
+			pickup_count_after_repeat += 1
+	check(pickup_count_after_repeat == combat_pickup_count, "World builder pickup population is idempotent")
 	check(drone_origins_ok, "Drone hover height was captured before spawn placement")
 	var doors := 0; var signs := 0; var checkpoints := 0; var finale := 0
 	for child in level.get_node("Interactables").get_children():

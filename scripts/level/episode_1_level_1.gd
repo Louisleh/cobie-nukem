@@ -93,6 +93,7 @@ func _ready() -> void:
 	var announced := _mission_runtime.announce_available_objectives()
 	if announced.is_empty():
 		objective_changed.emit(metadata.opening_objective)
+	# Ensure the opening encounter exists even when body-enter events settle before connections.
 	_enter_zone(&"forbidden_field", "FORBIDDEN FIELD", player)
 
 
@@ -116,6 +117,10 @@ func _setup_gameplay_systems() -> void:
 	if pressure != null:
 		_baseline_attack_budget = pressure.maximum_attackers
 	_restore_mission_snapshot()
+	# Level-owned timers die with the scene, so a pending opening-grace or
+	# completion callback can never fire into a freed level, and restarting the
+	# opening encounter replaces the pending grace window instead of stacking a
+	# second, earlier activation.
 	_opening_grace_timer = Timer.new()
 	_opening_grace_timer.name = "OpeningGraceTimer"
 	_opening_grace_timer.one_shot = true
@@ -184,6 +189,8 @@ func _setup_interaction_runtime() -> void:
 func _check_route_recovery() -> void:
 	if not is_instance_valid(player):
 		return
+	# Low-frequency indexed recovery keeps the route playable if a browser drops
+	# an Area3D transition without spending every physics frame scanning progress.
 	for milestone in ROUTE_PROGRESS:
 		var zone_id := StringName(milestone[1])
 		if player.global_position.z <= float(milestone[0]) and not spawned_zones.has(zone_id):
@@ -241,6 +248,7 @@ func _spawn_wave(zone_id: StringName) -> void:
 	else:
 		_spawn_registry.mark_zone_spawned(zone_id)
 	if zone_id == &"walker_arena" and _walker == null:
+		# Development fallback: a missing boss scene must not trap QA in the level.
 		_golden_ball.enable_for_boss(null)
 		narrative_message.emit("BOSS ASSET MISSING — GOLDEN BALL QA FALLBACK ENABLED.", 4.0)
 	if zone_id == &"forbidden_field":
@@ -295,6 +303,9 @@ func _bind_walker(walker: Node) -> void:
 	_walker_phase_rewards.clear()
 	_walker_phase_pickups.clear()
 	_walker_cannon_attacks = 0
+	# The generic chase path advances during attack cooldowns. Give this boss an
+	# authored orbit and retreat floor so it pressures from readable cannon range
+	# instead of collapsing into the player's collision capsule after every shot.
 	if encounter_pacing != null and walker is EnemyAgent and walker.definition != null:
 		walker.definition.preferred_distance = walker.definition.attack_range
 		walker.definition.retreat_distance = encounter_pacing.pressure_distance.x
@@ -340,6 +351,9 @@ func _on_walker_attack_fired(_kind: StringName, walker: Node) -> void:
 
 
 func _on_enemy_died(enemy: Node, zone_id: StringName) -> void:
+	# Checkpoint retries rebuild an authored encounter without increasing its
+	# mission total. Clamp credited defeats to that total so retry kills cannot
+	# corrupt completion reports or produce impossible >100% enemy statistics.
 	enemies_defeated = mini(enemies_defeated + 1, enemies_total); enemy_defeated.emit(enemy, zone_id)
 	var game_state := get_node_or_null("/root/GameState")
 	if game_state: game_state.run_stats.enemies_defeated = enemies_defeated
@@ -391,6 +405,8 @@ func _save_checkpoint_payload(id: StringName, position_value: Vector3) -> void:
 
 func restart_from_checkpoint() -> void:
 	if _interaction_runtime != null:
+		# Secrets are permanent for the current run even when the player dies;
+		# checkpoint saves persist the same dictionary across app restarts.
 		_interaction_runtime.reset_for_checkpoint({"secrets": secrets})
 	if _combat_audio != null:
 		_combat_audio.reset_gameplay_audio()
@@ -424,6 +440,9 @@ func _reset_active_encounter_for_checkpoint() -> void:
 				pickup.queue_free()
 		_walker_phase_pickups.clear()
 		_walker_cannon_attacks = 0
+		# The walker's summoned drones live outside the encounter runner's actor
+		# list; leaving them alive would greet the respawned player with stale
+		# pressure the reset just promised to remove.
 		for summon in get_tree().get_nodes_in_group(&"boss_summons"):
 			summon.queue_free()
 	_resetting_encounter = true
@@ -433,6 +452,7 @@ func _reset_active_encounter_for_checkpoint() -> void:
 
 func _on_golden_ball_claimed(_actor: Node) -> void:
 	if completion_started: return
+	# A finished run must not offer a stale mid-level Continue from the menu.
 	completion_started = true
 	_objective_tracker.record(ObjectiveDefinition.Kind.COLLECT_ITEM, &"golden_tennis_ball")
 	narrative_message.emit("THEY SAID NO ANIMALS. THEY SHOULD HAVE SAID PLEASE.", 5.0)
@@ -522,6 +542,7 @@ func _on_player_died_for_ui(_source: Node) -> void:
 
 
 func _spawn_enemy_drop(drop_id: StringName, position_value: Vector3) -> Node:
+	# Enemy definitions author a drop_id contract; this listener materializes it.
 	var path := "res://scenes/pickups/%s.tscn" % drop_id
 	if not ResourceLoader.exists(path, "PackedScene"):
 		push_warning("Enemy drop has no pickup scene: %s" % drop_id)
@@ -566,6 +587,8 @@ func _spawn_scene(path: String, position_value: Vector3) -> Node:
 	var packed := _spawn_registry.resolve_scene(path) if _spawn_registry != null else load(path) as PackedScene
 	if packed == null: return null
 	var instance := packed.instantiate()
+	# Place actors before _ready() runs so hover origins, drone flight heights,
+	# and physics interpolation all begin at the intended world transform.
 	if instance is Node3D: instance.position = position_value
 	_actors.add_child(instance)
 	if _spawn_registry != null: _spawn_registry.register_actor(instance)

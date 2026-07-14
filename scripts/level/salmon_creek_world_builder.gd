@@ -30,6 +30,7 @@ var navigation_region: NavigationRegion3D
 var _navigation_sources: Array[StaticBody3D] = []
 var _build_parent: Node
 var _is_built := false
+var _pickups_populated := false
 
 
 func build(owner: Node) -> void:
@@ -58,6 +59,9 @@ func populate_pickups() -> void:
 	if not _is_built:
 		push_error("SalmonCreekWorldBuilder.populate_pickups called before build")
 		return
+	if _pickups_populated:
+		return
+	_pickups_populated = true
 	_build_pickups()
 
 
