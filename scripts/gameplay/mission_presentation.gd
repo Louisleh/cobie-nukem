@@ -139,6 +139,8 @@ func on_objective_changed(text: String) -> void:
 func on_secret_found(_id: StringName, title: String, found: int, total: int) -> void:
 	if _hud != null:
 		_hud.show_secret("SECRET: %s (%d/%d)" % [title, found, total])
+	if _combat_audio != null:
+		_combat_audio.play_cobie_bark()
 
 
 func on_narrative_message(text: String, duration: float) -> void:
@@ -174,6 +176,8 @@ func on_level_completed(summary: Dictionary) -> void:
 		_pause_menu.visible = false
 	if _victory_screen != null:
 		_victory_screen.show_summary(summary)
+	if _combat_audio != null:
+		_combat_audio.play_cobie_bark()
 	_request_audio_state(&"victory")
 
 

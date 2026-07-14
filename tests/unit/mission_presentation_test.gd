@@ -50,6 +50,11 @@ func _make_presentation(level: FakeLevel, actors: Node, player: Node3D = null) -
 	var presentation := MissionPresentation.new()
 	presentation.name = "MissionPresentationTestPresentation"
 	root.add_child(presentation)
+	# State routing is under test here, not platform audio playback. Avoid starting
+	# real WAV voices immediately before SceneTree quit; the emitter contract has a
+	# dedicated playback test.
+	presentation._create_presentation_nodes()
+	presentation.get_audio_director().playback_enabled = false
 	_expect(presentation.configure(level, MANIFEST, actors, null, null, player, root.get_node_or_null("GameState"), &"forbidden_field", &"walker_arena", {
 		&"forbidden_field": &"salmon_ambience_exterior",
 		&"equipment_shed": &"salmon_ambience_exterior",
@@ -170,9 +175,14 @@ func _test_state_and_zone_transitions() -> void:
 	presentation.on_actor_spawned(boss_enemy, _definition(&"walker_arena"))
 	await process_frame
 	_expect(director.current_state() == &"boss", "boss cue activates for walker zone")
+	var combat_audio := presentation.get_combat_audio_bridge()
+	var bark_voices_before := combat_audio.samples.voice_count(&"cobie_bark")
+	presentation.on_secret_found(&"qa_secret", "QA SECRET", 1, 1)
+	_expect(combat_audio.samples.voice_count(&"cobie_bark") == bark_voices_before + 1, "real secret presentation path plays original Cobie bark")
 	presentation.on_level_completed({})
 	await process_frame
 	_expect(director.current_state() == &"victory", "victory event sets victory music")
+	_expect(combat_audio.samples.voice_count(&"cobie_bark") >= 1, "victory presentation retains bounded Cobie celebration family")
 	regular_enemy.free()
 	boss_enemy.free()
 	presentation.queue_free()

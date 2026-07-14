@@ -91,6 +91,23 @@ func reset() -> void:
 	_ambience_cue_id = &""
 
 
+func _exit_tree() -> void:
+	# AudioServer can retain a playback object for a frame after an owning scene is
+	# removed. Release voices synchronously so rapid restart/quit and headless soak
+	# runs do not leave WAV playback resources behind.
+	reset()
+	for player in _music_players:
+		if is_instance_valid(player):
+			player.free()
+	_music_players.clear()
+	if is_instance_valid(_ambience_player):
+		_ambience_player.free()
+	_ambience_player = null
+	_cues.clear()
+	_profile = null
+	_library = null
+
+
 func current_state() -> StringName: return _state
 func current_music_cue() -> StringName: return _music_cue_id
 func current_ambience_cue() -> StringName: return _ambience_cue_id
