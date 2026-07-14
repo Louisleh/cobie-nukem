@@ -102,6 +102,7 @@ func _setup_gameplay_systems() -> void:
 	_spawn_registry.name = "MissionSpawnRegistry"
 	add_child(_spawn_registry)
 	_spawn_registry.prewarm_encounters(content_manifest.encounters)
+	_spawn_registry.pickup_collected.connect(_on_spawn_registry_pickup_collected)
 	spawned_zones = _spawn_registry.completed_zones
 	_mission_runtime = MissionRuntime.new()
 	_mission_runtime.name = "MissionRuntime"
@@ -215,6 +216,7 @@ func _build_level() -> void:
 	_interactables = _world_builder.interactables
 	_golden_ball = _world_builder.golden_ball
 	_navigation_region = _world_builder.navigation_region
+	_spawn_registry.actor_parent = _actors
 	_world_builder.populate_pickups()
 
 
@@ -269,14 +271,11 @@ func _on_mission_encounter_failed(definition: EncounterDefinition, _reason: Stri
 
 func _on_encounter_actor_spawned(enemy: Node, definition: EncounterDefinition) -> void:
 	if enemy is ComplianceHound: enemy.name = "FetchGuard"
-	if enemy.has_signal("drop_requested"): enemy.drop_requested.connect(_spawn_enemy_drop)
-	if not _resetting_encounter: enemies_total += 1
-	if definition.zone_id == &"forbidden_field":
-		enemy.process_mode = Node.PROCESS_MODE_DISABLED
-		_opening_enemies.append(enemy)
+	_spawn_registry.register_encounter_actor(enemy, definition, _resetting_encounter)
 	enemy_spawned.emit(enemy, definition.zone_id)
 	_bind_enemy_captions(enemy)
 	if enemy is AnimalControlWalker: _bind_walker(enemy)
+	_sync_spawn_runtime_state()
 
 
 func _bind_enemy_captions(enemy: Node) -> void:
@@ -288,14 +287,8 @@ func _bind_enemy_captions(enemy: Node) -> void:
 
 
 func _activate_opening_encounter(_weapon: WeaponBase = null, _secondary := false) -> void:
-	if _opening_encounter_active:
-		return
-	_opening_encounter_active = true
-	for enemy in _opening_enemies:
-		if is_instance_valid(enemy):
-			enemy.process_mode = Node.PROCESS_MODE_INHERIT
-			if enemy.has_method("set_target") and player:
-				enemy.set_target(player)
+	_spawn_registry.activate_staged_enemies(player)
+	_sync_spawn_runtime_state()
 
 
 func _bind_walker(walker: Node) -> void:
@@ -354,9 +347,10 @@ func _on_enemy_died(enemy: Node, zone_id: StringName) -> void:
 	# Checkpoint retries rebuild an authored encounter without increasing its
 	# mission total. Clamp credited defeats to that total so retry kills cannot
 	# corrupt completion reports or produce impossible >100% enemy statistics.
-	enemies_defeated = mini(enemies_defeated + 1, enemies_total); enemy_defeated.emit(enemy, zone_id)
+	enemies_defeated = _spawn_registry.record_enemy_defeat(); enemy_defeated.emit(enemy, zone_id)
 	var game_state := get_node_or_null("/root/GameState")
 	if game_state: game_state.run_stats.enemies_defeated = enemies_defeated
+	_sync_spawn_runtime_state()
 
 
 func _discover_secret(secret_id: StringName, title: String) -> void:
@@ -430,8 +424,7 @@ func _reset_active_encounter_for_checkpoint() -> void:
 	_mission_runtime.reset_zone(zone_id)
 	_spawn_registry.clear_zone(zone_id)
 	if zone_id == &"forbidden_field":
-		_opening_enemies.clear()
-		_opening_encounter_active = false
+		_spawn_registry.reset_staged_enemies()
 	if zone_id == &"walker_arena":
 		_walker = null
 		_walker_phase_rewards.clear()
@@ -448,6 +441,7 @@ func _reset_active_encounter_for_checkpoint() -> void:
 	_resetting_encounter = true
 	_spawn_wave(zone_id)
 	_resetting_encounter = false
+	_sync_spawn_runtime_state()
 
 
 func _on_golden_ball_claimed(_actor: Node) -> void:
@@ -542,23 +536,11 @@ func _on_player_died_for_ui(_source: Node) -> void:
 
 
 func _spawn_enemy_drop(drop_id: StringName, position_value: Vector3) -> Node:
-	# Enemy definitions author a drop_id contract; this listener materializes it.
-	var path := "res://scenes/pickups/%s.tscn" % drop_id
-	if not ResourceLoader.exists(path, "PackedScene"):
-		push_warning("Enemy drop has no pickup scene: %s" % drop_id)
-		return null
-	return _spawn_pickup(path, Vector3(position_value.x, 0.8, position_value.z))
+	return _spawn_registry.spawn_enemy_drop(drop_id, position_value)
 
 
 func _spawn_pickup(path: String, position_value: Vector3) -> Node:
-	var pickup := _spawn_scene(path, position_value)
-	if pickup and pickup.has_signal("collected"):
-		pickup.collected.connect(func(_pickup, _collector, message):
-			narrative_message.emit(message, 2.0)
-			var game_state := get_node_or_null("/root/GameState")
-			if game_state != null: game_state.record_pickup()
-		)
-	return pickup
+	return _spawn_registry.spawn_pickup(path, position_value)
 
 
 func _on_interaction_secret_requested(secret_id: StringName, title: String, _source: Node) -> void:
@@ -569,30 +551,25 @@ func _on_interaction_loot_requested(loot_scene: String, count: int, source: Node
 	var actor := source as Node3D
 	if actor == null:
 		actor = player
-	var base_position := actor.global_position if actor != null else Vector3.ZERO
-	var safe_count := clampi(count, 1, 8)
-	for index in safe_count:
-		var angle := TAU * float(index) / float(max(safe_count, 1))
-		var radius := 0.72 + 0.14 * float(index % 4)
-		var offset := Vector3(cos(angle), 0.0, sin(angle)) * radius
-		var drop_position := Vector3(base_position.x + offset.x, max(0.8, base_position.y), base_position.z + offset.z)
-		if player != null and player.global_position.distance_to(drop_position) < 0.4:
-			drop_position += Vector3(0.36, 0.0, 0.36)
-		_spawn_pickup(loot_scene, drop_position)
+	_spawn_registry.spawn_loot_burst(loot_scene, count, actor, player)
 
 
 func _spawn_scene(path: String, position_value: Vector3) -> Node:
-	if not ResourceLoader.exists(path):
-		push_warning("Optional level dependency missing: " + path); return null
-	var packed := _spawn_registry.resolve_scene(path) if _spawn_registry != null else load(path) as PackedScene
-	if packed == null: return null
-	var instance := packed.instantiate()
-	# Place actors before _ready() runs so hover origins, drone flight heights,
-	# and physics interpolation all begin at the intended world transform.
-	if instance is Node3D: instance.position = position_value
-	_actors.add_child(instance)
-	if _spawn_registry != null: _spawn_registry.register_actor(instance)
-	return instance
+	return _spawn_registry.spawn_scene(path, position_value)
+
+
+func _on_spawn_registry_pickup_collected(message: String) -> void:
+	narrative_message.emit(message, 2.0)
+	var game_state := get_node_or_null("/root/GameState")
+	if game_state != null:
+		game_state.record_pickup()
+
+
+func _sync_spawn_runtime_state() -> void:
+	enemies_total = _spawn_registry.enemies_total
+	enemies_defeated = _spawn_registry.enemies_defeated
+	_opening_enemies = _spawn_registry.opening_enemies_snapshot()
+	_opening_encounter_active = _spawn_registry.opening_enemies_active()
 
 
 func _exit_tree() -> void:
