@@ -135,7 +135,7 @@ func _test_duplicate_and_stale_callback_rejection() -> void:
 
 func _test_reset_cycles_for_each_stage() -> void:
 	for stage in range(3):
-		for iteration in range(5):
+		for iteration in range(50):
 			var runtime := _make_set_piece_runtime()
 			var mission := _make_mission_runtime(&"external_three", 3)
 			var definition := _make_set_piece_definition(
@@ -157,18 +157,18 @@ func _test_reset_cycles_for_each_stage() -> void:
 				continue
 
 			if stage >= 1:
-				if not await _wait_for_stop(runtime, 0):
+				if not _drive_to_stop(runtime, 0):
 					failures.append("reset stage %d stalled at stop0 during %d" % [stage, iteration])
 					_cleanup(runtime, mission, coordinator)
 					continue
 				_kill_active_wave(mission, &"external_three")
-				if not await _wait_for_stop(runtime, 1):
+				if not _drive_to_stop(runtime, 1):
 					failures.append("reset stage %d stalled at stop1 during %d" % [stage, iteration])
 					_cleanup(runtime, mission, coordinator)
 					continue
 			if stage == 2:
 				_kill_active_wave(mission, &"external_three")
-				if not await _wait_for_stop(runtime, 2):
+				if not _drive_to_stop(runtime, 2):
 					failures.append("reset stage %d stalled at stop2 during %d" % [stage, iteration])
 					_cleanup(runtime, mission, coordinator)
 					continue
@@ -318,6 +318,14 @@ func _spawn_encounter_actor(_scene_path: String, position: Vector3) -> Node:
 func _wait_for_stop(runtime: MovingSetPieceRuntime, index: int, timeout_frames: int = 180) -> bool:
 	for _frame in range(timeout_frames):
 		await physics_frame
+		if int(runtime.current_state().get("next_stop_index", 0)) > index:
+			return true
+	return false
+
+
+func _drive_to_stop(runtime: MovingSetPieceRuntime, index: int) -> bool:
+	for _step in 12:
+		runtime._physics_process(0.25)
 		if int(runtime.current_state().get("next_stop_index", 0)) > index:
 			return true
 	return false
