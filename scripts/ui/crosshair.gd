@@ -16,11 +16,32 @@ func _ready() -> void:
 	set_process(false)
 
 func show_shot_result(kind: StringName) -> void:
-	# A pellet hitting an enemy takes priority over later pellets hitting scenery.
-	if _shot_result == &"enemy" and _shot_result_time > 0.0 and kind != &"enemy":
+	_show_shot_result(kind)
+
+
+func show_shot_feedback(event: CombatFeedbackEvent) -> void:
+	var kind := event.legacy_kind()
+	if event.hit_type == CombatFeedbackEvent.HitType.ENEMY and event.killed:
+		kind = &"kill"
+	_show_shot_result(kind)
+
+
+func _show_shot_result(kind: StringName) -> void:
+	var priority_map := {
+		&"": 0,
+		&"miss": 1,
+		&"world": 2,
+		&"destructible": 3,
+		&"enemy": 4,
+		&"kill": 5,
+	}
+	if _shot_result_time > 0.0 and priority_map.get(_shot_result, 0) >= priority_map.get(kind, 0):
 		return
+	if not priority_map.has(kind):
+		return
+	# A pellet hitting an enemy takes priority over later pellets hitting scenery.
 	_shot_result = kind
-	_shot_result_time = 0.2 if kind == &"enemy" else 0.13
+	_shot_result_time = 0.2 if kind == &"kill" or kind == &"enemy" or kind == &"destructible" else 0.13
 	set_process(true)
 	queue_redraw()
 
@@ -49,6 +70,17 @@ func _draw() -> void:
 			draw_line(center + Vector2(5, -5), center + Vector2(2, -2), hit_color, 1.5)
 			draw_line(center + Vector2(-5, 5), center + Vector2(-2, 2), hit_color, 1.5)
 			draw_line(center + Vector2(5, 5), center + Vector2(2, 2), hit_color, 1.5)
+		&"destructible":
+			var hit_color := Color(1.0, 0.64, 0.14, 1.0)
+			draw_arc(center, 7.0, 0, TAU, 16, hit_color, 1.0)
+			for index in 2:
+				draw_line(center + Vector2(-4, -4 + index * 8), center + Vector2(4, 4 - index * 8), hit_color, 1.1)
+				draw_line(center + Vector2(-4, 4 - index * 8), center + Vector2(4, -4 + index * 8), hit_color, 1.1)
+		&"kill":
+			var hit_color := Color(1.0, 0.0, 0.15, 1.0)
+			draw_circle(center, 2.8, hit_color)
+			draw_line(center + Vector2(-7, -1), center + Vector2(7, 1), hit_color, 2.0)
+			draw_line(center + Vector2(-7, 1), center + Vector2(7, -1), hit_color, 2.0)
 		&"world":
 			draw_circle(center, 2.0, Color(1.0, 0.8, 0.25, 0.95))
 		&"miss":

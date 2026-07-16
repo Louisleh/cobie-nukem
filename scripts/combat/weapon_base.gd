@@ -25,18 +25,26 @@ enum LifecycleState { HOLSTERED, RAISING, READY, FIRING, RECOVERING, RELOADING, 
 var ammo := 0
 var reserve_ammo := 0
 var is_reloading := false
-var enabled := false:
+var _enabled := false
+@export var enabled := false:
+	get:
+		return _enabled
 	set(value):
-		enabled = value
-		visible = value
+		if _enabled == value:
+			return
+		_enabled = value
 		if value:
-			lifecycle_state = LifecycleState.READY
-		elif lifecycle_state != LifecycleState.HOLSTERED:
-			lifecycle_state = LifecycleState.HOLSTERED
+			if lifecycle_state == LifecycleState.HOLSTERED or lifecycle_state == LifecycleState.LOWERING:
+				_start_lifecycle(LifecycleState.RAISING)
+		elif lifecycle_state == LifecycleState.HOLSTERED:
+			visible = false
+		else:
+			_start_lifecycle(LifecycleState.LOWERING)
 var _cooldown_remaining := 0.0
 var _muzzle_flash_generation := 0
 var _reload_remaining := 0.0
 var _reload_origin := Vector3.ZERO
+var _lifecycle_remaining := 0.0
 var lifecycle_state := LifecycleState.HOLSTERED
 var _shot_sequence := 0
 var _muzzle_timer: Timer
@@ -57,12 +65,25 @@ func _ready() -> void:
 	var burst := get_node_or_null("MuzzleBurst") as GeometryInstance3D
 	if burst != null:
 		burst.visible = false
-	visible = enabled
-	lifecycle_state = LifecycleState.READY if enabled else LifecycleState.HOLSTERED
+	if enabled:
+		_start_lifecycle(LifecycleState.RAISING)
+	else:
+		lifecycle_state = LifecycleState.HOLSTERED
+		visible = false
 
 func _process(delta: float) -> void:
 	_cooldown_remaining = maxf(0.0, _cooldown_remaining - delta)
-	if lifecycle_state == LifecycleState.FIRING:
+	if lifecycle_state == LifecycleState.RAISING:
+		_lifecycle_remaining = maxf(0.0, _lifecycle_remaining - delta)
+		if _lifecycle_remaining <= 0.0:
+			lifecycle_state = LifecycleState.READY
+			visible = true
+	elif lifecycle_state == LifecycleState.LOWERING:
+		_lifecycle_remaining = maxf(0.0, _lifecycle_remaining - delta)
+		if _lifecycle_remaining <= 0.0:
+			lifecycle_state = LifecycleState.HOLSTERED
+			visible = false
+	elif lifecycle_state == LifecycleState.FIRING:
 		lifecycle_state = LifecycleState.RECOVERING
 	elif lifecycle_state == LifecycleState.RECOVERING and _cooldown_remaining <= 0.0:
 		lifecycle_state = LifecycleState.READY
@@ -80,7 +101,7 @@ func configure(aim_camera: Camera3D, aim_component: AutoAimComponent, tactile: T
 	feedback = tactile
 
 func can_fire(secondary := false) -> bool:
-	if not unlocked or not enabled or definition == null or camera == null or _cooldown_remaining > 0.0 or is_reloading:
+	if not unlocked or not enabled or definition == null or camera == null or lifecycle_state != LifecycleState.READY or is_reloading:
 		return false
 	var cost := definition.ammo_per_secondary if secondary else definition.ammo_per_primary
 	return _has_ammo(cost)
@@ -222,6 +243,50 @@ func _hitscan(damage: float, range_limit: float, spread_degrees: float, knockbac
 func _emit_feedback(event: CombatFeedbackEvent) -> void:
 	feedback_resolved.emit(event)
 	shot_resolved.emit(event.legacy_kind(), event.destination)
+
+
+func request_raise() -> void:
+	if not enabled:
+		enabled = true
+
+
+func request_lower() -> void:
+	if enabled:
+		enabled = false
+
+
+func _start_lifecycle(state: LifecycleState) -> void:
+	match state:
+		LifecycleState.RAISING:
+			_lifecycle_remaining = _feel_raise_seconds()
+			if _lifecycle_remaining <= 0.0:
+				lifecycle_state = LifecycleState.READY
+				visible = true
+			else:
+				lifecycle_state = LifecycleState.RAISING
+				visible = true
+		LifecycleState.LOWERING:
+			_lifecycle_remaining = _feel_lower_seconds()
+			if _lifecycle_remaining <= 0.0:
+				lifecycle_state = LifecycleState.HOLSTERED
+				visible = false
+			else:
+				lifecycle_state = LifecycleState.LOWERING
+				visible = true
+		_:
+			return
+
+
+func _feel_raise_seconds() -> float:
+	if definition == null or definition.feel == null:
+		return 0.0
+	return maxf(definition.feel.raise_seconds, 0.0)
+
+
+func _feel_lower_seconds() -> float:
+	if definition == null or definition.feel == null:
+		return 0.0
+	return maxf(definition.feel.lower_seconds, 0.0)
 
 
 func _surface_type(collider: Variant) -> StringName:

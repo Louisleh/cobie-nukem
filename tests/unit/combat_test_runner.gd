@@ -8,8 +8,11 @@ func _initialize() -> void:
 	_test_auto_aim_modes()
 	_test_weapon_ammo_and_cooldown()
 	_test_magazines_reserve_and_reload()
+	_test_weapon_lifecycle_transitions()
+	_test_weapon_selection_queue()
+	_test_crosshair_feedback_routing()
 	_test_footstep_conditions()
-	_test_visible_muzzle_flash()
+	await _test_visible_muzzle_flash()
 	_test_enemy_hit_pop()
 	_test_player_forwards_weapon_ammo()
 	_test_instant_weapon_selection()
@@ -112,6 +115,101 @@ func _test_magazines_reserve_and_reload() -> void:
 	_expect(weapon.cancel_reload() and weapon.ammo == 0 and weapon.reserve_ammo == 2, "reload cancellation preserves ammunition state")
 	weapon.free()
 
+
+func _test_weapon_lifecycle_transitions() -> void:
+	var feel := WeaponFeelProfile.new()
+	feel.raise_seconds = 0.12
+	feel.lower_seconds = 0.08
+	var definition := WeaponDefinition.new()
+	definition.ammo_type = "test"
+	definition.feel = feel
+	definition.magazine_size = 6
+	var weapon := WeaponBase.new()
+	weapon.definition = definition
+	weapon.ammo = 6
+	weapon.camera = Camera3D.new()
+	weapon.add_child(weapon.camera)
+	root.add_child(weapon)
+	weapon.enabled = true
+	_expect(weapon.lifecycle_state == WeaponBase.LifecycleState.RAISING, "weapon raising starts on enable")
+	weapon._process(0.06)
+	_expect(weapon.lifecycle_state == WeaponBase.LifecycleState.RAISING, "weapon remains raising until duration expires")
+	weapon._process(0.06)
+	_expect(weapon.lifecycle_state == WeaponBase.LifecycleState.READY, "weapon reaches READY after raise duration")
+	weapon.enabled = false
+	_expect(weapon.lifecycle_state == WeaponBase.LifecycleState.LOWERING, "weapon lowering starts on disable")
+	weapon._process(0.04)
+	_expect(weapon.lifecycle_state == WeaponBase.LifecycleState.LOWERING, "weapon remains lowering until duration expires")
+	weapon._process(0.06)
+	_expect(weapon.lifecycle_state == WeaponBase.LifecycleState.HOLSTERED, "weapon reaches HOLSTERED after lower duration")
+	_expect(not weapon.can_fire(false), "holstered weapon cannot fire")
+	weapon.free()
+
+
+func _test_weapon_selection_queue() -> void:
+	var player := CobiePlayer.new()
+	var feel := WeaponFeelProfile.new()
+	feel.raise_seconds = 0.05
+	feel.lower_seconds = 0.04
+	var changes := [0]
+	for name in ["Pawstol", "Barkshot", "Fetch Launcher"]:
+		var definition := WeaponDefinition.new()
+		definition.display_name = name
+		definition.magazine_size = 20
+		definition.ammo_type = "test"
+		definition.feel = feel
+		var weapon := WeaponBase.new()
+		weapon.definition = definition
+		weapon.unlocked = true
+		player.weapons.append(weapon)
+	player.weapon_changed.connect(func(_name: String, _ammo: int, _maximum: int) -> void: changes[0] += 1)
+	player.select_weapon(0)
+	_expect(changes[0] == 1, "initial weapon selection notifies HUD")
+	player.select_weapon(1)
+	player.select_weapon(1)
+	player.select_weapon(2)
+	for _tick in range(16):
+		for weapon in player.weapons:
+			weapon._process(0.02)
+		player._process_weapon_selection_queue()
+	_expect(changes[0] == 2, "queued replacement notifies HUD once")
+	_expect(player.current_weapon_index == 2, "weapon queue applies only final replacement selection")
+	for weapon in player.weapons:
+		weapon.free()
+	player.free()
+
+
+func _test_crosshair_feedback_routing() -> void:
+	var hud := preload("res://scenes/ui/hud.tscn").instantiate() as GameHUD
+	var player := CobiePlayer.new()
+	var crosshair := hud.get_node_or_null("%Crosshair")
+	if crosshair is RetroCrosshair:
+		hud.crosshair = crosshair
+	hud.bind_player(player)
+	var event := CombatFeedbackEvent.new()
+	event.hit_type = CombatFeedbackEvent.HitType.ENEMY
+	event.killed = true
+	player.combat_feedback.emit(event)
+	_expect(hud.crosshair._shot_result == &"kill", "combat feedback routes kill impact to crosshair")
+	hud.crosshair._process(0.3)
+	event.hit_type = CombatFeedbackEvent.HitType.DESTRUCTIBLE
+	event.killed = false
+	player.combat_feedback.emit(event)
+	_expect(hud.crosshair._shot_result == &"destructible", "combat feedback routes destructible impact to crosshair")
+	hud.crosshair._process(0.3)
+	event.hit_type = CombatFeedbackEvent.HitType.WORLD
+	player.combat_feedback.emit(event)
+	_expect(hud.crosshair._shot_result == &"world", "combat feedback routes world impact to crosshair")
+	hud.crosshair._process(0.3)
+	event.hit_type = CombatFeedbackEvent.HitType.MISS
+	player.combat_feedback.emit(event)
+	_expect(hud.crosshair._shot_result == &"miss", "combat feedback routes miss impact to crosshair")
+	player.shot_resolved.emit(&"enemy", Vector3.ZERO)
+	hud.crosshair._process(0.25)
+	_expect(hud.crosshair._shot_result == &"", "legacy shot-resolved path remains active")
+	hud.free()
+	player.free()
+
 func _test_footstep_conditions() -> void:
 	_expect(CobiePlayer.should_play_footsteps(true, 4.0, false, false), "grounded movement permits footsteps")
 	_expect(not CobiePlayer.should_play_footsteps(false, 4.0, false, false), "airborne movement suppresses footsteps")
@@ -173,10 +271,12 @@ func _test_weapon_balance_and_fetch_bounce() -> void:
 
 func _test_visible_muzzle_flash() -> void:
 	var weapon := preload("res://scenes/weapons/pawstol.tscn").instantiate() as WeaponBase
+	root.add_child(weapon)
 	weapon.camera = Camera3D.new()
 	weapon.add_child(weapon.camera)
-	root.add_child(weapon)
+	await create_timer(0.0).timeout
 	weapon.enabled = true
+	weapon._process(weapon.definition.feel.raise_seconds if weapon.definition.feel != null else 0.0)
 	weapon.ammo = weapon.definition.starting_ammo
 	_expect(weapon._begin_fire(false), "Pawstol begins firing")
 	var burst := weapon.get_node_or_null("MuzzleBurst") as GeometryInstance3D

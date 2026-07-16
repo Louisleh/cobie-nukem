@@ -62,6 +62,7 @@ var _step_distance := 0.0
 var _last_step_position := Vector3.ZERO
 var _coyote_remaining := 0.0
 var _touch_look_scale := 1.35
+var _queued_weapon_index := -1
 
 func _ready() -> void:
 	# Level zones key progression off this stable identity. Keeping it in code
@@ -169,6 +170,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		_try_interact()
 
 func _physics_process(delta: float) -> void:
+	_process_weapon_selection_queue()
 	if _check_out_of_bounds():
 		return
 	if is_dead:
@@ -325,20 +327,25 @@ func select_weapon(index: int) -> void:
 		if weapons[candidate].unlocked:
 			break
 		candidate = posmod(candidate + direction, weapons.size())
-	if _weapon_selection_initialized and candidate == current_weapon_index:
-		return
-	if _weapon_selection_initialized:
-		weapons[current_weapon_index].cancel_reload()
-		weapons[current_weapon_index].enabled = false
-	else:
+	if not _weapon_selection_initialized:
 		for weapon in weapons:
 			weapon.enabled = false
-	current_weapon_index = candidate
-	weapons[current_weapon_index].enabled = true
-	_weapon_selection_initialized = true
-	var current := weapons[current_weapon_index]
-	weapon_changed.emit(current.definition.display_name, current.ammo, current.definition.magazine_size)
-	weapon_ammo_state_changed.emit(current.definition.display_name, current.ammo, current.definition.magazine_size, current.reserve_ammo, current.definition.infinite_reserve)
+		_queued_weapon_index = -1
+		_activate_weapon(candidate)
+		_weapon_selection_initialized = true
+		return
+	if candidate == current_weapon_index:
+		if _queued_weapon_index == -1:
+			return
+		_queued_weapon_index = -1
+		weapons[current_weapon_index].request_raise()
+		return
+	if _queued_weapon_index == candidate:
+		return
+	if weapons[current_weapon_index].is_reloading:
+		weapons[current_weapon_index].cancel_reload()
+	_queued_weapon_index = candidate
+	weapons[current_weapon_index].request_lower()
 
 
 func select_weapon_slot(index: int) -> bool:
@@ -346,6 +353,26 @@ func select_weapon_slot(index: int) -> bool:
 		return false
 	select_weapon(index)
 	return true
+
+
+func _process_weapon_selection_queue() -> void:
+	if _queued_weapon_index < 0 or not _weapon_selection_initialized or weapons.is_empty():
+		return
+	if weapons[current_weapon_index].lifecycle_state != WeaponBase.LifecycleState.HOLSTERED:
+		return
+	_activate_weapon(_queued_weapon_index)
+	_queued_weapon_index = -1
+
+
+func _activate_weapon(index: int) -> void:
+	if index < 0 or index >= weapons.size():
+		return
+	current_weapon_index = index
+	var current := weapons[current_weapon_index]
+	current.request_raise()
+	weapon_changed.emit(current.definition.display_name, current.ammo, current.definition.magazine_size)
+	weapon_ammo_state_changed.emit(current.definition.display_name, current.ammo, current.definition.magazine_size, current.reserve_ammo, current.definition.infinite_reserve)
+
 
 func unlock_weapon(display_name: String) -> bool:
 	for index in weapons.size():
