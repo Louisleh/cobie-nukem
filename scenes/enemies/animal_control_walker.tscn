@@ -109,7 +109,7 @@ mesh = SubResource("LabelMesh")
 [node name="DetailedSprite" type="Sprite3D" parent="Visual"]
 position = Vector3(0, 2.08, 0)
 texture = ExtResource("3_sprite")
-pixel_size = 0.0044
+pixel_size = 0.0172
 billboard = 1
 texture_filter = 1
 alpha_cut = 1

@@ -140,8 +140,12 @@ func _exit_tree() -> void:
 	_pipeline_prewarmer = null
 
 
-func _unhandled_input(event: InputEvent) -> void:
-	if not event.is_pressed() or event is InputEventMouseMotion:
+# Handled in _input rather than _unhandled_input: with emulate_mouse_from_touch
+# enabled, a tap on the brand panel that holds the prompt is consumed by the GUI
+# before it can reach _unhandled_input, so "tap to continue" felt dead when the
+# player tapped the prompt itself. _input sees the event first, everywhere.
+func _input(event: InputEvent) -> void:
+	if not event.is_pressed() or event is InputEventMouseMotion or event is InputEventScreenDrag:
 		return
 	var supported := event is InputEventKey or event is InputEventMouseButton or event is InputEventJoypadButton or event is InputEventScreenTouch
 	if not supported:
@@ -152,6 +156,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		return
 	if not can_accept_input():
 		return
+	get_viewport().set_input_as_handled()
 	_accepting = true
 	readiness = Readiness.TRANSITIONING
 	if _prompt_tween != null: _prompt_tween.kill()
