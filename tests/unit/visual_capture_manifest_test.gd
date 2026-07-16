@@ -114,6 +114,7 @@ func _validate_views(manifest: Dictionary) -> void:
 	if views.size() != CANONICAL_COUNT:
 		failures.append("views must contain exactly %d canonical entries" % CANONICAL_COUNT)
 	var ids: Dictionary = {}
+	var native_route_seed := 0
 	var expected_ids := {}
 	for expected_id in CANONICAL_VIEWS:
 		expected_ids[expected_id] = true
@@ -126,6 +127,7 @@ func _validate_views(manifest: Dictionary) -> void:
 		var scene_path := String(view.get("scene_path", ""))
 		var staging_id := String(view.get("staging_id", ""))
 		var support := String(view.get("capture_support", ""))
+		var adapter := String(view.get("adapter", ""))
 		var filenames: Variant = view.get("filenames", {})
 		var capture: Variant = view.get("capture", null)
 		var frame: Variant = view.get("frame")
@@ -150,12 +152,21 @@ func _validate_views(manifest: Dictionary) -> void:
 		elif support == "supported":
 			if not (typeof(capture) == TYPE_DICTIONARY):
 				failures.append("supported view %s must include capture object" % view_id)
-			elif String(capture.get("source_file", "")).is_empty():
-				failures.append("supported view %s must include capture.source_file" % view_id)
+			elif adapter in ["native_vertical_slice_capture", "native_vertical_slice_touch_capture"] and String(capture.get("source_file", "")).is_empty():
+				failures.append("native view %s must include capture.source_file" % view_id)
+			elif adapter == "direct_scene_capture" and int(capture.get("quit_after", 0)) <= int(frame):
+				failures.append("direct view %s must quit after its selected frame" % view_id)
+			elif adapter not in ["native_vertical_slice_capture", "native_vertical_slice_touch_capture", "direct_scene_capture"]:
+				failures.append("supported view %s uses unknown adapter %s" % [view_id, adapter])
 			if typeof(frame) not in [TYPE_INT, TYPE_FLOAT] or int(frame) <= 0:
 				failures.append("supported view %s must include positive frame" % view_id)
 			if typeof(seed) not in [TYPE_INT, TYPE_FLOAT] or int(seed) <= 0:
 				failures.append("supported view %s must include positive seed" % view_id)
+			elif adapter == "native_vertical_slice_capture":
+				if native_route_seed == 0:
+					native_route_seed = int(seed)
+				elif native_route_seed != int(seed):
+					failures.append("native route views must share one deterministic seed")
 		elif support == "unsupported":
 			if capture != null:
 				failures.append("unsupported view %s must not include capture config" % view_id)

@@ -17,6 +17,9 @@ Options:
   --baseline PATH       Baseline root path (default: manifest policy default_baseline_root)
   --candidate PATH      Candidate root path (default: manifest policy default_candidate_root)
   --view VIEW_ID        Capture only a specific canonical view ID. Repeat for multiple.
+  --aspect WIDTHxHEIGHT Capture only a declared aspect. Repeat for multiple.
+  --render-fps FPS      Deterministic render FPS: 30, 60, or 120.
+  --physics-tps TPS     Physics ticks per second; use 10 for interpolation diagnostics.
   --approve             Copy captured files into baseline root (explicit overwrite allowed).
   --run-id TEXT         Custom candidate run folder name under candidate root.
   --help                Show this help and exit.
@@ -36,7 +39,7 @@ while [[ $# -gt 0 ]]; do
 			usage
 			exit 0
 			;;
-		--manifest|--baseline|--candidate|--run-id|--view|--approve)
+		--manifest|--baseline|--candidate|--run-id|--view|--aspect|--render-fps|--physics-tps|--approve)
 			args+=("$1")
 			if [[ "$1" == "--approve" ]]; then
 				shift

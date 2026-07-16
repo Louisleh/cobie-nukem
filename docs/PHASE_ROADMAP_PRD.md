@@ -4,11 +4,11 @@
 
 **Created:** 2026-07-11
 
-**Last status review:** 2026-07-14
+**Last status review:** 2026-07-16
 
 **Current public baseline:** `0.6.0-alpha.9` (`c00d54c` gameplay/runtime revision; source integration `7326ff6`; website deployment `13eba81`; PCK SHA-256 `a44af5d67ca30ccc3c69b315ae09286e5e299a0bd0a0dc3a1f31a918dea6e98c`)
 
-**Unreleased development baseline:** none; `main` and the deployed public artifact are synchronized at Alpha.9
+**Unreleased development baseline:** `main` at `961d9e8` includes the four iPad playtest fixes from PR #36 (title touch readiness, elite/boss scale, removal of confusing Salmon Creek damage slabs, and a clearer critical-health portrait). The `codex/visual-quality-foundry` candidate adds the first repeatable visual-production pilot; neither source state is deployed yet.
 
 **Last released alpha:** `0.6.0-alpha.9` (`c00d54c`) — live at <https://www.louislehmann.fyi/games/cobie-nukem/>; human full-route validation remains open
 
@@ -29,6 +29,20 @@ Alpha.9 deliberately narrows the difference between public and internal developm
 | Human validation | **OPEN** | Physical iPad Safari, Chrome/Safari full routes, Vancouver pacing/fairness/art/mix, and family comprehension remain human-only |
 
 Alpha.9 is the current public baseline. Alpha.8 remains the retained rollback release and artifact set.
+
+### Visual Quality Foundry pilot ledger
+
+The 2026-07-16 pilot converts visual iteration from one-off asset generation into a source-controlled production and evidence loop. Chrome DevTools MCP and Context7 are installed locally, privacy-hardened, and available after a fresh Codex task; Material Maker 1.7 is installed as an authoring tool. The repository owns a `cobie-visual-foundry` skill, canonical art bible, ten-view/four-aspect manifest, isolated Godot Movie Maker capture host, perceptual comparison tools, and a 30/60/120 FPS plus 10-TPS diagnostic matrix. Approved baselines remain human-owned and cannot be overwritten implicitly.
+
+| Workstream | Status | Acceptance evidence |
+| --- | --- | --- |
+| Toolchain and repository memory | **INTEGRATED ON CANDIDATE** | Godot/Blender/Material Maker verifier green; Chrome telemetry/CrUX disabled; Context7 docs-only; skill metadata/forward test green |
+| Salmon Creek opening pilot | **INTEGRATED ON CANDIDATE — HUMAN ART REVIEW OPEN** | Original deterministic Blender source and eight-surface GLB replace procedural goal/fence/lights/trees/bleachers while preserving gameplay collision/navigation; asset/import contracts green |
+| Visual and motion QA | **IMPLEMENTED — BASELINE APPROVAL OPEN** | Ten canonical adapters, real 16:9/16:10/4:3/ultrawide capture projects, wrong-dimension/blank/alpha/contrast gates, local diffs, 30/60/120 FPS and 10-TPS captures |
+| 4:3 touch presentation | **AUTOMATED CANDIDATE GREEN — DEVICE OPEN** | Genuine 1024×768 Movie Maker evidence exposed and fixed the overlong onboarding line; twin-stick layout remains unchanged; physical iPad ergonomics remain human-only |
+| Performance | **NATIVE PILOT GREEN** | Against merged `main`, opening field improves 442→426 draw calls, 567→552 nodes, and 3,169→3,135 objects; candidate p95 17.511 ms and p99 17.800 ms |
+| Hero enemy source pipeline | **DEFERRED HIGH-PRIORITY ART WORK** | Existing manifested Hound/Walker atlases and PR #36 scale contracts are retained because a rushed procedural replacement would be a regression; reproducible Blender rigs and genuinely bespoke directional motion remain open |
+| Packaged-Web trace | **TOOL READY — FRESH-TASK RUN OPEN** | Chrome DevTools MCP was installed during this task and is not callable until Codex reloads MCP inventory; no Web trace is falsely claimed |
 
 ### Alpha.8 Rain City Forge ledger
 
@@ -73,13 +87,15 @@ This section is the first place a new Codex or external-auditor run should read.
 | Phase | Status | Completed | Explicitly remaining |
 | --- | --- | --- | --- |
 | 1. Gameplay systems foundation | **VERTICAL-SLICE FOUNDATION IMPLEMENTED — IN REVIEW** | Previous foundation plus profile-driven feel/combat, encounter schema v2, shared mission host, event registries, navigation, reusable directional shields, and reusable moving set pieces | Final human feel/balance and broader mission-host adoption |
-| 2. Content-production pipeline | **PRODUCTION PIPELINE EXERCISED BY TWO MISSIONS** | Versioned manifests, validators, authoring guides, provenance gates, Salmon interaction/environment content, and a public-beta Vancouver production mission with stable authored data | Visual editor tooling, final Vancouver art/navigation bake, and human pacing review |
+| 2. Content-production pipeline | **PRODUCTION PIPELINE EXERCISED BY TWO MISSIONS** | Versioned manifests, validators, authoring guides, provenance gates, Salmon interaction/environment content, public-beta Vancouver data, and the visual-foundry art/capture loop | Encounter visual editor tooling, final Vancouver art/navigation bake, and human pacing review |
 | 3. World and episode structure | **MISSION 2 PUBLIC BETA — HUMAN REVIEW OPEN** | Vancouver has five connected authored zones, route/objectives/checkpoints/secrets, a new enemy, interactions, and a citation-convoy finale; Mount Hood, Moon, and Ventura remain illustrated briefs | Vancouver human production review and polish; later missions remain unbuilt |
 | 4. Combat and presentation expansion | **ALPHA.8 PRODUCTION TRANCHE IN VALIDATION** | Existing combat/audio plus bespoke Hound/Walker atlases, Salmon environment materials/landmarks, adaptive mission audio, ambience, event-driven Cobie barks, shield enemy, and convoy spectacle | Human art, animation, mix, boss, encounter, and effects review |
-| 5. Accessibility, persistence, observability | **SAVE V4 + TOUCH FOUNDATION IMPLEMENTED** | Save schema v4 with v3 migration, campaign progress separated from checkpoints, route snapshots, local metrics, objective/caption HUD, reduced-flash/quality profiles, and dedicated touch alternate fire | Complete settings coverage, visual regression gallery, and physical devices |
+| 5. Accessibility, persistence, observability | **SAVE V4 + TOUCH + VISUAL QA FOUNDATION IMPLEMENTED** | Save schema v4, campaign/checkpoint separation, route snapshots, local metrics, accessible HUD/touch controls, and canonical visual/motion capture tooling | Human-approved visual baselines, complete settings review, Chrome packaged-Web traces, and physical devices |
 | 6. Alpha, beta, release | **PUBLIC ALPHA PROGRAM ACTIVE** | Reproducible CI/export/package/deploy gates and public Alpha.3–Alpha.8 evidence; Alpha.9 public-beta candidate in validation | Human/device/browser matrices, content completion, signing/notarization, legal review, store readiness |
 
 ### Immediate next gate
+
+**2026-07-16 Visual Quality Foundry candidate:** merge the green, source-only pilot after independent review; then restart Codex so Chrome DevTools MCP can trace the freshly packaged Web artifact. Human review must approve the opening art direction and 4:3 touch hierarchy before any candidate capture becomes an approved baseline. Next production work is the same pipeline applied to one truly reproducible Compliance Hound rig/atlas, one Walker phase/death sequence, and the remaining Salmon Creek graybox zones—not another broad tool-installation pass.
 
 **Gate passed 2026-07-11.** Accepted critical Fable findings are addressed, the stamped build is public through the owner website, and the touch-first iPad browser path has automated and tablet-viewport regression evidence. The remaining hardware gate is a real iPad Safari feel/thermal/network pass.
 

@@ -15,6 +15,8 @@ Options:
   --baseline PATH    Baseline capture directory (default: capture_policy.default_baseline_root from manifest)
   --candidate PATH   Candidate capture directory (default: capture_policy.default_candidate_root from manifest)
   --out PATH         Output directory for comparison JSON + Markdown (default: builds/visual-quality/compare/<timestamp>)
+  --view VIEW_ID     Compare only a named canonical view. Repeat for multiple.
+  --aspect WxH       Compare only a declared aspect. Repeat for multiple.
   --help             Show this help and exit.
 USAGE
 }
@@ -28,6 +30,7 @@ MANIFEST_PATH="$DEFAULT_MANIFEST_PATH"
 BASELINE_OVERRIDE=""
 CANDIDATE_OVERRIDE=""
 OUTPUT_OVERRIDE=""
+FILTER_ARGS=()
 
 while [[ $# -gt 0 ]]; do
 	case "$1" in
@@ -65,6 +68,14 @@ while [[ $# -gt 0 ]]; do
 				exit 1
 			fi
 			OUTPUT_OVERRIDE="$2"
+			shift 2
+			;;
+		--view|--aspect)
+			if [[ $# -lt 2 ]]; then
+				echo "ERROR: missing value for $1" >&2
+				exit 1
+			fi
+			FILTER_ARGS+=("$1" "$2")
 			shift 2
 			;;
 		*)
@@ -111,5 +122,6 @@ OUTPUT_PATH="${OUTPUT_OVERRIDE:-builds/visual-quality/comparisons/$(date -u +%Y%
 	--manifest "$MANIFEST_PATH" \
 	--baseline "$BASELINE_PATH" \
 	--candidate "$CANDIDATE_PATH" \
-	--out "$OUTPUT_PATH"
+	--out "$OUTPUT_PATH" \
+	"${FILTER_ARGS[@]}"
 exit $?

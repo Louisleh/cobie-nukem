@@ -5,6 +5,8 @@ builds/*
 !builds/.gdignore
 *.tmp
 *.log
+__pycache__/
+*.blend1
 tmp/
 export_credentials.cfg
 handoffs/fable_phase12_audit/outputs/**

@@ -7,6 +7,7 @@ import json
 import os
 import shutil
 import subprocess
+import sys
 import tempfile
 from pathlib import Path
 from typing import Any, Dict, List, Optional
@@ -35,6 +36,9 @@ def parse_args() -> argparse.Namespace:
         default=[],
         help="Capture only the named view(s). Repeat to capture multiple.",
     )
+    parser.add_argument("--aspect", action="append", default=[], help="Capture only the named aspect ID(s).")
+    parser.add_argument("--render-fps", type=int, default=None, help="Deterministic MovieWriter render FPS.")
+    parser.add_argument("--physics-tps", type=int, default=None, help="Physics tick rate for interpolation diagnostics.")
     parser.add_argument(
         "--approve",
         action="store_true",
@@ -60,7 +64,7 @@ def _load_json(path: Path) -> Dict[str, Any]:
     return data
 
 
-def _aspect_map(manifest: Dict[str, Any]) -> List[Dict[str, int]]:
+def _aspect_map(manifest: Dict[str, Any], requested: List[str]) -> List[Dict[str, int]]:
     aspects = manifest.get("aspects")
     if not isinstance(aspects, list):
         raise ValueError("manifest missing aspects")
@@ -69,7 +73,7 @@ def _aspect_map(manifest: Dict[str, Any]) -> List[Dict[str, int]]:
             raise ValueError(f"invalid aspect entry: {aspect}")
         if not aspect.get("id") or int(aspect.get("width", 0)) <= 0 or int(aspect.get("height", 0)) <= 0:
             raise ValueError(f"invalid aspect entry: {aspect}")
-    return [
+    result = [
         {
             "id": str(aspect["id"]),
             "width": int(aspect["width"]),
@@ -77,6 +81,13 @@ def _aspect_map(manifest: Dict[str, Any]) -> List[Dict[str, int]]:
         }
         for aspect in aspects
     ]
+    if requested:
+        available = {aspect["id"] for aspect in result}
+        missing = sorted(set(requested) - available)
+        if missing:
+            raise ValueError(f"requested aspect not found in manifest: {', '.join(missing)}")
+        result = [aspect for aspect in result if aspect["id"] in requested]
+    return result
 
 
 def _select_views(manifest: Dict[str, Any], requested: List[str]) -> List[Dict[str, Any]]:
@@ -100,6 +111,10 @@ def _native_capture_output(
     run_id: str,
     width: int,
     height: int,
+    render_fps: int,
+    physics_tps: int,
+    force_touch: bool = False,
+    capture_seed: int = 2026071601,
 ) -> Path:
     capture_script = _repo_root() / "tools" / "capture_native_evidence.sh"
     temp_output = output_root / run_id
@@ -111,9 +126,62 @@ def _native_capture_output(
             "GODOT_BIN": os.environ.get("GODOT_BIN", "/opt/homebrew/bin/godot"),
             "CAPTURE_WIDTH": str(width),
             "CAPTURE_HEIGHT": str(height),
+            "CAPTURE_FPS": str(render_fps),
+            "CAPTURE_PHYSICS_TPS": str(physics_tps),
+            "CAPTURE_FORCE_TOUCH": "1" if force_touch else "0",
+            "CAPTURE_SEED": str(capture_seed),
         },
     )
     return temp_output
+
+
+def _direct_scene_capture(
+    output_root: Path,
+    view: Dict[str, Any],
+    aspect: Dict[str, int],
+    render_fps: int,
+    physics_tps: int,
+) -> Path:
+    frame = int(view.get("frame", 0))
+    capture = view.get("capture", {})
+    quit_after = int(capture.get("quit_after", frame + 10)) if isinstance(capture, dict) else frame + 10
+    scene_path = str(view.get("scene_path", ""))
+    if not scene_path.startswith("res://") or frame <= 0 or quit_after <= frame:
+        raise ValueError(f"invalid direct scene capture contract: {view.get('id', '')}")
+    prefix = output_root / f"{view.get('id', 'view')}-{aspect['id']}" / "capture.png"
+    prefix.parent.mkdir(parents=True, exist_ok=True)
+    capture_project = output_root / f"project-{aspect['id']}"
+    if not (capture_project / "project.godot").is_file():
+        subprocess.check_call(
+            [
+                sys.executable,
+                str(_repo_root() / "tools" / "visual_quality" / "prepare_capture_project.py"),
+                str(_repo_root()),
+                str(capture_project),
+                str(aspect["width"]),
+                str(aspect["height"]),
+            ]
+        )
+    command = [
+        os.environ.get("GODOT_BIN", "/opt/homebrew/bin/godot"),
+        "--path", str(capture_project),
+        "--resolution", f"{aspect['width']}x{aspect['height']}",
+        "--write-movie", str(prefix),
+        "--fixed-fps", str(render_fps),
+        "res://scenes/debug/visual_direct_capture.tscn",
+        "--",
+        f"--target-scene={scene_path}",
+        f"--cleanup-frame={quit_after}",
+        f"--staging-id={view.get('staging_id', '')}",
+        f"--capture-size={aspect['width']}x{aspect['height']}",
+        f"--capture-seed={int(view.get('seed', 1))}",
+        f"--physics-tps={physics_tps}",
+    ]
+    subprocess.check_call(command)
+    frame_path = prefix.parent / f"capture{frame:08d}.png"
+    if not frame_path.is_file():
+        raise FileNotFoundError(f"direct scene frame missing: {frame_path}")
+    return frame_path
 
 
 def _copy_capture(
@@ -137,8 +205,11 @@ def run_capture(
     baseline_root: Optional[Path],
     candidate_root: Optional[Path],
     selected_views: List[str],
+    selected_aspects: List[str],
     approve: bool,
     run_id: Optional[str],
+    render_fps: Optional[int],
+    physics_tps: Optional[int],
 ) -> int:
     manifest = _load_json(manifest_path)
     policy = manifest.get("capture_policy", {})
@@ -166,7 +237,11 @@ def run_capture(
     candidate_run.mkdir(parents=True, exist_ok=True)
     baseline_root.mkdir(parents=True, exist_ok=True)
 
-    aspects = _aspect_map(manifest)
+    aspects = _aspect_map(manifest, selected_aspects)
+    render_fps = int(render_fps or policy.get("default_render_fps", 30))
+    physics_tps = int(physics_tps or policy.get("default_physics_tps", 60))
+    if render_fps not in [30, 60, 120] or not 10 <= physics_tps <= 240:
+        raise ValueError("render FPS must be 30/60/120 and physics TPS must be 10..240")
     captured: Dict[str, List[str]] = {}
     unsupported_requested: List[str] = []
     capture_failures: List[str] = []
@@ -176,29 +251,33 @@ def run_capture(
         with tempfile.TemporaryDirectory(prefix="visual_quality_native_") as temp_root:
             for aspect in aspects:
                 aspect_id = str(aspect["id"])
-                native_output = _native_capture_output(
-                    Path(temp_root),
-                    f"{run_id}-{aspect_id}",
-                    int(aspect["width"]),
-                    int(aspect["height"]),
-                )
+                native_output: Optional[Path] = None
+                touch_output: Optional[Path] = None
                 for view in supported_views:
                     view_id = str(view.get("id"))
                     adapter = str(view.get("adapter", ""))
                     capture = view.get("capture")
-                    if adapter != "native_vertical_slice_capture":
+                    if adapter == "native_vertical_slice_capture" and native_output is None:
+                        native_output = _native_capture_output(Path(temp_root), f"{run_id}-{aspect_id}", int(aspect["width"]), int(aspect["height"]), render_fps, physics_tps, False, int(view.get("seed", 1)))
+                    elif adapter == "native_vertical_slice_touch_capture" and touch_output is None:
+                        touch_output = _native_capture_output(Path(temp_root), f"{run_id}-{aspect_id}-touch", int(aspect["width"]), int(aspect["height"]), render_fps, physics_tps, True, int(view.get("seed", 1)))
+                    if adapter == "direct_scene_capture":
+                        source_path = _direct_scene_capture(Path(temp_root), view, aspect, render_fps, physics_tps)
+                    elif adapter == "native_vertical_slice_capture":
+                        source_path = native_output / str(capture.get("source_file", "")) if native_output is not None and isinstance(capture, dict) else Path()
+                    elif adapter == "native_vertical_slice_touch_capture":
+                        source_path = touch_output / str(capture.get("source_file", "")) if touch_output is not None and isinstance(capture, dict) else Path()
+                    else:
                         capture_failures.append(f"{view_id}: unsupported adapter for capture tool: {adapter}")
                         continue
                     if not isinstance(capture, dict):
                         capture_failures.append(f"{view_id}: missing capture config")
                         continue
-                    source_file_name = capture.get("source_file")
                     filenames = view.get("filenames", {})
-                    if not source_file_name or not isinstance(filenames, dict):
-                        capture_failures.append(f"{view_id}: incomplete capture or filename config")
+                    if not isinstance(filenames, dict):
+                        capture_failures.append(f"{view_id}: incomplete filename config")
                         continue
                     filename = filenames.get(aspect_id)
-                    source_path = native_output / str(source_file_name)
                     if not filename or not source_path.is_file():
                         capture_failures.append(f"{view_id}:{aspect_id}: missing declared source or target")
                         continue
@@ -238,6 +317,8 @@ def run_capture(
                 "unsupported_requested": unsupported_requested,
                 "failures": capture_failures,
                 "approved": approve,
+                "render_fps": render_fps,
+                "physics_tps": physics_tps,
                 "policy_requires_approve": not bool(policy.get("overwrite_baseline_without_approve", True)),
             },
             indent=2,
@@ -270,8 +351,11 @@ def main() -> int:
         baseline_root=Path(args.baseline) if args.baseline else None,
         candidate_root=Path(args.candidate) if args.candidate else None,
         selected_views=args.view,
+        selected_aspects=args.aspect,
         approve=args.approve,
         run_id=args.run_id,
+        render_fps=args.render_fps,
+        physics_tps=args.physics_tps,
     )
 
 

@@ -69,6 +69,8 @@ def parse_args() -> argparse.Namespace:
         default="builds/visual-quality/compare",
         help="Directory to write comparison artifacts.",
     )
+    parser.add_argument("--view", action="append", default=[], help="Compare only named canonical view IDs.")
+    parser.add_argument("--aspect", action="append", default=[], help="Compare only named aspect IDs.")
     return parser.parse_args()
 
 
@@ -263,8 +265,15 @@ def compare_views(
     baseline_dir: Path,
     candidate_dir: Path,
     output_root: Path,
+    selected_views: Optional[List[str]] = None,
+    selected_aspects: Optional[List[str]] = None,
 ) -> Dict[str, Any]:
     aspects = _aspect_map(manifest)
+    if selected_aspects:
+        missing_aspects = sorted(set(selected_aspects) - set(aspects))
+        if missing_aspects:
+            raise ValueError(f"unknown aspect(s): {', '.join(missing_aspects)}")
+        aspects = {key: value for key, value in aspects.items() if key in selected_aspects}
     views = manifest.get("views", [])
     supported = set(_supported_states(manifest))
     results = {
@@ -280,6 +289,8 @@ def compare_views(
         if not isinstance(view, dict):
             continue
         view_id = str(view.get("id", ""))
+        if selected_views and view_id not in selected_views:
+            continue
         support = str(view.get("capture_support", ""))
         filenames = view.get("filenames", {})
 
@@ -420,6 +431,8 @@ def compare_captures(
     baseline_dir: Path,
     candidate_dir: Path,
     output_dir: Path,
+    selected_views: Optional[List[str]] = None,
+    selected_aspects: Optional[List[str]] = None,
 ) -> Dict[str, Any]:
     manifest = load_manifest(manifest_path)
     baseline_root = Path(baseline_dir)
@@ -427,7 +440,7 @@ def compare_captures(
     output_root = Path(output_dir)
     output_root.mkdir(parents=True, exist_ok=True)
 
-    comparison = compare_views(manifest, baseline_root, candidate_root, output_root)
+    comparison = compare_views(manifest, baseline_root, candidate_root, output_root, selected_views, selected_aspects)
     comparison["manifest"] = str(manifest_path)
     comparison["baseline_dir"] = str(baseline_root)
     comparison["candidate_dir"] = str(candidate_root)
@@ -521,6 +534,8 @@ def main() -> int:
         baseline_dir=Path(args.baseline),
         candidate_dir=Path(args.candidate),
         output_dir=Path(args.out),
+        selected_views=args.view,
+        selected_aspects=args.aspect,
     )
     if result.get("exit_code", 1) != 0:
         return 1
