@@ -1,4 +1,4 @@
-[gd_resource type="Resource" load_steps=25 format=3]
+[gd_resource type="Resource" load_steps=24 format=3]
 
 [ext_resource type="Script" path="res://scripts/gameplay/interaction_catalog.gd" id="1"]
 [ext_resource type="Script" path="res://scripts/gameplay/interaction_placement.gd" id="2"]
@@ -37,20 +37,6 @@ detonation_delay = 0.02
 chain_reaction_radius = 3.2
 chain_reaction_limit = 1
 explosive_blast_radius = 2.4
-
-[sub_resource type="Resource" id="HazardDefinition"]
-script = ExtResource("3")
-schema_version = 1
-id = &"salmon_hazard_steam"
-prompt = "VENTING ARC"
-enabled = true
-kind = 2
-visual_size = Vector3(3.5, 0.2, 2.2)
-visual_color = Color(0.9020, 0.7216, 0.5608, 1.0)
-surface_type = &"concrete"
-hazard_tick_seconds = 0.7
-hazard_damage = 6.0
-hazard_radius = 2.2
 
 [sub_resource type="Resource" id="LootDefinition"]
 script = ExtResource("3")
@@ -99,10 +85,10 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.2, 0.5, -9.8)
 [sub_resource type="Resource" id="PlacementForbiddenHazardA"]
 script = ExtResource("2")
 schema_version = 1
-id = &"forbidden_field_hazard_steam_1"
+id = &"forbidden_field_breakable_console_2"
 zone_id = &"forbidden_field"
-definition = SubResource("HazardDefinition")
-transform = Transform3D(0.9, 0, 0, 0, 0.9, 0, 0, 0, 1, 2.7, 0.45, -16.1)
+definition = SubResource("BreakableDefinition")
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.7, 0.375, -16.1)
 
 [sub_resource type="Resource" id="PlacementForbiddenLootA"]
 script = ExtResource("2")
@@ -155,10 +141,10 @@ transform = Transform3D(0.98, 0, 0, 0, 1, 0, 0, 0, 1, -2.4, 0.5, -63.1)
 [sub_resource type="Resource" id="PlacementTunnelsHazardA"]
 script = ExtResource("2")
 schema_version = 1
-id = &"maintenance_tunnels_hazard_steam_1"
+id = &"maintenance_tunnels_breakable_console_2"
 zone_id = &"maintenance_tunnels"
-definition = SubResource("HazardDefinition")
-transform = Transform3D(0.9, 0, 0, 0, 0.9, 0, 0, 0, 1, -7.8, 0.5, -59.2)
+definition = SubResource("BreakableDefinition")
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.8, 0.375, -59.2)
 
 [sub_resource type="Resource" id="PlacementLabBreakableA"]
 script = ExtResource("2")
@@ -187,10 +173,10 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.1, 0.5, -111.9)
 [sub_resource type="Resource" id="PlacementArenaHazardA"]
 script = ExtResource("2")
 schema_version = 1
-id = &"walker_arena_hazard_steam_1"
+id = &"walker_arena_breakable_console_1"
 zone_id = &"walker_arena"
-definition = SubResource("HazardDefinition")
-transform = Transform3D(0.95, 0, 0, 0, 0.95, 0, 0, 0, 1, 8.2, 0.65, -134.4)
+definition = SubResource("BreakableDefinition")
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.2, 0.375, -134.4)
 
 [sub_resource type="Resource" id="PlacementArenaExplosiveA"]
 script = ExtResource("2")
