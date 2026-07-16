@@ -44,6 +44,7 @@ var _cooldown_remaining := 0.0
 var _muzzle_flash_generation := 0
 var _reload_remaining := 0.0
 var _reload_origin := Vector3.ZERO
+var _lifecycle_origin := Vector3.ZERO
 var _lifecycle_remaining := 0.0
 var lifecycle_state := LifecycleState.HOLSTERED
 var _shot_sequence := 0
@@ -60,6 +61,7 @@ func _ready() -> void:
 		ammo = definition.starting_ammo
 		reserve_ammo = definition.starting_reserve
 	_reload_origin = position
+	_lifecycle_origin = position
 	if muzzle_flash != null:
 		muzzle_flash.visible = false
 	var burst := get_node_or_null("MuzzleBurst") as GeometryInstance3D
@@ -75,17 +77,21 @@ func _process(delta: float) -> void:
 	_cooldown_remaining = maxf(0.0, _cooldown_remaining - delta)
 	if lifecycle_state == LifecycleState.RAISING:
 		_lifecycle_remaining = maxf(0.0, _lifecycle_remaining - delta)
+		_apply_lifecycle_motion(true)
 		if _lifecycle_remaining <= 0.0:
 			lifecycle_state = LifecycleState.READY
+			position = _lifecycle_origin
 			visible = true
 	elif lifecycle_state == LifecycleState.LOWERING:
 		_lifecycle_remaining = maxf(0.0, _lifecycle_remaining - delta)
+		_apply_lifecycle_motion(false)
 		if _lifecycle_remaining <= 0.0:
 			lifecycle_state = LifecycleState.HOLSTERED
+			position = _lifecycle_origin
 			visible = false
 	elif lifecycle_state == LifecycleState.FIRING:
 		lifecycle_state = LifecycleState.RECOVERING
-	elif lifecycle_state == LifecycleState.RECOVERING and _cooldown_remaining <= 0.0:
+	if lifecycle_state == LifecycleState.RECOVERING and _cooldown_remaining <= 0.0:
 		lifecycle_state = LifecycleState.READY
 	if is_reloading:
 		_reload_remaining -= delta
@@ -259,22 +265,38 @@ func _start_lifecycle(state: LifecycleState) -> void:
 	match state:
 		LifecycleState.RAISING:
 			_lifecycle_remaining = _feel_raise_seconds()
+			_lifecycle_origin = _reload_origin
 			if _lifecycle_remaining <= 0.0:
 				lifecycle_state = LifecycleState.READY
+				position = _lifecycle_origin
 				visible = true
 			else:
 				lifecycle_state = LifecycleState.RAISING
 				visible = true
+				_apply_lifecycle_motion(true)
 		LifecycleState.LOWERING:
 			_lifecycle_remaining = _feel_lower_seconds()
+			_lifecycle_origin = _reload_origin
 			if _lifecycle_remaining <= 0.0:
 				lifecycle_state = LifecycleState.HOLSTERED
+				position = _lifecycle_origin
 				visible = false
 			else:
 				lifecycle_state = LifecycleState.LOWERING
 				visible = true
 		_:
 			return
+
+
+func _apply_lifecycle_motion(raising: bool) -> void:
+	if _reduced_motion():
+		position = _lifecycle_origin
+		return
+	var duration := _feel_raise_seconds() if raising else _feel_lower_seconds()
+	var progress := 1.0 if duration <= 0.0 else clampf(1.0 - _lifecycle_remaining / duration, 0.0, 1.0)
+	var eased := smoothstep(0.0, 1.0, progress)
+	var drop := (1.0 - eased) if raising else eased
+	position = _lifecycle_origin + Vector3(0.0, -0.34 * drop, 0.08 * drop)
 
 
 func _feel_raise_seconds() -> float:
@@ -431,6 +453,12 @@ func _reduced_flashes() -> bool:
 	if not is_inside_tree(): return false
 	var settings := get_node_or_null("/root/SettingsManager")
 	return settings != null and bool(settings.get_value(&"video", &"reduced_flashes", false))
+
+
+func _reduced_motion() -> bool:
+	if not is_inside_tree(): return false
+	var settings := get_node_or_null("/root/SettingsManager")
+	return settings != null and bool(settings.get_value(&"accessibility", &"reduced_motion", false))
 
 
 func _impact_pop_material(color: Color, energy: float) -> StandardMaterial3D:

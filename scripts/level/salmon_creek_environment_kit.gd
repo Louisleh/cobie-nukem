@@ -38,6 +38,10 @@ func _build_shed_landmarks() -> void:
 	_box("Generator", Vector3(-4.7, 0.8, -36.5), Vector3(2.6, 1.6, 1.8), &"hazard", Color("d2912b"))
 	for index in 3:
 		_cylinder("VentStack", Vector3(-5.4 + index * 1.0, 2.0, -36.5), 0.12, 2.4, &"metal", Color("839095"))
+	_box("ShedSafetyStripe", Vector3(0, 0.035, -39.6), Vector3(12.0, 0.04, 0.16), &"hazard", Color("e0a632"))
+	_label("EQUIPMENT SHED\nAUTHORIZED GOOD DOGS ONLY", Vector3(0, 3.15, -42.35), Vector3.ZERO, 42, Color("f4dda0"))
+	_omni_light("ShedWorkLight", Vector3(0, 3.35, -34.0), Color("ffd18a"), 2.1, 10.0)
+	_omni_light("GeneratorStatusLight", Vector3(-4.7, 1.8, -36.5), Color("ff8a38"), 1.3, 5.0)
 
 
 func _build_tunnel_landmarks() -> void:
@@ -48,6 +52,10 @@ func _build_tunnel_landmarks() -> void:
 		_box("TunnelLight", Vector3(0, 3.62, z + 0.5), Vector3(2.2, 0.08, 0.28), &"lamp", Color("b7e1d3"))
 	for z in [-76.0, -61.0, -50.0]:
 		_cylinder("UtilityPipe", Vector3(3.9, 2.6, z), 0.18, 8.0, &"hazard", Color("d08d28"), Vector3(90, 0, 0))
+	for z in [-75.0, -63.0, -51.0]:
+		_omni_light("TunnelWorkLight", Vector3(0, 3.35, z), Color("a8e3d4"), 1.45, 7.5)
+	_box("TunnelGuideStripe", Vector3(-4.42, 1.25, -64.0), Vector3(0.08, 0.18, 34.0), &"hazard", Color("d8982d"))
+	_label("MAINTENANCE TUNNEL\nJOY DETECTORS ACTIVE", Vector3(0, 2.7, -79.15), Vector3.ZERO, 40, Color("f4dda0"))
 
 
 func _build_lab_landmarks() -> void:
@@ -60,6 +68,11 @@ func _build_lab_landmarks() -> void:
 	_box("ComplianceScanner", Vector3(0, 2.2, -110.0), Vector3(5.2, 4.4, 0.55), &"hazard", Color("bf7c25"))
 	_sphere("ScannerLens", Vector3(0, 2.35, -109.65), 0.75, &"display", Color("ff5c38"))
 	_label("CANINE COMPLIANCE\nLAB 01", Vector3(0, 3.85, -109.62), Vector3.ZERO, 46, Color("f4dda0"))
+	for z in [-112.0, -100.0, -89.0]:
+		_omni_light("LabCeilingLight", Vector3(0, 4.25, z), Color("b8fff0"), 1.7, 9.0)
+	for x in [-10.8, 10.8]:
+		_box("LabHazardBand", Vector3(x, 1.2, -103.0), Vector3(0.08, 0.22, 34.0), &"hazard", Color("d4982b"))
+	_box("LabCenterGuide", Vector3(0, 0.035, -101.0), Vector3(0.14, 0.04, 25.0), &"display", Color("58c9ba"))
 
 
 func _build_arena_landmarks() -> void:
@@ -72,6 +85,11 @@ func _build_arena_landmarks() -> void:
 		for x in [-16.5, 16.5]:
 			_box("ArenaBarrier", Vector3(x, 0.65, z), Vector3(1.4, 1.3, 5.0), &"hazard", Color("c18127"))
 	_label("ANIMAL CONTROL\nFINAL REVIEW", Vector3(0, 6.85, -147.55), Vector3.ZERO, 54, Color("ffd05a"))
+	for x in [-11.0, 11.0]:
+		_omni_light("ArenaKeyLight", Vector3(x, 5.6, -148.0), Color("ffc05c"), 2.15, 14.0)
+	_omni_light("ArenaWeakPointFill", Vector3(0, 3.2, -157.0), Color("54dce2"), 1.35, 10.0)
+	for z in [-136.0, -148.0, -160.0]:
+		_box("ArenaLaneStripe", Vector3(0, 0.04, z), Vector3(22.0, 0.045, 0.16), &"hazard", Color("d99a2e"))
 
 
 func _box(node_name: String, position_value: Vector3, size: Vector3, surface: StringName, color: Color) -> void:
@@ -93,6 +111,20 @@ func _label(text: String, position_value: Vector3, rotation_value: Vector3, font
 	var label := Label3D.new(); label.text = text; label.position = position_value; label.rotation_degrees = rotation_value; label.font_size = font_size; label.pixel_size = 0.0028; label.modulate = color; label.outline_size = 6; add_child(label)
 
 
+func _omni_light(node_name: String, position_value: Vector3, color: Color, energy: float, range_value: float) -> void:
+	var light := OmniLight3D.new()
+	light.name = node_name
+	light.position = position_value
+	light.light_color = color
+	light.light_energy = energy
+	light.omni_range = range_value
+	light.shadow_enabled = false
+	light.distance_fade_enabled = true
+	light.distance_fade_begin = range_value * 1.25
+	light.distance_fade_length = range_value * 0.75
+	add_child(light)
+
+
 func _material(surface: StringName, color: Color) -> StandardMaterial3D:
 	var key := "%s:%s" % [surface, color.to_html()]
 	if _materials.has(key):
@@ -103,6 +135,10 @@ func _material(surface: StringName, color: Color) -> StandardMaterial3D:
 	if surface in [&"metal", &"painted_metal", &"hazard"]:
 		material.metallic = 0.58
 		material.roughness = 0.38
+		if surface == &"hazard":
+			material.emission_enabled = true
+			material.emission = color * 0.18
+			material.emission_energy_multiplier = 0.45
 	if surface in [&"display", &"lamp", &"warning"]:
 		material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
 		material.emission_enabled = true

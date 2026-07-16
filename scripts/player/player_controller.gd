@@ -210,8 +210,6 @@ func _physics_process(delta: float) -> void:
 	_update_footsteps(running)
 	_update_head_bob(delta, input.length())
 	_update_interaction_prompt()
-
-
 func _check_out_of_bounds() -> bool:
 	if is_dead or global_position.y >= out_of_bounds_y:
 		return false
@@ -227,17 +225,14 @@ func apply_damage(amount: float, source: Node = null, _hit_position := Vector3.Z
 	return health_armor.apply_damage(amount, source)
 func set_touch_move(value: Vector2) -> void:
 	_touch_move = value.limit_length(1.0)
-
 func set_touch_look(value: Vector2) -> void:
 	_touch_look = value.limit_length(1.0)
 	if _touch_look == Vector2.ZERO:
 		_touch_aim.reset()
-
 func clear_touch_input() -> void:
 	_touch_move = Vector2.ZERO
 	_touch_look = Vector2.ZERO
 	_touch_aim.reset()
-
 func _apply_touch_stick_look(delta: float) -> void:
 	if is_dead or touch_aim_profile == null: return
 	var friction := auto_aim.touch_friction_scale(camera, _touch_aim_friction) if auto_aim != null else 1.0
@@ -245,7 +240,6 @@ func _apply_touch_stick_look(delta: float) -> void:
 	rotate_y(-response.x * deg_to_rad(touch_aim_profile.yaw_degrees_per_second) * _touch_horizontal_sensitivity * delta)
 	var pitch_direction := -1.0 if not _touch_invert_y else 1.0
 	head.rotation.x = clampf(head.rotation.x + response.y * deg_to_rad(touch_aim_profile.pitch_degrees_per_second) * _touch_vertical_sensitivity * pitch_direction * delta, deg_to_rad(-max_look_degrees), deg_to_rad(max_look_degrees))
-
 func _on_setting_changed(section: StringName, key: StringName, value: Variant) -> void:
 	if section != &"gameplay": return
 	match key:
@@ -263,16 +257,12 @@ func apply_touch_look(relative: Vector2) -> void:
 	if is_dead: return
 	rotate_y(-relative.x * mouse_sensitivity * _touch_look_scale)
 	head.rotation.x = clampf(head.rotation.x - relative.y * mouse_sensitivity * _touch_look_scale, deg_to_rad(-max_look_degrees), deg_to_rad(max_look_degrees))
-
 func heal(amount: float) -> float:
 	return health_armor.heal(amount)
-
 func add_armor(amount: float) -> float:
 	return health_armor.add_armor(amount)
-
 func restore_full() -> void:
 	health_armor.restore_full()
-
 func respawn(at_position: Vector3, protection_seconds := 1.5) -> void:
 	global_position = at_position
 	reset_physics_interpolation()
@@ -288,14 +278,12 @@ func respawn(at_position: Vector3, protection_seconds := 1.5) -> void:
 		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 	else:
 		$PointerCapture.request_capture()
-
 func add_ammo(ammo_type: String, amount: int) -> int:
 	var added := 0
 	for weapon in weapons:
 		if weapon.definition != null and weapon.definition.ammo_type == ammo_type:
 			added += weapon.add_ammo(amount)
 	return added
-
 func receive_pickup_effect(kind: PickupDefinition.Kind, amount: float) -> bool:
 	match kind:
 		PickupDefinition.Kind.ZOOMIES:
@@ -317,7 +305,6 @@ func receive_pickup_effect(kind: PickupDefinition.Kind, amount: float) -> bool:
 			pickup_message.emit("ACCESS COLLAR ACQUIRED.")
 			return true
 	return false
-
 func select_weapon(index: int) -> void:
 	if weapons.is_empty():
 		return
@@ -346,15 +333,11 @@ func select_weapon(index: int) -> void:
 		weapons[current_weapon_index].cancel_reload()
 	_queued_weapon_index = candidate
 	weapons[current_weapon_index].request_lower()
-
-
 func select_weapon_slot(index: int) -> bool:
 	if index < 0 or index >= weapons.size() or not weapons[index].unlocked:
 		return false
 	select_weapon(index)
 	return true
-
-
 func _process_weapon_selection_queue() -> void:
 	if _queued_weapon_index < 0 or not _weapon_selection_initialized or weapons.is_empty():
 		return
@@ -362,8 +345,6 @@ func _process_weapon_selection_queue() -> void:
 		return
 	_activate_weapon(_queued_weapon_index)
 	_queued_weapon_index = -1
-
-
 func _activate_weapon(index: int) -> void:
 	if index < 0 or index >= weapons.size():
 		return
@@ -372,8 +353,6 @@ func _activate_weapon(index: int) -> void:
 	current.request_raise()
 	weapon_changed.emit(current.definition.display_name, current.ammo, current.definition.magazine_size)
 	weapon_ammo_state_changed.emit(current.definition.display_name, current.ammo, current.definition.magazine_size, current.reserve_ammo, current.definition.infinite_reserve)
-
-
 func unlock_weapon(display_name: String) -> bool:
 	for index in weapons.size():
 		if weapons[index].definition != null and weapons[index].definition.display_name == display_name:
@@ -381,7 +360,6 @@ func unlock_weapon(display_name: String) -> bool:
 			select_weapon(index)
 			return true
 	return false
-
 func _current_weapon_fire(secondary: bool) -> void:
 	if weapons.is_empty():
 		return
@@ -390,12 +368,10 @@ func _current_weapon_fire(secondary: bool) -> void:
 		weapon.fire_secondary()
 	else:
 		weapon.fire_primary()
-
 func request_reload() -> bool:
 	if weapons.is_empty() or is_dead:
 		return false
 	return weapons[current_weapon_index].request_reload()
-
 func _update_footsteps(running: bool) -> void:
 	var horizontal_delta := Vector2(global_position.x - _last_step_position.x, global_position.z - _last_step_position.z).length()
 	_last_step_position = global_position

@@ -1,0 +1,16 @@
+work_id: alpha10-audit-combat-heroes
+role: spark-code-reviewer
+goal: Audit weapon switching/firing/reload feedback, hit/world/miss results, Hound shield presentation, Walker phases/summons/death, animation mapping, and audio/VFX ownership for high-value feel and spectacle improvements.
+baseline_revision: 6e1669bf04333f25b2a14ae76a2091ad1b2857fc
+dependencies: []
+owned_paths: []
+read_only_context: [scripts/combat, scripts/player, scripts/ai, scripts/level/salmon_creek_boss_runtime.gd, resources, scenes/enemies, scenes/weapons]
+forbidden_paths: [all filesystem writes]
+behavioral_contract: Independent read-only review; do not rely on previous completion claims.
+acceptance_criteria: [Find correctness defects before tuning, rank presentation gaps without architecture rewrites, verify bounded particles/decals/audio/projectiles/summons/timers, cite focused tests]
+focused_tests: Static inspection only.
+evidence_required: Severity, evidence, impact, recommendation, focused verification.
+out_of_scope: Editing, balance decisions, art creation, deployment.
+time_limit_minutes: 25
+
+Return the repository Spark result packet. Do not modify the repository.

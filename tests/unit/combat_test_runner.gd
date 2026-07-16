@@ -132,10 +132,15 @@ func _test_weapon_lifecycle_transitions() -> void:
 	root.add_child(weapon)
 	weapon.enabled = true
 	_expect(weapon.lifecycle_state == WeaponBase.LifecycleState.RAISING, "weapon raising starts on enable")
+	_expect(weapon.position.y < 0.0, "weapon starts its raise from a readable lowered pose")
 	weapon._process(0.06)
 	_expect(weapon.lifecycle_state == WeaponBase.LifecycleState.RAISING, "weapon remains raising until duration expires")
 	weapon._process(0.06)
 	_expect(weapon.lifecycle_state == WeaponBase.LifecycleState.READY, "weapon reaches READY after raise duration")
+	weapon.lifecycle_state = WeaponBase.LifecycleState.FIRING
+	weapon._cooldown_remaining = 0.01
+	weapon._process(0.02)
+	_expect(weapon.lifecycle_state == WeaponBase.LifecycleState.READY, "a completed firing cooldown returns to READY in the same process step")
 	weapon.enabled = false
 	_expect(weapon.lifecycle_state == WeaponBase.LifecycleState.LOWERING, "weapon lowering starts on disable")
 	weapon._process(0.04)

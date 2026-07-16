@@ -1,0 +1,16 @@
+work_id: alpha10-audit-web-performance
+role: spark-performance-auditor
+goal: Audit packaged-Web and runtime hot paths, temporary-node/audio/particle/timer lifetimes, scene resets, material costs, and likely Web/iPad stalls. Produce only measurable recommendations.
+baseline_revision: 6e1669bf04333f25b2a14ae76a2091ad1b2857fc
+dependencies: []
+owned_paths: []
+read_only_context: [scripts, scenes, resources, tools/profile_native_zones.gd, docs/TEST_EVIDENCE.md, docs/KNOWN_ISSUES.md]
+forbidden_paths: [all filesystem writes]
+behavioral_contract: Read-only; no speculative optimization without a named measurement.
+acceptance_criteria: [Rank Blocker/Critical/Major findings, identify repeated per-frame work and reset/lifetime risks, separate native from Web evidence, recommend Chrome trace and heap matrix]
+focused_tests: Static inspection only.
+evidence_required: Exact file/line evidence and expected before/after metric.
+out_of_scope: Production edits, release, subjective art.
+time_limit_minutes: 25
+
+Return the repository Spark result packet. Do not modify the repository.

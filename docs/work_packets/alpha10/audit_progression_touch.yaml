@@ -1,0 +1,16 @@
+work_id: alpha10-audit-progression-touch
+role: spark-ui-accessibility-worker
+goal: Audit progression, checkpoint/death/retry/focus transitions, pointer capture, twin-stick ownership, responsive HUD/captions, and 4:3 safe-area behavior for reproducible reliability/accessibility defects.
+baseline_revision: 6e1669bf04333f25b2a14ae76a2091ad1b2857fc
+dependencies: []
+owned_paths: []
+read_only_context: [scripts/input, scripts/ui, scripts/level, scripts/core, scenes/ui, scenes/levels, tests]
+forbidden_paths: [all filesystem writes]
+behavioral_contract: Read-only; do not claim physical-device comfort or photosensitivity approval.
+acceptance_criteria: [Rank reproducible Blocker/Critical/Major issues, check focus/app-switch/pause/death/retry/scene-exit/cancellation, identify 1024x768 and caption gaps, propose deterministic tests]
+focused_tests: Static inspection only.
+evidence_required: Exact file/line evidence and reproduction/test proposal.
+out_of_scope: Editing, subjective ergonomic claims, release work.
+time_limit_minutes: 25
+
+Return the repository Spark result packet. Do not modify the repository.
