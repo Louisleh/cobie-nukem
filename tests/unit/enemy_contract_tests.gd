@@ -41,6 +41,13 @@ func _run() -> void:
 		_expect(enemy.is_in_group(&"enemies"), "Enemy group: %s" % scene_path)
 		_expect(enemy.is_in_group(&"auto_aim_targets"), "Auto-aim group: %s" % scene_path)
 		_expect(enemy.get_auto_aim_position().is_finite(), "Finite aim point: %s" % scene_path)
+		# Enemies are sprite-primary (meshes hidden); a wrong pixel_size or an
+		# unapplied atlas grid renders them as a sub-meter speck or a full sheet.
+		var detailed := enemy.get_node_or_null("Visual/DetailedSprite") as Sprite3D
+		if detailed != null and detailed.visible:
+			var sprite_height := detailed.get_aabb().size.y * detailed.scale.y
+			_expect(sprite_height >= 0.8, "Primary sprite is not a tiny speck: %s (%.2f)" % [scene_path, sprite_height])
+			_expect(sprite_height <= 6.0, "Primary sprite is not an oversized sheet: %s (%.2f)" % [scene_path, sprite_height])
 		var health_bar := enemy.get_node_or_null("EnemyHealthBar") as Node3D
 		_expect(health_bar != null, "World-space health bar exists: %s" % scene_path)
 		var health_fill := enemy.get_node_or_null("EnemyHealthBar/Fill") as MeshInstance3D
