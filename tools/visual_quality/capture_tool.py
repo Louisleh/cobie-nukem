@@ -253,42 +253,57 @@ def run_capture(
                 aspect_id = str(aspect["id"])
                 native_output: Optional[Path] = None
                 touch_output: Optional[Path] = None
+                native_error: Optional[str] = None
+                touch_error: Optional[str] = None
                 for view in supported_views:
                     view_id = str(view.get("id"))
                     adapter = str(view.get("adapter", ""))
                     capture = view.get("capture")
-                    if adapter == "native_vertical_slice_capture" and native_output is None:
-                        native_output = _native_capture_output(Path(temp_root), f"{run_id}-{aspect_id}", int(aspect["width"]), int(aspect["height"]), render_fps, physics_tps, False, int(view.get("seed", 1)))
-                    elif adapter == "native_vertical_slice_touch_capture" and touch_output is None:
-                        touch_output = _native_capture_output(Path(temp_root), f"{run_id}-{aspect_id}-touch", int(aspect["width"]), int(aspect["height"]), render_fps, physics_tps, True, int(view.get("seed", 1)))
-                    if adapter == "direct_scene_capture":
-                        source_path = _direct_scene_capture(Path(temp_root), view, aspect, render_fps, physics_tps)
-                    elif adapter == "native_vertical_slice_capture":
-                        source_path = native_output / str(capture.get("source_file", "")) if native_output is not None and isinstance(capture, dict) else Path()
-                    elif adapter == "native_vertical_slice_touch_capture":
-                        source_path = touch_output / str(capture.get("source_file", "")) if touch_output is not None and isinstance(capture, dict) else Path()
-                    else:
-                        capture_failures.append(f"{view_id}: unsupported adapter for capture tool: {adapter}")
-                        continue
-                    if not isinstance(capture, dict):
-                        capture_failures.append(f"{view_id}: missing capture config")
-                        continue
-                    filenames = view.get("filenames", {})
-                    if not isinstance(filenames, dict):
-                        capture_failures.append(f"{view_id}: incomplete filename config")
-                        continue
-                    filename = filenames.get(aspect_id)
-                    if not filename or not source_path.is_file():
-                        capture_failures.append(f"{view_id}:{aspect_id}: missing declared source or target")
-                        continue
-                    target_path = candidate_run / str(filename)
-                    _copy_capture(
-                        source_path,
-                        target_path,
-                        int(aspect["width"]),
-                        int(aspect["height"]),
-                    )
-                    captured.setdefault(view_id, []).append(str(target_path))
+                    try:
+                        if not isinstance(capture, dict):
+                            raise ValueError("missing capture config")
+                        if adapter == "native_vertical_slice_capture":
+                            if native_error is not None:
+                                raise RuntimeError(f"native adapter unavailable: {native_error}")
+                            if native_output is None:
+                                try:
+                                    native_output = _native_capture_output(Path(temp_root), f"{run_id}-{aspect_id}", int(aspect["width"]), int(aspect["height"]), render_fps, physics_tps, False, int(view.get("seed", 1)))
+                                except Exception as error:
+                                    native_error = str(error)
+                                    raise
+                            source_path = native_output / str(capture.get("source_file", ""))
+                        elif adapter == "native_vertical_slice_touch_capture":
+                            if touch_error is not None:
+                                raise RuntimeError(f"touch adapter unavailable: {touch_error}")
+                            if touch_output is None:
+                                try:
+                                    touch_output = _native_capture_output(Path(temp_root), f"{run_id}-{aspect_id}-touch", int(aspect["width"]), int(aspect["height"]), render_fps, physics_tps, True, int(view.get("seed", 1)))
+                                except Exception as error:
+                                    touch_error = str(error)
+                                    raise
+                            source_path = touch_output / str(capture.get("source_file", ""))
+                        elif adapter == "direct_scene_capture":
+                            source_path = _direct_scene_capture(Path(temp_root), view, aspect, render_fps, physics_tps)
+                        else:
+                            raise ValueError(f"unsupported adapter for capture tool: {adapter}")
+                        filenames = view.get("filenames", {})
+                        if not isinstance(filenames, dict):
+                            raise ValueError("incomplete filename config")
+                        filename = filenames.get(aspect_id)
+                        if not filename or not source_path.is_file():
+                            raise FileNotFoundError("missing declared source or target")
+                        target_path = candidate_run / str(filename)
+                        _copy_capture(
+                            source_path,
+                            target_path,
+                            int(aspect["width"]),
+                            int(aspect["height"]),
+                        )
+                        captured.setdefault(view_id, []).append(str(target_path))
+                    except Exception as error:
+                        capture_failures.append(
+                            f"{view_id}:{aspect_id}: {type(error).__name__}: {error}"
+                        )
 
     for view in views:
         view_id = str(view.get("id", ""))

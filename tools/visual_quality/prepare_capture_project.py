@@ -39,6 +39,11 @@ def prepare(source_root: Path, target_root: Path, width: int, height: int) -> No
         destination = target_root / entry.name
         if destination.exists() or destination.is_symlink():
             continue
+        if entry.name == ".godot":
+            # Capture imports may update cache metadata. Snapshot the cache so a
+            # run cannot mutate or inherit live editor state through a symlink.
+            shutil.copytree(entry, destination, symlinks=False)
+            continue
         os.symlink(entry, destination, target_is_directory=entry.is_dir())
     project_text = (source_root / "project.godot").read_text(encoding="utf-8")
     (target_root / "project.godot").write_text(
