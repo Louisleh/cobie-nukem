@@ -4,6 +4,8 @@ extends Node3D
 ## Static, Web-safe production dressing layered over Salmon Creek's proven
 ## collision route. The kit owns visuals only: no progression or navigation.
 
+const OpeningFoundryScene := preload("res://assets/models/environment/salmon_creek_opening_foundry.glb")
+
 var _materials: Dictionary = {}
 
 
@@ -19,18 +21,12 @@ func build(parent: Node3D) -> void:
 
 
 func _build_field_landmarks() -> void:
-	_box("ScoreboardFrame", Vector3(-10.5, 2.8, -12.5), Vector3(0.45, 5.6, 3.8), &"painted_metal", Color("243036"))
-	_box("ScoreboardFace", Vector3(-10.2, 3.4, -12.5), Vector3(0.12, 2.4, 3.3), &"display", Color("101a1d"))
+	# Presentation-only Blender kit. The world builder retains every gameplay
+	# collider and the baked navigation source, so art can iterate independently.
+	var opening_foundry := OpeningFoundryScene.instantiate()
+	opening_foundry.name = "SalmonCreekOpeningFoundry"
+	add_child(opening_foundry)
 	_label("SALMON CREEK\nHOME  0  •  DOGS  1", Vector3(-10.08, 3.45, -12.5), Vector3(0, -90, 0), 52, Color("ffd05a"))
-	for x in [-10.5, 10.5]:
-		for z in [-13.5, 12.5]:
-			_cylinder("FloodlightMast", Vector3(x, 4.2, z), 0.13, 8.4, &"painted_metal", Color("58676c"))
-			_box("FloodlightBank", Vector3(x, 8.1, z), Vector3(0.5, 0.9, 2.8), &"lamp", Color("cde8d8"))
-	_build_evergreen_multimesh([
-		Vector3(-17, 0, 12), Vector3(-18, 0, 1), Vector3(-16, 0, -10),
-		Vector3(17, 0, 10), Vector3(18, 0, -3), Vector3(17, 0, -15),
-	])
-	_build_fence_multimesh()
 
 
 func _build_shed_landmarks() -> void:
@@ -76,44 +72,6 @@ func _build_arena_landmarks() -> void:
 		for x in [-16.5, 16.5]:
 			_box("ArenaBarrier", Vector3(x, 0.65, z), Vector3(1.4, 1.3, 5.0), &"hazard", Color("c18127"))
 	_label("ANIMAL CONTROL\nFINAL REVIEW", Vector3(0, 6.85, -147.55), Vector3.ZERO, 54, Color("ffd05a"))
-
-
-func _build_evergreen_multimesh(positions: Array[Vector3]) -> void:
-	var trunk_mesh := CylinderMesh.new()
-	trunk_mesh.top_radius = 0.22
-	trunk_mesh.bottom_radius = 0.34
-	trunk_mesh.height = 3.8
-	trunk_mesh.material = _material(&"wood", Color("49382d"))
-	var trunks := MultiMesh.new()
-	trunks.transform_format = MultiMesh.TRANSFORM_3D
-	trunks.mesh = trunk_mesh
-	trunks.instance_count = positions.size()
-	var crown_mesh := SphereMesh.new()
-	crown_mesh.radius = 1.35
-	crown_mesh.height = 4.8
-	crown_mesh.radial_segments = 12
-	crown_mesh.rings = 6
-	crown_mesh.material = _material(&"vegetation", Color("173f32"))
-	var crowns := MultiMesh.new()
-	crowns.transform_format = MultiMesh.TRANSFORM_3D
-	crowns.mesh = crown_mesh
-	crowns.instance_count = positions.size()
-	for index in positions.size():
-		trunks.set_instance_transform(index, Transform3D(Basis.IDENTITY, positions[index] + Vector3.UP * 1.9))
-		crowns.set_instance_transform(index, Transform3D(Basis.IDENTITY, positions[index] + Vector3.UP * 4.6))
-	var trunk_node := MultiMeshInstance3D.new(); trunk_node.name = "EvergreenTrunks"; trunk_node.multimesh = trunks; add_child(trunk_node)
-	var crown_node := MultiMeshInstance3D.new(); crown_node.name = "EvergreenCrowns"; crown_node.multimesh = crowns; add_child(crown_node)
-
-
-func _build_fence_multimesh() -> void:
-	var transforms: Array[Transform3D] = []
-	for z in range(-17, 18, 3):
-		transforms.append(Transform3D(Basis.IDENTITY, Vector3(-12.2, 1.0, z)))
-		transforms.append(Transform3D(Basis.IDENTITY, Vector3(12.2, 1.0, z)))
-	var mesh := BoxMesh.new(); mesh.size = Vector3(0.12, 2.0, 0.12); mesh.material = _material(&"metal", Color("687a7a"))
-	var multi := MultiMesh.new(); multi.transform_format = MultiMesh.TRANSFORM_3D; multi.mesh = mesh; multi.instance_count = transforms.size()
-	for index in transforms.size(): multi.set_instance_transform(index, transforms[index])
-	var node := MultiMeshInstance3D.new(); node.name = "FieldFencePosts"; node.multimesh = multi; add_child(node)
 
 
 func _box(node_name: String, position_value: Vector3, size: Vector3, surface: StringName, color: Color) -> void:

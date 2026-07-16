@@ -1,0 +1,4 @@
+interface:
+  display_name: "Cobie Visual Foundry"
+  short_description: "Produce and validate authored Cobie visuals"
+  default_prompt: "Run the Cobie visual-production loop for a bounded scene or asset, including provenance, deterministic captures, Web profiling, and human-review evidence."

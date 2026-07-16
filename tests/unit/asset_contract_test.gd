@@ -1,6 +1,7 @@
 extends SceneTree
 
 const BALL_RETURN_SCENE := preload("res://scenes/interactables/ball_return_secret.tscn")
+const OPENING_FOUNDRY_SCENE := preload("res://assets/models/environment/salmon_creek_opening_foundry.glb")
 const PILOT_MODELS: Dictionary = {
 	&"field_kit": preload("res://assets/models/pilot/salmon_creek_field_kit.glb"),
 	&"tunnel_module": preload("res://assets/models/pilot/maintenance_tunnel_module_a.glb"),
@@ -21,6 +22,7 @@ var failures: Array[String] = []
 
 func _initialize() -> void:
 	await _test_ball_return_production_asset()
+	await _test_opening_foundry_asset()
 	await _test_production_pipeline_pilot()
 	if failures.is_empty():
 		print("ASSET CONTRACT TESTS: PASS")
@@ -57,6 +59,25 @@ func _test_ball_return_production_asset() -> void:
 	ordinary_body.free()
 	fetch_body.free()
 	machine.queue_free()
+	await process_frame
+
+
+func _test_opening_foundry_asset() -> void:
+	var instance := OPENING_FOUNDRY_SCENE.instantiate()
+	get_root().add_child(instance)
+	await process_frame
+	var meshes := instance.find_children("*", "MeshInstance3D", true, false)
+	_expect(meshes.size() == 8, "opening foundry consolidates 188 authored parts into eight material batches")
+	for mesh_node in meshes:
+		var mesh_instance := mesh_node as MeshInstance3D
+		_expect(mesh_instance.mesh != null and mesh_instance.mesh.get_surface_count() == 1, "each opening foundry material batch exports as exactly one draw surface")
+	_expect(instance.find_children("*", "StaticBody3D", true, false).is_empty(), "opening foundry remains presentation-only and cannot replace gameplay collision")
+	var source_parts := 0
+	for child in instance.find_children("*", "", true, false):
+		var extras := child.get_meta(&"extras", {}) as Dictionary
+		source_parts += int(extras.get("source_part_count", 0))
+	_expect(source_parts == 188, "opening foundry retains its complete source-part vocabulary in import metadata")
+	instance.queue_free()
 	await process_frame
 
 

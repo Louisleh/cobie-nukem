@@ -8,6 +8,7 @@ var _ready_for_capture := false
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
+	_apply_capture_settings()
 	get_tree().paused = false
 	# The level suppresses presentation during its child _ready() so startup
 	# notifications cannot begin audio before this visual-only harness can mute
@@ -26,6 +27,40 @@ func _ready() -> void:
 	if level.player != null:
 		_silence_capture_audio()
 		_ready_for_capture = true
+	if _force_touch_requested():
+		for controls in level.find_children("*", "MobileControls", true, false):
+			controls.force_visible = true
+			controls.set("_touch_enabled", true)
+			controls.visible = true
+			controls.queue_redraw()
+
+
+func _apply_capture_settings() -> void:
+	for argument in OS.get_cmdline_user_args():
+		if argument.begins_with("--capture-size="):
+			_apply_capture_size(argument.trim_prefix("--capture-size="))
+		elif argument.begins_with("--capture-seed="):
+			seed(int(argument.trim_prefix("--capture-seed=")))
+		elif argument.begins_with("--physics-tps="):
+			var requested := int(argument.trim_prefix("--physics-tps="))
+			Engine.physics_ticks_per_second = clampi(requested, 10, 240)
+
+
+func _apply_capture_size(size_value: String) -> void:
+	var parts := size_value.to_lower().split("x")
+	if parts.size() != 2:
+		push_error("Invalid visual capture size: %s" % size_value)
+		return
+	var requested := Vector2i(maxi(320, int(parts[0])), maxi(240, int(parts[1])))
+	get_window().size = requested
+	# Preserve the game's 360 logical-pixel art direction while exposing the
+	# requested aspect ratio to anchors and responsive layout code.
+	var logical_width := maxi(320, roundi(360.0 * float(requested.x) / float(requested.y)))
+	get_window().content_scale_size = Vector2i(logical_width, 360)
+
+
+func _force_touch_requested() -> bool:
+	return OS.get_cmdline_user_args().has("--force-touch")
 
 
 func _process(_delta: float) -> void:
@@ -35,6 +70,8 @@ func _process(_delta: float) -> void:
 		return
 	match _frame:
 		5:
+			_stage_player_only(Vector3(0.0, 1.1, 10.0))
+		15:
 			_stage_zone(Vector3(0.0, 1.1, 10.0), &"forbidden_field", "CAPTURE: FORBIDDEN FIELD")
 		35:
 			_stage_zone(Vector3(0.0, 1.1, -30.0), &"equipment_shed", "CAPTURE: EQUIPMENT SHED")
@@ -54,6 +91,15 @@ func _process(_delta: float) -> void:
 			_ready_for_capture = false
 			level.queue_free()
 	_frame += 1
+
+
+func _stage_player_only(position_value: Vector3) -> void:
+	var player := level.player as CobiePlayer
+	player.global_position = position_value
+	player.velocity = Vector3.ZERO
+	player.rotation = Vector3.ZERO
+	player.head.rotation = Vector3.ZERO
+	player.reset_physics_interpolation()
 
 
 func _stage_zone(position_value: Vector3, zone_id: StringName, label: String) -> void:

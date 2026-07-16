@@ -54,6 +54,10 @@ This records menu, opening, lab, tunnel, Walker-arena, and victory percentiles p
 
 See `docs/BLENDER_ASSET_PIPELINE.md`. Blender MCP is localhost-only, telemetry-disabled, and privileged because it can execute arbitrary Python. Preserve editable `.blend` sources under `assets/source/blender/`, deterministic runtime exports under `assets/models/`, and exact provenance in `docs/ASSET_MANIFEST.md`.
 
+## Visual Foundry loop
+
+Invoke `.agents/skills/cobie-visual-foundry` for environment art, directional character production, materials, lighting, VFX, HUD/touch presentation, canonical captures, or visual regressions. The canonical route is art brief → editable source → deterministic runtime export → Godot import contract → fixed multi-aspect capture → local comparison → fresh packaged-Web trace → human review packet. Material Maker source graphs and Blender sources remain authoring inputs; neither is a runtime dependency. Chrome DevTools and Context7 are documentation/inspection tools only and require a fresh Codex task after first local configuration. Never overwrite approved visual baselines implicitly or represent perceptual-difference metrics as artistic judgment.
+
 ## Release loop
 
 1. Run `QA_EXPORTS=1 bash tools/release_validate.sh`.

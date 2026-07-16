@@ -10,6 +10,7 @@ These rules apply to the entire repository.
 4. Never describe joystick hardware as verified without a recorded physical test.
 5. Read `docs/design/README.md` for the contract of any subsystem you touch.
 6. For agent-assisted game work, use the installed `cobie-godot-production` skill and follow `docs/design/agentic-toolchain.md`.
+7. For environment art, character sprites, animation atlases, materials, lighting, VFX, HUD/touch presentation, or visual regression work, invoke the repo skill `cobie-visual-foundry`. Preserve gameplay collision/navigation, require editable sources and provenance, and treat automated image differences as review prompts rather than taste decisions.
 
 ## Spark acceleration
 

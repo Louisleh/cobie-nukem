@@ -2,6 +2,26 @@
 
 This is a durable evidence template, not a claim that every listed check has run against the current working tree. Add one section per candidate; never overwrite older evidence.
 
+## Visual Quality Foundry source candidate — 2026-07-16
+
+| Check | Result | Evidence |
+| --- | --- | --- |
+| Latest Claude bug-fix PR | Pass and merged | PR #36 green and merged as `961d9e8`; four focused iPad/playtest fixes are on source `main` but remain newer than the public artifact |
+| Toolchain verification | Pass with reload gate | Godot 4.7, Blender 5.1.2, Material Maker 1.7, privacy-hardened Blender/Godot MCPs, Chrome DevTools MCP, and Context7 configuration verified; new Chrome/Context7 tools require a fresh task |
+| Skill and workflow | Pass | `cobie-visual-foundry` validates and passes a fresh-context routing test; art bible, authoring/review contracts, and repository routing are committed |
+| Opening production asset | Pass | Deterministic project-original Blender source emits 188 authored parts consolidated into eight mesh instances and eight single-surface material batches; no gameplay collision; Godot asset contract green |
+| Visual manifest | Pass | Exactly ten canonical views and four declared aspects; title/mission/Vancouver direct capture, Salmon route capture, and forced-touch adapter all supported; approved baselines require explicit `--approve` |
+| Aspect correctness | Pass | Isolated capture project removes the desktop override and renders the actual requested Movie Maker dimensions; 1024×768 evidence caught and fixed the touch onboarding collision |
+| Motion matrix | Pass with human review | Sports-field and Walker captures complete at 30/60/120 rendered FPS with 60 TPS plus a 60 FPS/10 TPS interpolation diagnostic; all reports contain the expected two images and no capture failure |
+| Four-aspect gallery | Pass with human review | All ten canonical views captured at 1280×720, 1680×1050, 1024×768, and 3440×1440 using real aspect-specific Movie Maker projects; no approved baseline was overwritten |
+| Local visual comparison | Pass as diagnostic | Before/candidate opening comparison: MAE 0.0500, RMSE 0.1034, perceptual MAE 0.0406; dimensions/alpha/blank/contrast contracts pass. Metrics are not an art approval |
+| Native 1080p profile | Pass | Candidate opening p95/p99 17.511/17.800 ms, 426 draw calls, 3,135 objects, 552 nodes; merged-main baseline 21.419/23.233 ms, 442 draw calls, 3,169 objects, 567 nodes. Candidate peak static memory remains below 78 MB |
+| Complete release/export matrix | Pass | Final `QA_EXPORTS=1 bash tools/release_validate.sh` run completed parser/import, all unit/integration/route/adversarial/content/soak/performance/architecture/IP gates, Web export, and unsigned Universal macOS export. CI initially proved the visual manifest marker could enter the pack through `tools/`; both presets now exclude all authoring tools, and the exact local release-pack scanner is green |
+| Independent Spark review | Pass after correction | Explicit `gpt-5.3-codex-spark` startup metadata confirmed the pinned reviewer. Its two Major harness findings—shared `.godot` cache state and unstructured adapter exceptions—were fixed in `5073528`, covered by isolation/direct/native failure tests, and re-reviewed with no unresolved Blocker/Critical/Major finding |
+| Material Maker source | Partial pipeline pass | Original `salmon_wet_municipal.ptex` graph and source policy are present and JSON-valid. Runtime texture export/adoption awaits visual approval; packaged headless Material Maker lacks an initialized export target and emitted its own shutdown warnings |
+| Chrome packaged-Web trace | Not run | MCP installed during the task but unavailable until MCP inventory reload; do not represent native Movie Maker/profile evidence as WebGL trace evidence |
+| Human/device gates | Not run | Opening art preference, Hound/Walker motion, 4:3 touch comfort, physical iPad Safari, Web thermals, and photosensitivity remain human-only |
+
 ## Candidate 0.6.0-alpha.9 Public Beta Focus — 2026-07-14
 
 | Field | Value |

@@ -25,6 +25,10 @@ const STICK_CENTERS := {
 	&"standard": [Vector2(48, 105), Vector2(220, 105)],
 	&"wide": [Vector2(42, 108), Vector2(228, 108)],
 }
+const ONBOARDING_LINES := [
+	"LEFT STICK: MOVE   RIGHT STICK: AIM",
+	"FIRE: PRIMARY   ALT: SECONDARY",
+]
 const BUTTONS := {
 	&"fire_primary": {"center": Vector2(292, 111), "radius": 20.0, "label": "FIRE"},
 	&"fire_secondary": {"center": Vector2(292, 152), "radius": 11.0, "label": "ALT"},
@@ -190,11 +194,7 @@ func _draw() -> void:
 	_draw_stick(_from_design(centers[1]), _look_value, "AIM", scale_value)
 	var font := ThemeDB.fallback_font
 	if _onboarding_remaining > 0.0:
-		var hint := "LEFT: MOVE   RIGHT: AIM   FIRE=PRIMARY / ALT=SECONDARY"
-		var hint_size := maxi(7, roundi(8.0 * scale_value)); var measured := font.get_string_size(hint, HORIZONTAL_ALIGNMENT_LEFT, -1, hint_size)
-		var hint_center := _from_design(Vector2(160, 17))
-		draw_rect(Rect2(hint_center - Vector2(measured.x * 0.5 + 6.0 * scale_value, measured.y * 0.65), Vector2(measured.x + 12.0 * scale_value, measured.y + 5.0 * scale_value)), Color(0.02, 0.04, 0.04, 0.72 * control_opacity), true)
-		draw_string(font, hint_center - Vector2(measured.x * 0.5, -measured.y * 0.3), hint, HORIZONTAL_ALIGNMENT_LEFT, -1, hint_size, Color(1.0, 0.82, 0.32, minf(1.0, _onboarding_remaining)))
+		_draw_onboarding_hint(font, scale_value)
 	for action in BUTTONS:
 		var data: Dictionary = BUTTONS[action]; var center := _from_design(data.center); var radius := float(data.radius) * scale_value
 		var active: bool = action in _button_fingers.values()
@@ -202,6 +202,31 @@ func _draw() -> void:
 		draw_arc(center, radius, 0.0, TAU, 32, Color(1.0, 0.75, 0.24, 0.9), maxf(1.0, scale_value))
 		var label := String(data.label); var font_size := maxi(7, roundi(8.0 * scale_value)); var text_size := font.get_string_size(label, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size)
 		draw_string(font, center - Vector2(text_size.x * 0.5, -text_size.y * 0.32), label, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size, Color.WHITE)
+
+
+func _draw_onboarding_hint(font: Font, scale_value: float) -> void:
+	var font_size := maxi(7, roundi(7.0 * scale_value))
+	var max_width := size.x * 0.68
+	var line_widths: Array[float] = []
+	for line in ONBOARDING_LINES:
+		line_widths.append(font.get_string_size(line, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size).x)
+	while line_widths.max() > max_width and font_size > 7:
+		font_size -= 1
+		line_widths.clear()
+		for line in ONBOARDING_LINES:
+			line_widths.append(font.get_string_size(line, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size).x)
+	var line_height := font.get_height(font_size)
+	# Keep the transient help below the objective/capture banner. At 4:3 and
+	# 16:9 the previous y=15 position allowed two independently valid labels to
+	# read as a single garbled line.
+	var hint_center := _from_design(Vector2(160, 39))
+	var panel_size := Vector2(line_widths.max() + 12.0 * scale_value, line_height * 2.35)
+	draw_rect(Rect2(hint_center - panel_size * 0.5, panel_size), Color(0.02, 0.04, 0.04, 0.78 * control_opacity), true)
+	var color := Color(1.0, 0.82, 0.32, minf(1.0, _onboarding_remaining))
+	for index in ONBOARDING_LINES.size():
+		var line: String = ONBOARDING_LINES[index]
+		var baseline := hint_center.y - line_height * 0.58 + line_height * float(index)
+		draw_string(font, Vector2(hint_center.x - line_widths[index] * 0.5, baseline), line, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size, color)
 
 func _draw_stick(center: Vector2, value: Vector2, label: String, scale_value: float) -> void:
 	var radius := _stick_radius() * scale_value

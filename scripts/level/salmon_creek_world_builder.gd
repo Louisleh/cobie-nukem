@@ -185,14 +185,6 @@ func _build_field_dressing() -> void:
 		_prop_box("FieldStripe", Vector3(0, 0.025, z), Vector3(23, 0.035, 0.10), Color("b7c9aa"))
 	for x in [-10.0, 10.0]:
 		_prop_box("Touchline", Vector3(x, 0.03, 0), Vector3(0.10, 0.04, 32), Color("b7c9aa"))
-	for x in [-5.0, 5.0]:
-		_prop_box("GoalPost", Vector3(x, 1.4, -15.5), Vector3(0.14, 2.8, 0.14), Color("d9ddd0"))
-	_prop_box("GoalBar", Vector3(0, 2.75, -15.5), Vector3(10.1, 0.14, 0.14), Color("d9ddd0"))
-	for index in 5:
-		var x := -9.0 + index * 1.15
-		_prop_box("SafetyCone", Vector3(x, 0.28, 7.5), Vector3(0.28, 0.56, 0.28), Color("e67924"))
-	for row in 3:
-		_prop_box("Bleacher", Vector3(9.8, 0.35 + row * 0.38, 6.5 + row * 0.55), Vector3(4.2, 0.18, 0.65), Color("68777a"))
 	var production_kit := EnvironmentKitScript.new() as SalmonCreekEnvironmentKit
 	production_kit.name = "SalmonCreekProductionKit"
 	production_kit.build(geometry)

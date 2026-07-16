@@ -1,0 +1,210 @@
+{
+  "schema_version": 1,
+  "manifest_version": "visual-quality-manifest-v1",
+  "created_at": "2026-07-16T00:00:00Z",
+  "support_states": [
+    "supported",
+    "unsupported"
+  ],
+  "capture_policy": {
+    "overwrite_baseline_without_approve": false,
+    "default_baseline_root": "builds/visual-quality/baselines",
+    "default_candidate_root": "builds/visual-quality/candidates",
+    "default_render_fps": 30,
+    "default_physics_tps": 60
+  },
+  "aspects": [
+    {
+      "id": "1280x720",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "id": "1680x1050",
+      "width": 1680,
+      "height": 1050
+    },
+    {
+      "id": "1024x768",
+      "width": 1024,
+      "height": 768
+    },
+    {
+      "id": "3440x1440",
+      "width": 3440,
+      "height": 1440
+    }
+  ],
+  "views": [
+    {
+      "id": "title",
+      "scene_path": "res://scenes/menus/title_screen.tscn",
+      "staging_id": "title_screen",
+      "capture_support": "supported",
+      "adapter": "direct_scene_capture",
+      "seed": 2026071610,
+      "frame": 120,
+      "capture": {"quit_after": 130},
+      "filenames": {
+        "1280x720": "title_1280x720.png",
+        "1680x1050": "title_1680x1050.png",
+        "1024x768": "title_1024x768.png",
+        "3440x1440": "title_3440x1440.png"
+      }
+    },
+    {
+      "id": "mission_select",
+      "scene_path": "res://scenes/menus/level_select.tscn",
+      "staging_id": "mission_select",
+      "capture_support": "supported",
+      "adapter": "direct_scene_capture",
+      "seed": 2026071611,
+      "frame": 30,
+      "capture": {"quit_after": 40},
+      "filenames": {
+        "1280x720": "mission_select_1280x720.png",
+        "1680x1050": "mission_select_1680x1050.png",
+        "1024x768": "mission_select_1024x768.png",
+        "3440x1440": "mission_select_3440x1440.png"
+      }
+    },
+    {
+      "id": "salmon_opening",
+      "scene_path": "res://scenes/levels/episode_1_level_1.tscn",
+      "staging_id": "salmon_opening",
+      "capture_support": "supported",
+      "adapter": "native_vertical_slice_capture",
+      "seed": 2026071601,
+      "frame": 10,
+      "capture": {"source_file": "00-salmon-opening.png"},
+      "filenames": {
+        "1280x720": "salmon_opening_1280x720.png",
+        "1680x1050": "salmon_opening_1680x1050.png",
+        "1024x768": "salmon_opening_1024x768.png",
+        "3440x1440": "salmon_opening_3440x1440.png"
+      }
+    },
+    {
+      "id": "salmon_sports_field",
+      "scene_path": "res://scenes/levels/episode_1_level_1.tscn",
+      "staging_id": "forbidden_field",
+      "capture_support": "supported",
+      "adapter": "native_vertical_slice_capture",
+      "seed": 2026071601,
+      "frame": 25,
+      "capture": {
+        "source_file": "01-forbidden-field.png"
+      },
+      "filenames": {
+        "1280x720": "salmon_sports_field_1280x720.png",
+        "1680x1050": "salmon_sports_field_1680x1050.png",
+        "1024x768": "salmon_sports_field_1024x768.png",
+        "3440x1440": "salmon_sports_field_3440x1440.png"
+      }
+    },
+    {
+      "id": "salmon_shed",
+      "scene_path": "res://scenes/levels/episode_1_level_1.tscn",
+      "staging_id": "equipment_shed",
+      "capture_support": "supported",
+      "adapter": "native_vertical_slice_capture",
+      "seed": 2026071601,
+      "frame": 55,
+      "capture": {
+        "source_file": "02-equipment-shed.png"
+      },
+      "filenames": {
+        "1280x720": "salmon_shed_1280x720.png",
+        "1680x1050": "salmon_shed_1680x1050.png",
+        "1024x768": "salmon_shed_1024x768.png",
+        "3440x1440": "salmon_shed_3440x1440.png"
+      }
+    },
+    {
+      "id": "salmon_lab",
+      "scene_path": "res://scenes/levels/episode_1_level_1.tscn",
+      "staging_id": "compliance_lab",
+      "capture_support": "supported",
+      "adapter": "native_vertical_slice_capture",
+      "seed": 2026071601,
+      "frame": 115,
+      "capture": {
+        "source_file": "04-compliance-lab.png"
+      },
+      "filenames": {
+        "1280x720": "salmon_lab_1280x720.png",
+        "1680x1050": "salmon_lab_1680x1050.png",
+        "1024x768": "salmon_lab_1024x768.png",
+        "3440x1440": "salmon_lab_3440x1440.png"
+      }
+    },
+    {
+      "id": "salmon_tunnel",
+      "scene_path": "res://scenes/levels/episode_1_level_1.tscn",
+      "staging_id": "maintenance_tunnels",
+      "capture_support": "supported",
+      "adapter": "native_vertical_slice_capture",
+      "seed": 2026071601,
+      "frame": 85,
+      "capture": {
+        "source_file": "03-maintenance-tunnels.png"
+      },
+      "filenames": {
+        "1280x720": "salmon_tunnel_1280x720.png",
+        "1680x1050": "salmon_tunnel_1680x1050.png",
+        "1024x768": "salmon_tunnel_1024x768.png",
+        "3440x1440": "salmon_tunnel_3440x1440.png"
+      }
+    },
+    {
+      "id": "salmon_walker_arena",
+      "scene_path": "res://scenes/levels/episode_1_level_1.tscn",
+      "staging_id": "walker_arena",
+      "capture_support": "supported",
+      "adapter": "native_vertical_slice_capture",
+      "seed": 2026071601,
+      "frame": 145,
+      "capture": {
+        "source_file": "05-walker-arena.png"
+      },
+      "filenames": {
+        "1280x720": "salmon_walker_arena_1280x720.png",
+        "1680x1050": "salmon_walker_arena_1680x1050.png",
+        "1024x768": "salmon_walker_arena_1024x768.png",
+        "3440x1440": "salmon_walker_arena_3440x1440.png"
+      }
+    },
+    {
+      "id": "vancouver_waterfront",
+      "scene_path": "res://scenes/levels/episode_1_vancouver_waterfront.tscn",
+      "staging_id": "waterfront_seawall",
+      "capture_support": "supported",
+      "adapter": "direct_scene_capture",
+      "seed": 2026071613,
+      "frame": 80,
+      "capture": {"quit_after": 90},
+      "filenames": {
+        "1280x720": "vancouver_waterfront_1280x720.png",
+        "1680x1050": "vancouver_waterfront_1680x1050.png",
+        "1024x768": "vancouver_waterfront_1024x768.png",
+        "3440x1440": "vancouver_waterfront_3440x1440.png"
+      }
+    },
+    {
+      "id": "touch_hud_4_3",
+      "scene_path": "res://scenes/levels/episode_1_level_1.tscn",
+      "staging_id": "touch_hud_4_3",
+      "capture_support": "supported",
+      "adapter": "native_vertical_slice_touch_capture",
+      "seed": 2026071614,
+      "frame": 25,
+      "capture": {"source_file": "01-forbidden-field.png"},
+      "filenames": {
+        "1280x720": "touch_hud_4_3_1280x720.png",
+        "1680x1050": "touch_hud_4_3_1680x1050.png",
+        "1024x768": "touch_hud_4_3_1024x768.png",
+        "3440x1440": "touch_hud_4_3_3440x1440.png"
+      }
+    }
+  ]
+}

@@ -9,8 +9,11 @@ The Godot project and its typed Resources remain the source of truth. MCP server
 - Godot `4.7.stable.official.5b4e0cb0f` at `/opt/homebrew/bin/godot`.
 - `godot-cobie`: local audited Godot MCP, pinned from upstream commit `e71540f8985e123a0fe6f977dc531aa10ea5bb3a`, with dependency and lifecycle hardening applied locally.
 - `blender`: Blender MCP pinned from upstream commit `6e99eb5a442b83766a5796975ec7bb5bfc791341`, connected to Blender 5.1.2 on localhost with telemetry and external services disabled.
+- Material Maker 1.7 installed locally for editable procedural material graphs and Web-safe PBR exports; it is an authoring tool, not a project dependency.
+- Chrome DevTools MCP configured globally with an isolated headless profile, usage statistics disabled, and CrUX disabled. It owns packaged-Web performance traces, heap/network/console inspection, and tablet emulation after a Codex restart.
+- Context7 MCP configured globally as documentation-only support. It does not make architecture, art, or asset decisions.
 - TrenchBroom 2026.1: available for the isolated FuncGodot pilot only.
-- Cobie production skill plus focused Godot skills for 3D, navigation, animation, assets, audio, advanced GDScript, review, debugging, optimization, testing, input, mobile, VFX, physics, and responsive UI.
+- Cobie production and Visual Foundry skills plus focused Godot skills for 3D, navigation, animation, assets, audio, advanced GDScript, review, debugging, optimization, testing, input, mobile, VFX, physics, and responsive UI.
 
 Exact local paths and installation state are machine-local. The repository records decisions and validation evidence, not third-party executable payloads.
 
@@ -23,6 +26,8 @@ Exact local paths and installation state are machine-local. The repository recor
 5. Use Blender MCP only for original production assets with an explicit target, polygon/material/LOD/collision budget, deterministic export path, and manifest entry.
 6. Run focused tests, then `QA_EXPORTS=1 bash tools/release_validate.sh`.
 7. Record evidence and remaining human-only gates in the PRD, known issues, and manual checklist.
+
+For visual production, use `docs/ART_BIBLE.md` and `.agents/skills/cobie-visual-foundry`. Capture the same named view before and after, preserve collision/navigation, store editable sources and provenance, compare at all supported aspect families, and trace the freshly packaged Web build. Automated image metrics catch malformed or surprising output; GPT-5.6 and humans retain visual judgment.
 
 ## Required Godot MCP capability gate
 
