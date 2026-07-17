@@ -1,0 +1,37 @@
+work_id: rain-city-final-integration-review
+role: spark-code-reviewer
+goal: Independently review the complete Rain City Run RC integration for release-blocking correctness, lifecycle, persistence, Web, architecture, and false-completeness defects.
+baseline_revision: e385aee250dfb3952af2e1499bd24081effc2f81
+dependencies:
+  - docs/PRD.md
+  - docs/PHASE_ROADMAP_PRD.md
+  - docs/QA_PLAN.md
+owned_paths: []
+read_only_context:
+  - complete git diff main...88bcc4a6cf12cf1bc3dd84bcbec56422ac16144c
+  - tools/release_validate.sh
+  - all Rain City unit and integration tests
+forbidden_paths:
+  - "**"
+behavioral_contract:
+  - Rain City unlocks only through campaign completion or explicit development override.
+  - Save schema v5 migrates v4 and restores campaign, checkpoint, loadout, upgrades, route, encounters, and secrets deterministically.
+  - Five authored zones remain completable with 26 enemies, bounded pressure, four secrets, and no deadlock.
+  - Compliance Gull, Umbrella shield, and four-phase 1000-HP Towmaster behavior are telegraphed, reset-safe, generation-safe, and bounded.
+  - Desktop, Web, and twin-stick touch contracts remain compatible.
+  - The BETA/RC boundary and all human-only validation claims remain honest.
+acceptance_criteria:
+  - Report Blocker, Critical, Major, and Medium findings with exact file/line evidence, impact, reproduction, and disposition.
+  - Inspect accepted Spark contributions independently rather than trusting their summaries.
+  - Inspect new responsibility extractions for behavioral drift, stale references, signal duplication, cleanup, and serialization errors.
+  - State explicitly when no actionable issue is found.
+focused_tests:
+  - bash tools/release_validate.sh
+evidence_required:
+  - exact model identity gpt-5.3-codex-spark
+  - reviewed baseline and head revisions
+  - ranked findings or explicit clean disposition
+out_of_scope:
+  - subjective art, mix, humor, touch comfort, balance, and physical-device claims
+  - file edits, merge, release, deployment, or BuildInfo changes
+time_limit_minutes: 20
