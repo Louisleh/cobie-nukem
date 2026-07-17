@@ -41,10 +41,15 @@ func _ready() -> void:
 
 
 func _physics_process(delta: float) -> void:
-	super._physics_process(delta)
 	if is_dead:
 		return
-	_advance_dive(delta)
+	# A committed Gull dive is the authoritative physics movement for this tick.
+	# Running EnemyAgent first would call move_and_slide() and then move_and_collide()
+	# on the same CharacterBody3D, creating frame-rate-sensitive motion and contacts.
+	if _dive_phase == DivePhase.NONE:
+		super._physics_process(delta)
+	else:
+		_advance_dive(delta)
 	var visual := get_node_or_null("Visual") as Node3D
 	if visual != null:
 		visual.rotation.z = lerp_angle(visual.rotation.z, clampf(-velocity.x * 0.045, -0.28, 0.28), minf(1.0, delta * 7.0))

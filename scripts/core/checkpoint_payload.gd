@@ -18,6 +18,7 @@ extends RefCounted
 ##     { "mission_id": StringName, "selected_weapon": String,
 ##       "unlocked_weapons": [String], "weapon_ammo": { "weapon_id":
 ##       {"magazine": int, "reserve": int} }, "mission_upgrades": [String] }
+##   "player_state": {"health": float, "armor": float}
 ##   "secrets": Dictionary            — discovered secret id → title
 ## }
 ##
@@ -57,6 +58,9 @@ static func sanitize(raw: Dictionary) -> Dictionary:
 	var active_upgrades := _active_mission_upgrades(raw.get("active_mission_upgrades", {}))
 	if not active_upgrades.is_empty():
 		sanitized["active_mission_upgrades"] = active_upgrades
+	var player_state := _player_state(raw.get("player_state", {}))
+	if not player_state.is_empty():
+		sanitized["player_state"] = player_state
 	var position := _finite_position(raw.get("position"))
 	if not position.is_empty():
 		sanitized["position"] = position
@@ -183,6 +187,18 @@ static func _active_mission_upgrades(raw: Variant) -> Dictionary:
 	if payload.has("selected_weapon") or payload.has("unlocked_weapons") or payload.has("weapon_ammo") or payload.has("mission_upgrades") or payload.has("mission_id"):
 		return payload
 	return {}
+
+static func _player_state(raw: Variant) -> Dictionary:
+	if raw is not Dictionary:
+		return {}
+	var result := {}
+	for key in ["health", "armor"]:
+		var value: Variant = raw.get(key)
+		if value is int or value is float:
+			var number := float(value)
+			if is_finite(number):
+				result[key] = clampf(number, 0.0, 1000.0)
+	return result if result.size() == 2 else {}
 
 static func _weapon_ids(raw: Variant) -> Array[String]:
 	if raw is not Array:

@@ -3,6 +3,7 @@ set -euo pipefail
 
 cd "$(dirname "$0")/.."
 GODOT_BIN="${GODOT_BIN:-/opt/homebrew/bin/godot}"
+SAFE_GODOT_RUNNER="${SAFE_GODOT_RUNNER:-tools/run_godot_safe.sh}"
 if [[ ! -x "$GODOT_BIN" ]]; then
   GODOT_BIN="$(command -v godot || command -v godot4 || true)"
 fi
@@ -36,7 +37,8 @@ run_godot_test() {
   log_file="$(mktemp)"
   echo "==> $script"
   set +e
-  "$GODOT_BIN" --headless --path . --script "$script" 2>&1 | tee "$log_file"
+  GODOT_BIN="$GODOT_BIN" bash "$SAFE_GODOT_RUNNER" --timeout "${GODOT_TEST_TIMEOUT_SECONDS:-300}" -- \
+    --headless --path . --script "$script" 2>&1 | tee "$log_file"
   status=${PIPESTATUS[0]}
   set -e
   if [[ $status -ne 0 ]]; then
@@ -57,7 +59,9 @@ run_godot_test() {
 }
 
 echo "==> import/parser validation"
-"$GODOT_BIN" --headless --path . --editor --quit
+GODOT_BIN="$GODOT_BIN" bash "$SAFE_GODOT_RUNNER" --timeout "${GODOT_IMPORT_TIMEOUT_SECONDS:-600}" -- \
+  --headless --path . --editor --quit
+bash tools/tests/run_godot_safe_test.sh
 run_godot_test res://tests/run_tests.gd
 run_godot_test res://tests/unit/input_system_test.gd
 run_godot_test res://tests/unit/combat_test_runner.gd
@@ -135,8 +139,10 @@ if [[ "${QA_EXPORTS:-0}" == "1" ]]; then
   echo "==> release exports"
   rm -rf builds/web builds/macos
   mkdir -p builds/web builds/macos
-  "$GODOT_BIN" --headless --path . --export-release Web builds/web/index.html
-  "$GODOT_BIN" --headless --path . --export-release macOS builds/macos/CobieNukem.zip
+  GODOT_BIN="$GODOT_BIN" bash "$SAFE_GODOT_RUNNER" --timeout "${GODOT_EXPORT_TIMEOUT_SECONDS:-900}" -- \
+    --headless --path . --export-release Web builds/web/index.html
+  GODOT_BIN="$GODOT_BIN" bash "$SAFE_GODOT_RUNNER" --timeout "${GODOT_EXPORT_TIMEOUT_SECONDS:-900}" -- \
+    --headless --path . --export-release macOS builds/macos/CobieNukem.zip
   test -s builds/web/index.html
   test -s builds/macos/CobieNukem.zip
 

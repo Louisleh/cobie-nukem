@@ -1,21 +1,23 @@
-# Release Notes — 0.7.0-alpha.1-rc1 Rain City Run
+# Release Notes — 0.7.0-alpha.1-rc2 Rain City Stabilization
 
-Built on 2026-07-16 with Godot `4.7.stable.official.5b4e0cb0f`. Runtime feature revision: `3144a22`; source integration: `1dcb28c`.
+Built on 2026-07-16 with Godot `4.7.stable.official.5b4e0cb0f`. Runtime feature revision: `0d80348`; stamped candidate: `6228ecd`.
 
-## Player-visible changes
+## Player-visible changes since RC1
 
-- Rain City Run becomes the campaign's second mission, unlocked by completing Salmon Creek, with mission-aware Replay and `CONTINUE TO RAIN CITY` continuity.
-- Five authored zones replace the straight beta corridor: Downtown Service Alley, Rain City Slice, Waterfront Seawall, Terminal Service, and Harbour Pier.
-- The mission contains four secrets, 26 authored enemies, the new Compliance Gull, a production eight-direction Umbrella Shield Enforcer, original environmental jokes, and bounded Story/Classic/Mayhem pressure.
-- Terminal Service awards Municipal Recall Override, improving Fetch recall speed and first-contact shield/module stagger without adding primary damage.
-- The Municipal Towmaster is a four-phase 1,000-HP finale with ordered modules, reinforcement warnings, boss HUD/captions, authored audio, bounded ticket/spark effects, and a persistent wreck.
-- Rain City receives original Blender environment/convoy assets, Material Maker source families, and 27 imported Gull/Umbrella/convoy audio variations.
+- Four visible encounter gates prevent route fragmentation and combat-wave skips; replaying a checkpoint re-closes the active gate until the wave is defeated again.
+- All four Rain City secrets now grant their authored rewards, save exactly once, and restore ammo, health, armor, and the reduced finale reinforcement state.
+- Umbrella shields correctly block/drain frontal hits, expose attack windows, reward rear flanks, and remain broken after depletion.
+- Compliance Gulls use one physics movement authority and retain one CombatPressure token through their dive/recovery lifecycle.
+- Ground enemies require a clear attack path, use difficulty-scaled damage, and recover from unreachable navigation only within a bounded local radius.
+- Pickup collision roots remain grounded while only their visual children bob and spin.
 
 ## Engineering and validation
 
-- Save schema v5 adds deterministic v4 migration, content-revision checkpoint remapping, mission loadouts/upgrades, and campaign/checkpoint isolation.
-- Gameplay layout/collision/navigation remain independent of replaceable presentation art.
-- Mission warning/audio routing, loadouts, set-piece path/phase state, Rain City checkpoint state, and convoy presentation now have focused owners; all production scripts meet the 500-line architecture gate except the documented Salmon Creek legacy exemption.
+- Campaign completion is transactional: campaign progress must save and the completed checkpoint must delete before victory; either failure preserves a retry path.
+- Checkpoints only announce after successful writes, secret rewards are included in the saved snapshot, and test saves are isolated from real player data.
+- A serialized Godot runner adds per-project locking, stale-lock recovery, bounded timeouts, descendant cleanup, and unique logs. It prevents interrupted Codex tests from accumulating competing Godot processes—the root cause of the repeated local crash notifications.
+- Production Rain City navigation is baked and verified once; mission-host tests no longer launch five redundant bakes.
+- Rain City assembly, completion flow, and secret policy are extracted; all production scripts pass the 500-line architecture gate except the documented Salmon Creek legacy exemption.
 - The complete export matrix passes parser/import, unit/integration/content/smoke, 100 route/checkpoint/touch/effect cycles, 500 weapon transitions, 100 convoy cycles, provenance/IP, architecture, drift/performance, Web export, and unsigned Universal macOS export gates.
 - The exact packaged Web build passes a 1024×768 Chrome startup check: normalized title, first-tap activation, responsive menu, fitted mission selection, and no game-origin console errors.
 
@@ -29,11 +31,11 @@ Built on 2026-07-16 with Godot `4.7.stable.official.5b4e0cb0f`. Runtime feature 
 
 | Artifact | Bytes | SHA-256 |
 | --- | ---: | --- |
-| `cobie-nukem-0.7.0-alpha.1-rc1-itch.zip` | 35,345,432 | `1d9529e67804c5e2cd053fa9af2c94ee28a9d33745e7cbcf3e06d07e0f6a1784` |
-| `cobie-nukem-0.7.0-alpha.1-rc1-macos-unsigned.zip` | 84,711,021 | `76a5ddedc30e938b4e5e86c89d7d6f8736df1310ef88916df5c7e799f84d44a3` |
-| Public Web PCK | 25,836,140 | `462120a8057db93badb1d8b033701fbca31187326031ee4617a6b0bec787bc8d` |
+| `cobie-nukem-0.7.0-alpha.1-rc2-itch.zip` | 35,359,299 | `a73918c42de978674c435b289f115a6889c3d870332062d694dbf67730619929` |
+| `cobie-nukem-0.7.0-alpha.1-rc2-macos-unsigned.zip` | 84,723,809 | `98c215c24da7bf671f618a5cc3f293e7a85b48a4a3394ff6cc52f1cff2dd9b6a` |
+| Packaged Web PCK | 25,851,096 | `03a3fe985217b303bc90bad881fd79760761e9119aff696091a29d0e7906abe2` |
 
-Published through source [PR #40](https://github.com/Louisleh/cobie-nukem/pull/40) at integration `1dcb28c`, [GitHub prerelease `v0.7.0-alpha.1-rc1`](https://github.com/Louisleh/cobie-nukem/releases/tag/v0.7.0-alpha.1-rc1), and `Louisleh/louislehmann-site` [PR #122](https://github.com/Louisleh/louislehmann-site/pull/122) at deployment `ecfdcd6`. Ordinary and cache-busted public URLs identify the RC, and the downloaded public PCK matched the packaged SHA-256 exactly.
+Publication integration and downloaded public PCK identity are recorded in `docs/RELEASE_0_7_0_ALPHA1_RC2_EVIDENCE.md` after merge and deployment.
 
 ---
 

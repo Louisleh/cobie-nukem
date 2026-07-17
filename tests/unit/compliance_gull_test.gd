@@ -30,6 +30,7 @@ func _run() -> void:
 	_test_locked_dive_can_miss()
 	_test_committed_dive_is_interruptible()
 	_test_state_change_cleanup()
+	_test_dive_retains_pressure_token()
 
 	if fake_pressure != null:
 		fake_pressure.queue_free()
@@ -156,6 +157,35 @@ func _test_state_change_cleanup() -> void:
 	gull._begin_attack()
 	gull._die(fake_target)
 	_expect(gull.is_mark_telegraph_active() == false, "Dead gull never retains visible telegraph state")
+	gull.queue_free()
+
+
+func _test_dive_retains_pressure_token() -> void:
+	var pressure := root.get_node_or_null("CombatPressure")
+	if pressure == null:
+		failures.append("CombatPressure autoload is available for Gull pressure test")
+		return
+	pressure.reset()
+	pressure.configure_limit(1)
+	var gull := _spawn_gull()
+	_expect(pressure.request_attack(gull, 1), "Gull acquires the only attack-pressure token")
+	gull._set_state(ComplianceGull.State.ATTACK)
+	gull._perform_attack()
+	# Repeated base recovery attempts used to release the token even though the
+	# Gull override correctly held ATTACK through its physical dive.
+	for _step in 8:
+		gull._state_time = gull.definition.telegraph_seconds + 0.3
+		gull._physics_process(0.016)
+	var blocked_actor := Node.new()
+	test_scene.add_child(blocked_actor)
+	_expect(not pressure.request_attack(blocked_actor, 1), "Gull retains its token until dive and recovery finish")
+	for _step in 80:
+		gull._advance_dive(0.05)
+		if not gull.is_dive_active() and not gull.is_dive_recovering():
+			break
+	_expect(pressure.request_attack(blocked_actor, 1), "Gull releases its token exactly when recovery exits ATTACK")
+	pressure.release_attack(blocked_actor)
+	blocked_actor.queue_free()
 	gull.queue_free()
 
 

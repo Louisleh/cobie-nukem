@@ -28,7 +28,6 @@ func activate_from_pool() -> void:
 	if shape != null:
 		shape.set_deferred("disabled", false)
 	process_mode = Node.PROCESS_MODE_INHERIT
-	reset_physics_interpolation()
 
 
 func deactivate_for_pool() -> void:

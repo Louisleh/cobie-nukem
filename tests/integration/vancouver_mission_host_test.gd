@@ -18,6 +18,7 @@ func _initialize() -> void:
 
 func _run() -> void:
 	var mission := MissionScene.instantiate() as EpisodeOneVancouverWaterfront
+	mission.build_navigation = false
 	mission.spawn_player = false
 	mission.start_run_automatically = false
 	mission.setup_presentation = false
@@ -30,6 +31,9 @@ func _run() -> void:
 	_expect(mission._spawn_registry != null, "mission owns shared MissionSpawnRegistry")
 	_expect(mission._world_builder.geometry.get_child_count() >= 30, "five-zone world contains authored environment and landmarks")
 	_expect(mission._world_builder.navigation_region != null, "world owns production navigation region")
+	var navigation_status := mission._world_builder.navigation_bake_status()
+	_expect(not bool(navigation_status.get("requested", true)), "mission-host test explicitly disables production navigation baking")
+	_expect(not bool(navigation_status.get("started", true)), "mission-host test does not schedule a deferred navigation bake")
 
 	var route := mission.content_manifest.route_definition
 	for zone_id in EXPECTED_ZONES:
@@ -42,9 +46,19 @@ func _run() -> void:
 		mission._submit_route_position(center)
 		_expect(mission.current_zone == zone_id, "mission progresses into %s" % zone_id)
 		if zone_id != &"harbour_pier":
-			_expect(mission._mission_runtime.encounters.active.has(zone_id), "route zone %s activates only its current encounter" % zone_id)
+			_expect(mission._mission_runtime.encounters.active.has(zone_id), "route zone %s activates its current encounter" % zone_id)
+			_expect(not mission._world_builder.is_route_gate_open(zone_id), "route zone %s remains gated while enemies are active" % zone_id)
+			await _defeat_zone_encounter(mission, zone_id)
+			_expect(mission._mission_runtime.encounters.completed.has(zone_id), "route zone %s completes every authored wave" % zone_id)
+			_expect(mission._world_builder.is_route_gate_open(zone_id), "route zone %s opens only after encounter completion" % zone_id)
+			if zone_id == &"downtown_alley":
+				mission.restart_from_checkpoint()
+				_expect(mission._mission_runtime.encounters.active.has(zone_id), "checkpoint retry reactivates the last combat encounter")
+				_expect(not mission._world_builder.is_route_gate_open(zone_id), "checkpoint retry re-closes the encounter gate")
+				await _defeat_zone_encounter(mission, zone_id)
+				_expect(mission._world_builder.is_route_gate_open(zone_id), "replayed encounter reopens its gate only after second completion")
 
-	_expect(mission._mission_runtime.encounters.active.size() <= 1, "advancing the route clears abandoned prior-zone encounters")
+	_expect(mission._mission_runtime.encounters.active.size() <= 1, "completed route encounters leave no abandoned active actors")
 	_expect(not mission._mission_runtime.encounters.active.has(&"harbour_pier"), "convoy encounter waits for set-piece coordination")
 	_expect(mission._route_runtime.current_checkpoint_id == &"checkpoint_harbour_pier", "route exposes ordered harbour checkpoint")
 	_expect(mission._world_builder.terminal_switch != null, "terminal objective switch exists")
@@ -66,6 +80,7 @@ func _run() -> void:
 	await _test_opening_safety_window()
 	await _test_harbour_checkpoint_rehydration()
 	await _test_completed_checkpoint_rehydrates_wreck()
+	await _test_restored_terminal_secret_keeps_interactions()
 	await _test_stale_route_snapshot_fallback()
 	if failures.is_empty():
 		print("VANCOUVER MISSION HOST TEST: PASS")
@@ -78,6 +93,7 @@ func _run() -> void:
 
 func _test_harbour_checkpoint_rehydration() -> void:
 	var mission := MissionScene.instantiate() as EpisodeOneVancouverWaterfront
+	mission.build_navigation = false
 	mission.spawn_player = false
 	mission.start_run_automatically = false
 	mission.setup_presentation = false
@@ -108,6 +124,7 @@ func _test_harbour_checkpoint_rehydration() -> void:
 
 func _test_completed_checkpoint_rehydrates_wreck() -> void:
 	var mission := MissionScene.instantiate() as EpisodeOneVancouverWaterfront
+	mission.build_navigation = false
 	mission.spawn_player = false
 	mission.start_run_automatically = false
 	mission.setup_presentation = false
@@ -143,8 +160,39 @@ func _test_completed_checkpoint_rehydrates_wreck() -> void:
 	await process_frame
 
 
+func _test_restored_terminal_secret_keeps_interactions() -> void:
+	var mission := MissionScene.instantiate() as EpisodeOneVancouverWaterfront
+	mission.build_navigation = false
+	mission.spawn_player = false
+	mission.start_run_automatically = false
+	mission.setup_presentation = false
+	mission._restored_checkpoint = {
+		"checkpoint_id": "checkpoint_terminal_service",
+		"objective_snapshot": {"progress": {}, "completed": []},
+		"encounter_snapshot": {"completed": [], "active": {}},
+		"route_snapshot": {
+			"route_id": "vancouver_mission2_route",
+			"current_zone": "terminal_service",
+			"current_index": 3,
+			"visited_zones": ["downtown_alley", "ruse_block", "waterfront_seawall", "terminal_service"],
+			"checkpoint_id": "checkpoint_terminal_service",
+			"is_completed": false,
+		},
+		"secrets": {"secret_terminal_service": "DOCK LEAK MODE OFF"},
+	}
+	root.add_child(mission)
+	await process_frame
+	_expect(mission._interaction_runtime != null, "restored terminal secret keeps the mission interaction runtime active")
+	if mission._interaction_runtime != null:
+		_expect(mission._interaction_runtime.interaction_count() == mission.content_manifest.interaction_catalog.placements.size(), "restored terminal secret preserves every authored interaction")
+	_expect(mission._terminal_reinforcement_disabled, "restored terminal secret reapplies only its finale reinforcement reward")
+	mission.queue_free()
+	await process_frame
+
+
 func _test_stale_route_snapshot_fallback() -> void:
 	var mission := MissionScene.instantiate() as EpisodeOneVancouverWaterfront
+	mission.build_navigation = false
 	mission.spawn_player = false
 	mission.start_run_automatically = false
 	mission.setup_presentation = false
@@ -173,6 +221,7 @@ func _test_stale_route_snapshot_fallback() -> void:
 
 func _test_opening_safety_window() -> void:
 	var mission := MissionScene.instantiate() as EpisodeOneVancouverWaterfront
+	mission.build_navigation = false
 	mission.start_run_automatically = false
 	mission.setup_presentation = false
 	root.add_child(mission)
@@ -181,6 +230,38 @@ func _test_opening_safety_window() -> void:
 	_expect(player != null, "public Vancouver beta spawns its player")
 	if player != null:
 		_expect(player.health_armor.invulnerable_remaining >= mission.opening_protection_seconds - 0.1, "public beta grants time to establish pointer or touch control before opening damage")
+		player.health_armor.armor = 0.0
+		mission._on_secret_requested(&"secret_downtown_alley", "SIREN ROUTE DISABLED", null)
+		_expect(player.health_armor.armor >= 40.0, "downtown secret awards the authored armor cache")
+		player.health_armor.health = 20.0
+		mission._on_secret_requested(&"secret_ruse_block", "NOISE BARGE SILENCED", null)
+		_expect(is_equal_approx(player.health_armor.health, player.health_armor.max_health), "Rain City Slice secret restores full health")
+		var fetch_weapon: WeaponBase
+		for weapon in player.weapons:
+			if weapon.definition != null and weapon.definition.ammo_type == "tennis_balls":
+				fetch_weapon = weapon
+				break
+		_expect(fetch_weapon != null, "Vancouver loadout contains Fetch Launcher for secret reward")
+		if fetch_weapon != null:
+			fetch_weapon.reserve_ammo = 0
+			mission._on_secret_requested(&"secret_waterfront_seawall", "DOCK SECURITY LOOP CLOSED", null)
+			_expect(fetch_weapon.reserve_ammo == 6, "waterfront secret grants six Fetch balls")
+			var save_manager := mission.get_node_or_null("/root/SaveManager")
+			var saved_checkpoint: Dictionary = save_manager.load_slot(&"checkpoint") if save_manager != null else {}
+			var saved_loadout: Dictionary = saved_checkpoint.get("active_mission_upgrades", {})
+			var saved_ammo: Dictionary = saved_loadout.get("weapon_ammo", {})
+			var fetch_id := String(fetch_weapon.definition.id)
+			_expect(int((saved_ammo.get(fetch_id, {}) as Dictionary).get("reserve", -1)) == 6, "waterfront secret checkpoint captures the rewarded Fetch reserve")
+			var saved_player_state: Dictionary = saved_checkpoint.get("player_state", {})
+			_expect(float(saved_player_state.get("armor", -1.0)) >= 65.0, "waterfront secret checkpoint captures accumulated secret armor")
+		var harbour_definition := mission._mission_runtime.encounters.definitions.get(&"harbour_pier") as EncounterDefinition
+		var reinforcement_before: int = (harbour_definition.effective_waves()[1].get("spawns", []) as Array).size()
+		mission._on_secret_requested(&"secret_terminal_service", "DOCK LEAK MODE OFF", null)
+		harbour_definition = mission._mission_runtime.encounters.definitions.get(&"harbour_pier") as EncounterDefinition
+		var reinforcement_after: int = (harbour_definition.effective_waves()[1].get("spawns", []) as Array).size()
+		_expect(reinforcement_after == reinforcement_before - 1, "terminal secret removes one finale reinforcement")
+		mission._on_secret_requested(&"secret_terminal_service", "DOCK LEAK MODE OFF", null)
+		_expect((harbour_definition.effective_waves()[1].get("spawns", []) as Array).size() == reinforcement_after, "terminal secret reward is idempotent")
 	mission.queue_free()
 	await process_frame
 
@@ -216,6 +297,22 @@ func _exercise_convoy(mission: EpisodeOneVancouverWaterfront) -> void:
 	_expect(bool(final_state.get("path_completed", false)), "convoy reaches the authored path end")
 	_expect(bool(final_state.get("completion_emitted", false)), "convoy emits completion after waves and modules")
 	_expect(not mission._mission_runtime.encounters.active.has(&"harbour_pier"), "convoy encounter leaves no active harbour actors")
+
+
+func _defeat_zone_encounter(mission: EpisodeOneVancouverWaterfront, zone_id: StringName) -> void:
+	var safety := 0
+	while mission._mission_runtime.encounters.active.has(zone_id) and safety < 16:
+		var state := mission._mission_runtime.encounters.active.get(zone_id, {}) as Dictionary
+		var timer := state.get("timer") as Timer
+		if timer != null and not timer.is_stopped():
+			timer.timeout.emit()
+		var actors: Array = state.get("actors", []).duplicate()
+		for actor in actors:
+			if actor is EnemyAgent and not (actor as EnemyAgent).is_dead:
+				(actor as EnemyAgent).apply_damage(99999.0)
+		await process_frame
+		safety += 1
+	_expect(safety < 16, "route zone %s resolves within the bounded wave budget" % zone_id)
 
 
 func _flush_pending_wave_timer(mission: EpisodeOneVancouverWaterfront, wave_index: int) -> void:

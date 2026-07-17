@@ -1,6 +1,8 @@
 class_name VancouverWaterfrontWorldBuilder
 extends Node
 
+signal navigation_bake_completed(succeeded: bool, polygon_count: int)
+
 const CheckpointScene = preload("res://scenes/interactables/level_checkpoint.tscn")
 const SwitchScene = preload("res://scenes/interactables/level_switch.tscn")
 const ZoneScene = preload("res://scenes/interactables/zone_trigger.tscn")
@@ -10,6 +12,8 @@ var on_zone_entered: Callable
 var on_checkpoint_activated: Callable
 var on_objective_action: Callable
 var on_narrative_message: Callable
+
+@export var build_navigation := true
 
 var geometry: Node3D
 var gameplay_layout: Node3D
@@ -23,7 +27,11 @@ var departure_switch: LevelSwitch
 var _owner: Node3D
 var _navigation_sources: Array[StaticBody3D] = []
 var _materials: Dictionary = {}
+var _route_gates: Dictionary = {}
 var _built := false
+var _navigation_bake_started := false
+var _navigation_bake_finished := false
+var _navigation_bake_succeeded := false
 
 
 func build(owner: Node3D) -> bool:
@@ -53,6 +61,7 @@ func build(owner: Node3D) -> bool:
 	owner.add_child(interactables)
 	_build_environment()
 	_build_route()
+	_build_encounter_gates()
 	_build_landmarks()
 	_build_neighbourhood_detail()
 	_build_story_objects()
@@ -154,6 +163,44 @@ func _build_landmarks() -> void:
 	# Combat cover and machinery keep each major space tactically legible.
 	for position in [Vector3(-5, 1, -9), Vector3(5, 1, -29), Vector3(-6, 1, -44), Vector3(7, 1, -70), Vector3(-5, 1, -88), Vector3(-7, 1, -110), Vector3(7, 1, -117), Vector3(-9, 1, -145), Vector3(9, 1, -159)]:
 		_prop_box("ComplianceCrate", position, Vector3(2.8, 2.0, 2.8), Color("725638"), true)
+
+
+func _build_encounter_gates() -> void:
+	var gate_specs := {
+		&"downtown_alley": Vector3(0.0, 1.45, -19.0),
+		&"ruse_block": Vector3(0.0, 1.45, -53.0),
+		&"waterfront_seawall": Vector3(0.0, 1.45, -95.0),
+		&"terminal_service": Vector3(0.0, 1.45, -128.0),
+	}
+	for raw_zone_id in gate_specs:
+		var zone_id := StringName(raw_zone_id)
+		var gate := _prop_box(
+			"EncounterGate_%s" % zone_id,
+			gate_specs[zone_id],
+			Vector3(9.6, 2.9, 0.45),
+			Color("e6a53a"),
+			true,
+			true
+		)
+		gate.set_meta(&"encounter_gate_zone", zone_id)
+		gate.add_to_group(&"rain_city_encounter_gates")
+		_route_gates[zone_id] = gate
+
+
+func set_route_gate_open(zone_id: StringName, is_open: bool) -> void:
+	var gate := _route_gates.get(zone_id) as StaticBody3D
+	if gate == null:
+		return
+	gate.collision_layer = 0 if is_open else 1
+	gate.visible = not is_open
+	for child in gate.get_children():
+		if child is CollisionShape3D:
+			(child as CollisionShape3D).set_deferred("disabled", is_open)
+
+
+func is_route_gate_open(zone_id: StringName) -> bool:
+	var gate := _route_gates.get(zone_id) as StaticBody3D
+	return gate != null and gate.collision_layer == 0
 
 
 func _build_neighbourhood_detail() -> void:
@@ -266,11 +313,16 @@ func _build_navigation() -> void:
 	mesh.filter_baking_aabb = AABB(Vector3(-20.0, -1.2, -181.0), Vector3(40.0, 4.0, 194.0))
 	navigation_region.navigation_mesh = mesh
 	_owner.add_child(navigation_region)
-	call_deferred("_bake_navigation")
+	if build_navigation:
+		call_deferred("_bake_navigation")
 
 
 func _bake_navigation() -> void:
+	if _navigation_bake_started or _navigation_bake_finished:
+		return
+	_navigation_bake_started = true
 	if not is_instance_valid(navigation_region):
+		_finish_navigation_bake(false)
 		return
 	navigation_region.bake_navigation_mesh(false)
 	var navigation_map := navigation_region.get_navigation_map()
@@ -278,9 +330,32 @@ func _bake_navigation() -> void:
 	NavigationServer3D.region_set_navigation_mesh(navigation_region.get_rid(), navigation_region.navigation_mesh)
 	NavigationServer3D.map_set_active(navigation_map, true)
 	NavigationServer3D.map_force_update(navigation_map)
+	_finish_navigation_bake(navigation_region.navigation_mesh.get_polygon_count() > 0)
 	# Navigation sources are the authoritative gameplay floors. Removing them after
 	# baking used to make the level appear stable briefly and then drop actors and
 	# pickups through the world. Keep them owned by AuthoredGameplayLayout.
+
+
+func navigation_bake_status() -> Dictionary:
+	var polygon_count := 0
+	if is_instance_valid(navigation_region) and navigation_region.navigation_mesh != null:
+		polygon_count = navigation_region.navigation_mesh.get_polygon_count()
+	return {
+		"requested": build_navigation,
+		"started": _navigation_bake_started,
+		"finished": _navigation_bake_finished,
+		"succeeded": _navigation_bake_succeeded,
+		"polygon_count": polygon_count,
+	}
+
+
+func _finish_navigation_bake(succeeded: bool) -> void:
+	_navigation_bake_finished = true
+	_navigation_bake_succeeded = succeeded
+	var polygon_count := 0
+	if is_instance_valid(navigation_region) and navigation_region.navigation_mesh != null:
+		polygon_count = navigation_region.navigation_mesh.get_polygon_count()
+	navigation_bake_completed.emit(succeeded, polygon_count)
 
 
 func _floor(node_name: String, position: Vector3, size: Vector3, color: Color, surface_id: StringName) -> void:

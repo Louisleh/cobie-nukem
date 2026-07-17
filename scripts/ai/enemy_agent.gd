@@ -129,8 +129,6 @@ func _physics_process(delta: float) -> void:
 				_perform_attack()
 				attack_fired.emit(attack_kind)
 			if _state_time >= definition.telegraph_seconds + 0.2:
-				var pressure := get_node_or_null("/root/CombatPressure")
-				if pressure != null: pressure.release_attack(self)
 				_cooldown = definition.attack_cooldown / maxf(_aggression_scale, 0.1)
 				_set_state(State.CHASE)
 func set_target(value: Node3D) -> void:
@@ -313,14 +311,8 @@ func _on_navigation_recovery(reason: StringName, recovery_position: Vector3) -> 
 	var game_state := get_node_or_null("/root/GameState")
 	if game_state != null and not game_state.local_metrics.is_empty():
 		game_state.local_metrics["navigation_recoveries"] = int(game_state.local_metrics.get("navigation_recoveries", 0)) + 1
-	if reason != &"stuck_on_navigation":
-		return
-	# Clamp the correction to the navmesh and preserve a small floor offset. This
-	# only runs after three failed repaths and never crosses a large gap.
-	global_position = recovery_position + Vector3.UP * 0.05
-	velocity = Vector3.ZERO
-	reset_physics_interpolation()
-	_navigator.reset_after_teleport()
+	if EnemyNavigationRecovery.resolve(self, _navigator, reason, recovery_position) == EnemyNavigationRecovery.Result.DEFEAT:
+		_die(null)
 
 func _face_target(delta: float) -> void:
 	if not _target_valid():
@@ -342,8 +334,11 @@ func _begin_attack() -> void:
 func _perform_attack() -> void:
 	if not _target_valid():
 		return
-	if global_position.distance_to(target.global_position) <= definition.attack_range * 1.2 and target.has_method("apply_damage"):
+	if _can_damage_target(definition.attack_range * 1.2) and target.has_method("apply_damage"):
 		target.apply_damage(definition.attack_damage * _damage_scale, self, target.global_position)
+
+func _can_damage_target(maximum_distance: float) -> bool:
+	return _target_valid() and EnemyAttackQuery.has_clear_path(self, target, target_height, maximum_distance)
 
 func _spawn_projectile(scene: PackedScene, speed: float, splash_radius := 0.0) -> Node3D:
 	if not _target_valid() or scene == null:
@@ -356,6 +351,7 @@ func _spawn_projectile(scene: PackedScene, speed: float, splash_radius := 0.0) -
 	var origin := get_auto_aim_position()
 	var direction := origin.direction_to(target.global_position + Vector3.UP * 0.8)
 	projectile.global_position = origin
+	projectile.reset_physics_interpolation()
 	if projectile.has_method("launch"):
 		projectile.launch(direction, self, definition.attack_damage * _damage_scale, speed, splash_radius)
 	return projectile

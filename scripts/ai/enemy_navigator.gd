@@ -79,7 +79,7 @@ func observe_motion(wants_motion: bool, delta: float) -> void:
 	_recovery_cooldown = RECOVERY_COOLDOWN_SECONDS
 	var closest := NavigationServer3D.map_get_closest_point(agent.get_navigation_map(), actor.global_position)
 	if not closest.is_finite() or actor.global_position.distance_to(closest) > MAX_RECOVERY_DISTANCE:
-		recovery_requested.emit(&"path_unreachable", actor.global_position)
+		recovery_requested.emit(&"path_unreachable", closest)
 		return
 	recovery_count += 1
 	recovery_requested.emit(&"stuck_on_navigation", closest)

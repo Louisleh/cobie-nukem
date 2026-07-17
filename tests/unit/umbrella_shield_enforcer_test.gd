@@ -18,9 +18,10 @@ func _initialize() -> void:
 	var harness := Node3D.new()
 	root.add_child(harness)
 	await process_frame
-	_test_attack_opening_and_recovery(harness)
-	_test_difficulty_and_death_lock(harness)
-	_test_timer_generation_safety(harness)
+	await _test_attack_opening_and_recovery(harness)
+	await _test_damage_integration(harness)
+	await _test_difficulty_and_death_lock(harness)
+	await _test_timer_generation_safety(harness)
 	harness.free()
 
 	if failures.is_empty():
@@ -60,6 +61,59 @@ func _test_attack_opening_and_recovery(harness: Node3D) -> void:
 	_expect(_guard_timer_count(enemy) == baseline_timer_count, "guard uses shared timer node")
 	enemy.free()
 	target.free()
+
+
+func _test_damage_integration(harness: Node3D) -> void:
+	var enemy := _build_umbrella()
+	harness.add_child(enemy)
+	await process_frame
+
+	var shield := enemy.directional_shield
+	var front_hit := enemy.global_position + Vector3.FORWARD * 2.0
+	var rear_hit := enemy.global_position + Vector3.BACK * 2.0
+
+	var health_before := enemy.health
+	var shield_before := shield.current_shield_health
+	var blocked_applied := enemy.apply_damage(20.0, null, front_hit)
+	_expect(is_equal_approx(blocked_applied, 20.0 * shield.blocked_damage_multiplier), "guarded front hit applies the shield's blocked damage multiplier")
+	_expect(is_equal_approx(enemy.health, health_before - blocked_applied), "guarded front hit routes reduced damage through the enemy")
+	_expect(is_equal_approx(shield.current_shield_health, shield_before - shield.shield_hit_cost), "guarded front hit drains one shield quantum")
+
+	shield.reset()
+	enemy._set_state(UmbrellaShieldEnforcer.State.CHASE)
+	shield.set_guarding(false)
+	health_before = enemy.health
+	shield_before = shield.current_shield_health
+	var open_applied := enemy.apply_damage(10.0, null, front_hit)
+	_expect(is_equal_approx(open_applied, 10.0), "open guard applies full incoming damage")
+	_expect(is_equal_approx(enemy.health, health_before - open_applied), "open guard routes full damage through the enemy")
+	_expect(is_equal_approx(shield.current_shield_health, shield_before), "open guard does not drain shield health")
+
+	shield.reset()
+	enemy._set_state(UmbrellaShieldEnforcer.State.CHASE)
+	health_before = enemy.health
+	shield_before = shield.current_shield_health
+	var rear_applied := enemy.apply_damage(10.0, null, rear_hit)
+	_expect(is_equal_approx(rear_applied, 10.0 * shield.break_damage_multiplier), "guarded rear hit applies the authored bypass multiplier")
+	_expect(is_equal_approx(enemy.health, health_before - rear_applied), "rear bypass routes amplified damage through the enemy")
+	_expect(is_equal_approx(shield.current_shield_health, shield_before), "rear bypass does not drain frontal shield health")
+
+	shield.reset()
+	enemy._set_state(UmbrellaShieldEnforcer.State.CHASE)
+	while not shield.is_permanently_broken():
+		enemy.apply_damage(1.0, null, front_hit)
+		if not shield.is_permanently_broken():
+			enemy._set_state(UmbrellaShieldEnforcer.State.CHASE)
+	_expect(shield.is_permanently_broken(), "front impacts break the shield through the enemy damage entry point")
+	enemy._set_state(UmbrellaShieldEnforcer.State.CHASE)
+	_expect(enemy.guard_state == UmbrellaShieldEnforcer.GuardState.BROKEN, "broken shield remains broken after returning to chase")
+	health_before = enemy.health
+	var post_break_applied := enemy.apply_damage(5.0, null, front_hit)
+	_expect(is_equal_approx(post_break_applied, 5.0), "post-break front hit applies full damage")
+	_expect(is_equal_approx(enemy.health, health_before - post_break_applied), "post-break damage reaches enemy health")
+	_expect(shield.is_permanently_broken(), "ordinary state changes never restore a broken shield")
+
+	enemy.free()
 
 
 func _test_timer_generation_safety(harness: Node3D) -> void:
@@ -132,6 +186,9 @@ func _build_umbrella() -> UmbrellaShieldEnforcer:
 	enemy.definition = definition
 	enemy.base_opening_window_seconds = 0.20
 	enemy.base_recovery_window_seconds = 0.14
+	var telegraph := MeshInstance3D.new()
+	telegraph.name = "Telegraph"
+	enemy.add_child(telegraph)
 
 	var shield := DirectionalShieldComponent.new()
 	shield.name = "DirectionalShieldComponent"
