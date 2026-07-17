@@ -34,4 +34,9 @@
 
 ## Publication record
 
-Source PR, GitHub prerelease, website deployment, and downloaded-public-artifact identity are recorded after their respective green publication gates complete.
+- Source [PR #49](https://github.com/Louisleh/cobie-nukem/pull/49) merged at `951f07e` after `validate-package` passed.
+- GitHub prerelease [`v0.7.0-alpha.1-rc4`](https://github.com/Louisleh/cobie-nukem/releases/tag/v0.7.0-alpha.1-rc4) contains the exact validated Web and unsigned Universal macOS packages.
+- Website [PR #125](https://github.com/Louisleh/louislehmann-site/pull/125) merged at deployment `3a0c5af`; its main-branch CI and Vercel production deployment passed.
+- Ordinary and cache-busted public landing/play URLs identify `0.7.0-alpha.1-rc4` / `e1afd5a`.
+- The downloaded public PCK is exactly 26,282,436 bytes with SHA-256 `1260693005804915d30f6163036e4ab943063a0ccfbb75380aaee0729ed8bbe8`, matching the packaged artifact byte-for-byte.
+- A fresh public Chrome run confirmed Rain City remains selected with `START BETA` while focus sits on locked Mount Hood, and the game-origin console is clean.
