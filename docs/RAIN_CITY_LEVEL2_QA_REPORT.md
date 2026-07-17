@@ -103,6 +103,10 @@ The level already builds a lot of unused affordances (an upper seawall lane + ra
 - **Citation Convoy / Towmaster** is a vehicle mesh set piece, not a sprite — fine.
 - Recommend adding the Gull + Umbrella Enforcer to `enemy_contract_tests.gd` so the new "sprite is not a tiny speck / oversized sheet" guard covers *all* Mission‑2 enemies, not just the original five.
 
+**Flaky CI / test hygiene (found while running this pass):**
+
+- `tests/unit/mission_presentation_test.gd` intermittently leaks at process exit — `2 ObjectDB instances were leaked` + `1 resources still in use at exit`. It passed the full local gate and **5/5** isolated local re-runs cleanly, but failed once in CI. Because `tools/release_validate.sh` was hardened to fail on any `^ERROR:` line, this non-deterministic leak turns into a hard CI failure that can block *any* PR (including docs-only ones) at random. `MissionPresentation` is shared by both missions, so this is worth a real fix: audit `mission_presentation_test.gd` teardown (and `MissionPresentation`'s owned tweens/timers/audio streams) to free everything before `quit()`, mirroring the audio-stop pattern the smoke runner already uses. Not caused by any Rain City content; flagged here because it surfaced during Mission‑2 validation.
+
 **Worth a human eye (cannot be settled headlessly):**
 
 - **Hazard fall risk:** the seawall hazard `(10.4, -79.1)` sits between the promenade and the harbour side; confirm that dodging it doesn't nudge a player toward a rail gap / kill plane. (Geometry check says it's inside the floor, but feel matters.)
