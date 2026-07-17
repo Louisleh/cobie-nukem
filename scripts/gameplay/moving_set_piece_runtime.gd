@@ -113,7 +113,7 @@ func configure(definition: Object, actor_parent: Node = null) -> StringName:
 		return ERROR_INVALID_ACTOR_PARENT
 
 	_definition = definition.duplicate(true)
-	_schema_version = int(_definition.get("schema_version", 1))
+	_schema_version = int(_definition.get("schema_version"))
 	_actor_scene = scene
 	_actor_parent = parent
 	_path_points = _definition.path_points.duplicate()
@@ -474,6 +474,7 @@ func _spawn_actor(moving: bool) -> bool:
 	_actor = instance as Node3D
 	_actor.position = _path_points[0]
 	_actor_parent.add_child(_actor)
+	_sync_actor_phase()
 	_actor.reset_physics_interpolation()
 	_running = true
 	_moving = moving
@@ -564,6 +565,7 @@ func _try_finalize_active_phase() -> void:
 		_active_phase_index += 1
 		changed = true
 	if changed:
+		_sync_actor_phase()
 		phase_changed.emit(_active_phase_index, _active_phase_id(), _generation)
 
 
@@ -583,6 +585,11 @@ func _emit_boss_health_state() -> void:
 	if _schema_version != 2:
 		return
 	boss_health_changed.emit(_current_boss_health, _max_boss_health, _generation)
+
+
+func _sync_actor_phase() -> void:
+	if is_instance_valid(_actor) and _actor.has_method("set_active_phase"):
+		_actor.call("set_active_phase", _active_phase_index)
 
 
 func _start_loop_cycle() -> void:

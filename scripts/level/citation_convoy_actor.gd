@@ -49,7 +49,6 @@ func _on_interaction_completed(interaction_id: StringName, kind: int) -> void:
 		return
 	_destroyed_modules[key] = true
 	module_destroyed.emit(interaction_id)
-	_advance_phase_if_expected(interaction_id)
 
 
 func _on_module_staggered(module_id: StringName, multiplier: float) -> void:
@@ -64,11 +63,8 @@ func is_module_destroyed(module_id: StringName) -> bool:
 	return _destroyed_modules.has(String(module_id))
 
 
-func _advance_phase_if_expected(module_id: StringName) -> void:
-	var expected := _required_module_for_phase(_active_phase_index)
-	if String(module_id) != String(expected):
-		return
-	_active_phase_index += 1
+func set_active_phase(phase_index: int) -> void:
+	_active_phase_index = clampi(phase_index, 0, PHASE_MODULE_IDS.size())
 	_apply_phase_activation()
 
 

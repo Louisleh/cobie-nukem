@@ -51,7 +51,7 @@ func configure(set_piece_runtime: MovingSetPieceRuntime, mission_runtime: Missio
 	if wave_count == 0:
 		return ERROR_MISMATCHED_DEFINITION
 
-	var schema_version := int(definition.get("schema_version", 1))
+	var schema_version := int(definition.get("schema_version"))
 	_schema_version = schema_version
 	if schema_version == 1:
 		if definition.encounter_trigger_ids == null or definition.encounter_trigger_ids.is_empty():
@@ -77,10 +77,10 @@ func configure(set_piece_runtime: MovingSetPieceRuntime, mission_runtime: Missio
 			for phase in definition.phases:
 				if phase == null:
 					return ERROR_MISMATCHED_DEFINITION
-				var phase_wave_index := int(phase.get("encounter_wave_index", -1))
+				var phase_wave_index := int(phase.get("encounter_wave_index"))
 				if phase_wave_index < 0 or phase_wave_index >= wave_count:
 					return ERROR_MISMATCHED_DEFINITION
-				var encounter_id := phase.get("encounter_id", &"") as StringName
+				var encounter_id := phase.get("encounter_id") as StringName
 				if String(encounter_id).strip_edges().is_empty():
 					return ERROR_MISMATCHED_DEFINITION
 				_schema2_encounter_ids_by_wave[phase_wave_index] = encounter_id
@@ -306,9 +306,9 @@ func _is_schema2_encounter_valid(definition: Object, encounter_definition: Encou
 	for phase in definition.phases:
 		if phase == null:
 			return false
-		if int(phase.get("schema_version", 0)) != 2:
+		if int(phase.get("schema_version")) != 2:
 			return false
-		var required_id := phase.get("encounter_id", &"") as StringName
+		var required_id := phase.get("encounter_id") as StringName
 		if String(required_id).strip_edges().is_empty():
 			return false
 		if not found:
@@ -316,7 +316,7 @@ func _is_schema2_encounter_valid(definition: Object, encounter_definition: Encou
 			found = true
 		elif String(required_id) != String(encounter_id):
 			return false
-		var wave_index := int(phase.get("encounter_wave_index", -1))
+		var wave_index := int(phase.get("encounter_wave_index"))
 		if seen_wave_indices.has(wave_index):
 			return false
 		seen_wave_indices[wave_index] = true
@@ -335,7 +335,7 @@ func _encounter_id_for_schema2_definition(definition: Object) -> StringName:
 	var phase := definition.phases[0] as Object
 	if phase == null:
 		return &""
-	var required_id := phase.get("encounter_id", &"") as StringName
+	var required_id := phase.get("encounter_id") as StringName
 	if String(required_id).strip_edges().is_empty():
 		return &""
 	return required_id
