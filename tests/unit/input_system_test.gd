@@ -81,6 +81,18 @@ func check_pointer_capture_policy() -> void:
 		failures.append("Visible desktop pointer must request click-to-aim activation")
 	if not PointerCaptureController.needs_capture(false, Input.MOUSE_MODE_CONFINED):
 		failures.append("Confined desktop pointer is not sufficient for relative mouse aiming")
+	if PointerCaptureController.startup_policy(true, true) != PointerCaptureController.StartupPolicy.TOUCH_VISIBLE:
+		failures.append("Touch startup must keep a visible non-captured pointer")
+	if PointerCaptureController.startup_policy(false, false) != PointerCaptureController.StartupPolicy.NATIVE_CAPTURE:
+		failures.append("Native desktop startup must request pointer capture")
+	if PointerCaptureController.startup_policy(false, true) != PointerCaptureController.StartupPolicy.WEB_PRESERVE:
+		failures.append("Web startup must preserve the trusted Start-button capture request")
+	PointerCaptureController._launch_capture_requested_msec = 1000
+	if not PointerCaptureController.launch_capture_pending(1500):
+		failures.append("Mission-launch pointer request must survive the scene handoff")
+	if PointerCaptureController.launch_capture_pending(3101):
+		failures.append("Mission-launch pointer request must expire after its bounded grace period")
+	PointerCaptureController._launch_capture_requested_msec = -1
 
 
 func check_close(label: String, actual: float, expected: float, tolerance := 0.0001) -> void:
