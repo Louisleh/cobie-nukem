@@ -1,0 +1,16 @@
+work_id: alpha10-audit-visual-content
+role: spark-content-author
+goal: Audit current Salmon Creek and Vancouver presentation against docs/ART_BIBLE.md and the canonical views. Rank the smallest high-leverage environment, material, landmark, enemy, VFX, and route-readability targets.
+baseline_revision: 6e1669bf04333f25b2a14ae76a2091ad1b2857fc
+dependencies: []
+owned_paths: []
+read_only_context: [docs/ART_BIBLE.md, docs/PHASE_ROADMAP_PRD.md, docs/ASSET_MANIFEST.md, scenes/levels, scripts/level, assets]
+forbidden_paths: [all filesystem writes]
+behavioral_contract: Read-only. Preserve collision/navigation and separate confirmed defects from human taste.
+acceptance_criteria: [Rank at most 15 findings, cite exact files and scene/resource IDs, separate reusable Foundry work from decoration, flag missing editable source/provenance]
+focused_tests: Static inspection only.
+evidence_required: File/line or scene/resource evidence for every Major finding.
+out_of_scope: Editing, asset generation, final art judgment, release work.
+time_limit_minutes: 25
+
+Return the repository Spark result packet and a concise prioritized queue. Do not modify the repository.

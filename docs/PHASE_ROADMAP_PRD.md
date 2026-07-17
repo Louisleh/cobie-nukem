@@ -1,6 +1,6 @@
 # Cobie Nukem — Multi-Phase Production PRD
 
-**Status:** Active production source of truth; `0.6.0-alpha.9` public beta
+**Status:** Active production source of truth; `0.6.0-alpha.10` production-foundry release candidate
 
 **Created:** 2026-07-11
 
@@ -8,7 +8,7 @@
 
 **Current public baseline:** `0.6.0-alpha.9` (`c00d54c` gameplay/runtime revision; source integration `7326ff6`; website deployment `13eba81`; PCK SHA-256 `a44af5d67ca30ccc3c69b315ae09286e5e299a0bd0a0dc3a1f31a918dea6e98c`)
 
-**Unreleased development baseline:** `main` at `961d9e8` includes the four iPad playtest fixes from PR #36 (title touch readiness, elite/boss scale, removal of confusing Salmon Creek damage slabs, and a clearer critical-health portrait). The `codex/visual-quality-foundry` candidate adds the first repeatable visual-production pilot; neither source state is deployed yet.
+**Unreleased development baseline:** `codex/alpha10-production-foundry` at feature revision `20649be` includes PR #36, the merged visual-foundry harness, production first-person weapon models, deterministic weapon lifecycle/feedback, and a readability pass for Salmon Creek interiors and the Walker arena. Release stamping, final exports, merge, and deployment are the remaining machine gates.
 
 **Last released alpha:** `0.6.0-alpha.9` (`c00d54c`) — live at <https://www.louislehmann.fyi/games/cobie-nukem/>; human full-route validation remains open
 
@@ -16,6 +16,21 @@
 **Purpose:** Turn the family-playtest vertical slice into a sustainable, original multi-level game without sacrificing responsiveness, humor, Web support, or unusual-controller accessibility.
 
 ## 0. Current status dashboard
+
+### Alpha.10 production-foundry ledger
+
+Alpha.10 is the first phase to run the complete local visual-foundry loop with the newly available Chrome DevTools integration. GPT-5.6 retained architecture, art direction, review, integration, release identity, and claims. Four pinned Spark audits, two pinned implementation pilots, and one independent pinned reviewer were used. The pickup/auto-aim optimization pilot was rejected after root reproduction showed engine errors and weaker collection reliability; rejected output is not counted as progress.
+
+| Workstream | Status | Acceptance evidence |
+| --- | --- | --- |
+| First-person weapon art | **CANDIDATE GREEN — HUMAN ART REVIEW OPEN** | Project-original deterministic Blender source plus manifested Pawstol, Barkshot, and Fetch Launcher GLBs; mechanical, leather-sleeve, and Cobie-paw silhouettes; Godot import/asset contracts and native captures green |
+| Weapon switching and feedback | **CANDIDATE GREEN — HUMAN FEEL OPEN** | Timed resource-driven raise/lower states, eased viewmodel motion, reduced-motion path, overwrite-only queue, richer kill/destructible/world/miss crosshair states, legacy signal compatibility, focused tests, adversarial reload switching, and 500-transition soak |
+| Salmon Creek readability | **CANDIDATE GREEN — HUMAN ART REVIEW OPEN** | Bounded shadowless work/key/fill lights, hazard/guide markings, and zone labels in shed, lab, tunnel, and Walker arena; collision/navigation unchanged; canonical captures reviewed by root |
+| Native performance | **GREEN** | Apple M4 1080p Compatibility profile: opening p95/p99 19.378/19.481 ms, lab 17.931/18.524 ms, tunnels 17.787/19.092 ms, Walker 17.583/18.341 ms; static memory below 81 MB |
+| Packaged Web trace | **GREEN WITH HUMAN DEVICE GATE** | Chrome DevTools on a real packaged Web export at 1024×768 touch, Fast 4G, and 2× CPU: LCP 797 ms, CLS 0.00, clean Godot/WebGL console, 24.32 MB PCK, 39.51 MB WASM, correct loading screen and title render. Physical iPad thermals/input remain open |
+| Independent review | **PASS** | Explicit `gpt-5.3-codex-spark` reviewer found no evidence-backed defect; root test runs supersede the worker sandbox's unavailable Godot user-data path |
+
+Human-only throughout: subjective weapon feel/art, physical iPad Safari simultaneous touch/thermal/audio, target-Mac clean playthrough, mix, difficulty, boss fairness, humor, and photosensitivity.
 
 ### Alpha.9 public-beta and input-readiness ledger
 
@@ -95,7 +110,7 @@ This section is the first place a new Codex or external-auditor run should read.
 
 ### Immediate next gate
 
-**2026-07-16 Visual Quality Foundry candidate:** merge the green, source-only pilot after independent review; then restart Codex so Chrome DevTools MCP can trace the freshly packaged Web artifact. Human review must approve the opening art direction and 4:3 touch hierarchy before any candidate capture becomes an approved baseline. Next production work is the same pipeline applied to one truly reproducible Compliance Hound rig/atlas, one Walker phase/death sequence, and the remaining Salmon Creek graybox zones—not another broad tool-installation pass.
+**2026-07-16 Alpha.10 production-foundry candidate:** the visual-foundry pilot is merged and its first full production application is green at feature revision `20649be`. Chrome DevTools now validates the real packaged Web bootstrap and 1024×768 title path; three original weapon viewmodels replace the primitive placeholders; explicit lifecycle/feedback is fuzzed; and the remaining Salmon Creek interiors have readable authored lighting. Complete `QA_EXPORTS=1`, stamp/merge/package/deploy, and public byte-identity verification are the remaining machine gates. Human review must still approve weapon feel/art, the opening/interior direction, touch hierarchy, and physical-device behavior before captures become approved taste baselines.
 
 **Gate passed 2026-07-11.** Accepted critical Fable findings are addressed, the stamped build is public through the owner website, and the touch-first iPad browser path has automated and tablet-viewport regression evidence. The remaining hardware gate is a real iPad Safari feel/thermal/network pass.
 

@@ -2,6 +2,11 @@ extends SceneTree
 
 const BALL_RETURN_SCENE := preload("res://scenes/interactables/ball_return_secret.tscn")
 const OPENING_FOUNDRY_SCENE := preload("res://assets/models/environment/salmon_creek_opening_foundry.glb")
+const WEAPON_VIEWMODELS: Dictionary = {
+	&"pawstol": preload("res://assets/models/weapons/pawstol_viewmodel.glb"),
+	&"barkshot": preload("res://assets/models/weapons/barkshot_viewmodel.glb"),
+	&"fetch_launcher": preload("res://assets/models/weapons/fetch_launcher_viewmodel.glb"),
+}
 const PILOT_MODELS: Dictionary = {
 	&"field_kit": preload("res://assets/models/pilot/salmon_creek_field_kit.glb"),
 	&"tunnel_module": preload("res://assets/models/pilot/maintenance_tunnel_module_a.glb"),
@@ -23,6 +28,7 @@ var failures: Array[String] = []
 func _initialize() -> void:
 	await _test_ball_return_production_asset()
 	await _test_opening_foundry_asset()
+	await _test_weapon_viewmodels()
 	await _test_production_pipeline_pilot()
 	if failures.is_empty():
 		print("ASSET CONTRACT TESTS: PASS")
@@ -60,6 +66,23 @@ func _test_ball_return_production_asset() -> void:
 	fetch_body.free()
 	machine.queue_free()
 	await process_frame
+
+
+func _test_weapon_viewmodels() -> void:
+	var minimum_parts := {&"pawstol": 16, &"barkshot": 20, &"fetch_launcher": 18}
+	for asset_id: StringName in WEAPON_VIEWMODELS:
+		var packed := WEAPON_VIEWMODELS[asset_id] as PackedScene
+		_expect(packed != null, "%s viewmodel imports as a PackedScene" % asset_id)
+		if packed == null:
+			continue
+		var instance := packed.instantiate()
+		get_root().add_child(instance)
+		await process_frame
+		var meshes := instance.find_children("*", "MeshInstance3D", true, false)
+		_expect(meshes.size() >= int(minimum_parts[asset_id]), "%s retains its authored mechanical, grip, and Cobie-paw silhouette" % asset_id)
+		_expect(instance.find_children("*", "StaticBody3D", true, false).is_empty(), "%s remains a presentation-only first-person asset" % asset_id)
+		instance.queue_free()
+		await process_frame
 
 
 func _test_opening_foundry_asset() -> void:

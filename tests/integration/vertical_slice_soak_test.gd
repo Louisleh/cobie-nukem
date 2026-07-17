@@ -117,13 +117,26 @@ func _test_weapon_state_fuzz(count: int) -> void:
 	for weapon in player.weapons: weapon.unlocked = true
 	for transition in count:
 		player.select_weapon((transition * 17 + 5) % player.weapons.size())
+		for weapon in player.weapons:
+			weapon._process(0.016)
+		player._process_weapon_selection_queue()
 		var current := player.weapons[player.current_weapon_index]
 		if transition % 7 == 0: current.request_reload()
 		if transition % 11 == 0: current.cancel_reload()
-		var enabled_count := 0
+		var visible_count := 0
 		for weapon in player.weapons:
-			if weapon.enabled: enabled_count += 1
-		_expect(enabled_count == 1 and current.enabled and current.visible, "weapon transition %d creates flicker or multiple active weapons" % transition)
+			if weapon.visible: visible_count += 1
+		_expect(visible_count == 1, "weapon transition %d creates a blank frame or multiple visible weapons" % transition)
+	for _settle_tick in 40:
+		for weapon in player.weapons:
+			weapon._process(0.02)
+		player._process_weapon_selection_queue()
+	var enabled_count := 0
+	var visible_count := 0
+	for weapon in player.weapons:
+		if weapon.enabled: enabled_count += 1
+		if weapon.visible: visible_count += 1
+	_expect(enabled_count == 1 and visible_count == 1 and player.weapons[player.current_weapon_index].enabled, "weapon lifecycle settles with exactly one active visible weapon")
 	player.free()
 
 

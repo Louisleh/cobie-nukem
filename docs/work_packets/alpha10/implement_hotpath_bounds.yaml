@@ -1,0 +1,16 @@
+work_id: alpha10-hotpath-bounds
+role: spark-gameplay-worker
+goal: Remove per-physics-frame pickup overlap polling while preserving reliable initial-overlap and fast-crossing collection, and reduce auto-aim LOS raycasts by ranking geometry candidates before checking visibility for only the best bounded candidates.
+baseline_revision: 6e1669bf04333f25b2a14ae76a2091ad1b2857fc
+dependencies: [alpha10-audit-web-performance]
+owned_paths: [scripts/combat/pickup.gd, scripts/player/auto_aim_component.gd, tests/unit/gameplay_foundation_test.gd]
+read_only_context: [scripts/core/world_registry.gd, tests/unit/combat_test_runner.gd, tests/integration/integration_test_runner.gd]
+forbidden_paths: [scripts/core/build_info.gd, docs/PHASE_ROADMAP_PRD.md, project.godot, export_presets.cfg, .github]
+behavioral_contract: Pickups collect on body-enter and one deferred initial-overlap/recovery check only; collection remains idempotent and forgiving. Auto-aim preserves scoring, cone/range/death filtering and lock persistence while checking LOS for at most two ranked candidates per evaluation.
+acceptance_criteria: [No pickup _physics_process polling, initial overlap remains reliable, pickup respawn re-arms recovery, LOS checks are bounded to two, current target behavior and difficulty scaling remain unchanged, focused tests prove contracts]
+focused_tests: /opt/homebrew/bin/godot --headless --path . --script res://tests/unit/gameplay_foundation_test.gd
+evidence_required: Cohesive commit, exact tests, acceptance summary.
+out_of_scope: WorldRegistry architecture, interaction prompt rewrite, balance, release.
+time_limit_minutes: 35
+
+Use only owned paths. Run a headless editor import before the focused test. Commit one cohesive change and return the Spark result packet.

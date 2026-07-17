@@ -1,7 +1,8 @@
-[gd_scene load_steps=8 format=3]
+[gd_scene load_steps=9 format=3]
 
 [ext_resource type="Script" path="res://scripts/combat/barkshot.gd" id="1"]
 [ext_resource type="Resource" path="res://resources/weapons/barkshot.tres" id="2"]
+[ext_resource type="PackedScene" path="res://assets/models/weapons/barkshot_viewmodel.glb" id="3_foundry"]
 [sub_resource type="StandardMaterial3D" id="Dark"]
 albedo_color = Color(0.035, 0.04, 0.045, 1)
 emission_enabled = true
@@ -32,17 +33,9 @@ height = 0.38
 script = ExtResource("1")
 definition = ExtResource("2")
 muzzle_flash = NodePath("MuzzleFlash")
-[node name="Body" type="MeshInstance3D" parent="."]
-position = Vector3(0.22, -0.2, -0.2)
-mesh = SubResource("Body")
-[node name="TwinBarrelA" type="MeshInstance3D" parent="."]
-position = Vector3(0.15, -0.16, -0.68)
-rotation_degrees = Vector3(90, 0, 0)
-mesh = SubResource("Barrel")
-[node name="TwinBarrelB" type="MeshInstance3D" parent="."]
-position = Vector3(0.29, -0.16, -0.68)
-rotation_degrees = Vector3(90, 0, 0)
-mesh = SubResource("Barrel")
+[node name="FoundryViewmodel" parent="." instance=ExtResource("3_foundry")]
+position = Vector3(0.22, -0.23, -0.14)
+scale = Vector3(0.78, 0.78, 0.78)
 [node name="MuzzleFlash" type="OmniLight3D" parent="."]
 position = Vector3(0.22, -0.16, -1.1)
 light_color = Color(1, 0.48, 0.1, 1)

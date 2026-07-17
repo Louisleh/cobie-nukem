@@ -73,6 +73,8 @@ func bind_player(player: Node) -> void:
 		player.pickup_message.connect(show_notification)
 	if player.has_signal("shot_resolved"):
 		player.shot_resolved.connect(func(kind: StringName, _position: Vector3) -> void: crosshair.show_shot_result(kind))
+	if player.has_signal("combat_feedback"):
+		player.combat_feedback.connect(func(event: CombatFeedbackEvent) -> void: crosshair.show_shot_feedback(event))
 	if player.has_signal("access_item_changed"):
 		player.access_item_changed.connect(set_access_item)
 	var pointer_capture := player.get_node_or_null("PointerCapture") as PointerCaptureController

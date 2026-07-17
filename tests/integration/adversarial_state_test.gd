@@ -234,7 +234,15 @@ func _test_weapon_switch_spam_during_reload() -> void:
 	for weapon in player.weapons:
 		weapon.unlocked = true
 	player.select_weapon(1)
+	# Let the explicit lower/raise lifecycle settle before testing reload spam on
+	# the newly active weapon. Weapon selection is intentionally no longer an
+	# instantaneous visibility flip.
+	for _tick in range(24):
+		for mounted_weapon in player.weapons:
+			mounted_weapon._process(0.02)
+		player._process_weapon_selection_queue()
 	var weapon := player.weapons[1]
+	_expect(player.current_weapon_index == 1, "weapon lifecycle activates the requested slot before reload-spam coverage")
 	weapon.ammo = 0
 	weapon.reserve_ammo = maxi(weapon.reserve_ammo, weapon.definition.magazine_size)
 	var reserve_before := weapon.reserve_ammo

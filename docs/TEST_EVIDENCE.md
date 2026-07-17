@@ -2,6 +2,21 @@
 
 This is a durable evidence template, not a claim that every listed check has run against the current working tree. Add one section per candidate; never overwrite older evidence.
 
+## Candidate 0.6.0-alpha.10 Production Foundry — 2026-07-16
+
+| Check | Result | Evidence |
+| --- | --- | --- |
+| Feature revision | Pass | `20649be` contains project-original Blender weapon source/GLBs, Salmon readability, and the corrected Spark lifecycle integration; release stamp remains separate |
+| Spark acceleration | Pass with one rejection | Four model-pinned read-only audits, two model-pinned writers, and a model-pinned independent reviewer. Root rejected the pickup/auto-aim writer after reproducing engine errors and a reliability regression |
+| Weapon lifecycle and combat feedback | Pass | Combat, integrated combat, adversarial reload-switch, and 500-transition soak pass; exactly one viewmodel remains visible during spam and one active weapon remains after settling |
+| Asset/provenance contracts | Pass | Three weapon GLBs import, meet authored-part minimums, remain presentation-only, and have deterministic Blender source plus SHA-256 provenance |
+| Canonical native captures | Pass with human art gate | Ten 1280×720 views captured; opening, shed, lab, tunnel, Walker, Vancouver, and 4:3 touch inspected. No baseline was implicitly approved |
+| Native 1080p profile | Pass | All zones p95 below 20 ms and p99 below 20 ms on Apple M4 Compatibility renderer; static memory below 81 MB |
+| Packaged Web trace | Pass with hardware gate | Chrome DevTools 1024×768 touch, Fast 4G, 2× CPU: LCP 797 ms, CLS 0.00, clean console, 24.32 MB PCK, 39.51 MB WASM, correct loading/title presentation |
+| Architecture/content/IP gates | Pass | Player controller remains below 500 lines; no generated export/bridge/unowned timer; two manifests validate; asset/IP heuristic passes |
+| Independent Spark review | Pass | No evidence-backed defect in the integrated diff; root's unrestricted tests provide runtime evidence unavailable to the read-only worker sandbox |
+| Physical device and human playthrough | Not run | iPad Safari comfort/thermal/audio, target-Mac clean route, weapon feel/art, mix, balance, humor, and photosensitivity remain human-only |
+
 ## Visual Quality Foundry source candidate — 2026-07-16
 
 | Check | Result | Evidence |
