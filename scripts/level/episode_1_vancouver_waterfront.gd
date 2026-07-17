@@ -17,12 +17,6 @@ const WorldBuilderScript = preload("res://scripts/level/vancouver_waterfront_wor
 const PLAYER_SCENE := "res://scenes/player/cobie_player.tscn"
 const CONTENT_REVISION := 2
 const MUNICIPAL_RECALL_OVERRIDE := &"municipal_recall_override"
-const CONVOY_PHASE_CAPTIONS: Array[String] = [
-	"APPEAL FILED // DISABLE LEFT DRIVE",
-	"APPEAL DENIED // DISABLE SIGNAL DISH",
-	"FINAL NOTICE // DISABLE RIGHT DRIVE",
-	"CASE CLOSED // CITATION CORE EXPOSED",
-]
 const CHECKPOINT_POSITIONS: Dictionary = {
 	&"checkpoint_downtown_alley": Vector3(0, 1.1, 8),
 	&"checkpoint_ruse_block": Vector3(0, 1.1, -23),
@@ -57,14 +51,13 @@ var _interaction_runtime: MissionInteractionRuntime
 var _mission_presentation: MissionPresentation
 var _set_piece_runtime: MovingSetPieceRuntime
 var _convoy_coordinator: MovingSetPieceEncounterCoordinator
-var _active_convoy: CitationConvoyActor
+var _convoy_presentation: RainCityConvoyPresentation
 var _route_recovery_timer: Timer
 var _completion_timer: Timer
 var _last_combat_zone: StringName = &""
 var _resetting_encounter := false
 var _mission_upgrades: Array[StringName] = []
 var _baseline_attack_budget := 3
-
 
 func _ready() -> void:
 	_run_started_ms = Time.get_ticks_msec()
@@ -88,7 +81,6 @@ func _ready() -> void:
 		objective_changed.emit(metadata.opening_objective)
 	if is_instance_valid(player):
 		_submit_route_position(player.global_position)
-
 
 func _setup_runtime() -> void:
 	var pressure := get_node_or_null("/root/CombatPressure")
@@ -136,7 +128,6 @@ func _setup_runtime() -> void:
 	add_child(_completion_timer)
 	_restore_runtime_state()
 
-
 func _build_world() -> void:
 	_world_builder = WorldBuilderScript.new()
 	_world_builder.name = "VancouverWaterfrontWorldBuilder"
@@ -151,7 +142,6 @@ func _build_world() -> void:
 	_spawn_registry.actor_parent = _world_builder.actors
 	_setup_convoy()
 
-
 func _setup_convoy() -> void:
 	if content_manifest.moving_set_pieces.size() != 1:
 		push_error("Vancouver requires exactly one citation convoy definition")
@@ -164,17 +154,20 @@ func _setup_convoy() -> void:
 	if configure_error != MovingSetPieceRuntime.ERROR_NONE:
 		push_error("Citation convoy runtime rejected its definition: %s" % configure_error)
 		return
-	_set_piece_runtime.started.connect(_on_convoy_actor_started)
-	_set_piece_runtime.completed.connect(_on_convoy_completed)
-	_set_piece_runtime.phase_changed.connect(_on_convoy_phase_changed)
-	_set_piece_runtime.boss_health_changed.connect(_on_convoy_health_changed)
 	_convoy_coordinator = MovingSetPieceEncounterCoordinator.new()
 	_convoy_coordinator.name = "CitationConvoyCoordinator"
 	add_child(_convoy_coordinator)
 	var coordinator_error := _convoy_coordinator.configure(_set_piece_runtime, _mission_runtime, definition, &"harbour_pier")
 	if coordinator_error != MovingSetPieceEncounterCoordinator.ERROR_NONE:
 		push_error("Citation convoy coordinator rejected its definition: %s" % coordinator_error)
-
+		return
+	_convoy_presentation = RainCityConvoyPresentation.new()
+	_convoy_presentation.name = "RainCityConvoyPresentation"
+	add_child(_convoy_presentation)
+	_convoy_presentation.configure(_set_piece_runtime, _convoy_coordinator, _mission_runtime)
+	_convoy_presentation.boss_state_changed.connect(boss_state_changed.emit)
+	_convoy_presentation.boss_phase_caption.connect(boss_phase_caption.emit)
+	_convoy_presentation.narrative_message.connect(narrative_message.emit)
 
 func _setup_interactions() -> void:
 	if content_manifest.interaction_catalog == null or _world_builder == null:
@@ -189,7 +182,6 @@ func _setup_interactions() -> void:
 		return
 	_interaction_runtime.secret_requested.connect(_on_secret_requested)
 	_interaction_runtime.loot_requested.connect(_on_loot_requested)
-
 
 func _setup_presentation() -> void:
 	_mission_presentation = MissionPresentation.new()
@@ -209,7 +201,8 @@ func _setup_presentation() -> void:
 		"MUNICIPAL TOWMASTER // APPEAL DENIED"
 	)
 	_mission_presentation.bind_restart_requests(restart_from_checkpoint)
-
+	if _convoy_presentation != null:
+		_convoy_presentation.set_presentation(_mission_presentation)
 
 func _spawn_player() -> void:
 	player = _spawn_scene(PLAYER_SCENE, checkpoint_position) as Node3D
@@ -234,7 +227,6 @@ func _spawn_player() -> void:
 	if player.has_signal("restart_requested"):
 		player.restart_requested.connect(restart_from_checkpoint)
 
-
 func _load_campaign_upgrades() -> void:
 	var save_manager := get_node_or_null("/root/SaveManager")
 	if save_manager == null:
@@ -252,34 +244,20 @@ func _load_campaign_upgrades() -> void:
 
 func _apply_requested_checkpoint() -> void:
 	var game_state := get_node_or_null("/root/GameState")
-	if game_state == null or not bool(game_state.get("continue_requested")):
-		return
 	var save_manager := get_node_or_null("/root/SaveManager")
-	var saved := CheckpointPayload.sanitize(save_manager.load_slot(&"checkpoint")) if save_manager != null else {}
-	if String(saved.get("level_id", "")) != String(metadata.level_id):
-		game_state.continue_requested = false
+	var restored := RainCityCheckpointState.consume_requested(metadata, CONTENT_REVISION, CHECKPOINT_POSITIONS, game_state, save_manager)
+	if restored.is_empty():
 		return
-	_restored_checkpoint = saved
-	var checkpoint_id := StringName(saved.get("checkpoint_id", ""))
-	var values: Array = saved.get("position", [])
-	if int(saved.get("content_revision", 0)) != CONTENT_REVISION and CHECKPOINT_POSITIONS.has(checkpoint_id):
-		checkpoint_position = CHECKPOINT_POSITIONS[checkpoint_id]
-	elif values.size() == 3:
-		checkpoint_position = Vector3(float(values[0]), float(values[1]), float(values[2]))
-	game_state.continue_requested = false
+	_restored_checkpoint = restored.payload
+	checkpoint_position = restored.position
 
 
 func _restore_runtime_state() -> void:
-	if _restored_checkpoint.is_empty():
+	var restored := RainCityCheckpointState.restore(_restored_checkpoint, _mission_runtime, _route_runtime, content_manifest.route_definition)
+	if restored.is_empty():
 		return
-	_mission_runtime.restore(_restored_checkpoint)
-	for raw_id: Variant in _restored_checkpoint.get("secrets", {}):
-		secrets[StringName(raw_id)] = String(_restored_checkpoint.secrets[raw_id])
-	var route_snapshot: Dictionary = _restored_checkpoint.get("route_snapshot", {})
-	var route_restored := not route_snapshot.is_empty() and _route_runtime.restore(route_snapshot)
-	if not route_restored:
-		_restore_route_from_checkpoint(StringName(_restored_checkpoint.get("checkpoint_id", "")))
-	current_zone = _route_runtime.current_zone
+	secrets = restored.secrets
+	current_zone = restored.current_zone
 
 
 func _rehydrate_restored_gameplay() -> void:
@@ -295,31 +273,6 @@ func _rehydrate_restored_gameplay() -> void:
 			_set_piece_runtime.start()
 	elif current_zone != &"" and not _mission_runtime.encounters.completed.has(current_zone):
 		_activate_zone_encounter(current_zone)
-
-
-func _restore_route_from_checkpoint(checkpoint_id: StringName) -> void:
-	var ordered := content_manifest.route_definition.ordered_zone_ids()
-	var checkpoint_zone := &""
-	for zone_id in ordered:
-		var zone := content_manifest.route_definition.zone_for_id(zone_id)
-		if zone != null and zone.checkpoint_ids.has(checkpoint_id):
-			checkpoint_zone = zone_id
-			break
-	if checkpoint_zone == &"":
-		return
-	var target_index := ordered.find(checkpoint_zone)
-	var visited: Array[String] = []
-	for index in target_index + 1:
-		visited.append(String(ordered[index]))
-	_route_runtime.restore({
-		"route_id": String(content_manifest.route_definition.route_id),
-		"current_zone": String(checkpoint_zone),
-		"current_index": target_index,
-		"visited_zones": visited,
-		"checkpoint_id": String(checkpoint_id),
-		"is_completed": target_index == ordered.size() - 1,
-	})
-	current_zone = checkpoint_zone
 
 
 func _poll_route_position() -> void:
@@ -405,20 +358,9 @@ func _save_checkpoint(checkpoint_id: StringName, position_value: Vector3) -> voi
 	var runtime_snapshot := _mission_runtime.snapshot()
 	var game_state := get_node_or_null("/root/GameState")
 	var active_loadout: Dictionary = player.mission_loadout_snapshot(metadata.level_id, _mission_upgrades) if player is CobiePlayer else {}
-	save_manager.save_slot(&"checkpoint", {
-		"scene_path": "res://scenes/levels/episode_1_vancouver_waterfront.tscn",
-		"level_id": String(metadata.level_id),
-		"checkpoint_id": String(checkpoint_id),
-		"content_revision": CONTENT_REVISION,
-		"position": [position_value.x, position_value.y, position_value.z],
-		"difficulty_id": String(game_state.difficulty_id) if game_state != null else CheckpointPayload.DEFAULT_DIFFICULTY,
-		"objective_snapshot": runtime_snapshot.objective_snapshot,
-		"encounter_snapshot": runtime_snapshot.encounter_snapshot,
-		"route_snapshot": _route_runtime.snapshot(),
-		"secrets": secrets.duplicate(true),
-		"unlocked_weapons": active_loadout.get("unlocked_weapons", []),
-		"active_mission_upgrades": active_loadout,
-	})
+	var difficulty_id: StringName = game_state.difficulty_id if game_state != null else CheckpointPayload.DEFAULT_DIFFICULTY
+	var payload := RainCityCheckpointState.build_payload("res://scenes/levels/episode_1_vancouver_waterfront.tscn", metadata, checkpoint_id, CONTENT_REVISION, position_value, difficulty_id, runtime_snapshot, _route_runtime.snapshot(), secrets, active_loadout)
+	save_manager.save_slot(&"checkpoint", payload)
 
 
 func restart_from_checkpoint() -> void:
@@ -458,66 +400,6 @@ func _on_actor_defeated(enemy: Node, definition: EncounterDefinition) -> void:
 
 func _on_encounter_completed(definition: EncounterDefinition) -> void:
 	_spawn_registry.finish_encounter(definition.zone_id)
-
-
-func _on_convoy_actor_started(actor: Node3D, generation: int) -> void:
-	var convoy := actor as CitationConvoyActor
-	if convoy == null:
-		push_error("Citation convoy scene does not implement CitationConvoyActor")
-		return
-	_active_convoy = convoy
-	convoy.module_destroyed.connect(func(module_id: StringName) -> void:
-		if _mission_presentation != null:
-			_mission_presentation.play_spatial_cue(&"rain_city_module_break", convoy.global_position)
-		if _convoy_coordinator != null:
-			_convoy_coordinator.report_module_destroyed(module_id, generation)
-	)
-	var state := _set_piece_runtime.current_state() if _set_piece_runtime != null else {}
-	_on_convoy_health_changed(float(state.get("current_boss_health", 1000.0)), float(state.get("max_boss_health", 1000.0)), generation)
-	var phase_ids: Array = state.get("phase_ids", [])
-	var active_phase := int(state.get("active_phase_index", 0))
-	var active_phase_id := StringName(phase_ids[active_phase]) if active_phase >= 0 and active_phase < phase_ids.size() else &"appeal_filed"
-	_on_convoy_phase_changed(active_phase, active_phase_id, generation)
-
-
-func _on_convoy_phase_changed(phase_index: int, phase_id: StringName, generation: int) -> void:
-	if _set_piece_runtime == null or generation != _set_piece_runtime.generation():
-		return
-	if phase_index >= 0 and phase_index < CONVOY_PHASE_CAPTIONS.size():
-		boss_phase_caption.emit(CONVOY_PHASE_CAPTIONS[phase_index], 2.6)
-	if _mission_presentation != null and is_instance_valid(_active_convoy):
-		_mission_presentation.play_spatial_cue(&"rain_city_convoy_move", _active_convoy.global_position)
-	var state := _set_piece_runtime.current_state()
-	var maximum := maxf(1.0, float(state.get("max_boss_health", 1000.0)))
-	var current := clampf(float(state.get("current_boss_health", maximum)), 0.0, maximum)
-	boss_state_changed.emit(phase_id, current / maximum)
-
-
-func _on_convoy_health_changed(current_health: float, maximum_health: float, generation: int) -> void:
-	if _set_piece_runtime == null or generation != _set_piece_runtime.generation():
-		return
-	var maximum := maxf(1.0, maximum_health)
-	var state := _set_piece_runtime.current_state()
-	var phase_ids: Array = state.get("phase_ids", [])
-	var phase_index := int(state.get("active_phase_index", 0))
-	var phase_id := &"appeal_filed"
-	if phase_index >= 0 and phase_index < phase_ids.size():
-		phase_id = StringName(phase_ids[phase_index])
-	boss_state_changed.emit(phase_id, clampf(current_health / maximum, 0.0, 1.0))
-
-
-func _on_convoy_completed(event_id: StringName, _generation: int) -> void:
-	if event_id != &"citation_convoy_stopped":
-		return
-	boss_state_changed.emit(&"defeated", 0.0)
-	boss_phase_caption.emit("CASE CLOSED // MUNICIPAL TOWMASTER DISABLED", 3.0)
-	if is_instance_valid(_active_convoy):
-		_active_convoy.play_defeat_sequence()
-	if _mission_presentation != null and is_instance_valid(_active_convoy):
-		_mission_presentation.play_spatial_cue(&"rain_city_convoy_defeat", _active_convoy.global_position)
-	_mission_runtime.record_objective(ObjectiveDefinition.Kind.DEFEAT, &"citation_convoy")
-	_mission_runtime.activate_checkpoint(&"checkpoint_harbour_clear")
-	narrative_message.emit("CITATION CONVOY DISABLED. MUNICIPAL JOY RESTORED.", 3.0)
 
 
 func _on_encounter_failed(definition: EncounterDefinition, _reason: String) -> void:

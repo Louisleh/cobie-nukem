@@ -19,7 +19,7 @@ var _victory_screen: VictoryScreen
 var _combat_audio: CombatAudioBridge
 var _mobile_controls: MobileControls
 var _mission_audio_director: MissionAudioDirector
-var _mission_sfx: SampleAudioEmitter
+var _enemy_cues: MissionEnemyCueRouter
 var _player: Node3D
 var _actors: Node
 var _level: Node
@@ -35,7 +35,6 @@ var _last_zone: StringName = &""
 var _current_audio_state: StringName = &""
 var _last_ambience: StringName = &""
 var _player_weather: GPUParticles3D
-var _enemy_warning_bound: Dictionary = {}
 var _zone_actor_counts: Dictionary = {}
 var _zone_ambience: Dictionary = {}
 var _boss_zone_id: StringName = &""
@@ -107,25 +106,8 @@ func set_player(player: Node3D) -> void:
 
 
 func bind_warning_enemy(enemy: Node) -> void:
-	if enemy == null or not enemy.has_signal("telegraph_started"):
-		return
-	if enemy.has_meta(&"mission_presentation_warning_bound"):
-		return
-	if _hud == null or not enemy.has_signal("telegraph_started"):
-		return
-	enemy.set_meta(&"mission_presentation_warning_bound", true)
-	_enemy_warning_bound[enemy.get_instance_id()] = weakref(enemy)
-	var enemy_ref: WeakRef = weakref(enemy)
-	enemy.telegraph_started.connect(_on_enemy_telegraph.bind(enemy_ref))
-	if enemy is ComplianceGull:
-		var gull := enemy as ComplianceGull
-		gull.target_marked.connect(_on_gull_target_marked.bind(enemy_ref))
-		gull.attack_fired.connect(_on_gull_attack_fired.bind(enemy_ref))
-		gull.dive_interrupted.connect(_on_gull_dive_interrupted.bind(enemy_ref))
-		gull.died.connect(_on_gull_died.bind(enemy_ref))
-	elif enemy is UmbrellaShieldEnforcer:
-		var enforcer := enemy as UmbrellaShieldEnforcer
-		enforcer.guard_state_changed.connect(_on_umbrella_guard_state_changed.bind(enemy_ref))
+	if _enemy_cues != null:
+		_enemy_cues.bind_enemy(enemy)
 
 
 func bind_warning_enemies() -> void:
@@ -178,9 +160,7 @@ func on_boss_state_changed(state: StringName, fraction: float) -> void:
 
 
 func play_spatial_cue(cue_id: StringName, world_position: Vector3) -> bool:
-	if _mission_sfx == null:
-		return false
-	return _mission_sfx.play_at(cue_id, world_position)
+	return _enemy_cues != null and _enemy_cues.play_at(cue_id, world_position)
 
 
 func on_player_died(_source: Node) -> void:
@@ -275,8 +255,8 @@ func reset_for_checkpoint() -> void:
 		_death_screen.visible = false
 	if _mobile_controls != null:
 		_mobile_controls.release_all()
-	if _mission_sfx != null:
-		_mission_sfx.stop_all()
+	if _enemy_cues != null:
+		_enemy_cues.stop_all()
 	_zone_actor_counts.clear()
 	_current_audio_state = &""
 	_request_audio_state(&"exploration")
@@ -289,14 +269,11 @@ func is_pause_suppressed() -> bool:
 
 
 func bound_enemy_count() -> int:
-	_prune_enemy_bindings()
-	return _enemy_warning_bound.size()
+	return 0 if _enemy_cues == null else _enemy_cues.bound_enemy_count()
 
 
 func is_enemy_bound(enemy: Node) -> bool:
-	if enemy == null:
-		return false
-	return enemy.has_meta(&"mission_presentation_warning_bound")
+	return _enemy_cues != null and _enemy_cues.is_enemy_bound(enemy)
 
 
 func get_hud() -> GameHUD:
@@ -353,10 +330,10 @@ func _create_presentation_nodes() -> void:
 	_mission_audio_director = MissionAudioDirector.new()
 	_mission_audio_director.name = "MissionAudioDirector"
 	add_child(_mission_audio_director)
-	_mission_sfx = SampleAudioEmitter.new()
-	_mission_sfx.name = "MissionSampleAudioEmitter"
-	_mission_sfx.library = MissionAudioLibrary
-	add_child(_mission_sfx)
+	_enemy_cues = MissionEnemyCueRouter.new()
+	_enemy_cues.name = "MissionEnemyCueRouter"
+	add_child(_enemy_cues)
+	_enemy_cues.configure(_hud, MissionAudioLibrary)
 
 
 func _on_pause_restart() -> void:
@@ -475,54 +452,6 @@ func _bind_existing_enemies() -> void:
 		bind_warning_enemy(actor)
 
 
-func _on_enemy_telegraph(kind: StringName, _duration: float, _enemy_ref: WeakRef) -> void:
-	if _hud != null:
-		_hud.show_caption("%s WARNING" % String(kind).replace("_", " "), GameHUD.CaptionCategory.ENEMY_WARNING, 1.2)
-
-
-func _on_gull_target_marked(_target: Node3D, _duration: float, enemy_ref: WeakRef) -> void:
-	_play_enemy_cue(&"rain_city_gull_mark", enemy_ref)
-
-
-func _on_gull_attack_fired(kind: StringName, enemy_ref: WeakRef) -> void:
-	if kind == &"gull_mark_dive":
-		_play_enemy_cue(&"rain_city_gull_dive", enemy_ref)
-
-
-func _on_gull_dive_interrupted(enemy_ref: WeakRef) -> void:
-	_play_enemy_cue(&"rain_city_gull_dive", enemy_ref)
-
-
-func _on_gull_died(_enemy: EnemyAgent, _source: Node, enemy_ref: WeakRef) -> void:
-	_play_enemy_cue(&"rain_city_gull_death", enemy_ref)
-
-
-func _on_umbrella_guard_state_changed(_previous: UmbrellaShieldEnforcer.GuardState, current: UmbrellaShieldEnforcer.GuardState, enemy_ref: WeakRef) -> void:
-	match current:
-		UmbrellaShieldEnforcer.GuardState.GUARDING:
-			_play_enemy_cue(&"rain_city_shield_brace", enemy_ref)
-		UmbrellaShieldEnforcer.GuardState.OPENING:
-			_play_enemy_cue(&"rain_city_shield_open", enemy_ref)
-		UmbrellaShieldEnforcer.GuardState.BROKEN:
-			_play_enemy_cue(&"rain_city_shield_break", enemy_ref)
-
-
-func _play_enemy_cue(cue_id: StringName, enemy_ref: WeakRef) -> bool:
-	if enemy_ref == null:
-		return false
-	var enemy := enemy_ref.get_ref() as Node3D
-	if enemy == null or not is_instance_valid(enemy):
-		return false
-	return play_spatial_cue(cue_id, enemy.global_position)
-
-
-func _prune_enemy_bindings() -> void:
-	for instance_id: Variant in _enemy_warning_bound.keys():
-		var reference := _enemy_warning_bound[instance_id] as WeakRef
-		if reference == null or reference.get_ref() == null:
-			_enemy_warning_bound.erase(instance_id)
-
-
 func _resolve_boss_display_name(level: Node, configured_name: String, boss_zone_id: StringName) -> String:
 	var requested: String = configured_name.strip_edges()
 	if not requested.is_empty():
@@ -549,5 +478,5 @@ func _exit_tree() -> void:
 		_mobile_controls.release_all()
 	if _mission_audio_director != null:
 		_mission_audio_director.reset()
-	if _mission_sfx != null:
-		_mission_sfx.stop_all()
+	if _enemy_cues != null:
+		_enemy_cues.stop_all()
