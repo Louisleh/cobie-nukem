@@ -1,27 +1,27 @@
 # Cobie Nukem — Multi-Phase Production PRD
 
-**Status:** Active production source of truth; `0.7.0-alpha.1-rc1` Rain City is public as an honestly labelled RC while human route/device/feel gates remain open
+**Status:** Active production source of truth; `0.7.0-alpha.1-rc2` Rain City is public as an honestly labelled RC while human route/device/feel gates remain open
 
 **Created:** 2026-07-11
 
 **Last status review:** 2026-07-16
 
-**Current public baseline:** `0.7.0-alpha.1-rc1` (`3144a22` gameplay/runtime revision; source integration `1dcb28c`; website deployment `ecfdcd6`; PCK SHA-256 `462120a8057db93badb1d8b033701fbca31187326031ee4617a6b0bec787bc8d`)
+**Current public baseline:** `0.7.0-alpha.1-rc2` (`0d80348` gameplay/runtime revision; source integration `e016e44`; website deployment `c0d7171`; PCK SHA-256 `03a3fe985217b303bc90bad881fd79760761e9119aff696091a29d0e7906abe2`)
 
-**Unreleased development baseline:** `0.7.0-alpha.1-rc2` stabilization candidate on `codex/rain-city-stabilization`; RC1 remains the public artifact until the complete export/package/deployment gate passes.
+**Unreleased development baseline:** None. Source `main`, the GitHub prerelease package, and the deployed Web artifact are aligned on RC2. RC1 remains the immediate rollback release.
 
-**Last released alpha:** `0.7.0-alpha.1-rc1` (`3144a22`) — live at <https://www.louislehmann.fyi/games/cobie-nukem/>; the `BETA` badge remains because human full-route and physical-device validation are open
+**Last released alpha:** `0.7.0-alpha.1-rc2` (`0d80348`) — live at <https://www.louislehmann.fyi/games/cobie-nukem/>; the `BETA` badge remains because human full-route and physical-device validation are open
 
 **Engine:** Godot 4.7 stable, GDScript, Compatibility renderer
 **Purpose:** Turn the family-playtest vertical slice into a sustainable, original multi-level game without sacrificing responsiveness, humor, Web support, or unusual-controller accessibility.
 
 ## 0. Current status dashboard
 
-### Rain City Run `0.7.0-alpha.1-rc2` stabilization candidate
+### Rain City Run `0.7.0-alpha.1-rc2` public stabilization RC
 
 This focused pass diagnoses the repeated local Godot crash notifications and hardens Level 2 against progression, persistence, physics, navigation, and performance regressions. Recent macOS reports were attributable to overlapping Codex-launched Godot processes: two orphaned mission-host tests retained blocked output pipes while duplicate Godot MCP servers and an old editor process competed for the same project. The new serialized runner gives each invocation an atomic project lock, isolated test save root, bounded timeout, unique log, descendant cleanup, and stale-lock recovery. No new Godot crash report was observed after the cleanup and guarded runs.
 
-| Workstream | Candidate status | Evidence |
+| Workstream | Status | Evidence |
 | --- | --- | --- |
 | Process/crash stability | **AUTOMATED GREEN** | `tools/run_godot_safe.sh` plus runner tests cover lock contention, timeout cleanup, stale recovery, and isolated HOME/save state; release validation routes every Godot invocation through it |
 | Route/progression | **AUTOMATED GREEN** | Four visible encounter gates prevent combat skips; mission-host coverage defeats each wave before advancing; checkpoint-restored gates synchronize from encounter state |
@@ -30,6 +30,7 @@ This focused pass diagnoses the repeated local Godot crash notifications and har
 | Grounding/navigation | **AUTOMATED GREEN** | Pickup collision roots remain authoritative while visual children bob; unreachable enemies use bounded recovery or terminal defeat; production Rain City nav bake/path is explicitly tested while mission-host fixtures do not perform redundant bakes |
 | Secrets | **AUTOMATED GREEN** | Four unique rewards are functional, checkpointed, and idempotent; terminal secret removes one finale reinforcement without mutating shared source data |
 | Performance | **NATIVE AUTOMATED GREEN** | M4 1280×720 Compatibility: alley 18.43/18.54 ms p95/p99, Slice 18.54/18.62, seawall 18.49/18.60, terminal 18.34/18.42, pier 18.30/23.36; 195–406 draw calls and approximately 83 MB static memory |
+| Release | **PUBLIC RC — HUMAN GATES OPEN** | Full matrix, source PR #42/integration `e016e44`, prerelease `v0.7.0-alpha.1-rc2`, website PR #123/deployment `c0d7171`, 1024×768 Chrome startup, and downloaded public PCK byte identity are green |
 | Human-only | **OPEN** | Physical iPad Safari, full target-Mac route, Chrome/Safari completion, awkward-motion/convoy contact feel, encounter balance, art, mix, humor, and photosensitivity |
 
 ### Rain City Run `0.7.0-alpha.1-rc1` public RC ledger
@@ -143,7 +144,7 @@ This section is the first place a new Codex or external-auditor run should read.
 
 ### Immediate next gate
 
-**2026-07-16 Rain City stabilization candidate:** publish `0.7.0-alpha.1-rc2` only after the full Web/macOS export matrix, independent diff review, exact artifact identity, public browser startup, and website PCK byte verification pass. Preserve the `BETA` label because automated physics and route evidence cannot establish human feel or physical-iPad comfort.
+**2026-07-16 Rain City public stabilization RC:** `0.7.0-alpha.1-rc2` is live after the full Web/macOS export matrix, independent diff review, exact artifact identity, public browser startup, and website PCK byte verification passed. Preserve the `BETA` label until the target-Mac, physical-iPad, browser-completion, pacing, feel, mix, art, humor, and photosensitivity gates receive human approval.
 
 **2026-07-16 Rain City Run public RC:** `0.7.0-alpha.1-rc1` is live with exact source, package, deployment, runtime identity, and downloaded PCK byte identity verified. The immediate gate is now human-only: target-Mac Classic route, Story/Mayhem spot checks, physical iPad Safari twin-stick/audio/thermal route, Chrome/Safari completion, and review of pacing, fairness, route clarity, touch, art, mix, humor, and photosensitivity. Fix evidence-backed findings against the RC; after approval, remove the badge/warning and restamp final `0.7.0-alpha.1`. Do not unlock Mount Hood, Moon, or Ventura.
 
