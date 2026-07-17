@@ -67,7 +67,14 @@ func _process(_delta: float) -> void:
 	if get_tree().paused:
 		get_tree().paused = false
 	if not _ready_for_capture:
-		return
+		# A warm import/cache can complete the level's ready path between this
+		# harness's child-ready notification and signal connection. Recover from
+		# that ordering deterministically instead of recording hundreds of copies
+		# of frame zero.
+		if level.player == null:
+			return
+		_silence_capture_audio()
+		_ready_for_capture = true
 	match _frame:
 		5:
 			_stage_player_only(Vector3(0.0, 1.1, 10.0))
@@ -81,6 +88,8 @@ func _process(_delta: float) -> void:
 			_stage_zone(Vector3(0.0, 1.1, -100.0), &"compliance_lab", "CAPTURE: COMPLIANCE LAB")
 		125:
 			_stage_zone(Vector3(0.0, 1.1, -139.0), &"walker_arena", "CAPTURE: WALKER ARENA")
+		146:
+			_stage_walker_defeat()
 		155:
 			level.player.global_position.y = -20.0
 			level.player._check_out_of_bounds()
@@ -90,6 +99,7 @@ func _process(_delta: float) -> void:
 		210:
 			_ready_for_capture = false
 			level.queue_free()
+			set_process(false)
 	_frame += 1
 
 
@@ -110,6 +120,18 @@ func _stage_zone(position_value: Vector3, zone_id: StringName, label: String) ->
 	player.head.rotation = Vector3.ZERO
 	player.reset_physics_interpolation()
 	level._enter_zone(zone_id, label, player)
+
+
+func _stage_walker_defeat() -> void:
+	var walker := level._walker as AnimalControlWalker
+	if not is_instance_valid(walker):
+		push_error("Walker defeat capture requires a live Walker")
+		return
+	# One deterministic hit per authored boundary, followed by the authoritative
+	# final hit. This preserves the active-arena frame while adding evidence that
+	# the HUD reaches zero and the bounded defeat spectacle actually renders.
+	for _phase in range(4):
+		walker.apply_damage(10000.0, level.player, walker.get_auto_aim_position())
 
 
 func _silence_capture_audio() -> void:

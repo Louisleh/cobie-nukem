@@ -14,7 +14,6 @@ extends Resource
 @export var summon_scene: PackedScene
 @export var summon_attack_interval := 3
 @export_range(1, 24, 1) var max_live_summons := 3
-@export_range(0.0, 1.0, 0.01) var golden_ball_health_floor_fraction := 0.1
 @export_range(0.01, 2.0, 0.01) var followup_bolt_delay := 0.15
 
 
@@ -25,11 +24,11 @@ func validate() -> PackedStringArray:
 		return errors
 	var expected := phase_ids.size()
 	if expected < 2:
-		errors.append("Walker phase profile must include at least CANNONS and GOLDEN_BALL")
-	# DEFEATED is reached only by the Golden Ball finisher, so health thresholds
-	# exist for the three normal combat transitions, not for death itself.
+		errors.append("Walker phase profile must include at least one combat phase and DEFEATED")
+	# Health thresholds exist for the three authored phase transitions. The final
+	# vulnerability phase then runs continuously to zero health.
 	if expected - 2 != phase_transition_fractions.size():
-		errors.append("Transition fractions must cover combat phases but exclude the Golden Ball death transition")
+		errors.append("Transition fractions must cover authored combat transitions but exclude zero-health defeat")
 	for idx in expected:
 		if phase_attack_ranges.size() <= idx:
 			errors.append("Walker phase %d missing attack range" % idx)

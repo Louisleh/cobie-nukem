@@ -28,6 +28,20 @@ Critical progression uses a consistent golden-tennis-ball accent, strong silhoue
 
 Keep threats at least one clear value step away from their background at intended combat distance. Avoid full-frame fog, bloom, particles, or dark overlays that flatten that separation.
 
+## Mission environmental identities
+
+Every mission must be recognizable from an unlabelled screenshot. The identity is a production constraint, not a post-process tint: geometry, materials, landmarks, weather, prop language, lighting, ambience, and jokes must reinforce the same place. Shared systems and interaction components remain reusable, but a later level may not read as a recolored Salmon Creek.
+
+| Mission | Environmental identity | Signature landmarks and materials | Lighting and gameplay read |
+| --- | --- | --- | --- |
+| Salmon Creek | Rain-soaked Pacific Northwest sports complex and municipal animal-control facility | Wet turf, evergreen silhouettes, field fencing, scoreboard, floodlights, damp timber, laboratory panels | Storm blue/green with sodium amber route anchors; threats remain warm against cool rain |
+| Rain City Run | Dense fictional Vancouver waterfront under steady rain | Glass towers, seawall concrete, harbour steel, ferries, terminal machinery, cranes, warm Rain City Slice storefront | Slate/harbour green with warm storefront shelter and cyan municipal systems; upper/lower lanes remain visually distinct |
+| Mount Hood | Snowbound alpine pursuit around a historic lodge and mountain infrastructure | Snow banks, firs, exposed rock, timber lodge forms, chairlift/service machinery, fictional Sandy/Oregon route signs | Cold blue-white exterior with high-contrast silhouettes and warm refuge windows; snow cannot erase pickups or telegraphs |
+| Moon | Airless lunar compliance outpost | Regolith, crater rims, black sky, hard modular habitats, rover tracks, antennas, Earth landmark | Hard white/cyan light with deep controlled shadow and safety amber/red; traversal boundaries remain unmistakable |
+| Ventura | Sun-bleached coastal California showdown | Sand, surf teal, concrete promenade, palms, pier structure, marina/service props | Warm late-day sunlight and cool ocean fill; haze supports depth without hiding ranged threats |
+
+Before a zone enters production, its art brief must name its identity row, dominant landmark, material families, route-value hierarchy, weather/ambience, and at least one location-specific environmental joke.
+
 ## Shapes and edges
 
 - Cobie and friendly/progression elements favor rounded, energetic shapes.
@@ -51,6 +65,8 @@ Light establishes direction before mood. Each major zone has a dominant directio
 Major enemies use eight-direction presentation where memory permits. Required vocabulary: idle, locomotion, alert, telegraph, attack, hurt, stagger, milestone/phase, and death. Reaction states preserve the current orientation or use a transition designed to hide the change. Every atlas records orthographic camera, frame size, direction order, feet baseline, world height, FPS, distant FPS, alpha mode, compression, and provenance.
 
 Enemy scale is gameplay data: the rendered silhouette must agree with collision and intended threat. A boss cannot render as a tiny atlas cell; a reaction cannot expose a full sheet.
+
+All directional frames share one fixed cell grid, one feet baseline, and consistent transparent padding. Measure the opaque subject height in source pixels and calculate Godot `Sprite3D.pixel_size` as `intended_world_height / opaque_frame_height`; do not eyeball scale independently for desktop and tablet. The manifest records both values and the calculated result. Tablet and distance captures must prove that minor enemies remain targetable and bosses preserve their intended dominance.
 
 ## HUD, touch, and typography
 

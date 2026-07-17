@@ -11,10 +11,11 @@ const CANONICAL_VIEWS := [
 	"salmon_lab",
 	"salmon_tunnel",
 	"salmon_walker_arena",
+	"salmon_walker_defeat",
 	"vancouver_waterfront",
 	"touch_hud_4_3",
 ]
-const CANONICAL_COUNT := 10
+const CANONICAL_COUNT := 11
 
 var failures: Array[String] = []
 var safe_filename_pattern: RegEx = RegEx.new()

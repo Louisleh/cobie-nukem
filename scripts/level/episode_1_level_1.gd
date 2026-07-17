@@ -250,7 +250,7 @@ func _spawn_wave(zone_id: StringName) -> void:
 		_spawn_registry.mark_zone_spawned(zone_id)
 	if zone_id == &"walker_arena" and not _boss_runtime.has_active_walker():
 		# Development fallback: a missing boss scene must not trap QA in the level.
-		_golden_ball.enable_for_boss(null)
+		_golden_ball.enable_as_reward()
 		narrative_message.emit("BOSS ASSET MISSING — GOLDEN BALL QA FALLBACK ENABLED.", 4.0)
 	if zone_id == &"forbidden_field":
 		_opening_grace_timer.start()

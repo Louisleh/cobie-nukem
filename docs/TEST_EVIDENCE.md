@@ -1,5 +1,19 @@
 # Test Evidence
 
+## 2026-07-17 — Salmon Creek finale integrity and 2.5D production contract
+
+| Check | Result | Evidence |
+| --- | --- | --- |
+| Walker terminal state | Pass | Four authored damage boundaries terminate at zero; exactly one defeated event fires; focused enemy and pacing contracts pass |
+| Boss HUD | Pass | Compact upper-right layout; zero remains visible as `0% HEALTH / DESTROYED` for the defeat beat; UI contract and 1280×720 runtime capture pass |
+| Defeat spectacle | Pass | Walker stays grounded, collapses, and spawns one quality-budgeted bounded debris/core/shockwave effect; deterministic `05b-walker-defeat.png` capture is nonblank |
+| Finale sequencing | Pass | Boss summons are cleared at defeat; fetch objective depends on `defeat_walker`; Golden Ball remains hidden through the same frame and death linger, then appears once as the post-defeat reward |
+| Route geometry | Pass | All authored interaction extents remain within their zone's walkable bounds; connector top faces are separated from adjacent floors; tunnel sign has a stable wall-mounted transform |
+| Sign orientation | Pass | Scoreboard and landmark-label single-sided/front-facing contracts remain green; the mirrored screenshot came from the older public artifact |
+| Visual-production contract | Pass | AGENTS, PRD, art bible, decision log, and visual-foundry skill agree on high-resolution 2.5D, fixed atlas scale/baseline metadata, and five distinct mission identities |
+| Full release/export matrix | Pass | `QA_EXPORTS=1 bash tools/release_validate.sh`, exit 0: parser/import, all unit/integration/route/adversarial/content tests, 100-route/100-checkpoint/500-transition soak, architecture/IP checks, both-mission performance smoke, Web export, and unsigned Universal macOS export |
+| Human boss/visual review | Not run | Final pacing, spectacle preference, environment cohesion, and physical-device feel remain human-only |
+
 ## 2026-07-17 — Set A portrait, iPad readability, sign-facing, and Level 2 QA follow-up
 
 | Check | Result | Evidence |

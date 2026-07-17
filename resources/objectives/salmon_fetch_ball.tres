@@ -6,3 +6,4 @@ id = &"fetch_ball"
 title = "RECOVER THE GOLDEN TENNIS BALL"
 kind = 1
 target_id = &"golden_tennis_ball"
+prerequisite_ids = Array[StringName]([&"defeat_walker"])

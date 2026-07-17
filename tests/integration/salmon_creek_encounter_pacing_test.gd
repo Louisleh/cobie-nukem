@@ -36,7 +36,7 @@ func _test_authored_pacing_contract() -> void:
 	var profile_errors: PackedStringArray = profile.validate()
 	for error in profile_errors:
 		_expect(false, "Walker profile validates: %s" % error)
-	_expect(profile.phase_transition_fractions.size() == profile.phase_ids.size() - 2, "Walker profile has one threshold per normal combat phase transition")
+	_expect(profile.phase_transition_fractions.size() == profile.phase_ids.size() - 2, "Walker profile has one threshold per authored phase transition before zero-health defeat")
 	for i in range(profile.phase_transition_fractions.size()):
 		_expect(profile.phase_transition_fractions[i] > 0.0, "Walker phase boundary %d keeps positive health fraction" % i)
 		_expect(profile.phase_transition_fractions[i] < 1.0, "Walker phase boundary %d stays under full health" % i)
@@ -180,8 +180,9 @@ func _test_walker_pressure_phases_summons_and_recovery() -> void:
 	_expect(phase_ids == [&"exposed_core", &"charge"], "Second threshold communicates the charge phase")
 	_expect(_count_pickups(level) == pickups_before + 2, "Charge phase deploys one authored ammunition recovery")
 	walker.apply_damage(300.0)
-	_expect(phase_ids == [&"exposed_core", &"charge", &"golden_ball"], "Final threshold communicates the Golden Ball vulnerability")
+	_expect(phase_ids == [&"exposed_core", &"charge", &"final_vulnerability"], "Final threshold communicates the exposed finishing core")
 	_expect(narrative.any(func(text: String) -> bool: return "EXPOSED CORE" in text), "Weak-point phase has an explicit player cue")
+	_expect(not level._golden_ball.enabled and not level._golden_ball.visible, "Golden Ball stays contained throughout live boss phases")
 
 	# Recreate the cannon phase for an isolated public-behavior summon cadence check.
 	walker.boss_phase = AnimalControlWalker.BossPhase.CANNONS
@@ -254,17 +255,21 @@ func _test_walker_phase_ordering_guardrail() -> void:
 	_expect(phase_events.size() == 1, "A single oversized hit advances at most one phase")
 	_expect(phase_events == [&"exposed_core"], "A single oversized hit advances exactly one phase in order")
 	_expect(is_equal_approx(walker.health_fraction(), profile.phase_transition_fractions[0]), "Oversized damage stops at the authored phase floor")
-	_expect(not walker.is_dead, "Normal weapon damage cannot bypass the Golden Ball finisher")
+	_expect(not walker.is_dead, "Phase guardrail preserves intermediate telegraphs")
 	walker.apply_damage(100000.0)
 	walker.apply_damage(100000.0)
-	_expect(phase_events == [&"exposed_core", &"charge", &"golden_ball"], "Oversized follow-up hits still traverse every authored phase in order")
+	_expect(phase_events == [&"exposed_core", &"charge", &"final_vulnerability"], "Oversized follow-up hits still traverse every authored phase in order")
 	var defeated_events := [0]
 	walker.walker_defeated.connect(func() -> void: defeated_events[0] += 1)
-	walker.strike_with_golden_ball(target)
-	await process_frame
-	_expect(walker.is_dead and walker.boss_phase == AnimalControlWalker.BossPhase.DEFEATED, "Golden Ball strike reaches the explicit defeated phase")
+	walker.death_linger_seconds = 0.05
+	_expect(not level._golden_ball.enabled, "Final reward is absent before the killing hit")
+	walker.apply_damage(100000.0, target)
+	_expect(walker.is_dead and is_zero_approx(walker.health) and walker.boss_phase == AnimalControlWalker.BossPhase.DEFEATED, "Weapon damage reaches zero and the explicit defeated phase")
 	_expect(defeated_events[0] == 1, "Walker defeated event emits exactly once")
-	_expect(level._encounter_runner.completed.has(&"walker_arena"), "Golden Ball defeat completes the authored boss encounter")
+	_expect(not level._golden_ball.enabled, "Golden Ball cannot appear on the same frame as boss defeat")
+	await create_timer(0.16).timeout
+	_expect(level._golden_ball.enabled and level._golden_ball.visible, "Golden Ball appears only after the complete defeat linger")
+	_expect(level._encounter_runner.completed.has(&"walker_arena"), "Zero-health defeat completes the authored boss encounter")
 	level.free()
 	await process_frame
 

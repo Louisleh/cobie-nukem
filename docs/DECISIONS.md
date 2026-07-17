@@ -1,5 +1,11 @@
 # Decisions
 
+## D-014 — High-resolution 2.5D is the production constraint
+
+Cobie remains a high-resolution retro 2.5D shooter: authored low-poly 3D environments carry collision, navigation, materials, lighting, and landmarks, while original directional billboard sprites carry character detail and readable animation. A pure pixel-art rewrite is rejected because it would not solve the actual consistency problems—sprite scale, baselines, animation vocabulary, collision agreement, and environmental authorship—and would discard the existing visual direction.
+
+All manifested sprite atlases use a fixed grid and feet baseline and record opaque-frame height, intended world height, and `pixel_size = intended_world_height / opaque_frame_height`. Every mission follows the distinct identity matrix in `docs/ART_BIBLE.md`; shared systems are reusable, but environments cannot be mere palette swaps. Human review retains taste and cohesion ownership, while scale metadata, imports, safe areas, performance, and malformed captures are mechanical gates.
+
 ## D-013 — Cobie HUD portrait uses two unmistakable health states
 
 The owner-selected Set A portrait is the sole HUD art direction. Cobie uses a clean portrait at 65–100% health and the most visibly damaged portrait below 65%; the nuanced middle image is intentionally omitted because it did not read distinctly at gameplay size. Runtime assets are 512×512 tight crops, the controller draws consistent HUD chrome, and source concepts remain under `assets/source/ui/` with provenance.

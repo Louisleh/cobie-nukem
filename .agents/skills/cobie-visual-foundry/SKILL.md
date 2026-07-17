@@ -14,6 +14,7 @@ Turn a bounded art target into a reproducible source-to-runtime asset with revie
 3. Name one bounded target: a canonical view, hero asset, material family, animation vocabulary, VFX family, or responsive UI state.
 4. Capture the current runtime view before changing source. Record the exact revision, viewport, quality profile, camera/staging ID, and frame rate.
 5. Write an art brief using [art-brief-contract.md](references/art-brief-contract.md). Stop if silhouette, palette, gameplay readability, source ownership, or platform budget is undecided.
+6. Name the mission identity row from `docs/ART_BIBLE.md`. Record the dominant landmark, material families, weather/ambience, route-value hierarchy, and location-specific prop/joke language; reject a treatment that reads as a recolor of another mission.
 
 ## Select the production route
 
@@ -29,6 +30,9 @@ Image generation is for concepts and reference sheets, not uncontrolled final at
 
 1. Preserve editable sources under `assets/source/`; store runtime-ready assets only under the established `assets/models`, `assets/materials`, `assets/sprites`, or `assets/ui` roots.
 2. Use deterministic scripts for Blender export, atlas packing, and capture. Record Blender version, render engine, camera, lighting, frame vocabulary, atlas grid, feet baseline, and output sizes.
+   - Directional sprites use one fixed cell grid, consistent transparent padding, and one feet baseline across every state and direction.
+   - Record opaque-frame height and intended world height, then set `Sprite3D.pixel_size = intended_world_height / opaque_frame_height`. Never tune enemy scale separately by viewport or device.
+   - Validate intended silhouette height against collision height and capture it at desktop and 1024×768 tablet viewports.
 3. Use Material Maker project files as the material source of truth. Export Web-safe maps at the minimum resolution that survives the canonical views. Do not bake field markings, labels, or unique grime into tiling base materials.
 4. Add mipmaps, compression, alpha, filter, LOD, collision, and distant-animation metadata deliberately. Do not rely on editor defaults.
 5. Update `docs/ASSET_MANIFEST.md` in the same change with origin, authoring method, license, source path, runtime path, version/tooling, hashes where required, and prohibited-IP review.
