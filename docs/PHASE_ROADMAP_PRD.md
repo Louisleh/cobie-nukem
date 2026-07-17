@@ -1,23 +1,23 @@
 # Cobie Nukem — Multi-Phase Production PRD
 
-**Status:** Active production source of truth; `0.7.0-alpha.1-rc1` Rain City candidate is in final automated validation while `0.6.0-alpha.10` remains public
+**Status:** Active production source of truth; `0.7.0-alpha.1-rc1` Rain City is public as an honestly labelled RC while human route/device/feel gates remain open
 
 **Created:** 2026-07-11
 
 **Last status review:** 2026-07-16
 
-**Current public baseline:** `0.6.0-alpha.10` (`20649be` gameplay/runtime revision; source integration `2515e19`; website deployment `e7e2c6b`; PCK SHA-256 `59753bc9dc40c18a7f292e89f30b126ef84553515379ec1e020970ed33310696`)
+**Current public baseline:** `0.7.0-alpha.1-rc1` (`3144a22` gameplay/runtime revision; source integration `1dcb28c`; website deployment `ecfdcd6`; PCK SHA-256 `462120a8057db93badb1d8b033701fbca31187326031ee4617a6b0bec787bc8d`)
 
-**Unreleased development baseline:** Rain City Run RC candidate on `codex/rain-city-final`; public Alpha.10 remains the rollback until the RC export, source integration, website deployment, and public byte-identity gates complete.
+**Unreleased development baseline:** none. Source `main`, packaged release, and the public Web artifact are aligned at the Rain City RC. `0.6.0-alpha.10` remains the immediate rollback artifact.
 
-**Last released alpha:** `0.6.0-alpha.10` (`20649be`) — live at <https://www.louislehmann.fyi/games/cobie-nukem/>; human full-route and physical-device validation remain open
+**Last released alpha:** `0.7.0-alpha.1-rc1` (`3144a22`) — live at <https://www.louislehmann.fyi/games/cobie-nukem/>; the `BETA` badge remains because human full-route and physical-device validation are open
 
 **Engine:** Godot 4.7 stable, GDScript, Compatibility renderer
 **Purpose:** Turn the family-playtest vertical slice into a sustainable, original multi-level game without sacrificing responsiveness, humor, Web support, or unusual-controller accessibility.
 
 ## 0. Current status dashboard
 
-### Rain City Run `0.7.0-alpha.1-rc1` candidate ledger
+### Rain City Run `0.7.0-alpha.1-rc1` public RC ledger
 
 This candidate turns the public Vancouver beta into the campaign's second production mission while preserving an honest `BETA` label until human gates pass. GPT-5.6 retained architecture, art direction, integration, review, evidence, release identity, and deployment ownership. Explicitly pinned `gpt-5.3-codex-spark` workers contributed bounded campaign, save/loadout, boss-soak, audio/HUD, and independent-review packets; root inspected and retested every accepted contribution.
 
@@ -30,7 +30,7 @@ This candidate turns the public Vancouver beta into the campaign's second produc
 | Audio/presentation | **INTEGRATED — HUMAN MIX/ART OPEN** | 27 deterministic imported Gull/Umbrella/convoy WAVs, bounded spatial routing, boss HUD/captions, 13-batch Rain City Blender foundry, Material Maker sources, and project-original Towmaster model |
 | Architecture/durability | **AUTOMATED GREEN** | Mission presentation, loadout, path, phase, checkpoint, and convoy-presentation ownership extracted; all production scripts at or below 500 lines except the documented Salmon Creek legacy exemption |
 | Automated gate | **FULL EXPORT MATRIX GREEN** | Parser/import, unit/integration/content/smoke, 100 route/checkpoint/touch/effect cycles, 500 weapon transitions, 100 convoy cycles, asset/IP, architecture, headless drift/performance, Web export, and Universal macOS export pass |
-| Release | **PACKAGED — PUBLICATION PENDING** | Exact Web and unsigned macOS packages are hashed; packaged Chrome title/first-touch/menu/4:3 mission-selection checks are green. Source PR/release, website deployment, and downloaded public PCK identity remain before RC publication |
+| Release | **PUBLIC RC — HUMAN GATES OPEN** | Full matrix, source PR #40/integration `1dcb28c`, prerelease `v0.7.0-alpha.1-rc1`, website PR #122/deployment `ecfdcd6`, packaged/public Chrome startup, and downloaded public PCK byte identity are green |
 
 Human-only throughout: one 15–22 minute target-Mac Classic route, Story/Mayhem spot checks, physical iPad Safari simultaneous twin-stick/audio/thermal pass, Chrome/Safari completion, boss/encounter fairness, route clarity, touch comfort, art cohesion, mix, humor, and photosensitivity. These gates prevent removal of the `BETA` badge; they do not prevent an honestly labeled public RC.
 
@@ -128,7 +128,7 @@ This section is the first place a new Codex or external-auditor run should read.
 
 ### Immediate next gate
 
-**2026-07-16 Rain City Run RC candidate:** complete the final pinned Spark review, native/Web export matrix, rendered native/tablet performance evidence, package identity, source integration, GitHub prerelease, clean website deployment, ordinary/cache-busted public verification, and PCK SHA-256 match. Publish as `0.7.0-alpha.1-rc1` with `BETA` retained while human gates above remain open. After human approval, remove the badge/warning and restamp final `0.7.0-alpha.1`; do not unlock Mount Hood, Moon, or Ventura.
+**2026-07-16 Rain City Run public RC:** `0.7.0-alpha.1-rc1` is live with exact source, package, deployment, runtime identity, and downloaded PCK byte identity verified. The immediate gate is now human-only: target-Mac Classic route, Story/Mayhem spot checks, physical iPad Safari twin-stick/audio/thermal route, Chrome/Safari completion, and review of pacing, fairness, route clarity, touch, art, mix, humor, and photosensitivity. Fix evidence-backed findings against the RC; after approval, remove the badge/warning and restamp final `0.7.0-alpha.1`. Do not unlock Mount Hood, Moon, or Ventura.
 
 **2026-07-16 Alpha.10 production-foundry release:** the visual-foundry pilot and its first full production application are public at feature revision `20649be`. Chrome DevTools validates the real packaged Web bootstrap and 1024×768 title path; three original weapon viewmodels replace the primitive placeholders; explicit lifecycle/feedback is fuzzed; and the remaining Salmon Creek interiors have readable authored lighting. `QA_EXPORTS=1`, source PR #38, GitHub prerelease `v0.6.0-alpha.10`, website PR #120, Vercel production deployment, browser startup, and public PCK byte identity are green. Human review must still approve weapon feel/art, the opening/interior direction, touch hierarchy, complete routes, and physical-device behavior before captures become approved taste baselines.
 
