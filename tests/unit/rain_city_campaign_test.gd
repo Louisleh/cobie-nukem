@@ -30,7 +30,7 @@ func _initialize() -> void:
 	campaign_runtime.load_progress()
 	campaign_runtime.reset_progress()
 	_test_salmon_availability()
-	_test_vancouver_campaign_gate()
+	_test_vancouver_public_beta()
 	_test_later_teasers_remain_locked()
 
 	_save_manager_delete(CAMPAIGN_SLOT)
@@ -55,30 +55,31 @@ func _test_salmon_availability() -> void:
 	_expect(SALMON_CARD.is_preview_release() == false, "Salmon preview state is disabled")
 
 
-func _test_vancouver_campaign_gate() -> void:
+func _test_vancouver_public_beta() -> void:
 	_expect(VANCOUVER_CARD != null, "Vancouver card resource loads")
 	if VANCOUVER_CARD == null:
 		return
 	_expect(VANCOUVER_CARD.level_id == &"episode_1_vancouver_waterfront", "Vancouver level id remains stable")
-	_expect(VANCOUVER_CARD.unlock_policy == LevelCardData.UnlockPolicy.CAMPAIGN, "Vancouver uses campaign unlock policy")
-	_expect(VANCOUVER_CARD.prerequisite_mission_id == &"episode_1_level_1", "Vancouver requires Salmon completion")
-	_expect(not VANCOUVER_CARD.is_available(campaign_runtime), "Vancouver is unavailable before Salmon completion")
+	_expect(VANCOUVER_CARD.unlock_policy == LevelCardData.UnlockPolicy.ALWAYS, "Vancouver public BETA uses always-available policy")
+	_expect(VANCOUVER_CARD.prerequisite_mission_id == &"", "Vancouver public BETA has no campaign prerequisite")
+	_expect(VANCOUVER_CARD.is_available(), "Vancouver public BETA is available without campaign state")
+	_expect(VANCOUVER_CARD.is_available(campaign_runtime), "Vancouver public BETA remains available with an empty campaign")
 
-	# Alpha.10 exposed Vancouver as a public beta. A player who completed that
-	# preview retains access even when their save predates the Salmon prerequisite.
+	# Existing campaign records remain readable even though public access no
+	# longer depends on them.
 	campaign_runtime.record_completion(VANCOUVER_CARD.level_id, {})
 	campaign_runtime.load_progress()
-	_expect(VANCOUVER_CARD.is_available(campaign_runtime), "Completed Vancouver preview retains campaign access")
+	_expect(VANCOUVER_CARD.is_available(campaign_runtime), "Completed Vancouver preview remains available")
 	campaign_runtime.reset_progress()
 	campaign_runtime.unlock_mission(VANCOUVER_CARD.level_id)
 	campaign_runtime.load_progress()
-	_expect(VANCOUVER_CARD.is_available(campaign_runtime), "Explicitly unlocked Vancouver remains available without prerequisite completion")
+	_expect(VANCOUVER_CARD.is_available(campaign_runtime), "Explicitly unlocked Vancouver remains available")
 	campaign_runtime.reset_progress()
 
 	campaign_runtime.record_completion(&"episode_1_level_1", {})
 	campaign_runtime.load_progress()
 	_expect(campaign_runtime.is_mission_completed(&"episode_1_level_1"), "Campaign runtime records Salmon completion")
-	_expect(VANCOUVER_CARD.is_available(campaign_runtime), "Vancouver unlocks after Salmon completion")
+	_expect(VANCOUVER_CARD.is_available(campaign_runtime), "Vancouver remains available after Salmon completion")
 
 
 func _test_later_teasers_remain_locked() -> void:

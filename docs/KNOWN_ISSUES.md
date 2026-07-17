@@ -4,6 +4,8 @@ This file distinguishes confirmed product limitations from unperformed validatio
 
 ## `0.7.0-alpha.1-rc3` Rain City human gates
 
+- RC4 corrects selector ownership so merely hovering or focusing another mission cannot replace a committed selection. Rain City is intentionally public and immediately playable under its `BETA` badge; only Mount Hood, Moon, and Ventura remain locked teasers. Automated selector coverage is required before deployment, while pointer feel still needs physical-browser validation.
+
 - RC3 separates card selection from launch, retains Web pointer lock across the Start transition, and enables proactive `R` reloads with authored HUD/audio feedback. Packaged and public Chrome verify the pointer and reload contracts; Safari, physical iPad, and full human route confirmation remain open.
 - The Rain City RC is intended for open public development with an explicit `BETA` badge and warning. Automated gates do not convert the human/device checks below into passes; final publication identity and hashes are recorded only after deployment.
 

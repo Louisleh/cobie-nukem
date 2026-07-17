@@ -37,8 +37,8 @@ func _test_public_beta_contract() -> void:
 		return
 	_expect(LEVEL_CARD.level_id == &"episode_1_vancouver_waterfront", "Mission card keeps stable level id")
 	_expect(LEVEL_CARD.title == "RAIN CITY RUN", "Mission card uses the canonical Rain City Run title")
-	_expect(LEVEL_CARD.unlock_policy == LevelCardData.UnlockPolicy.CAMPAIGN, "Vancouver uses campaign-gated availability")
-	_expect(LEVEL_CARD.prerequisite_mission_id == &"episode_1_level_1", "Vancouver unlocks after Salmon Creek")
+	_expect(LEVEL_CARD.unlock_policy == LevelCardData.UnlockPolicy.ALWAYS, "Vancouver public BETA is always available")
+	_expect(LEVEL_CARD.prerequisite_mission_id == &"", "Vancouver public BETA has no campaign prerequisite")
 	_expect(LEVEL_CARD.scene_path == "res://scenes/levels/episode_1_vancouver_waterfront.tscn", "Vancouver beta card routes to the production preview scene")
 	_expect(LEVEL_CARD.release_badge == "BETA", "Vancouver is explicitly labeled BETA while human gates remain open")
 	_expect(not LEVEL_CARD.launch_notice.strip_edges().is_empty(), "Vancouver beta declares its work-in-progress status")

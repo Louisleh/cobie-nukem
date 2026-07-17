@@ -59,23 +59,6 @@ func _check_scene(path: String) -> void:
 		instance.free()
 
 func _check_level_select_contract() -> void:
-	var controller_script := load("res://scripts/ui/level_select.gd") as GDScript
-	var focus_probe: Node = controller_script.new() as Node
-	var locked_a := Button.new()
-	var locked_b := Button.new()
-	locked_a.disabled = true
-	locked_b.disabled = true
-	var focus_cards: Array[Button] = [locked_a, locked_b]
-	focus_probe.set("_cards", focus_cards)
-	if int(focus_probe.call("_first_selectable_index")) != -1:
-		failures.append("Level select must report no selectable card when every route is locked")
-	locked_b.disabled = false
-	if int(focus_probe.call("_first_selectable_index")) != 1:
-		failures.append("Level select must focus the first actually available card")
-	focus_probe.set("_cards", [])
-	focus_probe.free()
-	locked_a.free()
-	locked_b.free()
 	var packed := load("res://scenes/menus/level_select.tscn") as PackedScene
 	if packed == null:
 		return
@@ -108,10 +91,10 @@ func _check_level_select_contract() -> void:
 				beta_cards += 1
 				if data.launch_notice.strip_edges().is_empty():
 					failures.append("Beta level card needs a visible work-in-progress notice")
-		if always_available != 1 or campaign_routes != 1 or locked_teasers != 3:
-			failures.append("Level select must expose one opening mission, one campaign-gated Rain City route, and three locked teasers")
+		if always_available != 2 or campaign_routes != 0 or locked_teasers != 3:
+			failures.append("Level select must expose Salmon Creek and public Rain City plus three locked teasers")
 		if beta_cards != 1:
-			failures.append("Exactly one campaign route must carry the BETA badge")
+			failures.append("Exactly one public route must carry the BETA badge")
 	var scroll := instance.get_node_or_null("SafeArea/Main/CourseScroll") as ScrollContainer
 	if scroll == null or scroll.horizontal_scroll_mode == ScrollContainer.SCROLL_MODE_DISABLED:
 		failures.append("Level cards must remain reachable in narrow viewports")
@@ -135,6 +118,10 @@ func _check_level_select_activation_contract() -> void:
 		failures.append("Level select needs selectable mission cards")
 	else:
 		var first_card := row.get_child(0) as Button
+		var rain_city_card := row.get_child(1) as Button
+		var locked_card := row.get_child(2) as Button
+		var title := instance.get_node_or_null("SafeArea/Main/MissionPanel/MissionMargin/Mission/Info/LevelTitle") as Label
+		var play := instance.get_node_or_null("SafeArea/Main/Footer/PlayButton") as Button
 		var selects_only := false
 		for connection in first_card.pressed.get_connections():
 			var callable: Callable = connection.get("callable", Callable())
@@ -143,8 +130,22 @@ func _check_level_select_activation_contract() -> void:
 				break
 		if not selects_only:
 			failures.append("Mission-card press must select only; explicit Start owns scene launch")
-		instance.set("_selected", -1)
-		instance.call("_on_card_pressed", 0)
+		var initial_title := title.text if title != null else ""
+		var initial_action := play.text if play != null else ""
+		locked_card.emit_signal("mouse_entered")
+		locked_card.emit_signal("focus_entered")
+		if int(instance.get("_selected")) != 0 or (title != null and title.text != initial_title) or (play != null and play.text != initial_action):
+			failures.append("Hover and focus must not commit a different mission selection")
+		locked_card.emit_signal("pressed")
+		if int(instance.get("_selected")) != 2 or (play != null and (play.text != "LOCKED" or not play.disabled)):
+			failures.append("Activating a locked teaser must commit its details and a disabled LOCKED action")
+		rain_city_card.emit_signal("pressed")
+		if int(instance.get("_selected")) != 1 or (play != null and (play.text != "START BETA" or play.disabled)):
+			failures.append("Rain City must be an immediately launchable public BETA selection")
+		locked_card.emit_signal("mouse_entered")
+		if int(instance.get("_selected")) != 1 or (play != null and play.text != "START BETA"):
+			failures.append("Crossing a locked card on the way to Start must preserve the committed Rain City selection")
+		first_card.emit_signal("pressed")
 		if int(instance.get("_selected")) != 0 or bool(instance.get("_launching")):
 			failures.append("Mission-card click must update selection without entering launch state")
 		var status := instance.get_node_or_null("SafeArea/Main/Footer/StatusLabel") as Label
