@@ -39,11 +39,18 @@ This remains an honestly labelled public RC. Automated validation supports publi
 
 ## Publication ledger
 
-- Source PR/integration: pending.
-- GitHub prerelease `v0.7.0-alpha.1-rc2`: pending.
-- Website PR/deployment: pending.
-- Ordinary/cache-busted browser startup and downloaded public PCK byte identity: pending.
+- Source [PR #42](https://github.com/Louisleh/cobie-nukem/pull/42) merged at integration `e016e44c072c6730f5b1bc636d1c6f66807ed47b`.
+- GitHub prerelease [`v0.7.0-alpha.1-rc2`](https://github.com/Louisleh/cobie-nukem/releases/tag/v0.7.0-alpha.1-rc2) contains the exact validated Web and unsigned Universal macOS packages.
+- Website [PR #123](https://github.com/Louisleh/louislehmann-site/pull/123) deployed at `c0d7171cc9083093fc6b4f5e3099f45e87c27955`.
+- Ordinary and cache-busted public URLs identify RC2. The downloaded 25,851,096-byte public PCK matched SHA-256 `03a3fe985217b303bc90bad881fd79760761e9119aff696091a29d0e7906abe2` exactly.
 - Immediate rollback: `0.7.0-alpha.1-rc1`.
+
+## Public browser evidence
+
+- A fresh 1024×768 touch-forced Chrome run displayed the RC2 loading identity and then the ready title prompt.
+- The first activation click entered a responsive main menu; no menu-resume workaround was required.
+- Mission selection fit the 4:3 viewport, and a fresh campaign correctly kept Rain City locked behind Salmon Creek completion.
+- No game-origin console error occurred. Browser-extension/content-script warnings were identified separately and excluded from game evidence.
 
 ## Human gates still open
 
