@@ -1,0 +1,42 @@
+work_id: rain-city-boss-hud
+role: spark-ui-accessibility-worker
+goal: Add a responsive, accessible boss health presentation and bind the existing mission boss-state contract.
+baseline_revision: 6291d6b
+dependencies: [rain-city-convoy-boss]
+owned_paths:
+  - scripts/ui/hud.gd
+  - scenes/ui/hud.tscn
+  - scripts/gameplay/mission_presentation.gd
+read_only_context:
+  - scripts/level/episode_1_vancouver_waterfront.gd
+  - scripts/level/episode_1_level_1.gd
+  - resources/ui/retro_theme.tres
+forbidden_paths:
+  - scripts/level/
+  - scripts/core/
+  - project.godot
+  - export_presets.cfg
+behavioral_contract:
+  - MissionPresentation connects a level boss_state_changed(state, fraction) signal when present.
+  - HUD exposes a public set_boss_state(display_name, state, fraction) method.
+  - The bar is hidden before a positive boss fraction and after defeated/zero; it shows exact title MUNICIPAL TOWMASTER // APPEAL DENIED for the Rain City boss via a configurable presentation name rather than mission-specific logic in HUD.
+  - State text is readable and the fraction is clamped and finite.
+  - Layout remains inside safe areas at 1024x768 and does not overlap objective, caption, pointer prompt, touch controls, or notification.
+  - High contrast and text scaling apply; reduced motion does not remove information.
+acceptance_criteria:
+  - Boss bar updates deterministically, rejects NaN/inf, and hides on defeated.
+  - Existing desktop/touch HUD behavior is unchanged outside the new bar.
+  - No per-frame polling or new autoload.
+focused_tests:
+  - godot --headless --path . --editor --quit
+  - godot --headless --path . --script res://tests/integration/hud_accessibility_test.gd
+evidence_required:
+  - exact model
+  - changed files
+  - tests and result
+  - one cohesive commit
+out_of_scope:
+  - level-side signal emission
+  - subjective boss tuning
+  - release metadata
+time_limit_minutes: 25
