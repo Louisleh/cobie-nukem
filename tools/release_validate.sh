@@ -83,7 +83,10 @@ run_godot_test res://tests/unit/moving_set_piece_encounter_coordinator_test.gd
 run_godot_test res://tests/unit/external_wave_encounter_test.gd
 run_godot_test res://tests/unit/directional_shield_component_test.gd
 run_godot_test res://tests/unit/umbrella_shield_enforcer_test.gd
+run_godot_test res://tests/unit/compliance_gull_test.gd
 run_godot_test res://tests/unit/campaign_progress_runtime_test.gd
+run_godot_test res://tests/unit/rain_city_campaign_test.gd
+run_godot_test res://tests/unit/mission_loadout_profile_test.gd
 run_godot_test res://tests/unit/alpha8_resource_contract_test.gd
 run_godot_test res://tests/integration/integration_test_runner.gd
 run_godot_test res://tests/integration/mission_runtime_contract_test.gd
@@ -94,6 +97,8 @@ run_godot_test res://tests/integration/vancouver_route_foundation_test.gd
 run_godot_test res://tests/integration/vancouver_interaction_catalog_test.gd
 run_godot_test res://tests/integration/umbrella_shield_content_test.gd
 run_godot_test res://tests/integration/vancouver_mission_host_test.gd
+run_godot_test res://tests/integration/rain_city_route_production_test.gd
+run_godot_test res://tests/integration/rain_city_convoy_boss_test.gd
 run_godot_test res://tests/integration/adversarial_state_test.gd
 run_godot_test res://tests/integration/vertical_slice_soak_test.gd
 run_godot_test res://tests/smoke/smoke_test_runner.gd
