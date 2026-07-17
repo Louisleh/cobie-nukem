@@ -2,6 +2,7 @@ class_name UmbrellaShieldEnforcer
 extends EnemyAgent
 
 signal guard_state_changed(previous_state: GuardState, current_state: GuardState)
+signal shield_broken()
 
 enum GuardState {
 	GUARDING,
@@ -119,6 +120,7 @@ func _on_directional_shield_broken() -> void:
 	_cancel_guard_timer()
 	_set_guard_state(GuardState.BROKEN)
 	_apply_guarding(false)
+	shield_broken.emit()
 
 
 func _on_directional_shield_reset() -> void:
@@ -133,6 +135,15 @@ func get_opening_window_seconds() -> float:
 
 func get_recovery_window_seconds() -> float:
 	return _recovery_window_seconds
+
+
+func apply_recall_stagger(multiplier: float) -> void:
+	if is_dead:
+		return
+	# The upgrade changes shield-control utility, never primary projectile damage.
+	if directional_shield != null and directional_shield.is_guarding():
+		directional_shield.apply_stagger_multiplier(multiplier)
+	stun(0.7 * maxf(multiplier, 1.0))
 
 
 func _start_guard_recovery() -> void:
@@ -237,4 +248,3 @@ func _is_shield_broken() -> bool:
 	if directional_shield == null:
 		return false
 	return directional_shield.is_permanently_broken()
-

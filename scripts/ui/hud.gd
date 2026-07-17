@@ -10,6 +10,11 @@ extends CanvasLayer
 @onready var portrait: CobiePortrait = %CobiePortrait
 @onready var crosshair: RetroCrosshair = %Crosshair
 @onready var sounds: ProceduralAudio = %ProceduralAudio
+@onready var boss_panel: Panel = %BossPanel
+@onready var boss_name_label: Label = %BossNameLabel
+@onready var boss_state_label: Label = %BossStateLabel
+@onready var boss_health_label: Label = %BossHealthPercentLabel
+@onready var boss_health_bar: ProgressBar = %BossHealthBar
 
 var _notification_tween: Tween
 var _caption_tween: Tween
@@ -57,7 +62,10 @@ func _ready() -> void:
 	if _caption_viewport != null:
 		_caption_viewport.size_changed.connect(_update_caption_layout)
 	_update_caption_layout()
+	_update_boss_layout()
 	_apply_caption_font_settings()
+	boss_panel.visible = false
+	boss_health_bar.value = 0.0
 
 func bind_player(player: Node) -> void:
 	if player.has_signal("weapon_changed"):
@@ -153,6 +161,23 @@ func show_enemy_warning_caption(message: String, seconds: float = CAPTION_DEFAUL
 
 func show_boss_phase_caption(message: String, seconds: float = CAPTION_DEFAULT_SECONDS) -> void:
 	show_caption(message, CaptionCategory.BOSS_PHASE, seconds)
+
+
+func set_boss_state(display_name: String, state: StringName, fraction: float) -> void:
+	var safe_fraction := _sanitize_fraction(fraction)
+	if safe_fraction <= 0.0 or state.to_lower() == "defeated":
+		_hide_boss_panel()
+		return
+	var title_text := display_name.strip_edges()
+	if title_text.is_empty():
+		title_text = "BOSS"
+	var readable_state := _readable_state_text(state)
+	var percentage := roundi(safe_fraction * 100.0)
+	boss_name_label.text = title_text.to_upper()
+	boss_state_label.text = "STATE // %s" % readable_state
+	boss_health_label.text = "%d%% HEALTH" % percentage
+	boss_health_bar.value = safe_fraction
+	boss_panel.visible = true
 
 func show_checkpoint_caption(message: String, seconds: float = CAPTION_DEFAULT_SECONDS) -> void:
 	show_caption(message, CaptionCategory.CHECKPOINT, seconds)
@@ -259,6 +284,35 @@ func _apply_caption_layout() -> void:
 
 func _update_caption_layout() -> void:
 	_apply_caption_layout()
+	_update_boss_layout()
+
+func _update_boss_layout() -> void:
+	var viewport_size := _caption_viewport.get_visible_rect().size if _caption_viewport != null else get_viewport().get_visible_rect().size
+	var panel_width := clampf(viewport_size.x * 0.44, 320.0, 620.0)
+	var left_margin := maxf(12.0, viewport_size.x - panel_width - 12.0)
+	var top_margin := maxf(64.0, viewport_size.y * 0.082)
+	boss_panel.anchor_left = 0.0
+	boss_panel.anchor_top = 0.0
+	boss_panel.anchor_right = 0.0
+	boss_panel.anchor_bottom = 0.0
+	boss_panel.offset_left = left_margin
+	boss_panel.offset_top = top_margin
+	boss_panel.offset_right = left_margin + panel_width
+	boss_panel.offset_bottom = top_margin + 74.0
+
+func _sanitize_fraction(value: float) -> float:
+	if not is_finite(value):
+		return -1.0
+	return clampf(value, 0.0, 1.0)
+
+func _readable_state_text(state: StringName) -> String:
+	var normalized := String(state).strip_edges().to_upper().replace("_", " ")
+	if normalized.is_empty():
+		return "ACTIVE"
+	return normalized
+
+func _hide_boss_panel() -> void:
+	boss_panel.visible = false
 
 func set_access_item(label: String) -> void:
 	%AccessLabel.text = label

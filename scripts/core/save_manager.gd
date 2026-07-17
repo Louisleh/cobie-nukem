@@ -13,7 +13,9 @@ signal load_completed(slot: StringName, data: Dictionary)
 #   3 — checkpoint payloads persist objective, completed-encounter, and secret
 #       snapshots. Active actors are intentionally rebuilt by the mission.
 #   4 — campaign payloads are canonicalized in a new envelope-compatible shape.
-const SAVE_VERSION := 4
+#   5 — checkpoints and campaign snapshots persist content revision, unlocked weapons,
+#       and active/campaign upgrades with deterministic sanitizer defaults.
+const SAVE_VERSION := 5
 const SAVE_DIRECTORY := "user://saves"
 
 func save_slot(slot: StringName, payload: Dictionary) -> Error:
@@ -131,6 +133,19 @@ func _migrate(version: int, payload: Dictionary) -> Dictionary:
 						migrated["unlocked_missions"] = []
 					if not migrated.has("mission_records"):
 						migrated["mission_records"] = {}
+			4:
+				# v5 adds loadout revision/upgrades keys for deterministic payload
+				# migration; campaign and checkpoint payloads remain semantically intact.
+				if _is_checkpoint_payload(migrated):
+					if not migrated.has("content_revision"):
+						migrated["content_revision"] = 0
+					if not migrated.has("unlocked_weapons"):
+						migrated["unlocked_weapons"] = []
+					if not migrated.has("active_mission_upgrades"):
+						migrated["active_mission_upgrades"] = {}
+				if _is_campaign_payload(migrated):
+					if not migrated.has("campaign_upgrades"):
+						migrated["campaign_upgrades"] = {}
 	return migrated
 
 func _is_checkpoint_payload(payload: Dictionary) -> bool:

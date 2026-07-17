@@ -1,6 +1,5 @@
 class_name CobiePlayer
 extends CharacterBody3D
-
 signal died(source: Node)
 signal restart_requested
 signal interaction_available(label: String)
@@ -360,6 +359,10 @@ func unlock_weapon(display_name: String) -> bool:
 			select_weapon(index)
 			return true
 	return false
+
+
+func apply_mission_loadout(profile: MissionLoadoutProfile, restored_payload: Dictionary = {}) -> bool: return MissionLoadoutApplicator.apply(self, profile, restored_payload)
+func mission_loadout_snapshot(mission_id: StringName, mission_upgrades: Array[StringName] = []) -> Dictionary: return MissionLoadoutApplicator.snapshot(self, mission_id, mission_upgrades)
 func _current_weapon_fire(secondary: bool) -> void:
 	if weapons.is_empty():
 		return

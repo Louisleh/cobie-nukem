@@ -4,13 +4,14 @@
 [resource]
 script = ExtResource("1")
 level_id = &"episode_1_vancouver_waterfront"
-title = "RAIN CITY SLICE"
+title = "RAIN CITY RUN"
 episode = "EPISODE 1 // VANCOUVER WATERFRONT"
 description = "A citation convoy is loose between the downtown blocks and the harbour. The seawall remains under emergency leash protocol."
 difficulty = 3
 expected_minutes = "15–22 MIN"
 encounter = "CITATION CONVOY"
-unlocked = true
+unlock_policy = 1
+prerequisite_mission_id = "episode_1_level_1"
 scene_path = "res://scenes/levels/episode_1_vancouver_waterfront.tscn"
 release_badge = "BETA"
 launch_notice = "BETA // PLAYABLE WORK IN PROGRESS — EXPECT ROUGH EDGES"

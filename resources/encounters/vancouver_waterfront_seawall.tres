@@ -9,11 +9,17 @@ schema_version = 2
 spawns = []
 waves = Array[Dictionary]([{
 "spawns": [
-	{"scene":"res://scenes/enemies/leash_enforcement_drone.tscn","position":Vector3(-6,2,-62)},
-	{"scene":"res://scenes/enemies/leash_enforcement_drone.tscn","position":Vector3(6,2,-68)},
+	{"scene":"res://scenes/enemies/compliance_gull.tscn","position":Vector3(-6,4,-62)},
+	{"scene":"res://scenes/enemies/compliance_gull.tscn","position":Vector3(6,4,-68)},
 	{"scene":"res://scenes/enemies/umbrella_shield_enforcer.tscn","position":Vector3(0,0,-72)}
+]}, {
+"delay_seconds": 1.8,
+"spawns": [
+	{"scene":"res://scenes/enemies/squirrel_trooper.tscn","position":Vector3(9,0,-78)},
+	{"scene":"res://scenes/enemies/leash_enforcement_drone.tscn","position":Vector3(-10,3,-84)},
+	{"scene":"res://scenes/enemies/compliance_gull.tscn","position":Vector3(2,4,-89)}
 ]}])
 enemy_budget = 6
-maximum_simultaneous_attackers = 2
+maximum_simultaneous_attackers = 4
 music_intensity = 0.6
 reward_policy = &"authored"

@@ -1,0 +1,46 @@
+work_id: rain-city-authored-audio
+role: spark-content-author
+goal: Add deterministic project-original Rain City enemy and convoy audio families and register bounded Web-safe cues.
+baseline_revision: 7a69565
+dependencies: [rain-city-visual-foundry]
+owned_paths:
+  - assets/audio/source/generate_production_sfx.py
+  - assets/audio/SHA256SUMS.txt
+  - assets/audio/enemies/compliance_gull/
+  - assets/audio/enemies/umbrella_enforcer/
+  - assets/audio/set_pieces/citation_convoy/
+  - resources/audio/mission_audio_library.tres
+read_only_context:
+  - scripts/audio/audio_cue_set.gd
+  - scripts/audio/audio_cue_library.gd
+  - resources/audio/vancouver_mission_audio.tres
+forbidden_paths:
+  - scripts/
+  - docs/ASSET_MANIFEST.md
+  - scripts/core/
+  - project.godot
+  - export_presets.cfg
+behavioral_contract:
+  - Synthesis is deterministic, mono 44.1 kHz, project-original, and uses no sample, voice clone, quote, or protected-performance imitation.
+  - Add three variants per family where variation helps: gull mark/dive/death, umbrella brace/open/break, convoy move/module-break/defeat.
+  - Cue IDs are rain_city_gull_mark, rain_city_gull_dive, rain_city_gull_death, rain_city_shield_brace, rain_city_shield_open, rain_city_shield_break, rain_city_convoy_move, rain_city_module_break, and rain_city_convoy_defeat.
+  - All cues use SFX, spatial playback, bounded max distance, pitch variation no wider than 0.94–1.06, and maximum polyphony no greater than 3.
+  - Regenerating the library preserves all pre-existing WAV hashes and cue registrations except the checksum manifest naturally gains the new files.
+acceptance_criteria:
+  - Generator creates all declared WAVs and deterministic hashes.
+  - Every new cue resolves at least one stream and validates in AudioCueLibrary.
+  - Existing audio cue IDs remain present.
+focused_tests:
+  - python3 assets/audio/source/generate_production_sfx.py
+  - godot --headless --path . --script res://tests/unit/imported_audio_contract_test.gd
+evidence_required:
+  - exact model
+  - generated paths and hashes
+  - test result
+  - one cohesive commit
+out_of_scope:
+  - gameplay event wiring
+  - subjective mix approval
+  - spoken voice
+  - release metadata
+time_limit_minutes: 25

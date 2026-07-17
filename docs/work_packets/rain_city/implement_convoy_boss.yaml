@@ -1,0 +1,41 @@
+work_id: rain-city-convoy-boss
+role: spark-gameplay-worker
+goal: Convert the citation convoy into a deterministic four-phase Municipal Towmaster boss using MovingSetPieceDefinition schema v2 and typed phase Resources.
+baseline_revision: 1a8e4cb
+dependencies:
+  - Rain City save-v5, route, 26-enemy encounter, and Municipal Recall foundations
+owned_paths:
+  - scripts/gameplay/moving_set_piece_phase_definition.gd
+  - scripts/gameplay/moving_set_piece_definition.gd
+  - scripts/gameplay/moving_set_piece_runtime.gd
+  - scripts/gameplay/moving_set_piece_encounter_coordinator.gd
+  - scripts/level/citation_convoy_actor.gd
+  - scenes/set_pieces/citation_convoy.tscn
+  - resources/set_pieces/vancouver_citation_convoy.tres
+  - resources/set_pieces/vancouver_convoy_phases/
+read_only_context:
+  - scripts/level/episode_1_vancouver_waterfront.gd
+  - resources/encounters/vancouver_harbour_pier.tres
+  - scripts/level/world_interaction.gd
+  - tests/unit/moving_set_piece_runtime_test.gd
+  - tests/unit/moving_set_piece_encounter_coordinator_test.gd
+forbidden_paths:
+  - scripts/core/build_info.gd
+  - docs/PHASE_ROADMAP_PRD.md
+  - project.godot
+  - export_presets.cfg
+behavioral_contract: Add schema_version=2 and four ordered typed phases: Appeal Filed (left drive), Appeal Denied (signal dish), Final Notice (right drive), Case Closed (citation core). Each phase names its stop, encounter wave, required module, display caption, health allocation, and music intensity. Total Classic module/core health is approximately 1000 and the core is unavailable until earlier modules complete. Runtime state/snapshot includes phase index and completed phase IDs, generation-gates every callback, restores deterministically, and resets actor/modules/waves once. Preserve current three-vehicle actor identity, make the wreck persist on completion, and never depend on falling/disappearance. Coordinator must support exactly one external encounter with four waves/stops.
+acceptance_criteria:
+  - Definition validation rejects missing, duplicate, unordered, or mismatched phases/stops/waves/modules.
+  - Actor has left drive, signal dish, right drive, and citation core with phase-gated vulnerability and combined 1000 Classic HP.
+  - Runtime emits phase_changed and boss_health_changed deterministically and completion once.
+  - Reset, stale generation, simultaneous final enemy/module completion, and scene exit cannot duplicate rewards or completion.
+  - Completion leaves a disabled persistent wreck until reset/scene exit.
+focused_tests:
+  - /opt/homebrew/bin/godot --headless --path . --script res://tests/unit/moving_set_piece_runtime_test.gd
+  - /opt/homebrew/bin/godot --headless --path . --script res://tests/unit/moving_set_piece_encounter_coordinator_test.gd
+evidence_required:
+  - One cohesive commit, exact test/import output, and structured result contract.
+out_of_scope:
+  - Mission controller wiring, final pacing/taste, audio asset creation, HUD, BuildInfo, PRD, release.
+time_limit_minutes: 45

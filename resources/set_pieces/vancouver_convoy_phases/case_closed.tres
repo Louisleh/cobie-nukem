@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="MovingSetPiecePhaseDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/gameplay/moving_set_piece_phase_definition.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+schema_version = 2
+phase_id = &"case_closed"
+stop_marker = 0.94
+encounter_wave_index = 3
+encounter_id = &"vancouver_convoy_showdown"
+required_module_id = &"citation_core"
+display_caption = "CASE CLOSED"
+health_allocation = 250.0
+music_intensity = 0.95

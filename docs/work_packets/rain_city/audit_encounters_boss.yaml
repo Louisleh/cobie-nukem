@@ -1,0 +1,32 @@
+work_id: rain-city-audit-encounters-boss
+role: spark-code-reviewer
+goal: Audit current Vancouver encounters, Umbrella Shield Enforcer, moving set-piece runtime, combat-pressure limits, checkpoint/reset behavior, and boss-readiness for the approved Compliance Gull and four-phase Municipal Towmaster finale.
+baseline_revision: e385aee
+dependencies: []
+owned_paths: []
+read_only_context:
+  - scripts/enemies/
+  - scripts/encounters/
+  - scripts/level/episode_1_vancouver_waterfront.gd
+  - resources/encounters/
+  - resources/setpieces/
+  - tests/unit/umbrella_shield_enforcer_test.gd
+  - tests/integration/vancouver_mission_host_test.gd
+forbidden_paths:
+  - scripts/core/build_info.gd
+  - docs/PHASE_ROADMAP_PRD.md
+  - .github/workflows/
+  - project.godot
+behavioral_contract: Read-only. Identify deterministic state, lifecycle, pressure-budget, navigation, reset, cleanup, and test gaps. Preserve the shared 1,000-point Classic boss budget and existing encounter systems.
+acceptance_criteria:
+  - Rank findings with exact file/line evidence.
+  - Define bounded implementation seams for Gull behavior, pressure limits, typed boss phases, modules, rewards, and resets.
+  - Call out unbounded or double-fired state transitions.
+focused_tests:
+  - bash tools/run_godot_test.sh tests/unit/umbrella_shield_enforcer_test.gd 60
+  - bash tools/run_godot_test.sh tests/integration/vancouver_mission_host_test.gd 60
+evidence_required:
+  - Structured result contract with model identity and no changed files.
+out_of_scope:
+  - Implementation, difficulty feel, final pacing, visual/audio taste.
+time_limit_minutes: 25

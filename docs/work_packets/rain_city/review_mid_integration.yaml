@@ -1,0 +1,28 @@
+work_id: rain-city-mid-integration-review
+role: spark-code-reviewer
+goal: Independently review the Rain City campaign, save-v5, five-zone route, Gull, authored visual/audio, boss runtime, boss HUD, and soak-test integration against the approved production contract.
+baseline_revision: e385aee
+dependencies:
+  - integrated branch head 8ee0a4e
+owned_paths: []
+read_only_context:
+  - AGENTS.md
+  - docs/PRD.md
+  - docs/PHASE_ROADMAP_PRD.md
+  - docs/work_packets/rain_city/
+  - full git diff e385aee..8ee0a4e
+forbidden_paths:
+  - entire repository is read-only
+behavioral_contract: Inspect the complete diff and relevant surrounding code independently. Rank only evidence-backed findings affecting progression, checkpoint/campaign isolation, stale callbacks, boss phase/reset correctness, audio/node bounds, touch/HUD safety, Web compatibility, navigation/floor ownership, asset provenance, test validity, or false completeness claims. Do not implement.
+acceptance_criteria:
+  - Findings include severity and exact file/line evidence.
+  - Duplicate symptoms are consolidated to one root cause.
+  - Each Blocker/Critical/Major finding includes reproduction or a concrete failing contract.
+  - Explicitly identify untested human-only claims and release gates.
+focused_tests:
+  - Read-only inspection; run only existing focused headless tests needed to confirm a finding.
+evidence_required:
+  - Structured result contract with ranked findings and recommended dispositions.
+out_of_scope:
+  - Edits, commits, merges, deployment, asset creation, subjective visual acceptance, physical-device claims.
+time_limit_minutes: 35

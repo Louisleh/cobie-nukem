@@ -126,6 +126,62 @@ def enemy_cue(phase: str, variant: int) -> tuple[float, Callable[[float, random.
     return duration, synth
 
 
+def rain_city_cue(family: str, phase: str, variant: int) -> tuple[float, Callable[[float, random.Random], float]]:
+    families = {
+        "compliance_gull": {
+            "mark": (0.32, 196.0, 0.64, 0.19, 0.44),
+            "dive": (0.38, 146.0, 0.48, 0.25, 0.53),
+            "death": (0.74, 92.0, 0.56, 0.33, 0.72),
+            "loop_cutoff": 0.09,
+        },
+        "umbrella_enforcer": {
+            "brace": (0.34, 154.0, 0.72, 0.24, 0.50),
+            "open": (0.28, 178.0, 0.55, 0.20, 0.45),
+            "break": (0.58, 116.0, 0.66, 0.30, 0.66),
+            "loop_cutoff": 0.13,
+        },
+        "citation_convoy": {
+            "move": (0.42, 132.0, 0.44, 0.23, 0.58),
+            "module_break": (0.66, 102.0, 0.70, 0.34, 0.64),
+            "defeat": (0.74, 88.0, 0.58, 0.28, 0.76),
+            "loop_cutoff": 0.11,
+        },
+    }
+    family_settings = families[family]
+    duration, base_hz, harmonic_hz, brightness, decay = family_settings[phase]
+    filtered = _noise_filter(family_settings["loop_cutoff"])
+    phase_offsets = {
+        "mark": 0.21,
+        "dive": -0.18,
+        "death": 0.42,
+        "brace": 0.03,
+        "open": -0.34,
+        "break": 0.87,
+        "move": -0.08,
+        "module_break": 0.45,
+        "defeat": -0.59,
+    }
+    def synth(t: float, rng: random.Random) -> float:
+        progress = t / duration
+        envelope = _decay(t, duration, 1.3)
+        drift = math.sin(math.tau * 6.0 * progress + variant * 0.21)
+        tone = math.sin(math.tau * (base_hz + harmonic_hz * drift + 7.0 * (1.0 - progress)) * t + phase_offsets[phase] + variant * 0.31)
+        scrape = filtered(rng) * (1.2 + drift * 0.12)
+        pulse = rng.uniform(-1.0, 1.0) * math.exp(-t * (38.0 if phase not in ("break", "module_break", "death") else 28.0))
+        if family == "citation_convoy" and phase in ("move", "module_break"):
+            harmonic = math.sin(math.tau * (base_hz * 1.8 + harmonic_hz * 0.4) * t + phase_offsets[phase]) * _decay(t, duration, 1.8)
+            tone += 0.22 * harmonic
+        if phase in ("dive", "open", "move"):
+            gliss = math.sin(math.tau * (base_hz * 0.62) * t + math.tau * 0.4 * progress) * progress
+            tone += 0.31 * gliss
+        if phase in ("death", "break", "module_break", "defeat"):
+            clang = math.sin(math.tau * base_hz * 2.7 * t + phase_offsets[phase]) * _decay(t, duration, 1.5)
+            pulse += 0.44 * clang
+        return (tone * brightness + scrape * 0.52 + pulse) * envelope * (0.72 + 0.18 * math.sin(math.tau * progress * (2.2 + variant * 0.33)))
+
+    return duration, synth
+
+
 def footstep(surface: str, variant: int) -> tuple[float, Callable[[float, random.Random], float]]:
     settings = {
         "soil": (0.18, 58.0, 0.11, 0.50),
@@ -242,6 +298,18 @@ def main() -> None:
             relative = f"enemies/shared/{phase}_{variant:02d}.wav"
             _render(relative, duration, synth, 0xE11E0 + phase_index * 100 + variant)
             generated.append(ROOT / relative)
+    for family, phases, base_seed in (
+        ("compliance_gull", ("mark", "dive", "death"), 0xD1E90),
+        ("umbrella_enforcer", ("brace", "open", "break"), 0xD2F10),
+        ("citation_convoy", ("move", "module_break", "defeat"), 0xD3F80),
+    ):
+        base_directory = f"set_pieces/{family}" if family == "citation_convoy" else f"enemies/{family}"
+        for phase_index, phase in enumerate(phases):
+            for variant in range(1, 4):
+                duration, synth = rain_city_cue(family, phase, variant)
+                relative = f"{base_directory}/{phase}_{variant:02d}.wav"
+                _render(relative, duration, synth, base_seed + phase_index * 100 + variant)
+                generated.append(ROOT / relative)
     for surface_index, surface in enumerate(("soil", "concrete", "wood", "metal")):
         for variant in range(1, 4):
             duration, synth = footstep(surface, variant)

@@ -1,0 +1,36 @@
+work_id: rain-city-run-production-foundry
+target: Five-zone Rain City Run gameplay layout and production presentation, including Umbrella Shield Enforcer, Compliance Gull, Municipal Towmaster convoy, HUD, and touch-safe boss presentation.
+baseline_revision: e385aee
+canonical_views:
+  - mission_selection
+  - downtown_service_alley
+  - rain_city_slice
+  - waterfront_seawall
+  - terminal_service
+  - harbour_pier
+  - umbrella_shield_enforcer
+  - compliance_gull
+  - municipal_towmaster
+  - tablet_4_3_touch_hud
+gameplay_readability: The player must read the forward route, current objective, hostile silhouettes, shield openings, Gull mark/dive telegraphs, convoy modules, flank paths, secrets, pickups, and lethal water before decorative detail.
+silhouette_goal: Wet vertical city canyon transitions into open harbour layers; the enforcer is a broad grounded shield wedge, the Gull is a small high-contrast airborne triangle/searchlight, and the Towmaster is an asymmetrical three-vehicle municipal machine with individually legible modules.
+visual_story: A cheerful rainy waterfront has been overrun by absurd automated compliance enforcement; warmth and improvised neighbourhood personality push back against cold teal municipal machinery.
+palette: Cool blue-green rain and harbour values; warm amber restaurant and checkpoint accents; off-white objective text; safety orange interactables; red hostile weak points; purple secret feedback.
+value_hierarchy: Critical route and enemies occupy the highest local contrast, objectives and pickups second, landmarks third, ambient architecture and rain remain quieter.
+materials: Wet asphalt, painted concrete, rain-darkened brick, glass tower panels, seawall concrete, harbour steel, warm restaurant tile, terminal flooring, painted municipal vehicle metal.
+lighting_and_fog: Baked/static overcast key, warm authored pools at the restaurant and checkpoints, restrained distance fog for skyline separation, bounded local dynamic lights for boss modules and impacts.
+animation_or_state_vocabulary: Eight-direction enforcer patrol/alert/brace/open/attack/shield-break/hurt/stagger/death; Gull patrol/search/mark/dive/recover/hurt/death; Towmaster enter/stop/module break/phase change/core expose/defeat.
+platform_budgets: Native 1080p p95 <=20 ms and p99 <=33.3 ms; Web/tablet p95 <=33.3 ms and p99 <=50 ms; <=4 active enemies; Web transfer <90 MB target; native memory <1 GB; unreviewed zone <=650 draw calls.
+source_and_license: Original deterministic Blender and Material Maker sources authored for Cobie Nukem; supporting assets only with recorded commercial redistribution rights. No copied maps, photography, logos, private data, or protected character/game IP.
+owned_paths:
+  - assets/source/blender/
+  - assets/source/material_maker/
+  - assets/models/rain_city/
+  - assets/materials/rain_city/
+  - assets/sprites/enemies/
+  - scenes/levels/vancouver/
+  - docs/ASSET_MANIFEST.md
+preserved_gameplay_contracts: Stable mission/zone/objective/encounter/interaction IDs; authored collision/navigation remains separate from replaceable presentation; all progression and checkpoints remain recoverable without presentation assets.
+acceptance_evidence: Deterministic imports, focused tests, four-aspect captures, 30/60/120 FPS motion, 10-TPS diagnostics, native metrics, packaged-Web trace, provenance, and cleanup baselines.
+human_review_questions: Route clarity, landmark hierarchy, enemy/boss readability, material cohesion, rain comfort, touch HUD comfort, humor, music/mix, photosensitivity, and whether presentation clearly exceeds Alpha.10.
+out_of_scope: Real-world Vancouver reproduction, real restaurant branding, multiplayer, native iOS, public Mount Hood/Moon/Ventura content.

@@ -7,6 +7,8 @@ signal encounter_requested(id: StringName, generation: int)
 signal path_completed(generation: int)
 signal completed(id: StringName, generation: int)
 signal reset_completed(generation: int)
+signal phase_changed(phase_index: int, phase_id: StringName, generation: int)
+signal boss_health_changed(current_health: float, max_health: float, generation: int)
 
 const ERROR_NONE := &""
 const ERROR_MISSING_DEFINITION := &"missing_definition"
@@ -25,26 +27,24 @@ var _waiting_for_stop := false
 var _path_completed := false
 var _completion_emitted := false
 var _completion_event_id: StringName = &""
+var _schema_version := 1
 var _path_points: Array[Vector3] = []
 var _stop_fractions: Array[float] = []
-var _stop_distances: Array[float] = []
-var _segment_lengths: Array[float] = []
-var _segment_directions: Array[Vector3] = []
-var _total_path_length := 0.0
+var _path := MovingSetPiecePath.new()
 var _distance_along_path := 0.0
 var _next_stop_index := 0
+var _active_wave_index := -1
 var _encounter_requirements: Array[StringName] = []
 var _module_requirements: Array[StringName] = []
 var _encounter_completed: Dictionary = {}
 var _module_destroyed: Dictionary = {}
-
+var _phase_state := MovingSetPiecePhaseState.new()
 
 func generation() -> int:
 	return _generation
 
-
 func current_state() -> Dictionary:
-	return {
+	var state := {
 		"generation": _generation,
 		"has_actor": is_instance_valid(_actor),
 		"running": _running,
@@ -56,7 +56,8 @@ func current_state() -> Dictionary:
 		"encounter_gates": _encounter_completed.duplicate(),
 		"module_gates": _module_destroyed.duplicate(),
 	}
-
+	state.merge(_phase_state.snapshot(), true)
+	return state
 
 func configure(definition: Object, actor_parent: Node = null) -> StringName:
 	clear()
@@ -88,27 +89,20 @@ func configure(definition: Object, actor_parent: Node = null) -> StringName:
 		return ERROR_INVALID_ACTOR_PARENT
 
 	_definition = definition.duplicate(true)
+	_schema_version = int(_definition.get("schema_version"))
 	_actor_scene = scene
 	_actor_parent = parent
 	_path_points = _definition.path_points.duplicate()
-	_stop_fractions = _definition.stop_markers.duplicate()
-	_encounter_requirements = _definition.encounter_trigger_ids.duplicate()
-	_module_requirements = _definition.destructible_module_ids.duplicate()
-
-	# Callers are responsible for collision-safe authored paths and non-degenerate movement geometry.
-	if _encounter_requirements.size() > _stop_fractions.size():
-		clear()
-		return ERROR_INVALID_DEFINITION
-	if _has_duplicate_stop_markers(_stop_fractions):
-		clear()
-		return ERROR_INVALID_DEFINITION
-
 	_completion_event_id = StringName(_definition.completion_event)
+
+	if not _configure_definitions():
+		clear()
+		return ERROR_INVALID_DEFINITION
+
 	_build_path_data()
 	_reset_progress()
 	_generation += 1
 	return ERROR_NONE
-
 
 func start() -> bool:
 	if _definition == null:
@@ -121,7 +115,6 @@ func start() -> bool:
 	_reset_progress()
 	_clear_actor()
 	return _spawn_actor(true)
-
 
 func reset() -> bool:
 	if _definition == null:
@@ -153,7 +146,6 @@ func reset() -> bool:
 	reset_completed.emit(_generation)
 	return true
 
-
 func resume_from_stop() -> bool:
 	if not _running or not _waiting_for_stop or _moving:
 		return false
@@ -162,40 +154,91 @@ func resume_from_stop() -> bool:
 	set_physics_process(true)
 	return true
 
-
 func mark_encounter_completed(id: StringName, observed_generation: int = -1) -> bool:
 	if not _running or _definition == null:
 		return false
 	if observed_generation != -1 and observed_generation != _generation:
 		return false
-	var key := String(id).strip_edges().to_lower()
-	if key.is_empty():
+	if _schema_version == 1:
+		var key := String(id).strip_edges().to_lower()
+		if key.is_empty():
+			return false
+		if not _encounter_completed.has(key):
+			return false
+		if bool(_encounter_completed[key]):
+			return false
+		_encounter_completed[key] = true
+		_evaluate_completion_gates()
+		return true
+
+	if not _phase_state.mark_encounter(id, _active_wave_index):
 		return false
-	if not _encounter_completed.has(key):
-		return false
-	if bool(_encounter_completed[key]):
-		return false
-	_encounter_completed[key] = true
+	_try_finalize_active_phase()
 	_evaluate_completion_gates()
 	return true
-
 
 func mark_module_destroyed(id: StringName, observed_generation: int = -1) -> bool:
 	if not _running or _definition == null:
 		return false
 	if observed_generation != -1 and observed_generation != _generation:
 		return false
-	var key := String(id).strip_edges().to_lower()
-	if key.is_empty():
+	if _schema_version == 1:
+		var key := String(id).strip_edges().to_lower()
+		if key.is_empty():
+			return false
+		if not _module_destroyed.has(key):
+			return false
+		if bool(_module_destroyed[key]):
+			return false
+		_module_destroyed[key] = true
+		_evaluate_completion_gates()
+		return true
+
+	if not _phase_state.mark_module(id):
 		return false
-	if not _module_destroyed.has(key):
-		return false
-	if bool(_module_destroyed[key]):
-		return false
-	_module_destroyed[key] = true
+	boss_health_changed.emit(_phase_state.current_health, _phase_state.max_health, _generation)
+	_try_finalize_active_phase()
 	_evaluate_completion_gates()
 	return true
 
+func update_module_health(id: StringName, current_health: float, maximum_health: float, observed_generation: int = -1) -> bool:
+	if not _running or _schema_version != 2:
+		return false
+	if observed_generation != -1 and observed_generation != _generation:
+		return false
+	if not _phase_state.update_module_health(id, current_health, maximum_health):
+		return false
+	boss_health_changed.emit(_phase_state.current_health, _phase_state.max_health, _generation)
+	return true
+
+func restore_completed_state() -> bool:
+	if _definition == null or _schema_version != 2 or _actor_scene == null or _actor_parent == null:
+		return false
+	_generation += 1
+	_clear_actor()
+	_distance_along_path = _path.total_length
+	_next_stop_index = _stop_fractions.size()
+	_active_wave_index = _stop_fractions.size() - 1
+	_running = false
+	_moving = false
+	_waiting_for_stop = false
+	_path_completed = true
+	_completion_emitted = true
+	_phase_state.restore_completed()
+	set_physics_process(false)
+	var instance := _actor_scene.instantiate() as Node3D
+	if instance == null:
+		return false
+	_actor = instance
+	_actor.position = _path.position_at(_distance_along_path)
+	_actor_parent.add_child(_actor)
+	_sync_actor_phase()
+	_actor.reset_physics_interpolation()
+	started.emit(_actor, _generation)
+	if _actor.has_method("play_defeat_sequence"):
+		_actor.call("play_defeat_sequence")
+	_emit_boss_health_state()
+	return true
 
 func clear() -> void:
 	_clear_actor()
@@ -207,29 +250,26 @@ func clear() -> void:
 	_waiting_for_stop = false
 	_path_completed = false
 	_completion_emitted = false
+	_active_wave_index = -1
 	_completion_event_id = &""
 	_distance_along_path = 0.0
 	_next_stop_index = 0
-	_total_path_length = 0.0
+	_schema_version = 1
 	_path_points.clear()
 	_stop_fractions.clear()
-	_stop_distances.clear()
-	_segment_lengths.clear()
-	_segment_directions.clear()
+	_path.clear()
 	_encounter_requirements.clear()
 	_module_requirements.clear()
+	_phase_state.clear()
 	_encounter_completed.clear()
 	_module_destroyed.clear()
 	set_physics_process(false)
 
-
 func _ready() -> void:
 	set_physics_process(false)
 
-
 func _exit_tree() -> void:
 	clear()
-
 
 func _physics_process(delta: float) -> void:
 	if not _running or not _moving or _definition == null:
@@ -247,15 +287,15 @@ func _physics_process(delta: float) -> void:
 
 	var previous_distance: float = _distance_along_path
 	var target_distance: float = previous_distance + move_distance
-	var stop_distance: float = _next_stop_distance()
+	var stop_distance: float = _path.next_stop(_next_stop_index)
 	if stop_distance >= 0.0 and target_distance + EPSILON >= stop_distance and previous_distance < stop_distance - EPSILON:
 		_distance_along_path = stop_distance
 		_apply_position()
 		_handle_stop_reached(_next_stop_index, _stop_fractions[_next_stop_index])
 		return
 
-	if target_distance >= _total_path_length - EPSILON:
-		_distance_along_path = _total_path_length
+	if target_distance >= _path.total_length - EPSILON:
+		_distance_along_path = _path.total_length
 		_apply_position()
 		_handle_path_completed()
 		return
@@ -263,17 +303,19 @@ func _physics_process(delta: float) -> void:
 	_distance_along_path = target_distance
 	_apply_position()
 
-
 func _handle_stop_reached(stop_index: int, fraction: float) -> void:
+	if _schema_version == 2:
+		_active_wave_index = stop_index
 	_next_stop_index += 1
 	_waiting_for_stop = true
 	_moving = false
 	set_physics_process(false)
 	stop_reached.emit(stop_index, fraction)
+	if _schema_version == 2 and stop_index < _phase_state.encounter_requirements.size():
+		phase_changed.emit(_phase_state.phase_index_for_wave(stop_index), _phase_state.phase_id_for_wave(stop_index), _generation)
 	var encounter_id := _encounter_id_for_index(stop_index)
 	if encounter_id != &"":
 		encounter_requested.emit(encounter_id, _generation)
-
 
 func _handle_path_completed() -> void:
 	if _path_completed:
@@ -285,74 +327,64 @@ func _handle_path_completed() -> void:
 	path_completed.emit(_generation)
 	_evaluate_completion_gates()
 
-
 func _evaluate_completion_gates() -> void:
 	if _definition == null or _completion_emitted:
 		return
-	if not _path_completed:
-		return
-	if not _all_gates_complete():
-		return
+	if _schema_version == 2:
+		if not _path_completed:
+			return
+		if _phase_state.active_index < _phase_state.ids.size():
+			return
+	else:
+		if not _path_completed:
+			return
+		if not _all_gates_complete():
+			return
 	_completion_emitted = true
 	completed.emit(_completion_event_id, _generation)
+	if _schema_version == 2:
+		phase_changed.emit(_phase_state.active_index, _phase_state.active_id(), _generation)
+		boss_health_changed.emit(_phase_state.current_health, _phase_state.max_health, _generation)
 	if _definition.reset_policy == 2:
 		_start_loop_cycle()
 
-
 func _build_path_data() -> void:
-	_segment_lengths.clear()
-	_segment_directions.clear()
-	_stop_distances.clear()
-	_total_path_length = 0.0
-
-	if _path_points.size() < 2:
-		return
-
-	for index in range(_path_points.size() - 1):
-		var segment := _path_points[index + 1] - _path_points[index]
-		var segment_length: float = segment.length()
-		_segment_lengths.append(segment_length)
-		if segment_length > EPSILON:
-			_segment_directions.append(segment / segment_length)
-		else:
-			_segment_directions.append(Vector3.ZERO)
-		_total_path_length += segment_length
-
-	for marker in _stop_fractions:
-		_stop_distances.append(marker * _total_path_length)
-
+	_path.configure(_path_points, _stop_fractions)
 	_reset_requirements()
-
 
 func _reset_requirements() -> void:
 	_encounter_completed.clear()
-	for id in _encounter_requirements:
-		var key := String(id).strip_edges().to_lower()
-		if not key.is_empty():
-			_encounter_completed[key] = false
 	_module_destroyed.clear()
-	for id in _module_requirements:
-		var key := String(id).strip_edges().to_lower()
-		if not key.is_empty():
-			_module_destroyed[key] = false
-
+	if _schema_version == 1:
+		for id in _encounter_requirements:
+			var key := String(id).strip_edges().to_lower()
+			if not key.is_empty():
+				_encounter_completed[key] = false
+		for id in _module_requirements:
+			var key := String(id).strip_edges().to_lower()
+			if not key.is_empty():
+				_module_destroyed[key] = false
+	else:
+		_phase_state.reset()
 
 func _reset_progress() -> void:
 	_completion_emitted = false
 	_distance_along_path = 0.0
 	_next_stop_index = 0
-	_path_completed = false
+	_phase_state.active_index = 0
+	_active_wave_index = -1
 	_waiting_for_stop = false
 	_moving = false
+	_path_completed = false
 	_reset_requirements()
 	set_physics_process(false)
-
+	_emit_phase_state()
+	_emit_boss_health_state()
 
 func _clear_actor() -> void:
 	if is_instance_valid(_actor):
 		_actor.queue_free()
 	_actor = null
-
 
 func _spawn_actor(moving: bool) -> bool:
 	if _actor_scene == null:
@@ -369,6 +401,7 @@ func _spawn_actor(moving: bool) -> bool:
 	_actor = instance as Node3D
 	_actor.position = _path_points[0]
 	_actor_parent.add_child(_actor)
+	_sync_actor_phase()
 	_actor.reset_physics_interpolation()
 	_running = true
 	_moving = moving
@@ -379,66 +412,58 @@ func _spawn_actor(moving: bool) -> bool:
 	_process_stops_at_distance()
 	return true
 
-
 func _process_stops_at_distance() -> void:
 	var can_process := true
-	while can_process and _next_stop_index < _stop_distances.size():
-		var stop_distance: float = _stop_distances[_next_stop_index]
+	while can_process and _next_stop_index < _path.stop_distances.size():
+		var stop_distance: float = _path.stop_distances[_next_stop_index]
 		if _distance_along_path + EPSILON >= stop_distance:
 			var stop_fraction: float = _stop_fractions[_next_stop_index]
-			var index := _next_stop_index
-			_handle_stop_reached(index, stop_fraction)
+			_handle_stop_reached(_next_stop_index, stop_fraction)
 			can_process = _moving
 		else:
 			can_process = false
 
-
 func _apply_position() -> void:
 	if _actor == null or not is_instance_valid(_actor):
 		return
-	_actor.position = _position_at_distance(_distance_along_path)
-
-
-func _position_at_distance(distance: float) -> Vector3:
-	if _path_points.is_empty():
-		return Vector3.ZERO
-	if _path_points.size() == 1:
-		return _path_points[0]
-	if _total_path_length <= EPSILON:
-		return _path_points[-1]
-
-	var remaining := clampf(distance, 0.0, _total_path_length)
-	for index in range(_segment_lengths.size()):
-		var segment_length: float = _segment_lengths[index]
-		if segment_length <= EPSILON:
-			continue
-		if remaining <= segment_length:
-			return _path_points[index] + _segment_directions[index] * remaining
-		remaining -= segment_length
-	return _path_points[_path_points.size() - 1]
-
-
-func _next_stop_distance() -> float:
-	if _next_stop_index < 0 or _next_stop_index >= _stop_distances.size():
-		return -1.0
-	return _stop_distances[_next_stop_index]
-
+	_actor.position = _path.position_at(_distance_along_path)
 
 func _encounter_id_for_index(stop_index: int) -> StringName:
 	if stop_index < 0 or stop_index >= _encounter_requirements.size():
 		return &""
 	return _encounter_requirements[stop_index]
 
-
 func _all_gates_complete() -> bool:
-	for key in _encounter_completed.keys():
-		if bool(_encounter_completed[key]) == false:
-			return false
-	for key in _module_destroyed.keys():
-		if bool(_module_destroyed[key]) == false:
-			return false
-	return true
+	if _schema_version == 1:
+		for key in _encounter_completed.keys():
+			if bool(_encounter_completed[key]) == false:
+				return false
+		for key in _module_destroyed.keys():
+			if bool(_module_destroyed[key]) == false:
+				return false
+		return true
+	return _phase_state.all_complete()
 
+func _try_finalize_active_phase() -> void:
+	if _phase_state.finalize_completed():
+		_sync_actor_phase()
+		phase_changed.emit(_phase_state.active_index, _phase_state.active_id(), _generation)
+		if _waiting_for_stop:
+			resume_from_stop()
+
+func _emit_phase_state() -> void:
+	if _schema_version != 2:
+		return
+	phase_changed.emit(_phase_state.active_index, _phase_state.active_id(), _generation)
+
+func _emit_boss_health_state() -> void:
+	if _schema_version != 2:
+		return
+	boss_health_changed.emit(_phase_state.current_health, _phase_state.max_health, _generation)
+
+func _sync_actor_phase() -> void:
+	if is_instance_valid(_actor) and _actor.has_method("set_active_phase"):
+		_actor.call("set_active_phase", _phase_state.active_index)
 
 func _start_loop_cycle() -> void:
 	if _definition == null:
@@ -449,12 +474,25 @@ func _start_loop_cycle() -> void:
 		_running = false
 		set_physics_process(false)
 
+func _configure_definitions() -> bool:
+	_encounter_requirements = []
+	_module_requirements = []
+	_phase_state.clear()
+	_stop_fractions = []
+	_encounter_completed.clear()
+	_module_destroyed.clear()
 
-func _has_duplicate_stop_markers(stop_markers: Array[float]) -> bool:
-	var seen_markers: Dictionary = {}
-	for marker in stop_markers:
-		var key := "%0.6f" % marker
-		if seen_markers.has(key):
-			return true
-		seen_markers[key] = true
-	return false
+	if _schema_version == 1:
+		_stop_fractions = _definition.stop_markers.duplicate()
+		_encounter_requirements = _definition.encounter_trigger_ids.duplicate()
+		_module_requirements = _definition.destructible_module_ids.duplicate()
+		if _encounter_requirements.size() > _stop_fractions.size():
+			return false
+		return true
+
+	if not (_definition.phases is Array) or not _phase_state.configure(_definition.phases):
+		return false
+	_stop_fractions = _phase_state.stop_markers.duplicate()
+	_encounter_requirements = _phase_state.encounter_requirements.duplicate()
+	_module_requirements = _phase_state.module_requirements.duplicate()
+	return true

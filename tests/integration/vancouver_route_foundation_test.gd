@@ -165,7 +165,7 @@ func _check_encounter_alignment(manifest: ContentManifest, route: MissionRouteDe
 	var harbour: EncounterDefinition = encounter_by_zone.get(&"harbour_pier", null) as EncounterDefinition
 	assert_true(harbour != null, "Harbour-pier encounter exists")
 	if harbour != null:
-		assert_true(harbour.waves.size() == 3, "Harbour-pier encounter uses exactly three waves")
+		assert_true(harbour.waves.size() == 4, "Harbour-pier encounter uses exactly four boss-phase waves")
 		var harbour_spawn_count: int = 0
 		for wave in harbour.waves:
 			harbour_spawn_count += (wave.get("spawns", []) as Array).size()
@@ -264,7 +264,7 @@ func _check_encounter_reset_contract(manifest: ContentManifest) -> void:
 	var harbour_encounter: EncounterDefinition = _manifest_encounter_by_zone(manifest, &"harbour_pier")
 	assert_true(harbour_encounter != null, "Harbour-pier encounter exists")
 	if harbour_encounter != null:
-		assert_true(harbour_encounter.waves.size() == 3, "Harbour-pier encounter keeps three waves")
+		assert_true(harbour_encounter.waves.size() == 4, "Harbour-pier encounter keeps four boss-phase waves")
 		assert_true(harbour_encounter.enemy_budget >= 1 and harbour_encounter.enemy_budget <= 12, "Harbour-pier budget remains bounded")
 
 

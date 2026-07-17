@@ -10,9 +10,10 @@ spawns = []
 waves = Array[Dictionary]([{
 "spawns": [
 	{"scene":"res://scenes/enemies/squirrel_trooper.tscn","position":Vector3(-3,0,-6)},
-	{"scene":"res://scenes/enemies/squirrel_trooper.tscn","position":Vector3(3,0,-9)}
+	{"scene":"res://scenes/enemies/squirrel_trooper.tscn","position":Vector3(3,0,-9)},
+	{"scene":"res://scenes/enemies/leash_enforcement_drone.tscn","position":Vector3(6,2,-15)}
 ]}])
 enemy_budget = 3
-maximum_simultaneous_attackers = 2
+maximum_simultaneous_attackers = 4
 music_intensity = 0.35
 reward_policy = &"authored"

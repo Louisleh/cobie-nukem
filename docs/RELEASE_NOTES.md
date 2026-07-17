@@ -1,4 +1,33 @@
-# Release Notes — 0.6.0-alpha.9 Public Beta Focus
+# Release Notes — 0.7.0-alpha.1-rc1 Rain City Run
+
+Candidate built on 2026-07-16 with Godot `4.7.stable.official.5b4e0cb0f`. Final source revision, artifact hashes, PRs, release URL, deployment commit, and public PCK identity are appended after the release gate succeeds.
+
+## Player-visible changes
+
+- Rain City Run becomes the campaign's second mission, unlocked by completing Salmon Creek, with mission-aware Replay and `CONTINUE TO RAIN CITY` continuity.
+- Five authored zones replace the straight beta corridor: Downtown Service Alley, Rain City Slice, Waterfront Seawall, Terminal Service, and Harbour Pier.
+- The mission contains four secrets, 26 authored enemies, the new Compliance Gull, a production eight-direction Umbrella Shield Enforcer, original environmental jokes, and bounded Story/Classic/Mayhem pressure.
+- Terminal Service awards Municipal Recall Override, improving Fetch recall speed and first-contact shield/module stagger without adding primary damage.
+- The Municipal Towmaster is a four-phase 1,000-HP finale with ordered modules, reinforcement warnings, boss HUD/captions, authored audio, bounded ticket/spark effects, and a persistent wreck.
+- Rain City receives original Blender environment/convoy assets, Material Maker source families, and 27 imported Gull/Umbrella/convoy audio variations.
+
+## Engineering and validation
+
+- Save schema v5 adds deterministic v4 migration, content-revision checkpoint remapping, mission loadouts/upgrades, and campaign/checkpoint isolation.
+- Gameplay layout/collision/navigation remain independent of replaceable presentation art.
+- Mission warning/audio routing, loadouts, set-piece path/phase state, Rain City checkpoint state, and convoy presentation now have focused owners; all production scripts meet the 500-line architecture gate except the documented Salmon Creek legacy exemption.
+- The complete export matrix passes parser/import, unit/integration/content/smoke, 100 route/checkpoint/touch/effect cycles, 500 weapon transitions, 100 convoy cycles, provenance/IP, architecture, drift/performance, Web export, and unsigned Universal macOS export gates.
+- The exact packaged Web build passes a 1024×768 Chrome startup check: normalized title, first-tap activation, responsive menu, fitted mission selection, and no game-origin console errors.
+
+## Honest RC boundary
+
+- The `BETA` badge and opening warning remain. Physical iPad Safari, target-Mac 15–22 minute playthrough, Chrome/Safari completion, Story/Mayhem feel, boss fairness, art cohesion, mix, humor, and photosensitivity are human-only finalization gates.
+- Mount Hood, Moon, and Ventura remain locked illustrated teasers.
+- The macOS ZIP remains unsigned and unnotarized. The working title still requires clearance before commercial distribution.
+
+---
+
+# Prior Release Notes — 0.6.0-alpha.9 Public Beta Focus
 
 Built on 2026-07-14 with Godot `4.7.stable.official.5b4e0cb0f`. Runtime feature revision: `c00d54c`.
 

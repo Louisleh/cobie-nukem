@@ -1,0 +1,37 @@
+work_id: rain-city-save-v5-loadout
+role: spark-gameplay-worker
+goal: Implement save schema v5, checkpoint content revision/upgrades, campaign upgrades, and reusable mission loadout Resources for Rain City Run.
+baseline_revision: 2d18488
+dependencies: []
+owned_paths:
+  - scripts/core/save_manager.gd
+  - scripts/core/checkpoint_payload.gd
+  - scripts/core/campaign_progress_payload.gd
+  - scripts/core/campaign_progress_runtime.gd
+  - scripts/gameplay/mission_loadout_profile.gd
+  - resources/loadouts/
+read_only_context:
+  - scripts/player/player_controller.gd
+  - scripts/combat/weapon_definition.gd
+  - scripts/level/episode_1_vancouver_waterfront.gd
+  - tests/unit/save_schema_test.gd
+  - tests/unit/campaign_progress_runtime_test.gd
+forbidden_paths:
+  - scripts/core/build_info.gd
+  - docs/PHASE_ROADMAP_PRD.md
+  - project.godot
+  - export_presets.cfg
+behavioral_contract: Bump deterministic envelope migration to v5. Checkpoints sanitize content_revision, unlocked_weapons, active_mission_upgrades, and ignore unsafe values. Campaign progress sanitizes campaign_upgrades. Preserve v4 data and keep checkpoint/campaign isolation. Add MissionLoadoutProfile with validated weapon IDs, magazine/reserve quantities, selected weapon, and mission upgrades; author Salmon and Vancouver profiles, with Vancouver Pawstol 15/unlimited reserve, Barkshot 6+12, Fetch 3+6. Do not wire mission controllers or change weapon balance.
+acceptance_criteria:
+  - v4 campaign/checkpoint payloads migrate deterministically to safe v5 defaults.
+  - Corrupt and future envelopes remain rejected by existing policy.
+  - Campaign and checkpoint sanitizers deduplicate stable string IDs and reject non-finite/negative ammo.
+  - Vancouver loadout validates and expresses the approved quantities without hardcoding a controller.
+  - No new autoload and no checkpoint slot deletion from campaign code.
+focused_tests:
+  - /opt/homebrew/bin/godot --headless --path . --script res://tests/unit/save_schema_test.gd
+evidence_required:
+  - One cohesive commit, changed-file inventory, parse/test results, and remaining risks.
+out_of_scope:
+  - Mission controller wiring, Municipal Recall gameplay, UI, BuildInfo, PRD, release.
+time_limit_minutes: 35

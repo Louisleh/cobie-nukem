@@ -27,6 +27,7 @@ func _run() -> void:
 	_test_definition_validation()
 	await _test_weapon_hit_and_effect_cleanup_contract()
 	await _test_breakable_and_loot_activation()
+	await _test_recall_stagger_applies_bounded_bonus_damage()
 	await _test_explosive_one_shot_chain_reactions()
 	await _test_hazard_ticks_with_one_timer()
 	await _test_secret_snapshot_and_restore()
@@ -115,6 +116,23 @@ func _test_breakable_and_loot_activation() -> void:
 	_expect(loot_interaction.is_active(), "loot interaction activates")
 	_expect(loot_events.size() == 1, "loot interaction emits one bounded loot request")
 	_expect(int(loot_events[0].get("count", 0)) == 3, "loot request carries configured count")
+
+
+func _test_recall_stagger_applies_bounded_bonus_damage() -> void:
+	var definition := _make_definition(WorldInteractionDefinition.Kind.BREAKABLE_PROP)
+	definition.id = &"recall_module"
+	definition.breakable_health = 250.0
+	var interaction := _spawn_interaction(definition)
+	await process_frame
+	var health_events: Array[Array] = []
+	interaction.health_changed.connect(func(_id: StringName, current: float, maximum: float, applied: float) -> void:
+		health_events.append([current, maximum, applied])
+	)
+	_expect(is_equal_approx(interaction.apply_damage(32.0), 32.0), "recall primary damage remains the authored 32 points")
+	_expect(is_equal_approx(interaction.apply_recall_stagger(2.0), 25.0), "municipal override adds a bounded ten-percent module stagger reduction")
+	_expect(is_equal_approx(float(interaction.snapshot_state().get("current_health", -1.0)), 193.0), "primary and stagger reductions compose without changing primary damage")
+	_expect(is_equal_approx(interaction.apply_recall_stagger(1.0), 0.0), "baseline recall adds no bonus module damage")
+	_expect(health_events.size() == 2, "module health emits once for primary damage and once for the valid stagger bonus")
 
 
 func _test_explosive_one_shot_chain_reactions() -> void:

@@ -60,8 +60,6 @@ func validate() -> PackedStringArray:
 	for index in range(checkpoint_ids.size()):
 		if checkpoint_ids[index] == &"":
 			errors.append("route zone %s checkpoint_ids[%d] is empty" % [zone_id, index])
-	if secret_ids.is_empty():
-		errors.append("route zone %s has no secret ids" % zone_id)
 	for index in range(secret_ids.size()):
 		if secret_ids[index] == &"":
 			errors.append("route zone %s secret_ids[%d] is empty" % [zone_id, index])

@@ -12,6 +12,8 @@ var on_objective_action: Callable
 var on_narrative_message: Callable
 
 var geometry: Node3D
+var gameplay_layout: Node3D
+var presentation: Node3D
 var actors: Node3D
 var interactables: Node3D
 var navigation_region: NavigationRegion3D
@@ -20,6 +22,7 @@ var departure_switch: LevelSwitch
 
 var _owner: Node3D
 var _navigation_sources: Array[StaticBody3D] = []
+var _materials: Dictionary = {}
 var _built := false
 
 
@@ -29,9 +32,19 @@ func build(owner: Node3D) -> bool:
 	if owner == null:
 		return false
 	_owner = owner
+	gameplay_layout = owner.get_node_or_null("GameplayLayout") as Node3D
+	if gameplay_layout == null:
+		gameplay_layout = Node3D.new()
+		gameplay_layout.name = "GameplayLayout"
+		owner.add_child(gameplay_layout)
 	geometry = Node3D.new()
-	geometry.name = "Geometry"
-	owner.add_child(geometry)
+	geometry.name = "CollisionAndNavigation"
+	gameplay_layout.add_child(geometry)
+	presentation = owner.get_node_or_null("Presentation") as Node3D
+	if presentation == null:
+		presentation = Node3D.new()
+		presentation.name = "Presentation"
+		owner.add_child(presentation)
 	actors = Node3D.new()
 	actors.name = "Actors"
 	owner.add_child(actors)
@@ -41,6 +54,7 @@ func build(owner: Node3D) -> bool:
 	_build_environment()
 	_build_route()
 	_build_landmarks()
+	_build_neighbourhood_detail()
 	_build_story_objects()
 	_build_navigation()
 	_built = true
@@ -91,17 +105,33 @@ func _build_route() -> void:
 	# Edge rails stop accidental route skips while leaving the authored forward path open.
 	for section in [
 		[11.0, -3.0, 34.0], [13.0, -36.0, 32.0], [17.0, -73.0, 42.0],
-		[13.0, -111.0, 34.0], [19.0, -153.0, 50.0],
+		[13.0, -111.0, 34.0],
 	]:
 		var x := float(section[0])
 		var z := float(section[1])
 		var length := float(section[2])
 		_prop_box("RouteRail", Vector3(-x, 0.65, z), Vector3(0.45, 1.3, length), Color("25363b"), true)
 		_prop_box("RouteRail", Vector3(x, 0.65, z), Vector3(0.45, 1.3, length), Color("25363b"), true)
+	# The pier keeps authored rail gaps beside the harbour. Missing the safe lane drops
+	# the player below the shared kill plane instead of creating an invisible wall.
+	for rail_z in [-137.0, -158.0, -173.0]:
+		_prop_box("PierLandRail", Vector3(-18.8, 0.65, rail_z), Vector3(0.45, 1.3, 12.0), Color("25363b"), true)
+	for rail_z in [-137.0, -170.0]:
+		_prop_box("PierWaterRail", Vector3(18.8, 0.65, rail_z), Vector3(0.45, 1.3, 10.0), Color("25363b"), true)
 	# The upper seawall lane creates authored vertical combat without disconnecting the lower path.
 	_floor("SeawallUpperLane", Vector3(-9.5, 1.1, -76.0), Vector3(8.0, 0.5, 24.0), Color("61747a"), &"concrete")
 	for step in 6:
 		_floor("SeawallRampStep", Vector3(-7.5 + step * 0.7, -0.32 + step * 0.22, -62.0), Vector3(1.6, 0.35, 3.0), Color("61747a"), &"concrete")
+	# Secondary authored lanes break the former single straight corridor while keeping
+	# every objective reachable from the lower accessibility route.
+	_floor("AlleyParkingLeg", Vector3(6.0, -0.48, 3.5), Vector3(10.0, 0.96, 9.0), Color("343d43"), &"asphalt")
+	_floor("SlicePlaza", Vector3(5.0, -0.46, -37.0), Vector3(12.0, 0.92, 15.0), Color("555158"), &"concrete")
+	_floor("TerminalControlLoop", Vector3(-7.5, 1.15, -115.0), Vector3(7.0, 0.45, 13.0), Color("596970"), &"metal")
+	for step in 5:
+		_floor("TerminalBoothStep", Vector3(-5.0 - step * 0.55, -0.30 + step * 0.30, -105.0), Vector3(1.4, 0.34, 2.5), Color("596970"), &"metal")
+	_floor("PierCraneFlank", Vector3(-12.5, 1.0, -155.0), Vector3(8.0, 0.45, 17.0), Color("4f6065"), &"steel")
+	for step in 5:
+		_floor("PierCraneStep", Vector3(-9.2 - step * 0.6, -0.30 + step * 0.26, -144.5), Vector3(1.5, 0.32, 2.6), Color("4f6065"), &"steel")
 
 
 func _build_landmarks() -> void:
@@ -124,6 +154,48 @@ func _build_landmarks() -> void:
 	# Combat cover and machinery keep each major space tactically legible.
 	for position in [Vector3(-5, 1, -9), Vector3(5, 1, -29), Vector3(-6, 1, -44), Vector3(7, 1, -70), Vector3(-5, 1, -88), Vector3(-7, 1, -110), Vector3(7, 1, -117), Vector3(-9, 1, -145), Vector3(9, 1, -159)]:
 		_prop_box("ComplianceCrate", position, Vector3(2.8, 2.0, 2.8), Color("725638"), true)
+
+
+func _build_neighbourhood_detail() -> void:
+	# Downtown service texture: fire escapes, steam vents, dumpsters, and bike markings.
+	for level in 3:
+		_prop_box("FireEscapeLanding", Vector3(-7.1, 2.0 + level * 1.8, -7.0), Vector3(2.6, 0.18, 1.4), Color("39464b"), false)
+		_prop_box("FireEscapeRail", Vector3(-7.1, 2.7 + level * 1.8, -7.65), Vector3(2.6, 1.2, 0.12), Color("607178"), false)
+	_prop_box("DowntownDumpster", Vector3(7.0, 0.75, -10.0), Vector3(2.5, 1.5, 1.4), Color("315d53"), true)
+	_prop_box("SteamVent", Vector3(3.0, 0.18, -15.5), Vector3(1.6, 0.25, 1.6), Color("7b8585"), false, true)
+	_sign("RAIN DELAYED\nDUE TO RAIN", Vector3(6.7, 2.0, -1.0), -90.0, Color("ffe28a"))
+
+	# Rain City Slice is warm, compact, and readable against the cool exterior.
+	_prop_box("SliceAwning", Vector3(-5.2, 2.5, -37.0), Vector3(1.0, 0.25, 10.0), Color("d96b3f"), false, true)
+	_prop_box("DeliveryScooter", Vector3(4.8, 0.55, -34.0), Vector3(0.8, 1.1, 1.8), Color("f0b840"), true)
+	_prop_box("PizzaOven", Vector3(-9.2, 1.1, -43.0), Vector3(2.2, 2.2, 2.0), Color("884a38"), true, true)
+	_sign("DELIVERY WINDOW\nRING BELL • RECEIVE JUSTICE", Vector3(-5.3, 1.4, -43.0), 90.0, Color("fff1c3"))
+
+	# The seawall has a lower promenade and a glass-canopy upper terrace.
+	for z in [-64.0, -72.0, -80.0, -88.0]:
+		_prop_box("SeawallBench", Vector3(8.5, 0.45, z), Vector3(2.4, 0.55, 0.7), Color("8a6848"), true)
+	for z in [-69.0, -81.0]:
+		_prop_box("GlassCanopyPost", Vector3(-12.0, 2.6, z), Vector3(0.18, 5.2, 0.18), Color("8fb8c2"), false, true)
+		_prop_box("GlassCanopy", Vector3(-9.5, 4.9, z), Vector3(5.2, 0.16, 4.2), Color(0.35, 0.62, 0.70, 0.58), false, true)
+	_sign("SEAWALL SPEED LIMIT:\nZOOMIES", Vector3(12.3, 1.5, -69.0), -90.0, Color("f9df83"))
+	_sign("NO FETCHING\nFROM THE HARBOUR", Vector3(16.0, 1.5, -88.0), -90.0, Color("ff9d70"))
+
+	# Terminal machinery frames an interior/exterior loop and elevated control booth.
+	_prop_box("TerminalShellLeft", Vector3(-11.0, 3.0, -112.0), Vector3(1.0, 6.0, 25.0), Color("38474d"), true)
+	_prop_box("TerminalShellRight", Vector3(11.0, 3.0, -112.0), Vector3(1.0, 6.0, 25.0), Color("38474d"), true)
+	_prop_box("TerminalControlBooth", Vector3(-8.5, 3.1, -116.0), Vector3(5.0, 3.4, 7.0), Color("526c72"), true)
+	for z in [-102.0, -110.0, -121.0]:
+		_prop_box("CargoMachine", Vector3(5.7, 1.2, z), Vector3(3.0, 2.4, 2.2), Color("566167"), true)
+	_sign("CARGO ROUTING:\nDOGS FIRST • FORMS LAST", Vector3(-5.9, 2.4, -118.0), 90.0, Color("bce9dc"))
+	_sign("AUTHORIZED PERSONNEL\nAND ONE VERY GOOD DOG", Vector3(10.3, 1.7, -103.0), -90.0, Color("f5d68a"))
+
+	# Pier shapes a broad boss loop with obvious cover hierarchy and crane flank.
+	for x in [-13.0, -6.0, 5.0, 12.0]:
+		_prop_box("PierBollard", Vector3(x, 0.65, -169.0), Vector3(0.7, 1.3, 0.7), Color("d8a13d"), true)
+	_prop_box("TowmasterDepartureControl", Vector3(0.0, 1.6, -174.0), Vector3(3.2, 3.2, 1.4), Color("2d5159"), true, true)
+	_sign("APPEALS WINDOW\nCLOSED FOR LUNCH SINCE 1998", Vector3(-15.2, 2.0, -161.0), 90.0, Color("ffd16c"))
+	_sign("PIER 404:\nBOAT NOT FOUND", Vector3(15.2, 1.6, -151.0), -90.0, Color("bbf1ea"))
+	_sign("FINAL NOTICE:\nEXCESSIVE TAIL WAGGING", Vector3(0.0, 2.2, -166.0), 0.0, Color("ff975d"))
 
 
 func _build_story_objects() -> void:
@@ -206,10 +278,9 @@ func _bake_navigation() -> void:
 	NavigationServer3D.region_set_navigation_mesh(navigation_region.get_rid(), navigation_region.navigation_mesh)
 	NavigationServer3D.map_set_active(navigation_map, true)
 	NavigationServer3D.map_force_update(navigation_map)
-	for source in _navigation_sources:
-		if is_instance_valid(source):
-			source.queue_free()
-	_navigation_sources.clear()
+	# Navigation sources are the authoritative gameplay floors. Removing them after
+	# baking used to make the level appear stable briefly and then drop actors and
+	# pickups through the world. Keep them owned by AuthoredGameplayLayout.
 
 
 func _floor(node_name: String, position: Vector3, size: Vector3, color: Color, surface_id: StringName) -> void:
@@ -229,12 +300,7 @@ func _prop_box(node_name: String, position: Vector3, size: Vector3, color: Color
 	var box := BoxMesh.new()
 	box.size = size
 	mesh_instance.mesh = box
-	var material := StandardMaterial3D.new()
-	material.albedo_color = color
-	material.roughness = 0.78
-	if emissive:
-		material.emission_enabled = true
-		material.emission = color * 0.45
+	var material := _shared_material(color, emissive)
 	mesh_instance.material_override = material
 	body.add_child(mesh_instance)
 	if collision:
@@ -243,8 +309,27 @@ func _prop_box(node_name: String, position: Vector3, size: Vector3, color: Color
 		box_shape.size = size
 		shape.shape = box_shape
 		body.add_child(shape)
-	geometry.add_child(body)
+	var parent := geometry if collision else presentation
+	parent.add_child(body)
 	return body
+
+
+func _shared_material(color: Color, emissive: bool) -> StandardMaterial3D:
+	var key := "%s:%s" % [color.to_html(true), str(emissive)]
+	if _materials.has(key):
+		return _materials[key] as StandardMaterial3D
+	var material := StandardMaterial3D.new()
+	material.albedo_color = color
+	material.roughness = 0.78
+	material.metallic = 0.12 if emissive else 0.0
+	if color.a < 0.999:
+		material.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+		material.cull_mode = BaseMaterial3D.CULL_DISABLED
+	if emissive:
+		material.emission_enabled = true
+		material.emission = Color(color.r, color.g, color.b, 1.0) * 0.45
+	_materials[key] = material
+	return material
 
 
 func _sign(text: String, position: Vector3, yaw: float, color: Color) -> void:
@@ -258,7 +343,7 @@ func _sign(text: String, position: Vector3, yaw: float, color: Color) -> void:
 	label.modulate = color
 	label.outline_size = 8
 	label.no_depth_test = false
-	geometry.add_child(label)
+	presentation.add_child(label)
 
 
 func _on_zone_triggered(zone_id: StringName, title: String, actor: Node) -> void:

@@ -65,6 +65,8 @@ func _run() -> void:
 	await process_frame
 	await _test_opening_safety_window()
 	await _test_harbour_checkpoint_rehydration()
+	await _test_completed_checkpoint_rehydrates_wreck()
+	await _test_stale_route_snapshot_fallback()
 	if failures.is_empty():
 		print("VANCOUVER MISSION HOST TEST: PASS")
 		quit(0)
@@ -104,6 +106,71 @@ func _test_harbour_checkpoint_rehydration() -> void:
 	await process_frame
 
 
+func _test_completed_checkpoint_rehydrates_wreck() -> void:
+	var mission := MissionScene.instantiate() as EpisodeOneVancouverWaterfront
+	mission.spawn_player = false
+	mission.start_run_automatically = false
+	mission.setup_presentation = false
+	mission._restored_checkpoint = {
+		"objective_snapshot": {
+			"progress": {"reach_waterfront": 1, "restore_terminal": 1, "stop_citation_convoy": 1},
+			"completed": ["reach_waterfront", "restore_terminal", "stop_citation_convoy"],
+		},
+		"encounter_snapshot": {"completed": ["harbour_pier"]},
+		"route_snapshot": {
+			"route_id": "vancouver_mission2_route",
+			"current_zone": "harbour_pier",
+			"current_index": 4,
+			"visited_zones": ["downtown_alley", "ruse_block", "waterfront_seawall", "terminal_service", "harbour_pier"],
+			"checkpoint_id": "checkpoint_harbour_clear",
+			"is_completed": true,
+		},
+		"secrets": {},
+	}
+	root.add_child(mission)
+	await process_frame
+	var state := mission._set_piece_runtime.current_state()
+	_expect(bool(state.get("completion_emitted", false)), "Completed Continue restores terminal convoy state without replaying the boss")
+	_expect(is_equal_approx(float(state.get("current_boss_health", -1.0)), 0.0), "Completed Continue restores zero boss health")
+	var wreck := _find_convoy(mission._world_builder.actors)
+	_expect(wreck != null and wreck.defeat_started(), "Completed Continue restores the persistent defeated wreck")
+	_expect(mission._world_builder.departure_switch.enabled, "Completed Continue keeps departure control enabled")
+	var generation := mission._set_piece_runtime.generation()
+	mission.restart_from_checkpoint()
+	_expect(mission._set_piece_runtime.generation() == generation, "Post-victory retry never resets or resurrects the convoy")
+	_expect(bool(mission._set_piece_runtime.current_state().get("completion_emitted", false)), "Post-victory retry preserves terminal convoy state")
+	mission.queue_free()
+	await process_frame
+
+
+func _test_stale_route_snapshot_fallback() -> void:
+	var mission := MissionScene.instantiate() as EpisodeOneVancouverWaterfront
+	mission.spawn_player = false
+	mission.start_run_automatically = false
+	mission.setup_presentation = false
+	mission._restored_checkpoint = {
+		"checkpoint_id": "checkpoint_terminal_service",
+		"objective_snapshot": {"progress": {}, "completed": []},
+		"encounter_snapshot": {"completed": [], "active": {}},
+		"route_snapshot": {
+			"route_id": "obsolete_vancouver_beta_route",
+			"current_zone": "obsolete_terminal",
+			"current_index": 3,
+			"visited_zones": ["obsolete_terminal"],
+			"checkpoint_id": "checkpoint_terminal_service",
+			"is_completed": false,
+		},
+		"secrets": {},
+	}
+	root.add_child(mission)
+	await process_frame
+	_expect(mission.current_zone == &"terminal_service", "stale route snapshot falls back to the authoritative checkpoint zone")
+	_expect(mission._route_runtime.current_checkpoint_id == &"checkpoint_terminal_service", "fallback keeps the authoritative checkpoint id")
+	_expect(mission._route_runtime.visited_zones == [&"downtown_alley", &"ruse_block", &"waterfront_seawall", &"terminal_service"], "fallback reconstructs authored route order")
+	mission.queue_free()
+	await process_frame
+
+
 func _test_opening_safety_window() -> void:
 	var mission := MissionScene.instantiate() as EpisodeOneVancouverWaterfront
 	mission.start_run_automatically = false
@@ -123,7 +190,12 @@ func _exercise_convoy(mission: EpisodeOneVancouverWaterfront) -> void:
 	_expect(mission._convoy_coordinator != null, "convoy coordinator exists")
 	if mission._set_piece_runtime == null or mission._convoy_coordinator == null:
 		return
-	for wave_index in 3:
+	var convoy := _find_convoy(mission._world_builder.actors)
+	_expect(convoy != null, "convoy actor remains available through all boss phases")
+	if convoy == null:
+		return
+	var module_ids: Array[StringName] = [&"citation_drive_left", &"citation_signal_dish", &"citation_drive_right", &"citation_core"]
+	for wave_index in 4:
 		mission._set_piece_runtime._physics_process(100.0)
 		var coordinator_state := mission._convoy_coordinator.current_state()
 		_expect(int(coordinator_state.get("active_wave_index", -1)) == wave_index, "convoy stop %d starts wave %d" % [wave_index, wave_index])
@@ -132,15 +204,12 @@ func _exercise_convoy(mission: EpisodeOneVancouverWaterfront) -> void:
 		_defeat_active_wave(mission, wave_index)
 		await process_frame
 		_expect(bool(mission._convoy_coordinator.current_state().waves_completed[wave_index]), "convoy wave %d completes" % wave_index)
-
-	var convoy := _find_convoy(mission._world_builder.actors)
-	_expect(convoy != null, "convoy actor remains available for module destruction")
-	if convoy != null:
-		for child in convoy.get_children():
-			var module := child as WorldInteraction
-			if module != null:
-				module.apply_damage(9999.0)
-		_expect(convoy.destroyed_module_count() == 2, "both convoy compliance modules are destructible")
+		var module := _find_convoy_module(convoy, module_ids[wave_index])
+		_expect(module != null and module.visible, "convoy phase %d exposes only its authored module" % wave_index)
+		if module != null:
+			module.apply_damage(9999.0)
+		await process_frame
+		_expect(convoy.destroyed_module_count() == wave_index + 1, "convoy phase %d records one module destruction" % wave_index)
 	mission._set_piece_runtime._physics_process(100.0)
 	await process_frame
 	var final_state := mission._set_piece_runtime.current_state()
@@ -172,6 +241,14 @@ func _find_convoy(parent: Node) -> CitationConvoyActor:
 	for child in parent.get_children():
 		if child is CitationConvoyActor:
 			return child as CitationConvoyActor
+	return null
+
+
+func _find_convoy_module(convoy: CitationConvoyActor, module_id: StringName) -> WorldInteraction:
+	for child in convoy.get_children():
+		var module := child as WorldInteraction
+		if module != null and module.definition != null and module.definition.id == module_id:
+			return module
 	return null
 
 

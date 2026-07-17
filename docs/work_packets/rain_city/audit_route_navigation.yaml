@@ -1,0 +1,33 @@
+work_id: rain-city-audit-route-navigation
+role: spark-content-author
+goal: Audit the Vancouver beta route, authored-content Resources, collision/navigation boundaries, objectives, checkpoints, critical pickups, secrets, and presentation separation against the approved five-zone Rain City Run route.
+baseline_revision: e385aee
+dependencies: []
+owned_paths: []
+read_only_context:
+  - scripts/level/episode_1_vancouver_waterfront.gd
+  - scripts/level/vancouver_waterfront_world_builder.gd
+  - scenes/levels/episode_1_vancouver_waterfront.tscn
+  - resources/content/
+  - resources/routes/
+  - resources/interactions/
+  - tests/integration/vancouver_route_foundation_test.gd
+  - tests/integration/vancouver_content_contract_test.gd
+forbidden_paths:
+  - scripts/core/build_info.gd
+  - docs/PHASE_ROADMAP_PRD.md
+  - .github/workflows/
+  - project.godot
+behavioral_contract: Read-only. Preserve existing stable IDs. Identify concrete route, reachability, ownership, and production-presentation gaps without proposing copied real-world layouts or mission-specific shared-system forks.
+acceptance_criteria:
+  - Produce an exact five-zone implementation map using existing contracts where possible.
+  - Identify every route edge, checkpoint, objective, secret, and critical pickup that needs validation.
+  - Rank progression and navigation risks with file/line evidence.
+focused_tests:
+  - bash tools/run_godot_test.sh tests/integration/vancouver_route_foundation_test.gd 60
+  - bash tools/run_godot_test.sh tests/integration/vancouver_content_contract_test.gd 60
+evidence_required:
+  - Structured result contract with model identity and no changed files.
+out_of_scope:
+  - Writing content, visual taste decisions, Blender operations, public unlock.
+time_limit_minutes: 25

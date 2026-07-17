@@ -1,6 +1,7 @@
-[gd_resource type="Resource" script_class="LevelMetadata" load_steps=2 format=3]
+[gd_resource type="Resource" script_class="LevelMetadata" load_steps=3 format=3]
 
 [ext_resource type="Script" path="res://scripts/level/level_metadata.gd" id="1"]
+[ext_resource type="Resource" path="res://resources/loadouts/vancouver_waterfront_loadout.tres" id="2"]
 
 [resource]
 script = ExtResource("1")
@@ -11,6 +12,11 @@ target_minutes_min = 15
 target_minutes_max = 22
 total_secrets = 4
 opening_objective = "REACH THE WATERFRONT SEAWALL"
+replay_scene = "res://scenes/levels/episode_1_vancouver_waterfront.tscn"
+next_mission_id = &""
+next_mission_scene = ""
+next_mission_title = ""
+mission_loadout = ExtResource("2")
 zones = Array[Dictionary]([{
 "id": &"downtown_alley",
 "title": "DOWNTOWN SERVICE ALLEY",

@@ -1,0 +1,39 @@
+work_id: rain-city-convoy-boss-soak
+role: spark-test-engineer
+goal: Add a deterministic high-cycle regression suite for the integrated four-phase Municipal Towmaster convoy boss.
+baseline_revision: 943fade
+dependencies:
+  - MovingSetPieceDefinition schema v2
+  - four authored Vancouver convoy phases
+owned_paths:
+  - tests/integration/rain_city_convoy_boss_test.gd
+read_only_context:
+  - scripts/gameplay/moving_set_piece_phase_definition.gd
+  - scripts/gameplay/moving_set_piece_definition.gd
+  - scripts/gameplay/moving_set_piece_runtime.gd
+  - scripts/gameplay/moving_set_piece_encounter_coordinator.gd
+  - scripts/level/citation_convoy_actor.gd
+  - resources/set_pieces/vancouver_citation_convoy.tres
+  - resources/set_pieces/vancouver_convoy_phases/
+  - tests/unit/moving_set_piece_runtime_test.gd
+  - tests/unit/moving_set_piece_encounter_coordinator_test.gd
+forbidden_paths:
+  - scripts/
+  - resources/
+  - scenes/
+  - docs/PHASE_ROADMAP_PRD.md
+  - scripts/core/build_info.gd
+behavioral_contract: Tests only. Prove the authored convoy has exactly four ordered phases and four gated modules totaling a 1000-point Classic budget; every phase requires both its named wave and module; stale-generation callbacks do nothing; simultaneous final wave/module completion emits completion once; and at least 100 start/advance/reset cycles return to phase zero with no duplicate rewards, actors, or completion.
+acceptance_criteria:
+  - The test runs standalone with Godot 4.7 headlessly and exits zero.
+  - It directly loads the production convoy Resource rather than duplicating its data.
+  - It checks all four named phase IDs, module IDs, wave indices, and health allocations.
+  - It performs 100 deterministic reset cycles and exercises both wave-first and module-first completion order.
+  - It reports no attributable ERROR, leak, or orphan output.
+focused_tests:
+  - /opt/homebrew/bin/godot --headless --path . --script res://tests/integration/rain_city_convoy_boss_test.gd
+evidence_required:
+  - One cohesive commit, exact test/import output, and the structured Spark result contract.
+out_of_scope:
+  - Production code, HUD visuals, audio, boss feel, physical devices, release metadata.
+time_limit_minutes: 35

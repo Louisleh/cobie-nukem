@@ -18,6 +18,7 @@ const REGULAR_SCENES := [
 const ELITE_BOSS_SCENES := [
 	"res://scenes/enemies/compliance_hound.tscn",
 	"res://scenes/enemies/animal_control_walker.tscn",
+	"res://scenes/enemies/umbrella_shield_enforcer.tscn",
 ]
 
 

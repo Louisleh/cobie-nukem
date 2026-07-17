@@ -57,6 +57,23 @@ func _check_scene(path: String) -> void:
 		instance.free()
 
 func _check_level_select_contract() -> void:
+	var controller_script := load("res://scripts/ui/level_select.gd") as GDScript
+	var focus_probe: Node = controller_script.new() as Node
+	var locked_a := Button.new()
+	var locked_b := Button.new()
+	locked_a.disabled = true
+	locked_b.disabled = true
+	var focus_cards: Array[Button] = [locked_a, locked_b]
+	focus_probe.set("_cards", focus_cards)
+	if int(focus_probe.call("_first_selectable_index")) != -1:
+		failures.append("Level select must report no selectable card when every route is locked")
+	locked_b.disabled = false
+	if int(focus_probe.call("_first_selectable_index")) != 1:
+		failures.append("Level select must focus the first actually available card")
+	focus_probe.set("_cards", [])
+	focus_probe.free()
+	locked_a.free()
+	locked_b.free()
 	var packed := load("res://scenes/menus/level_select.tscn") as PackedScene
 	if packed == null:
 		return
@@ -65,25 +82,34 @@ func _check_level_select_contract() -> void:
 	if levels.size() != 5:
 		failures.append("Level select needs two playable and three future cards")
 	else:
-		var unlocked := 0
+		var always_available := 0
+		var campaign_routes := 0
+		var locked_teasers := 0
 		var beta_cards := 0
 		for data in levels:
 			if data.preview == null:
 				failures.append("Every level card needs illustrated preview art: %s" % data.level_id)
-			if data.unlocked:
-				unlocked += 1
-				if data.scene_path.is_empty():
-					failures.append("Unlocked level card has no route")
-				if data.status_badge() == "BETA":
-					beta_cards += 1
-					if data.launch_notice.strip_edges().is_empty():
-						failures.append("Beta level card needs a visible work-in-progress notice")
-			elif not data.scene_path.is_empty():
-				failures.append("Locked level card must not route to a scene")
-		if unlocked != 2:
-			failures.append("Exactly two levels must be playable in the public beta")
+			match data.unlock_policy:
+				LevelCardData.UnlockPolicy.ALWAYS:
+					always_available += 1
+					if data.scene_path.is_empty():
+						failures.append("Always-available level card has no route")
+				LevelCardData.UnlockPolicy.CAMPAIGN:
+					campaign_routes += 1
+					if data.scene_path.is_empty() or data.prerequisite_mission_id == &"":
+						failures.append("Campaign level card needs a route and prerequisite")
+				LevelCardData.UnlockPolicy.LOCKED_TEASER:
+					locked_teasers += 1
+					if not data.scene_path.is_empty():
+						failures.append("Locked teaser card must not route to a scene")
+			if data.release_badge.strip_edges().to_upper() == "BETA":
+				beta_cards += 1
+				if data.launch_notice.strip_edges().is_empty():
+					failures.append("Beta level card needs a visible work-in-progress notice")
+		if always_available != 1 or campaign_routes != 1 or locked_teasers != 3:
+			failures.append("Level select must expose one opening mission, one campaign-gated Rain City route, and three locked teasers")
 		if beta_cards != 1:
-			failures.append("Exactly one playable level must carry the BETA badge")
+			failures.append("Exactly one campaign route must carry the BETA badge")
 	var scroll := instance.get_node_or_null("SafeArea/Main/CourseScroll") as ScrollContainer
 	if scroll == null or scroll.horizontal_scroll_mode == ScrollContainer.SCROLL_MODE_DISABLED:
 		failures.append("Level cards must remain reachable in narrow viewports")

@@ -19,6 +19,8 @@ const EnemyDeathEffectScript := preload("res://scripts/ai/enemy_death_effect.gd"
 @export var attack_kind: StringName = &"attack"
 @export var uses_gravity := true
 @export var ground_height := 0.0
+@export_range(0.5, 8.0, 0.1) var ground_recovery_drop_distance := 1.5
+@export_range(0, 4, 1) var ground_recovery_retry_limit := 1
 
 var state := State.IDLE
 var health := 1.0
@@ -44,9 +46,14 @@ var _stagger_accumulator := 0.0
 var _visual_base_position := Vector3.ZERO
 var _presentation_tween: Tween
 var _navigator: EnemyNavigator
+var _ground_recovery := EnemyGroundRecovery.new()
 
 func _ready() -> void:
 	floor_snap_length = 0.45
+	# Authored spawn points are the initial bounded fallback. Once physics confirms
+	# a floor contact this is replaced by the latest real grounded position. This
+	# prevents an actor knocked off a pier from being clamped under open water.
+	_ground_recovery.configure(global_position)
 	add_to_group(&"enemies")
 	add_to_group(&"auto_aim_targets")
 	if definition == null:
@@ -227,8 +234,6 @@ func _build_health_bar() -> void:
 	_health_label.fixed_size = true
 	_health_bar.add_child(_health_label)
 	_update_health_bar()
-
-
 func _health_bar_material(color: Color) -> StandardMaterial3D:
 	var material := StandardMaterial3D.new()
 	material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
@@ -238,8 +243,6 @@ func _health_bar_material(color: Color) -> StandardMaterial3D:
 	material.emission = color
 	material.emission_energy_multiplier = 1.4
 	return material
-
-
 func _update_health_bar_presentation() -> void:
 	if _health_bar == null:
 		return
@@ -251,8 +254,6 @@ func _update_health_bar_presentation() -> void:
 	_health_bar.scale = Vector3.ONE * clampf(distance * 0.016, 0.08, 0.34)
 	if _health_label != null:
 		_health_label.visible = distance <= 16.0
-
-
 func _update_health_bar() -> void:
 	if _health_bar_fill_mesh == null or _health_bar_fill_material == null:
 		return
@@ -297,14 +298,16 @@ func _move_toward(destination: Vector3, speed: float, delta: float) -> void:
 		_navigator.observe_motion(desired.length_squared() > 0.01, delta)
 
 func _stabilize_ground_height() -> void:
-	if not uses_gravity or global_position.y >= ground_height:
+	if not uses_gravity or is_dead:
 		return
-	global_position.y = ground_height
-	velocity.y = 0.0
-	if _navigator != null:
-		_navigator.reset_after_teleport()
-
-
+	var recovery := _ground_recovery.stabilize(self, ground_recovery_drop_distance, ground_recovery_retry_limit)
+	if recovery == EnemyGroundRecovery.DEFEAT:
+		navigation_recovery_requested.emit(self, &"fell_out_of_bounds")
+		_die(null)
+	elif recovery == EnemyGroundRecovery.RECOVERED:
+		reset_physics_interpolation()
+		if _navigator != null:
+			_navigator.reset_after_teleport()
 func _on_navigation_recovery(reason: StringName, recovery_position: Vector3) -> void:
 	navigation_recovery_requested.emit(self, reason)
 	var game_state := get_node_or_null("/root/GameState")
@@ -391,15 +394,11 @@ func _set_state(next: State) -> void:
 	_state_time = 0.0
 	state_changed.emit(previous, state)
 	_animate_state(previous, next)
-
-
 func _update_locomotion_presentation() -> void:
 	var visual := get_node_or_null("Visual") as Node3D
 	if visual == null or state == State.DEAD or _presentation_tween != null and _presentation_tween.is_running(): return
 	var moving := Vector2(velocity.x, velocity.z).length() > 0.25
 	visual.position.y = _visual_base_position.y + (sin(Time.get_ticks_msec() * 0.012) * 0.035 if moving else 0.0)
-
-
 func _animate_state(_previous: State, next: State) -> void:
 	var visual := get_node_or_null("Visual") as Node3D
 	if visual == null or next == State.DEAD: return

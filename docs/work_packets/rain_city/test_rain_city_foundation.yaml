@@ -1,0 +1,36 @@
+work_id: rain-city-foundation-tests
+role: spark-test-engineer
+goal: Add focused regression coverage for Rain City campaign unlocks, loadouts, save-v5 remap inputs, Compliance Gull, four-secret route, 26-enemy budget, floor ownership, and difficulty pressure limits.
+baseline_revision: 1a8e4cb
+dependencies:
+  - Rain City campaign/route/Gull foundation
+owned_paths:
+  - tests/unit/rain_city_campaign_test.gd
+  - tests/unit/mission_loadout_profile_test.gd
+  - tests/unit/compliance_gull_test.gd
+  - tests/integration/rain_city_route_production_test.gd
+read_only_context:
+  - scripts/ui/level_card_data.gd
+  - scripts/ui/victory_screen.gd
+  - scripts/gameplay/mission_loadout_profile.gd
+  - scripts/ai/compliance_gull.gd
+  - scripts/level/vancouver_waterfront_world_builder.gd
+  - resources/routes/vancouver_route_definition.tres
+  - resources/encounters/vancouver_*.tres
+forbidden_paths:
+  - scripts/
+  - resources/
+  - scenes/
+  - docs/PHASE_ROADMAP_PRD.md
+behavioral_contract: Tests only. Exercise named public contracts without timing-fragile visual assertions. Prove Vancouver is campaign-gated, Salmon always available, later teasers locked, loadout quantities and validation, v5 sanitization inputs, Gull visible telegraph/interruption/cleanup, four secrets, exactly 26 authored enemies, max authored pressure 4, and the world builder retains navigation-floor bodies after baking.
+acceptance_criteria:
+  - Each new test runs standalone headlessly with no ERROR/leak/orphan output.
+  - Tests fail against the documented Alpha.10 gaps or directly assert new contracts.
+  - No production edits.
+focused_tests:
+  - Run each owned test standalone with Godot 4.7.
+evidence_required:
+  - One cohesive commit and structured result with exact outputs.
+out_of_scope:
+  - Boss tests, visual taste, physical-device claims, production fixes.
+time_limit_minutes: 35

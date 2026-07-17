@@ -1,6 +1,6 @@
 # Cobie Nukem — Multi-Phase Production PRD
 
-**Status:** Active production source of truth; `0.6.0-alpha.10` production-foundry release is public
+**Status:** Active production source of truth; `0.7.0-alpha.1-rc1` Rain City candidate is in final automated validation while `0.6.0-alpha.10` remains public
 
 **Created:** 2026-07-11
 
@@ -8,7 +8,7 @@
 
 **Current public baseline:** `0.6.0-alpha.10` (`20649be` gameplay/runtime revision; source integration `2515e19`; website deployment `e7e2c6b`; PCK SHA-256 `59753bc9dc40c18a7f292e89f30b126ef84553515379ec1e020970ed33310696`)
 
-**Unreleased development baseline:** No gameplay delta. Source `main` matches the public Alpha.10 runtime and artifact; post-release evidence-only documentation may be newer than feature revision `20649be`.
+**Unreleased development baseline:** Rain City Run RC candidate on `codex/rain-city-final`; public Alpha.10 remains the rollback until the RC export, source integration, website deployment, and public byte-identity gates complete.
 
 **Last released alpha:** `0.6.0-alpha.10` (`20649be`) — live at <https://www.louislehmann.fyi/games/cobie-nukem/>; human full-route and physical-device validation remain open
 
@@ -16,6 +16,23 @@
 **Purpose:** Turn the family-playtest vertical slice into a sustainable, original multi-level game without sacrificing responsiveness, humor, Web support, or unusual-controller accessibility.
 
 ## 0. Current status dashboard
+
+### Rain City Run `0.7.0-alpha.1-rc1` candidate ledger
+
+This candidate turns the public Vancouver beta into the campaign's second production mission while preserving an honest `BETA` label until human gates pass. GPT-5.6 retained architecture, art direction, integration, review, evidence, release identity, and deployment ownership. Explicitly pinned `gpt-5.3-codex-spark` workers contributed bounded campaign, save/loadout, boss-soak, audio/HUD, and independent-review packets; root inspected and retested every accepted contribution.
+
+| Workstream | Status | Acceptance evidence |
+| --- | --- | --- |
+| Campaign continuity | **INTEGRATED — AUTOMATED GREEN** | Campaign-gated Vancouver unlock, mission-aware Replay/Continue, Salmon Creek `CONTINUE TO RAIN CITY`, locked future teasers, direct development override, and canonical mission IDs |
+| Persistence/loadout | **SAVE V5 INTEGRATED** | Deterministic v4 migration, checkpoint content revision/remap, campaign/checkpoint isolation, Vancouver loadout, weapon/upgrade snapshots, stale-route recovery, and Municipal Recall Override persistence |
+| Authored mission route | **INTEGRATED — HUMAN ROUTE REVIEW OPEN** | Five separated gameplay/presentation zones, vertical lanes, checkpoints, harbour kill plane, four secrets, original jokes/landmarks, 26 authored enemies, and Story/Classic/Mayhem pressure caps of 2/3/4 |
+| Enemies and boss | **INTEGRATED — HUMAN FEEL OPEN** | Compliance Gull telegraph/dive/interrupt contracts; manifested 8×4 Umbrella atlas; four typed convoy phases/modules/waves; shared 1,000-HP budget; persistent Towmaster wreck and bounded defeat effects |
+| Audio/presentation | **INTEGRATED — HUMAN MIX/ART OPEN** | 27 deterministic imported Gull/Umbrella/convoy WAVs, bounded spatial routing, boss HUD/captions, 13-batch Rain City Blender foundry, Material Maker sources, and project-original Towmaster model |
+| Architecture/durability | **AUTOMATED GREEN** | Mission presentation, loadout, path, phase, checkpoint, and convoy-presentation ownership extracted; all production scripts at or below 500 lines except the documented Salmon Creek legacy exemption |
+| Automated gate | **FULL EXPORT MATRIX GREEN** | Parser/import, unit/integration/content/smoke, 100 route/checkpoint/touch/effect cycles, 500 weapon transitions, 100 convoy cycles, asset/IP, architecture, headless drift/performance, Web export, and Universal macOS export pass |
+| Release | **PACKAGED — PUBLICATION PENDING** | Exact Web and unsigned macOS packages are hashed; packaged Chrome title/first-touch/menu/4:3 mission-selection checks are green. Source PR/release, website deployment, and downloaded public PCK identity remain before RC publication |
+
+Human-only throughout: one 15–22 minute target-Mac Classic route, Story/Mayhem spot checks, physical iPad Safari simultaneous twin-stick/audio/thermal pass, Chrome/Safari completion, boss/encounter fairness, route clarity, touch comfort, art cohesion, mix, humor, and photosensitivity. These gates prevent removal of the `BETA` badge; they do not prevent an honestly labeled public RC.
 
 ### Alpha.10 production-foundry ledger
 
@@ -103,13 +120,15 @@ This section is the first place a new Codex or external-auditor run should read.
 | Phase | Status | Completed | Explicitly remaining |
 | --- | --- | --- | --- |
 | 1. Gameplay systems foundation | **VERTICAL-SLICE FOUNDATION IMPLEMENTED — IN REVIEW** | Previous foundation plus profile-driven feel/combat, encounter schema v2, shared mission host, event registries, navigation, reusable directional shields, and reusable moving set pieces | Final human feel/balance and broader mission-host adoption |
-| 2. Content-production pipeline | **PRODUCTION PIPELINE EXERCISED BY TWO MISSIONS** | Versioned manifests, validators, authoring guides, provenance gates, Salmon interaction/environment content, public-beta Vancouver data, and the visual-foundry art/capture loop | Encounter visual editor tooling, final Vancouver art/navigation bake, and human pacing review |
-| 3. World and episode structure | **MISSION 2 PUBLIC BETA — HUMAN REVIEW OPEN** | Vancouver has five connected authored zones, route/objectives/checkpoints/secrets, a new enemy, interactions, and a citation-convoy finale; Mount Hood, Moon, and Ventura remain illustrated briefs | Vancouver human production review and polish; later missions remain unbuilt |
+| 2. Content-production pipeline | **PRODUCTION PIPELINE EXERCISED BY TWO MISSIONS** | Versioned manifests, validators, authoring guides, provenance gates, Salmon interaction/environment content, Rain City production data/art/audio, and the visual-foundry art/capture loop | Encounter visual editor tooling, human-approved Rain City art baseline, and human pacing review |
+| 3. World and episode structure | **MISSION 2 RC — HUMAN REVIEW OPEN** | Rain City has five authored zones, campaign continuity, route/objectives/checkpoints/secrets, Gull and Umbrella enemies, interactions, and a four-phase Towmaster finale; Mount Hood, Moon, and Ventura remain illustrated briefs | Rain City human production approval and `BETA` removal; later missions remain unbuilt |
 | 4. Combat and presentation expansion | **ALPHA.10 PRODUCTION TRANCHE PUBLIC** | Existing combat/audio plus bespoke Hound/Walker atlases, Salmon environment materials/landmarks, adaptive mission audio, ambience, event-driven Cobie barks, production weapon viewmodels/lifecycle, shield enemy, and convoy spectacle | Human art, animation, mix, boss, encounter, and effects review |
-| 5. Accessibility, persistence, observability | **SAVE V4 + TOUCH + VISUAL/WEB QA FOUNDATION IMPLEMENTED** | Save schema v4, campaign/checkpoint separation, route snapshots, local metrics, accessible HUD/touch controls, canonical visual/motion captures, and packaged-Web trace tooling | Human-approved visual baselines, complete settings review, long-session Web memory evidence, and physical devices |
+| 5. Accessibility, persistence, observability | **SAVE V5 + TOUCH + VISUAL/WEB QA FOUNDATION IMPLEMENTED** | Save schema v5, campaign/checkpoint separation, content-revision remap, loadout/upgrades, route snapshots, local metrics, accessible HUD/touch controls, canonical captures, and packaged-Web trace tooling | Human-approved visual baselines, complete settings review, long-session Web memory evidence, and physical devices |
 | 6. Alpha, beta, release | **PUBLIC ALPHA PROGRAM ACTIVE** | Reproducible CI/export/package/deploy gates and public Alpha.3–Alpha.10 evidence; Vancouver public beta remains explicitly unfinished | Human/device/browser matrices, content completion, signing/notarization, legal review, store readiness |
 
 ### Immediate next gate
+
+**2026-07-16 Rain City Run RC candidate:** complete the final pinned Spark review, native/Web export matrix, rendered native/tablet performance evidence, package identity, source integration, GitHub prerelease, clean website deployment, ordinary/cache-busted public verification, and PCK SHA-256 match. Publish as `0.7.0-alpha.1-rc1` with `BETA` retained while human gates above remain open. After human approval, remove the badge/warning and restamp final `0.7.0-alpha.1`; do not unlock Mount Hood, Moon, or Ventura.
 
 **2026-07-16 Alpha.10 production-foundry release:** the visual-foundry pilot and its first full production application are public at feature revision `20649be`. Chrome DevTools validates the real packaged Web bootstrap and 1024×768 title path; three original weapon viewmodels replace the primitive placeholders; explicit lifecycle/feedback is fuzzed; and the remaining Salmon Creek interiors have readable authored lighting. `QA_EXPORTS=1`, source PR #38, GitHub prerelease `v0.6.0-alpha.10`, website PR #120, Vercel production deployment, browser startup, and public PCK byte identity are green. Human review must still approve weapon feel/art, the opening/interior direction, touch hierarchy, complete routes, and physical-device behavior before captures become approved taste baselines.
 

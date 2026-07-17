@@ -2,19 +2,19 @@
 
 This file distinguishes confirmed product limitations from unperformed validation. Update it for every release candidate; do not silently convert “not tested” into “passed.”
 
-## `0.6.0-alpha.10` public human gates
+## `0.7.0-alpha.1-rc1` Rain City human gates
 
-- Alpha.10 is public and byte-identical to the packaged Web artifact. Source PR #38 includes PR #36, the visual-foundry harness, production weapon models/lifecycle feedback, and Salmon Creek readability work. The release does not convert the human/device checks below into automated passes.
+- The Rain City RC is intended for open public development with an explicit `BETA` badge and warning. Automated gates do not convert the human/device checks below into passes; final publication identity and hashes are recorded only after deployment.
 
 - Right-stick profiles are automated for response, frame-rate stability, cancellation, and settings wiring, but final friction/boost strength and thumb comfort require physical iPad Safari testing.
 - The Web bootstrap and title preload are browser-tested; slow real-world mobile networks still need a physical first-load timing pass.
-- Vancouver Waterfront is now a public `BETA` preview with objectives, checkpoints, interactions, a shield enemy, and a three-stop convoy finale. It has not had a human end-to-end playthrough; art, pacing, balance, navigation clarity, and convoy feel remain explicitly unfinished. Mount Hood, Moon, and Ventura remain illustrated locked teasers only.
+- Rain City Run now has campaign continuity, five authored zones, 26 enemies, Compliance Gulls, a production Umbrella Shield Enforcer, four secrets, save-v5/loadout/upgrade continuity, and a four-phase 1,000-HP Municipal Towmaster finale. It has not had the required human 15–22 minute end-to-end playthrough; art, pacing, balance, navigation clarity, touch comfort, mix, and boss feel remain explicitly open. Mount Hood, Moon, and Ventura remain illustrated locked teasers only.
 - Three regular archetypes plus Compliance Hound and Walker have original directional/reaction atlases and typed presentation profiles. The generated Walker source produced three distinct authored rows, so its alternate locomotion slot intentionally reuses the primary gait; this is manifested provenance, not a claim of eight unique animation families.
 - Imported primary-combat audio, Salmon Creek ambience, adaptive mission music states, and nonverbal Cobie bark events are contract-tested. Loudness, tonal character, repetition, spatial mix, emotional timing, and perceived weapon/enemy weight still require human listening.
 - Salmon Creek now contains 17 required actors across staged waves while limiting peak authored density to three. Encounter completion, reset, pressure distance, boss phases, summons, and recovery are automated; 12–20 minute route pacing, fairness by difficulty, and spectacle remain human gates.
 - Salmon Creek now instantiates 16 data-authored breakable, explosive, loot, and secret interactions across five arenas. Damaging steam hazard zones were removed from Salmon Creek after iPad playtest feedback (their flat beige visual read as a random slab and dealt unexplained damage in the finale approach); the reusable HAZARD_ZONE kind remains available and is still used by Vancouver. Their collision, grounding, reset, bounded effects, and route safety are automated; visual density, discoverability, and whether each placement feels meaningfully useful require a human playthrough.
 - Walker weak-point phase floors, Golden Ball defeat, summon caps, recovery drops, and repeated reset behavior are automated. Boss telegraph fairness, perceived speed, spectacle, and the approximately 1,000-HP pacing target still require human play.
-- Vancouver uses intentionally original low-poly preview geometry and authored route contracts. Its public badge and launch notice identify it as unfinished rather than final mission completion.
+- Rain City uses intentionally original low-poly authored geometry, project-original Blender/Material Maker sources, and independent gameplay collision/navigation. Its badge and launch notice identify the current RC as unfinished rather than falsely claiming final human approval.
 - Alpha.10 native 1080p Compatibility profiling passes: opening p95/p99 is 19.378/19.481 ms, lab 17.931/18.524 ms, tunnels 17.787/19.092 ms, and Walker 17.583/18.341 ms; observed static memory remained below 81 MB. A packaged-Web Fast 4G/2× CPU trace is green, but long-session Web memory and physical-device thermals remain human/hardware gates.
 
 ## Distribution and legal

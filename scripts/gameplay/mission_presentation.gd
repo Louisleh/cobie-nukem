@@ -19,6 +19,7 @@ var _victory_screen: VictoryScreen
 var _combat_audio: CombatAudioBridge
 var _mobile_controls: MobileControls
 var _mission_audio_director: MissionAudioDirector
+var _enemy_cues: MissionEnemyCueRouter
 var _player: Node3D
 var _actors: Node
 var _level: Node
@@ -34,14 +35,14 @@ var _last_zone: StringName = &""
 var _current_audio_state: StringName = &""
 var _last_ambience: StringName = &""
 var _player_weather: GPUParticles3D
-var _enemy_warning_bound: Dictionary = {}
 var _zone_actor_counts: Dictionary = {}
 var _zone_ambience: Dictionary = {}
 var _boss_zone_id: StringName = &""
 var _initial_zone_id: StringName = &""
+var _boss_display_name := ""
 
 
-func configure(level: Node, content_manifest: ContentManifest, actors: Node, encounter_runner: EncounterRunner = null, mission_runtime: MissionRuntime = null, player: Node3D = null, game_state: Node = null, initial_zone_id: StringName = &"", boss_zone_id: StringName = &"", zone_ambience: Dictionary = {}) -> bool:
+func configure(level: Node, content_manifest: ContentManifest, actors: Node, encounter_runner: EncounterRunner = null, mission_runtime: MissionRuntime = null, player: Node3D = null, game_state: Node = null, initial_zone_id: StringName = &"", boss_zone_id: StringName = &"", zone_ambience: Dictionary = {}, boss_display_name: String = "") -> bool:
 	if level == null:
 		return false
 	if _configured and (_level != level or _mission_runtime != mission_runtime or _encounter_runner != encounter_runner):
@@ -54,6 +55,7 @@ func configure(level: Node, content_manifest: ContentManifest, actors: Node, enc
 	_game_state = game_state if game_state != null else get_node_or_null("/root/GameState")
 	_initial_zone_id = initial_zone_id
 	_boss_zone_id = boss_zone_id
+	_boss_display_name = _resolve_boss_display_name(level, boss_display_name, boss_zone_id)
 	_zone_ambience.clear()
 	for raw_zone_id: Variant in zone_ambience:
 		_zone_ambience[StringName(raw_zone_id)] = StringName(zone_ambience[raw_zone_id])
@@ -104,15 +106,8 @@ func set_player(player: Node3D) -> void:
 
 
 func bind_warning_enemy(enemy: Node) -> void:
-	if enemy == null or not enemy.has_signal("telegraph_started"):
-		return
-	if enemy.has_meta(&"mission_presentation_warning_bound"):
-		return
-	if _hud == null or not enemy.has_signal("telegraph_started"):
-		return
-	enemy.set_meta(&"mission_presentation_warning_bound", true)
-	_enemy_warning_bound[enemy.get_instance_id()] = weakref(enemy)
-	enemy.telegraph_started.connect(_on_enemy_telegraph)
+	if _enemy_cues != null:
+		_enemy_cues.bind_enemy(enemy)
 
 
 func bind_warning_enemies() -> void:
@@ -157,6 +152,15 @@ func on_checkpoint_caption(message: String) -> void:
 func on_boss_phase_caption(message: String, duration: float) -> void:
 	if _hud != null:
 		_hud.show_boss_phase_caption(message, duration)
+
+
+func on_boss_state_changed(state: StringName, fraction: float) -> void:
+	if _hud != null:
+		_hud.set_boss_state(_boss_display_name, state, fraction)
+
+
+func play_spatial_cue(cue_id: StringName, world_position: Vector3) -> bool:
+	return _enemy_cues != null and _enemy_cues.play_at(cue_id, world_position)
 
 
 func on_player_died(_source: Node) -> void:
@@ -251,6 +255,8 @@ func reset_for_checkpoint() -> void:
 		_death_screen.visible = false
 	if _mobile_controls != null:
 		_mobile_controls.release_all()
+	if _enemy_cues != null:
+		_enemy_cues.stop_all()
 	_zone_actor_counts.clear()
 	_current_audio_state = &""
 	_request_audio_state(&"exploration")
@@ -263,14 +269,11 @@ func is_pause_suppressed() -> bool:
 
 
 func bound_enemy_count() -> int:
-	_prune_enemy_bindings()
-	return _enemy_warning_bound.size()
+	return 0 if _enemy_cues == null else _enemy_cues.bound_enemy_count()
 
 
 func is_enemy_bound(enemy: Node) -> bool:
-	if enemy == null:
-		return false
-	return enemy.has_meta(&"mission_presentation_warning_bound")
+	return _enemy_cues != null and _enemy_cues.is_enemy_bound(enemy)
 
 
 func get_hud() -> GameHUD:
@@ -327,6 +330,10 @@ func _create_presentation_nodes() -> void:
 	_mission_audio_director = MissionAudioDirector.new()
 	_mission_audio_director.name = "MissionAudioDirector"
 	add_child(_mission_audio_director)
+	_enemy_cues = MissionEnemyCueRouter.new()
+	_enemy_cues.name = "MissionEnemyCueRouter"
+	add_child(_enemy_cues)
+	_enemy_cues.configure(_hud, MissionAudioLibrary)
 
 
 func _on_pause_restart() -> void:
@@ -346,6 +353,8 @@ func _connect_level(level: Node) -> void:
 		level.secret_found.connect(on_secret_found)
 	if level.has_signal("boss_phase_caption"):
 		level.boss_phase_caption.connect(on_boss_phase_caption)
+	if level.has_signal("boss_state_changed"):
+		level.boss_state_changed.connect(on_boss_state_changed)
 	_level_connected = true
 
 
@@ -443,16 +452,23 @@ func _bind_existing_enemies() -> void:
 		bind_warning_enemy(actor)
 
 
-func _on_enemy_telegraph(kind: StringName, _duration: float) -> void:
-	if _hud != null:
-		_hud.show_caption("%s WARNING" % String(kind).replace("_", " "), GameHUD.CaptionCategory.ENEMY_WARNING, 1.2)
-
-
-func _prune_enemy_bindings() -> void:
-	for instance_id: Variant in _enemy_warning_bound.keys():
-		var reference := _enemy_warning_bound[instance_id] as WeakRef
-		if reference == null or reference.get_ref() == null:
-			_enemy_warning_bound.erase(instance_id)
+func _resolve_boss_display_name(level: Node, configured_name: String, boss_zone_id: StringName) -> String:
+	var requested: String = configured_name.strip_edges()
+	if not requested.is_empty():
+		return requested.to_upper()
+	if level == null:
+		return &""
+	if level.has_meta(&"boss_display_name"):
+		var meta_name: Variant = level.get_meta(&"boss_display_name")
+		if meta_name is String:
+			var text: String = (meta_name as String).strip_edges()
+			if not text.is_empty():
+				return text.to_upper()
+	# Mission-specific names are configuration, not shared presentation policy.
+	# Retain a neutral fallback only for legacy or test hosts.
+	if boss_zone_id != &"":
+		return "BOSS"
+	return &""
 
 
 func _exit_tree() -> void:
@@ -462,3 +478,5 @@ func _exit_tree() -> void:
 		_mobile_controls.release_all()
 	if _mission_audio_director != null:
 		_mission_audio_director.reset()
+	if _enemy_cues != null:
+		_enemy_cues.stop_all()

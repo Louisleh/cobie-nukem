@@ -55,7 +55,7 @@ func _run() -> void:
 	if mission_library != null:
 		_expect(mission_library.validation_errors().is_empty(), "mission cue contracts are valid: %s" % [mission_library.validation_errors()])
 		var mission_ids := mission_library.cue_ids()
-		for cue_id in [&"salmon_music_exploration", &"salmon_music_tension", &"salmon_music_combat", &"salmon_music_boss", &"salmon_music_victory", &"vancouver_music_exploration", &"vancouver_music_tension", &"vancouver_music_combat", &"vancouver_music_boss", &"vancouver_music_victory", &"salmon_ambience_exterior", &"salmon_ambience_tunnel", &"salmon_ambience_lab", &"salmon_ambience_arena", &"vancouver_ambience_dock", &"vancouver_ambience_terminal", &"vancouver_ambience_harbour", &"cobie_bark", &"hound_vocal", &"walker_vocal"]:
+		for cue_id in [&"salmon_music_exploration", &"salmon_music_tension", &"salmon_music_combat", &"salmon_music_boss", &"salmon_music_victory", &"vancouver_music_exploration", &"vancouver_music_tension", &"vancouver_music_combat", &"vancouver_music_boss", &"vancouver_music_victory", &"salmon_ambience_exterior", &"salmon_ambience_tunnel", &"salmon_ambience_lab", &"salmon_ambience_arena", &"vancouver_ambience_dock", &"vancouver_ambience_terminal", &"vancouver_ambience_harbour", &"cobie_bark", &"hound_vocal", &"walker_vocal", &"rain_city_gull_mark", &"rain_city_gull_dive", &"rain_city_gull_death", &"rain_city_shield_brace", &"rain_city_shield_open", &"rain_city_shield_break", &"rain_city_convoy_move", &"rain_city_module_break", &"rain_city_convoy_defeat"]:
 			_expect(cue_id in mission_ids, "mission cue is authored: %s" % cue_id)
 		for cue in mission_library.cues:
 			_expect(cue.maximum_polyphony <= 2, "%s has a strict mission voice bound" % cue.id)
@@ -93,7 +93,7 @@ func _run() -> void:
 	_expect(bridge.samples.voice_count(&"enemy_alert", true) == 1, "enemy playback uses a bounded 3D voice")
 	_expect(bridge.samples.play_at(&"enemy_attack", Vector3(2.0, 1.0, -3.0)), "enemy attacks use authored positional playback")
 	_expect(bridge.samples.voice_count(&"enemy_attack", true) == 1, "enemy attack playback uses a bounded 3D voice")
-	_expect(bridge.samples.registered_cue_count() == required.size() + 20, "scene installs production and mission cue libraries")
+	_expect(bridge.samples.registered_cue_count() == required.size() + mission_library.cue_ids().size(), "scene installs production and mission cue libraries")
 	_expect(bridge.play_cobie_bark(), "bridge routes original nonverbal Cobie barks")
 	_expect(bridge.samples.play_at(&"hound_vocal", Vector3.ZERO), "Hound family uses bounded positional playback")
 	_expect(bridge.samples.play_at(&"walker_vocal", Vector3.ZERO), "Walker family uses bounded positional playback")

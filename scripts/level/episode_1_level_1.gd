@@ -406,7 +406,7 @@ func _setup_presentation() -> void:
 		_mission_presentation = MissionPresentation.new()
 		_mission_presentation.name = "MissionPresentation"
 		add_child(_mission_presentation)
-	_mission_presentation.configure(self, content_manifest, _actors, _encounter_runner, _mission_runtime, player, get_node_or_null("/root/GameState"), &"forbidden_field", &"walker_arena", ZONE_AMBIENCE)
+	_mission_presentation.configure(self, content_manifest, _actors, _encounter_runner, _mission_runtime, player, get_node_or_null("/root/GameState"), &"forbidden_field", &"walker_arena", ZONE_AMBIENCE, "ANIMAL CONTROL WALKER")
 	_mission_presentation.bind_restart_requests(restart_from_checkpoint)
 
 func _spawn_enemy_drop(drop_id: StringName, position_value: Vector3) -> Node:

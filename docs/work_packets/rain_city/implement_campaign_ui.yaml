@@ -1,0 +1,39 @@
+work_id: rain-city-campaign-ui
+role: spark-ui-accessibility-worker
+goal: Implement data-driven campaign unlock policy and mission-aware victory/replay/next-mission UI for Rain City Run.
+baseline_revision: 2d18488
+dependencies: []
+owned_paths:
+  - scripts/ui/level_card_data.gd
+  - scripts/ui/level_select.gd
+  - scripts/ui/victory_screen.gd
+  - scenes/ui/victory_screen.tscn
+  - scripts/level/level_metadata.gd
+  - resources/level/salmon_creek_card.tres
+  - resources/level/rain_city_card.tres
+  - resources/level/episode_1_level_1.tres
+  - resources/level/episode_1_vancouver_waterfront.tres
+read_only_context:
+  - scripts/core/campaign_progress_runtime.gd
+  - scripts/gameplay/mission_presentation.gd
+  - scripts/core/game_state.gd
+  - tests/unit/campaign_progress_runtime_test.gd
+forbidden_paths:
+  - scripts/core/build_info.gd
+  - docs/PHASE_ROADMAP_PRD.md
+  - project.godot
+  - export_presets.cfg
+behavioral_contract: Add LevelCardData UnlockPolicy ALWAYS/CAMPAIGN/LOCKED_TEASER plus prerequisite mission ID and a runtime is_available check that uses CampaignProgressRuntime. Level selection must load campaign progress without touching checkpoints; Vancouver is available only after Salmon Creek completion, except a deliberate development-feature override that is off in normal exports. Extend LevelMetadata with replay scene and optional next mission id/scene/title and loadout reference. Victory PLAY AGAIN uses summary/metadata mission scene; Salmon Creek exposes a Continue to Rain City button; Vancouver does not. Preserve focus, touch, desktop pointer capture, and the BETA card/launch notice.
+acceptance_criteria:
+  - Salmon Creek is always selectable; Vancouver is campaign-gated; later cards remain locked teasers.
+  - Direct development override is explicit and never silently unlocks production.
+  - Victory replay reloads the completed mission and Continue routes Salmon Creek to Rain City.
+  - Campaign reads do not delete checkpoint or campaign slots.
+  - UI fits the existing 4:3 container contract and disabled controls are not focusable.
+focused_tests:
+  - /opt/homebrew/bin/godot --headless --path . --script res://tests/unit/campaign_progress_runtime_test.gd
+evidence_required:
+  - One cohesive commit, changed-file inventory, parse/test results, and remaining risks.
+out_of_scope:
+  - Save schema, loadout implementation, BuildInfo, PRD, release, public deployment.
+time_limit_minutes: 35

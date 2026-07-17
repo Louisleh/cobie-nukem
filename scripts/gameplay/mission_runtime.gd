@@ -102,7 +102,7 @@ func activate_checkpoint(checkpoint_id: StringName) -> bool:
 	return route.activate_checkpoint(checkpoint_id) if route != null else false
 
 
-func record_campaign_completion(level_id: StringName, summary: Dictionary, save_manager: Node, difficulty_id: StringName, unlocks: Array = []) -> Error:
+func record_campaign_completion(level_id: StringName, summary: Dictionary, save_manager: Node, difficulty_id: StringName, unlocks: Array = [], upgrades: Array = []) -> Error:
 	if save_manager == null:
 		return ERR_UNCONFIGURED
 	var campaign := CampaignProgressRuntime.new()
@@ -117,7 +117,7 @@ func record_campaign_completion(level_id: StringName, summary: Dictionary, save_
 		"difficulty": String(difficulty_id),
 		"best_secrets": int(summary.get("secrets_found", 0)),
 		"total_secrets": int(summary.get("secrets_total", 0)),
-	}, unlocks)
+	}, unlocks, upgrades)
 	campaign.queue_free()
 	return error
 

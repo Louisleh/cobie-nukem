@@ -3,6 +3,7 @@ extends Control
 
 @export var levels: Array[LevelCardData] = []
 @export_file("*.tscn") var menu_scene_path := "res://scenes/menus/main_menu.tscn"
+@export var campaign_unlock_override := false
 
 @onready var card_row: HBoxContainer = %CardRow
 @onready var preview: TextureRect = %Preview
@@ -20,36 +21,60 @@ extends Control
 var _selected := 0
 var _cards: Array[Button] = []
 var _difficulty_buttons: Array[Button] = []
+var _campaign_progress: CampaignProgressRuntime
 var _difficulty_group := ButtonGroup.new()
 
 func _ready() -> void:
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 	%BuildLabel.text = BuildInfo.label()
 	GameState._set_phase(GameState.Phase.MENU)
+	_prepare_campaign_progress()
 	_build_cards()
 	_build_difficulty_selector()
 	play_button.pressed.connect(_activate_selected)
 	%BackButton.pressed.connect(_back)
 	play_button.focus_neighbor_bottom = play_button.get_path_to(%BackButton)
 	%BackButton.focus_neighbor_top = %BackButton.get_path_to(play_button)
-	if not _cards.is_empty():
-		_select(0)
-		_cards[0].grab_focus()
+	var first_enabled := _first_selectable_index()
+	if first_enabled >= 0:
+		_select(first_enabled)
+		_cards[first_enabled].grab_focus()
+	elif not _cards.is_empty():
+		_selected = -1
+		play_button.disabled = true
+		play_button.focus_mode = Control.FOCUS_NONE
+		play_button.text = "NO MISSIONS AVAILABLE"
+		status_label.text = "CAMPAIGN ROUTES LOCKED"
+		%BackButton.grab_focus()
+
+func _prepare_campaign_progress() -> void:
+	var save_manager := get_node_or_null("/root/SaveManager")
+	if save_manager == null:
+		return
+	_campaign_progress = CampaignProgressRuntime.new()
+	add_child(_campaign_progress)
+	if _campaign_progress.configure(save_manager):
+		_campaign_progress.load_progress()
 
 func _build_cards() -> void:
 	for child in card_row.get_children():
 		child.queue_free()
 	_cards.clear()
+	var focusable_cards: Array[Button] = []
 	for index in levels.size():
 		var data := levels[index]
+		var available := data.is_available(_campaign_progress, _development_unlock_override())
 		var card := Button.new()
 		card.custom_minimum_size = Vector2(105.0, 43.0)
 		card.add_theme_font_size_override("font_size", 6)
-		card.text = "%02d  %s\n%s" % [index + 1, data.status_badge(), data.title]
+		card.text = "%02d  %s\n%s" % [index + 1, data.status_badge(_campaign_progress, _development_unlock_override()), data.title]
 		card.icon = data.preview
 		card.expand_icon = true
 		card.tooltip_text = data.description
-		card.focus_mode = Control.FOCUS_ALL
+		card.disabled = not available
+		card.focus_mode = Control.FOCUS_NONE if card.disabled else Control.FOCUS_ALL
+		if not card.disabled:
+			focusable_cards.append(card)
 		card.mouse_entered.connect(func() -> void:
 			card.grab_focus()
 			_select(index)
@@ -58,13 +83,16 @@ func _build_cards() -> void:
 		card.pressed.connect(func() -> void: _activate(index))
 		card_row.add_child(card)
 		_cards.append(card)
-	for index in _cards.size():
-		var previous := _cards[(index - 1 + _cards.size()) % _cards.size()]
-		var next := _cards[(index + 1) % _cards.size()]
-		_cards[index].focus_neighbor_left = _cards[index].get_path_to(previous)
-		_cards[index].focus_neighbor_right = _cards[index].get_path_to(next)
-		_cards[index].focus_neighbor_bottom = _cards[index].get_path_to(play_button)
-
+	if focusable_cards.size() == 0:
+		return
+	for index in focusable_cards.size():
+		var current := focusable_cards[index]
+		var previous := focusable_cards[(index - 1 + focusable_cards.size()) % focusable_cards.size()]
+		var next := focusable_cards[(index + 1) % focusable_cards.size()]
+		current.focus_neighbor_left = current.get_path_to(previous)
+		current.focus_neighbor_right = current.get_path_to(next)
+		if _difficulty_buttons.is_empty():
+			current.focus_neighbor_bottom = current.get_path_to(play_button)
 
 func _build_difficulty_selector() -> void:
 	# Labels, descriptions, and tuning summaries come straight from the
@@ -92,13 +120,15 @@ func _build_difficulty_selector() -> void:
 		button.focus_neighbor_right = button.get_path_to(next)
 		button.focus_neighbor_bottom = button.get_path_to(play_button)
 		if not _cards.is_empty():
-			button.focus_neighbor_top = button.get_path_to(_cards[0])
+			var first_selectable := _first_selectable_index()
+			if first_selectable >= 0:
+				button.focus_neighbor_top = button.get_path_to(_cards[first_selectable])
 	if not _difficulty_buttons.is_empty():
 		for card in _cards:
-			card.focus_neighbor_bottom = card.get_path_to(_difficulty_buttons[0])
+			if not card.disabled:
+				card.focus_neighbor_bottom = card.get_path_to(_difficulty_buttons[0])
 		play_button.focus_neighbor_top = play_button.get_path_to(_difficulty_buttons[0])
 	_update_difficulty_blurb()
-
 
 func _on_difficulty_pressed(profile: DifficultyProfile) -> void:
 	if GameState.select_difficulty(profile.id):
@@ -134,19 +164,20 @@ func _select(index: int) -> void:
 		return
 	_selected = index
 	var data := levels[index]
+	var available := data.is_available(_campaign_progress, _development_unlock_override())
 	episode_label.text = data.episode
 	title_label.text = data.title
 	description_label.text = data.description
 	difficulty_label.text = "DIFFICULTY  %d / 5 PAWS" % clampi(data.difficulty, 1, 5)
 	details_label.text = "%s  •  %d SECRETS  •  %s" % [data.expected_minutes, data.secrets, data.encounter]
 	preview.texture = data.preview
-	play_button.disabled = not data.unlocked
+	play_button.disabled = not available
 	play_button.focus_mode = Control.FOCUS_NONE if play_button.disabled else Control.FOCUS_ALL
-	play_button.text = ("START %s" % data.status_badge()) if data.is_preview_release() else ("START MISSION" if data.unlocked else "LOCKED")
-	if not data.unlocked:
+	play_button.text = ("START %s" % data.status_badge(_campaign_progress, _development_unlock_override())) if data.is_preview_release(_campaign_progress, _development_unlock_override()) else ("START MISSION" if available else "LOCKED")
+	if not available:
 		status_label.text = "COMING SOON // FUTURE MISSION"
-	elif data.is_preview_release():
-		status_label.text = data.launch_notice if not data.launch_notice.strip_edges().is_empty() else "%s // PUBLIC WORK IN PROGRESS" % data.status_badge()
+	elif data.is_preview_release(_campaign_progress, _development_unlock_override()):
+		status_label.text = data.launch_notice if not data.launch_notice.strip_edges().is_empty() else "%s // PUBLIC WORK IN PROGRESS" % data.status_badge(_campaign_progress, _development_unlock_override())
 	else:
 		status_label.text = "READY"
 
@@ -157,7 +188,7 @@ func _activate(index: int) -> void:
 	if index < 0 or index >= levels.size():
 		return
 	var data := levels[index]
-	if not data.unlocked or data.scene_path.is_empty():
+	if not data.is_available(_campaign_progress, _development_unlock_override()) or data.scene_path.is_empty():
 		status_label.text = "LOCKED // ANIMAL CONTROL SEALED THIS COURSE"
 		sounds.play(ProceduralAudio.Cue.ERROR)
 		return
@@ -179,6 +210,18 @@ func _activate(index: int) -> void:
 
 func _back() -> void:
 	SceneRouter.go_to(menu_scene_path)
+
+func _first_selectable_index() -> int:
+	for index in _cards.size():
+		if not _cards[index].disabled:
+			return index
+	return -1
+
+
+func _development_unlock_override() -> bool:
+	# The route override is intentionally unavailable to release exports even if a
+	# scene was accidentally saved with the inspector toggle enabled.
+	return campaign_unlock_override and OS.is_debug_build()
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed(&"menu_back") or event.is_action_pressed(&"pause"):
