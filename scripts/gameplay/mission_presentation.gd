@@ -39,9 +39,10 @@ var _zone_actor_counts: Dictionary = {}
 var _zone_ambience: Dictionary = {}
 var _boss_zone_id: StringName = &""
 var _initial_zone_id: StringName = &""
+var _boss_display_name := &""
 
 
-func configure(level: Node, content_manifest: ContentManifest, actors: Node, encounter_runner: EncounterRunner = null, mission_runtime: MissionRuntime = null, player: Node3D = null, game_state: Node = null, initial_zone_id: StringName = &"", boss_zone_id: StringName = &"", zone_ambience: Dictionary = {}) -> bool:
+func configure(level: Node, content_manifest: ContentManifest, actors: Node, encounter_runner: EncounterRunner = null, mission_runtime: MissionRuntime = null, player: Node3D = null, game_state: Node = null, initial_zone_id: StringName = &"", boss_zone_id: StringName = &"", boss_display_name: String = "", zone_ambience: Dictionary = {}) -> bool:
 	if level == null:
 		return false
 	if _configured and (_level != level or _mission_runtime != mission_runtime or _encounter_runner != encounter_runner):
@@ -54,6 +55,7 @@ func configure(level: Node, content_manifest: ContentManifest, actors: Node, enc
 	_game_state = game_state if game_state != null else get_node_or_null("/root/GameState")
 	_initial_zone_id = initial_zone_id
 	_boss_zone_id = boss_zone_id
+	_boss_display_name = _resolve_boss_display_name(level, boss_display_name, boss_zone_id)
 	_zone_ambience.clear()
 	for raw_zone_id: Variant in zone_ambience:
 		_zone_ambience[StringName(raw_zone_id)] = StringName(zone_ambience[raw_zone_id])
@@ -157,6 +159,11 @@ func on_checkpoint_caption(message: String) -> void:
 func on_boss_phase_caption(message: String, duration: float) -> void:
 	if _hud != null:
 		_hud.show_boss_phase_caption(message, duration)
+
+
+func on_boss_state_changed(state: StringName, fraction: float) -> void:
+	if _hud != null:
+		_hud.set_boss_state(_boss_display_name, state, fraction)
 
 
 func on_player_died(_source: Node) -> void:
@@ -346,6 +353,8 @@ func _connect_level(level: Node) -> void:
 		level.secret_found.connect(on_secret_found)
 	if level.has_signal("boss_phase_caption"):
 		level.boss_phase_caption.connect(on_boss_phase_caption)
+	if level.has_signal("boss_state_changed"):
+		level.boss_state_changed.connect(on_boss_state_changed)
 	_level_connected = true
 
 
@@ -453,6 +462,25 @@ func _prune_enemy_bindings() -> void:
 		var reference := _enemy_warning_bound[instance_id] as WeakRef
 		if reference == null or reference.get_ref() == null:
 			_enemy_warning_bound.erase(instance_id)
+
+
+func _resolve_boss_display_name(level: Node, configured_name: String, boss_zone_id: StringName) -> String:
+	var requested := configured_name.strip_edges()
+	if not requested.is_empty():
+		return requested.to_upper()
+	if level == null:
+		return &""
+	if level.has_meta(&"boss_display_name"):
+		var meta_name := level.get_meta(&"boss_display_name")
+		if meta_name is String:
+			var text := meta_name.strip_edges()
+			if not text.is_empty():
+				return text.to_upper()
+	if level.scene_file_path.contains("episode_1_vancouver_waterfront"):
+		return "MUNICIPAL TOWMASTER // APPEAL DENIED"
+	if boss_zone_id == &"walker_arena":
+		return "ANIMAL CONTROL WALKER"
+	return &""
 
 
 func _exit_tree() -> void:
