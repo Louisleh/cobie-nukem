@@ -1,8 +1,11 @@
-[gd_scene load_steps=15 format=3]
+[gd_scene load_steps=18 format=3]
 
 [ext_resource type="Script" path="res://scripts/ai/umbrella_shield_enforcer.gd" id="1"]
 [ext_resource type="Resource" path="res://resources/enemies/umbrella_shield_enforcer.tres" id="2"]
 [ext_resource type="Script" path="res://scripts/ai/directional_shield_component.gd" id="3"]
+[ext_resource type="Texture2D" path="res://assets/sprites/enemies/atlases/umbrella_shield_enforcer_atlas.png" id="4_atlas"]
+[ext_resource type="Script" path="res://scripts/ai/enemy_sprite_presentation.gd" id="5_presentation"]
+[ext_resource type="Resource" path="res://resources/enemies/umbrella_shield_enforcer_presentation.tres" id="6_profile"]
 [sub_resource type="CapsuleShape3D" id="Shape"]
 radius = 0.45
 height = 1.5
@@ -76,17 +79,21 @@ position = Vector3(0, 0.95, 0)
 shape = SubResource("Shape")
 [node name="Visual" type="Node3D" parent="."]
 [node name="Torso" type="MeshInstance3D" parent="Visual"]
+visible = false
 position = Vector3(0, 0.95, 0)
 mesh = SubResource("TorsoMesh")
 [node name="Pole" type="MeshInstance3D" parent="Visual"]
+visible = false
 position = Vector3(0, 0.72, -0.45)
 rotation = Vector3(0.7, 0, 0)
 mesh = SubResource("LegMesh")
 [node name="Canopy" type="MeshInstance3D" parent="Visual"]
+visible = false
 position = Vector3(0, 1.9, -1.1)
 rotation = Vector3(-1.0, 0, 0)
 mesh = SubResource("CanopyMesh")
 [node name="UmbrellaStem" type="MeshInstance3D" parent="Visual"]
+visible = false
 position = Vector3(0, 1.78, -1.5)
 mesh = SubResource("LegMesh")
 scale = Vector3(0.55, 1.85, 0.55)
@@ -96,9 +103,25 @@ position = Vector3(0, 1.68, -1.78)
 rotation = Vector3(-1.65, 0, 0)
 mesh = SubResource("UmbrellaMesh")
 [node name="WeakPoint" type="MeshInstance3D" parent="Visual"]
+visible = false
 position = Vector3(0, 1.06, 1.0)
 scale = Vector3(0.35, 0.35, 0.35)
 mesh = SubResource("WeakPointMesh")
+
+[node name="DetailedSprite" type="Sprite3D" parent="Visual"]
+position = Vector3(0, 1.08, 0)
+texture = ExtResource("4_atlas")
+pixel_size = 0.0082
+billboard = 1
+texture_filter = 1
+alpha_cut = 1
+
+[node name="EnemySpritePresentation" type="Node" parent="."]
+script = ExtResource("5_presentation")
+presentation_profile = ExtResource("6_profile")
+animation_fps = 9.0
+motion_scale = 0.84
+attack_accent = Color(0.03, 0.72, 1, 1)
 
 [node name="Telegraph" type="MeshInstance3D" parent="."]
 position = Vector3(0, 0.08, -2.85)
@@ -116,4 +139,3 @@ blocked_damage_multiplier = 0.24
 break_damage_multiplier = 1.34
 shield_hit_cost = 36.0
 visual_target_path = NodePath("Visual/Shield")
-

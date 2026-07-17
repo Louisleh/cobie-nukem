@@ -2,6 +2,7 @@ class_name UmbrellaShieldEnforcer
 extends EnemyAgent
 
 signal guard_state_changed(previous_state: GuardState, current_state: GuardState)
+signal shield_broken()
 
 enum GuardState {
 	GUARDING,
@@ -119,6 +120,7 @@ func _on_directional_shield_broken() -> void:
 	_cancel_guard_timer()
 	_set_guard_state(GuardState.BROKEN)
 	_apply_guarding(false)
+	shield_broken.emit()
 
 
 func _on_directional_shield_reset() -> void:
