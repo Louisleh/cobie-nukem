@@ -203,7 +203,7 @@ func _test_manifest() -> void:
 		_expect(mission_2.level_id == &"episode_1_vancouver_waterfront", "Mission 2 manifest uses the documented level id")
 		_expect(mission_2.objectives.size() == 4 and mission_2.encounters.size() == 5, "Mission 2 skeleton covers four objectives and five zones")
 	var mission_2_card := load("res://resources/level/rain_city_card.tres") as LevelCardData
-	_expect(mission_2_card != null and mission_2_card.unlock_policy == LevelCardData.UnlockPolicy.CAMPAIGN and mission_2_card.prerequisite_mission_id == &"episode_1_salmon_creek" and mission_2_card.release_badge == "BETA" and mission_2_card.scene_path == "res://scenes/levels/episode_1_vancouver_waterfront.tscn", "Mission 2 is campaign-gated after Salmon Creek with an explicit BETA badge and production route")
+	_expect(mission_2_card != null and mission_2_card.unlock_policy == LevelCardData.UnlockPolicy.CAMPAIGN and mission_2_card.prerequisite_mission_id == &"episode_1_level_1" and mission_2_card.release_badge == "BETA" and mission_2_card.scene_path == "res://scenes/levels/episode_1_vancouver_waterfront.tscn", "Mission 2 is campaign-gated after Salmon Creek with an explicit BETA badge and production route")
 	var cycle_a := ObjectiveDefinition.new(); cycle_a.id = &"a"; cycle_a.title = "A"; cycle_a.target_id = &"a"; cycle_a.prerequisite_ids = [&"b"]
 	var cycle_b := ObjectiveDefinition.new(); cycle_b.id = &"b"; cycle_b.title = "B"; cycle_b.target_id = &"b"; cycle_b.prerequisite_ids = [&"a"]
 	var invalid := ContentManifest.new(); invalid.level_id = &"invalid"; invalid.level_scene = "res://scenes/levels/episode_1_level_1.tscn"; invalid.objectives = [cycle_a, cycle_b]
