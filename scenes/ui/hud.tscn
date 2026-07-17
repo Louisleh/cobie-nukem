@@ -82,16 +82,16 @@ theme_override_styles/panel = SubResource("HudPanel")
 unique_name_in_owner = true
 layout_mode = 0
 offset_left = 10.0
-offset_top = -34.0
-offset_right = 90.0
+offset_top = -46.0
+offset_right = 114.0
 offset_bottom = 62.0
 script = ExtResource("3")
 
 [node name="HealthTag" type="Label" parent="Root/BottomBar"]
 layout_mode = 0
-offset_left = 98.0
+offset_left = 122.0
 offset_top = 6.0
-offset_right = 160.0
+offset_right = 184.0
 offset_bottom = 24.0
 theme_override_colors/font_color = Color(0.55, 0.65, 0.6, 1)
 theme_override_font_sizes/font_size = 7
@@ -99,18 +99,18 @@ text = "HEALTH"
 [node name="HealthLabel" type="Label" parent="Root/BottomBar"]
 unique_name_in_owner = true
 layout_mode = 0
-offset_left = 98.0
+offset_left = 122.0
 offset_top = 20.0
-offset_right = 180.0
+offset_right = 194.0
 offset_bottom = 60.0
 theme_override_colors/font_color = Color(0.98, 0.72, 0.2, 1)
 theme_override_font_sizes/font_size = 16
 text = "100"
 [node name="ArmorTag" type="Label" parent="Root/BottomBar"]
 layout_mode = 0
-offset_left = 184.0
+offset_left = 202.0
 offset_top = 6.0
-offset_right = 250.0
+offset_right = 268.0
 offset_bottom = 24.0
 theme_override_colors/font_color = Color(0.55, 0.65, 0.6, 1)
 theme_override_font_sizes/font_size = 7
@@ -118,9 +118,9 @@ text = "ARMOR"
 [node name="ArmorLabel" type="Label" parent="Root/BottomBar"]
 unique_name_in_owner = true
 layout_mode = 0
-offset_left = 184.0
+offset_left = 202.0
 offset_top = 20.0
-offset_right = 264.0
+offset_right = 274.0
 offset_bottom = 60.0
 theme_override_colors/font_color = Color(0.45, 0.78, 0.86, 1)
 theme_override_font_sizes/font_size = 16

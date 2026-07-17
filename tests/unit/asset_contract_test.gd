@@ -2,6 +2,7 @@ extends SceneTree
 
 const BALL_RETURN_SCENE := preload("res://scenes/interactables/ball_return_secret.tscn")
 const OPENING_FOUNDRY_SCENE := preload("res://assets/models/environment/salmon_creek_opening_foundry.glb")
+const SALMON_ENVIRONMENT_KIT := preload("res://scripts/level/salmon_creek_environment_kit.gd")
 const WEAPON_VIEWMODELS: Dictionary = {
 	&"pawstol": preload("res://assets/models/weapons/pawstol_viewmodel.glb"),
 	&"barkshot": preload("res://assets/models/weapons/barkshot_viewmodel.glb"),
@@ -28,6 +29,7 @@ var failures: Array[String] = []
 func _initialize() -> void:
 	await _test_ball_return_production_asset()
 	await _test_opening_foundry_asset()
+	await _test_salmon_sign_faces()
 	await _test_weapon_viewmodels()
 	await _test_production_pipeline_pilot()
 	if failures.is_empty():
@@ -101,6 +103,27 @@ func _test_opening_foundry_asset() -> void:
 		source_parts += int(extras.get("source_part_count", 0))
 	_expect(source_parts == 188, "opening foundry retains its complete source-part vocabulary in import metadata")
 	instance.queue_free()
+	await process_frame
+
+
+func _test_salmon_sign_faces() -> void:
+	var parent := Node3D.new()
+	var kit := SALMON_ENVIRONMENT_KIT.new() as Node3D
+	get_root().add_child(parent)
+	kit.build(parent)
+	await process_frame
+	var labels := kit.find_children("*", "Label3D", true, false)
+	_expect(labels.size() == 5, "Salmon Creek presentation retains five authored landmark labels")
+	var scoreboard: Label3D
+	for candidate in labels:
+		var label := candidate as Label3D
+		_expect(not label.double_sided, "Landmark labels never expose mirrored back-face text")
+		if label.text.begins_with("SALMON CREEK"):
+			scoreboard = label
+	_expect(scoreboard != null, "Salmon Creek scoreboard label exists")
+	if scoreboard != null:
+		_expect(is_equal_approx(scoreboard.rotation_degrees.y, 90.0), "Scoreboard text faces the playable field instead of rendering backwards")
+	parent.queue_free()
 	await process_frame
 
 

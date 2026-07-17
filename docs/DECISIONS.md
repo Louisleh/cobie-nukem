@@ -1,5 +1,9 @@
 # Decisions
 
+## D-013 — Cobie HUD portrait uses two unmistakable health states
+
+The owner-selected Set A portrait is the sole HUD art direction. Cobie uses a clean portrait at 65–100% health and the most visibly damaged portrait below 65%; the nuanced middle image is intentionally omitted because it did not read distinctly at gameplay size. Runtime assets are 512×512 tight crops, the controller draws consistent HUD chrome, and source concepts remain under `assets/source/ui/` with provenance.
+
 ## D-011 — Audited local agentic game-development toolchain
 
 Godot and Blender automation are privileged localhost-only development tools, not game dependencies. The permanent Godot MCP is an audited, locally pinned fork of `alexmeckes/godot-mcp` because it alone passed the required live InputMap, screenshot, output, and runtime-state capability gate. Its Node dependencies are upgraded to a zero-known-vulnerability production audit. Its temporary runtime autoload is removed when the plugin exits, and `tools/release_validate.sh` fails if bridge files or settings are present. The upstream package currently lacks a distributable top-level license file, so the bridge is not vendored into this repository.

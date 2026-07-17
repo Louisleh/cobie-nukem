@@ -7,6 +7,14 @@
 
 This report is a continuation point for Codex. It records what was tested, what is confirmed broken or low‑value, and a concrete design menu for replacing the "hot air duct" hazard squares with more interesting objects and challenges. It is **not** a claim of a human playthrough — all findings below are from automated headless tests, code/resource inspection, and headless sprite/geometry diagnostics.
 
+## Codex disposition — 2026-07-17
+
+- **Fixed:** all three silent `HAZARD_ZONE` floor slabs and their dead prompt data were removed from the Rain City catalog.
+- **Improved:** the harbour slab became a second readable explosive prop within authored chain-reaction reach of the existing finale explosive; downtown and seawall retain their validated interaction minimums without low-value replacement clutter.
+- **Covered:** the catalog test rejects silent hazard slabs/dead prompts and proves the harbour chain layout. Enemy scale/HP coverage now includes Compliance Gull and Umbrella Shield Enforcer rather than stopping at Salmon Creek archetypes.
+- **Stabilized:** the previously intermittent `mission_presentation_test.gd` teardown now unwinds asynchronous presentation state before quitting and passed 20 consecutive clean runs.
+- **Deferred intentionally:** the swinging crane load and rising-tide concepts remain future authored set pieces. They require telegraph, reset, checkpoint, performance, and human-fairness work and were not smuggled into a focused bug-fix pass.
+
 ---
 
 ## 1. How it was tested

@@ -33,10 +33,19 @@ func _run() -> void:
 	await _test_teardown_without_leaks()
 	if failures.is_empty():
 		print("MISSION PRESENTATION TESTS: PASS")
-		quit(0)
+		call_deferred("_finish", 0)
 	else:
 		for failure in failures: push_error(failure)
-		quit(1)
+		call_deferred("_finish", 1)
+
+
+func _finish(exit_code: int) -> void:
+	# Let the async test stack unwind before SceneTree exits. This gives queued
+	# presentation nodes, audio resources, particles, and signal closures two
+	# complete frames to release instead of racing process shutdown in CI.
+	await process_frame
+	await process_frame
+	quit(exit_code)
 
 
 func _make_level() -> FakeLevel:
