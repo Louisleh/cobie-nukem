@@ -2,9 +2,9 @@
 
 This file distinguishes confirmed product limitations from unperformed validation. Update it for every release candidate; do not silently convert “not tested” into “passed.”
 
-## `0.7.0-alpha.1-rc2` Rain City human gates
+## `0.7.0-alpha.1-rc3` Rain City human gates
 
-- The pending RC3 startup fix separates card selection from launch, retains Web pointer lock across the Start transition, and enables proactive `R` reloads with authored HUD/audio feedback. Packaged Chrome verifies the automated pointer and reload contracts; Safari, physical iPad, and full human route confirmation remain open.
+- RC3 separates card selection from launch, retains Web pointer lock across the Start transition, and enables proactive `R` reloads with authored HUD/audio feedback. Packaged and public Chrome verify the pointer and reload contracts; Safari, physical iPad, and full human route confirmation remain open.
 - The Rain City RC is intended for open public development with an explicit `BETA` badge and warning. Automated gates do not convert the human/device checks below into passes; final publication identity and hashes are recorded only after deployment.
 
 - Right-stick profiles are automated for response, frame-rate stability, cancellation, and settings wiring, but final friction/boost strength and thumb comfort require physical iPad Safari testing.
@@ -16,7 +16,7 @@ This file distinguishes confirmed product limitations from unperformed validatio
 - Salmon Creek instantiates data-authored breakable, explosive, loot, and secret interactions across five arenas. Rain City’s three silent flat damage slabs were also removed after the same iPad readability issue was confirmed by the Level 2 QA report; the harbour placement is now a readable two-prop explosive-chain challenge. The reusable `HAZARD_ZONE` kind remains available for future telegraphed/timed hazards, but neither public mission currently relies on an invisible floor-damage slab. Collision, grounding, reset, bounded effects, and route safety are automated; visual density and usefulness still require a human playthrough.
 - Walker phase thresholds, final-core damage to zero, post-defeat Golden Ball sequencing, summon cleanup, recovery drops, and repeated reset behavior are automated. A deterministic runtime capture proves the compact boss panel reaches `0% / DESTROYED` during the bounded defeat spectacle. Boss telegraph fairness, perceived speed, spectacle quality, and the approximately 1,000-HP pacing target still require human play.
 - Rain City uses intentionally original low-poly authored geometry, project-original Blender/Material Maker sources, and independent gameplay collision/navigation. Its badge and launch notice identify the current RC as unfinished rather than falsely claiming final human approval.
-- RC2 native Compatibility profiling covers both missions. Rain City at 1280×720 reports p95/p99 of 18.43/18.54 ms in the alley, 18.54/18.62 in Rain City Slice, 18.49/18.60 at the seawall, 18.34/18.42 in the terminal, and 18.30/23.36 at the pier, with 195–406 draw calls and approximately 83 MB static memory. A packaged-Web trace still cannot establish long-session physical-iPad thermals, simultaneous-finger comfort, or human encounter feel.
+- The latest rendered native Compatibility profiling remains the RC2 baseline because RC3 changes startup/input/UI ownership rather than level rendering. Rain City at 1280×720 reports p95/p99 of 18.43/18.54 ms in the alley, 18.54/18.62 in Rain City Slice, 18.49/18.60 at the seawall, 18.34/18.42 in the terminal, and 18.30/23.36 at the pier, with 195–406 draw calls and approximately 83 MB static memory. A packaged-Web trace still cannot establish long-session physical-iPad thermals, simultaneous-finger comfort, or human encounter feel.
 - Convoy movement/reset, enemy navigation recovery, projectiles, pickup grounding, and encounter gating have deterministic coverage, but human observation is still required for contact motion, perceived acceleration, environmental snagging, and whether combat movement looks natural at ordinary play speed.
 
 ## Distribution and legal

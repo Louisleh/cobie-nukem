@@ -29,7 +29,7 @@ Built on 2026-07-17 with Godot `4.7.stable.official.5b4e0cb0f`. Runtime feature 
 | `cobie-nukem-0.7.0-alpha.1-rc3-macos-unsigned.zip` | 85,155,304 | `976d6172336bb684392bcd7d2e2951837ccc6af7e6cf0158b6cb2d62810a7066` |
 | Packaged Web PCK | 26,282,532 | `d4c763ae8e3a74fcd2671992aad520b8866cb01d5dbbcdd6db15f00f2359d2cb` |
 
-Source integration, GitHub prerelease, website deployment, and downloaded public byte identity are recorded in `docs/RELEASE_0_7_0_ALPHA1_RC3_EVIDENCE.md` after publication.
+Published through source [PR #47](https://github.com/Louisleh/cobie-nukem/pull/47) at integration `93984f1`, [GitHub prerelease `v0.7.0-alpha.1-rc3`](https://github.com/Louisleh/cobie-nukem/releases/tag/v0.7.0-alpha.1-rc3), and website [PR #124](https://github.com/Louisleh/louislehmann-site/pull/124) at deployment `03f15c0`. Ordinary/cache-busted public URLs identify RC3, and the downloaded 26,282,532-byte PCK matches SHA-256 `d4c763ae8e3a74fcd2671992aad520b8866cb01d5dbbcdd6db15f00f2359d2cb` exactly.
 
 ---
 
