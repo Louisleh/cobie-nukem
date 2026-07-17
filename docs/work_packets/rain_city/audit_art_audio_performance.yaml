@@ -1,0 +1,32 @@
+work_id: rain-city-audit-art-audio-performance
+role: spark-performance-auditor
+goal: Audit the Vancouver beta presentation, asset pipeline, audio, captions, rain/VFX, temporary-node ownership, and Web/native performance risks against the approved Rain City Visual Foundry production pass.
+baseline_revision: e385aee
+dependencies: []
+owned_paths: []
+read_only_context:
+  - scripts/level/vancouver_waterfront_world_builder.gd
+  - scripts/audio/
+  - resources/audio/
+  - assets/
+  - docs/ASSET_MANIFEST.md
+  - docs/ART_BIBLE.md
+  - tools/visual_quality/
+forbidden_paths:
+  - scripts/core/build_info.gd
+  - docs/PHASE_ROADMAP_PRD.md
+  - .github/workflows/
+  - project.godot
+behavioral_contract: Read-only. Rank measurable visual-production, draw-call, material, allocation, temporary-node, audio-voice, caption, Web import, and packaged-build risks. Do not make subjective art decisions or speculative optimization claims.
+acceptance_criteria:
+  - Exact file/line evidence and proposed measurements for every finding.
+  - Identify reusable presentation seams that preserve gameplay collision/navigation.
+  - Inventory current asset provenance and missing source-of-truth requirements.
+focused_tests:
+  - bash tools/run_godot_test.sh tests/unit/imported_audio_contract_test.gd 60
+  - bash tools/run_godot_test.sh tests/unit/visual_capture_manifest_test.gd 60
+evidence_required:
+  - Structured result contract with model identity and no changed files.
+out_of_scope:
+  - Implementation, Blender/MCP operations, human visual or audio acceptance.
+time_limit_minutes: 25

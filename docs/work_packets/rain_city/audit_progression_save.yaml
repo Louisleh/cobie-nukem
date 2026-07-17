@@ -1,0 +1,33 @@
+work_id: rain-city-audit-progression-save
+role: spark-code-reviewer
+goal: Audit the existing Vancouver beta campaign progression, mission selection, victory flow, checkpoint persistence, and save-v4 contracts against the approved Rain City Run 0.7.0-alpha.1 plan.
+baseline_revision: e385aee
+dependencies: []
+owned_paths: []
+read_only_context:
+  - scripts/core/
+  - scripts/ui/
+  - scripts/level/
+  - resources/level/
+  - tests/unit/save_schema_test.gd
+  - tests/unit/campaign_progress_runtime_test.gd
+  - tests/integration/vancouver_mission_host_test.gd
+forbidden_paths:
+  - scripts/core/build_info.gd
+  - docs/PHASE_ROADMAP_PRD.md
+  - .github/workflows/
+  - export_presets.cfg
+  - project.godot
+behavioral_contract: Read-only. Identify reproducible gaps and exact ownership boundaries for campaign unlock policies, mission-aware victory/replay/continue, mission loadouts, save-v5 migration, content-revision checkpoint remaps, and checkpoint/campaign isolation. Do not invent product decisions.
+acceptance_criteria:
+  - Rank findings by Blocker, Critical, Major, or Minor with exact file and line evidence.
+  - Separate confirmed defects from missing planned capability.
+  - Recommend the smallest coherent contract and test slices.
+focused_tests:
+  - bash tools/run_godot_test.sh tests/unit/save_schema_test.gd 60
+  - bash tools/run_godot_test.sh tests/unit/campaign_progress_runtime_test.gd 60
+evidence_required:
+  - Structured result contract with model identity and no changed files.
+out_of_scope:
+  - Implementation, release stamping, deployment, subjective UX claims.
+time_limit_minutes: 25
