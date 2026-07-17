@@ -232,9 +232,8 @@ func _test_manual_reload_key_before_empty() -> void:
 	weapon.ammo = maxi(1, weapon.definition.magazine_size - 3)
 	weapon.reserve_ammo = maxi(weapon.reserve_ammo, 3)
 	var reload_events := [0]
-	player.weapon_reload_state_changed.connect(func(active: bool, _duration: float) -> void:
-		if active:
-			reload_events[0] += 1
+	weapon.reload_started.connect(func(_active_weapon: WeaponBase, _duration: float) -> void:
+		reload_events[0] += 1
 	)
 	var reload_key := InputEventKey.new()
 	reload_key.keycode = KEY_R

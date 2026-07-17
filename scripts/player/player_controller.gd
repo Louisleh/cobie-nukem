@@ -6,7 +6,6 @@ signal interaction_available(label: String)
 signal interacted(target: Node)
 signal weapon_changed(display_name: String, ammo: int, maximum_ammo: int)
 signal weapon_ammo_state_changed(display_name: String, loaded: int, magazine_capacity: int, reserve: int, infinite_reserve: bool)
-signal weapon_reload_state_changed(active: bool, duration: float)
 signal pickup_message(message: String)
 signal temporary_effect_started(effect: StringName, duration: float)
 signal shot_resolved(kind: StringName, position: Vector3)
@@ -101,9 +100,6 @@ func _ready() -> void:
 			weapon.configure(camera, auto_aim, feedback)
 			weapon.ammo_changed.connect(_on_weapon_ammo_changed.bind(weapon))
 			weapon.ammo_state_changed.connect(_on_weapon_ammo_state_changed.bind(weapon))
-			weapon.reload_started.connect(_on_weapon_reload_started)
-			weapon.reload_finished.connect(_on_weapon_reload_finished)
-			weapon.reload_cancelled.connect(_on_weapon_reload_cancelled)
 			weapon.shot_resolved.connect(_on_shot_resolved)
 			weapon.feedback_resolved.connect(func(event: CombatFeedbackEvent) -> void: combat_feedback.emit(event))
 			weapon.fired.connect(func(fired_weapon: WeaponBase, _secondary: bool) -> void:
@@ -121,9 +117,7 @@ func _ready() -> void:
 func _input(event: InputEvent) -> void:
 	if is_dead or get_tree().paused:
 		return
-	# Handle named actions before the raw-key weapon shortcuts. Previously every
-	# non-echo key event entered the branch below, so R never reached the later
-	# reload `elif` even though InputMap correctly bound it.
+	# Named actions must run before raw-key weapon shortcuts so R reaches reload.
 	if event.is_action_pressed(&"reload"):
 		request_reload()
 		get_viewport().set_input_as_handled()
@@ -380,24 +374,8 @@ func _current_weapon_fire(secondary: bool) -> void:
 	else:
 		weapon.fire_primary()
 func request_reload() -> bool:
-	if weapons.is_empty() or is_dead:
-		return false
+	if weapons.is_empty() or is_dead: return false
 	return weapons[current_weapon_index].request_reload()
-
-
-func _on_weapon_reload_started(weapon: WeaponBase, duration: float) -> void:
-	if not weapons.is_empty() and weapon == weapons[current_weapon_index]:
-		weapon_reload_state_changed.emit(true, duration)
-
-
-func _on_weapon_reload_finished(weapon: WeaponBase) -> void:
-	if not weapons.is_empty() and weapon == weapons[current_weapon_index]:
-		weapon_reload_state_changed.emit(false, 0.0)
-
-
-func _on_weapon_reload_cancelled(weapon: WeaponBase) -> void:
-	if not weapons.is_empty() and weapon == weapons[current_weapon_index]:
-		weapon_reload_state_changed.emit(false, 0.0)
 func _update_footsteps(running: bool) -> void:
 	var horizontal_delta := Vector2(global_position.x - _last_step_position.x, global_position.z - _last_step_position.z).length()
 	_last_step_position = global_position
@@ -504,8 +482,6 @@ func _on_died(source: Node) -> void:
 	collision_shape.disabled = true
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 	died.emit(source)
-
-
 func _apply_feel_profile() -> void:
 	if feel_profile == null: return
 	walk_speed = feel_profile.walk_speed

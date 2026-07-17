@@ -21,6 +21,7 @@ var _notification_tween: Tween
 var _caption_tween: Tween
 var _reload_active := false
 var _reload_available := false
+var _bound_player: CobiePlayer
 var _boss_hide_tween: Tween
 var _caption_queue: Array[Dictionary] = []
 var _active_caption: Dictionary = {}
@@ -77,10 +78,13 @@ func bind_player(player: Node) -> void:
 	if player.has_signal("weapon_ammo_state_changed"):
 		player.weapon_ammo_state_changed.connect(_on_weapon_ammo_state_changed)
 	if player is CobiePlayer and not player.weapons.is_empty():
+		_bound_player = player
+		for weapon in player.weapons:
+			weapon.reload_started.connect(_on_weapon_reload_started)
+			weapon.reload_finished.connect(_on_weapon_reload_finished)
+			weapon.reload_cancelled.connect(_on_weapon_reload_cancelled)
 		var current: WeaponBase = player.weapons[player.current_weapon_index]
 		_on_weapon_ammo_state_changed(current.definition.display_name, current.ammo, current.definition.magazine_size, current.reserve_ammo, current.definition.infinite_reserve)
-	if player.has_signal("weapon_reload_state_changed"):
-		player.weapon_reload_state_changed.connect(_on_weapon_reload_state_changed)
 	if player.has_signal("interaction_available"):
 		player.interaction_available.connect(_on_interaction_available)
 	if player.has_signal("pickup_message"):
@@ -369,9 +373,24 @@ func _on_weapon_ammo_state_changed(display_name: String, loaded: int, capacity: 
 	_update_reload_hint()
 
 
-func _on_weapon_reload_state_changed(active: bool, _duration: float) -> void:
-	_reload_active = active
-	_update_reload_hint()
+func _on_weapon_reload_started(weapon: WeaponBase, _duration: float) -> void:
+	if _is_active_weapon(weapon):
+		_reload_active = true
+		_update_reload_hint()
+
+
+func _on_weapon_reload_finished(weapon: WeaponBase) -> void:
+	if _is_active_weapon(weapon):
+		_reload_active = false
+		_update_reload_hint()
+
+
+func _on_weapon_reload_cancelled(weapon: WeaponBase) -> void:
+	_on_weapon_reload_finished(weapon)
+
+
+func _is_active_weapon(weapon: WeaponBase) -> bool:
+	return _bound_player != null and not _bound_player.weapons.is_empty() and weapon == _bound_player.weapons[_bound_player.current_weapon_index]
 
 
 func _update_reload_hint() -> void:
