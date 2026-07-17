@@ -37,7 +37,13 @@ The packaged Web directory is approximately 65 MB and remains below the 90 MB ta
 
 ## Publication ledger
 
-The source PR, integration commit, GitHub prerelease URL, website PR/deployment commit, and downloaded public PCK byte-identity result are appended after their external gates complete. Until then, `0.6.0-alpha.10` remains the rollback release.
+- Source [PR #40](https://github.com/Louisleh/cobie-nukem/pull/40) passed `validate-package` and was squash-merged to `main` at `1dcb28c88f3201ffca52284f93beaec735a9425e`.
+- GitHub prerelease [`v0.7.0-alpha.1-rc1`](https://github.com/Louisleh/cobie-nukem/releases/tag/v0.7.0-alpha.1-rc1) contains the exact itch/Web and unsigned macOS packages plus `BUILD_INFO.txt` and `SHA256SUMS.txt`.
+- Website [PR #122](https://github.com/Louisleh/louislehmann-site/pull/122) passed repository hygiene, curated build, route verification, app checks, review, and Vercel preview before squash merge at `ecfdcd6ff1182e1fe2bc454588e853155a7ca6d8`.
+- Ordinary and cache-busted apex/`www` URLs identify `0.7.0-alpha.1-rc1` and runtime revision `3144a22`.
+- The downloaded public PCK is 25,836,140 bytes and matches the packaged SHA-256 exactly: `462120a8057db93badb1d8b033701fbca31187326031ee4617a6b0bec787bc8d`.
+- The public 1024×768 touch-forced title accepted its first tap and entered the responsive main menu with no game-origin Chrome error.
+- `0.6.0-alpha.10` remains the immediate rollback release.
 
 ## Human gates still open
 

@@ -1,6 +1,6 @@
 # Release Notes — 0.7.0-alpha.1-rc1 Rain City Run
 
-Candidate built on 2026-07-16 with Godot `4.7.stable.official.5b4e0cb0f`. Final source revision, artifact hashes, PRs, release URL, deployment commit, and public PCK identity are appended after the release gate succeeds.
+Built on 2026-07-16 with Godot `4.7.stable.official.5b4e0cb0f`. Runtime feature revision: `3144a22`; source integration: `1dcb28c`.
 
 ## Player-visible changes
 
@@ -24,6 +24,16 @@ Candidate built on 2026-07-16 with Godot `4.7.stable.official.5b4e0cb0f`. Final 
 - The `BETA` badge and opening warning remain. Physical iPad Safari, target-Mac 15–22 minute playthrough, Chrome/Safari completion, Story/Mayhem feel, boss fairness, art cohesion, mix, humor, and photosensitivity are human-only finalization gates.
 - Mount Hood, Moon, and Ventura remain locked illustrated teasers.
 - The macOS ZIP remains unsigned and unnotarized. The working title still requires clearance before commercial distribution.
+
+## Artifacts and integration
+
+| Artifact | Bytes | SHA-256 |
+| --- | ---: | --- |
+| `cobie-nukem-0.7.0-alpha.1-rc1-itch.zip` | 35,345,432 | `1d9529e67804c5e2cd053fa9af2c94ee28a9d33745e7cbcf3e06d07e0f6a1784` |
+| `cobie-nukem-0.7.0-alpha.1-rc1-macos-unsigned.zip` | 84,711,021 | `76a5ddedc30e938b4e5e86c89d7d6f8736df1310ef88916df5c7e799f84d44a3` |
+| Public Web PCK | 25,836,140 | `462120a8057db93badb1d8b033701fbca31187326031ee4617a6b0bec787bc8d` |
+
+Published through source [PR #40](https://github.com/Louisleh/cobie-nukem/pull/40) at integration `1dcb28c`, [GitHub prerelease `v0.7.0-alpha.1-rc1`](https://github.com/Louisleh/cobie-nukem/releases/tag/v0.7.0-alpha.1-rc1), and `Louisleh/louislehmann-site` [PR #122](https://github.com/Louisleh/louislehmann-site/pull/122) at deployment `ecfdcd6`. Ordinary and cache-busted public URLs identify the RC, and the downloaded public PCK matched the packaged SHA-256 exactly.
 
 ---
 
