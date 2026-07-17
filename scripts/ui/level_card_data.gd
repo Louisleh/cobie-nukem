@@ -1,6 +1,14 @@
 class_name LevelCardData
 extends Resource
 
+enum UnlockPolicy {
+	ALWAYS,
+	CAMPAIGN,
+	LOCKED_TEASER,
+}
+
+@export var unlock_policy: UnlockPolicy = UnlockPolicy.LOCKED_TEASER
+@export var prerequisite_mission_id: StringName = &""
 @export var level_id: StringName
 @export var title := "LOCKED COURSE"
 @export var episode := "EPISODE ?"
@@ -9,19 +17,33 @@ extends Resource
 @export var expected_minutes := "12–20 MIN"
 @export var secrets := 0
 @export var encounter := "UNKNOWN THREAT"
-@export var unlocked := false
 @export_file("*.tscn") var scene_path := ""
 @export var release_badge := ""
 @export_multiline var launch_notice := ""
 @export var preview: Texture2D
+@export var unlocked := false
 
+func is_available(campaign_progress: CampaignProgressRuntime = null, development_override := false) -> bool:
+	match unlock_policy:
+		UnlockPolicy.ALWAYS:
+			return true
+		UnlockPolicy.LOCKED_TEASER:
+			return false
+		UnlockPolicy.CAMPAIGN:
+			if development_override:
+				return true
+			var prerequisite := String(prerequisite_mission_id).strip_edges()
+			if prerequisite.is_empty() or campaign_progress == null:
+				return false
+			return campaign_progress.is_mission_completed(StringName(prerequisite))
+		_:
+			return false
 
-func status_badge() -> String:
-	if not unlocked:
+func is_preview_release(campaign_progress: CampaignProgressRuntime = null, development_override := false) -> bool:
+	return is_available(campaign_progress, development_override) and status_badge(campaign_progress, development_override) != "ACTIVE"
+
+func status_badge(campaign_progress: CampaignProgressRuntime = null, development_override := false) -> String:
+	if not is_available(campaign_progress, development_override):
 		return "LOCKED"
 	var configured := release_badge.strip_edges().to_upper()
 	return configured if not configured.is_empty() else "ACTIVE"
-
-
-func is_preview_release() -> bool:
-	return unlocked and status_badge() != "ACTIVE"

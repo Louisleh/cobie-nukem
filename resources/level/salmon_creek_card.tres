@@ -5,6 +5,7 @@
 
 [resource]
 script = ExtResource("1")
+unlock_policy = 0
 level_id = &"episode_1_level_1"
 title = "NO DOGS ALLOWED"
 episode = "EPISODE 1 // SALMON CREEK"
