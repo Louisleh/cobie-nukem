@@ -1,16 +1,16 @@
 # Cobie Nukem — Multi-Phase Production PRD
 
-**Status:** Active production source of truth; `0.6.0-alpha.10` production-foundry release candidate
+**Status:** Active production source of truth; `0.6.0-alpha.10` production-foundry release is public
 
 **Created:** 2026-07-11
 
 **Last status review:** 2026-07-16
 
-**Current public baseline:** `0.6.0-alpha.9` (`c00d54c` gameplay/runtime revision; source integration `7326ff6`; website deployment `13eba81`; PCK SHA-256 `a44af5d67ca30ccc3c69b315ae09286e5e299a0bd0a0dc3a1f31a918dea6e98c`)
+**Current public baseline:** `0.6.0-alpha.10` (`20649be` gameplay/runtime revision; source integration `2515e19`; website deployment `e7e2c6b`; PCK SHA-256 `59753bc9dc40c18a7f292e89f30b126ef84553515379ec1e020970ed33310696`)
 
-**Unreleased development baseline:** `codex/alpha10-production-foundry` at feature revision `20649be` includes PR #36, the merged visual-foundry harness, production first-person weapon models, deterministic weapon lifecycle/feedback, and a readability pass for Salmon Creek interiors and the Walker arena. Release stamping, final exports, merge, and deployment are the remaining machine gates.
+**Unreleased development baseline:** No gameplay delta. Source `main` matches the public Alpha.10 runtime and artifact; post-release evidence-only documentation may be newer than feature revision `20649be`.
 
-**Last released alpha:** `0.6.0-alpha.9` (`c00d54c`) — live at <https://www.louislehmann.fyi/games/cobie-nukem/>; human full-route validation remains open
+**Last released alpha:** `0.6.0-alpha.10` (`20649be`) — live at <https://www.louislehmann.fyi/games/cobie-nukem/>; human full-route and physical-device validation remain open
 
 **Engine:** Godot 4.7 stable, GDScript, Compatibility renderer
 **Purpose:** Turn the family-playtest vertical slice into a sustainable, original multi-level game without sacrificing responsiveness, humor, Web support, or unusual-controller accessibility.
@@ -23,12 +23,13 @@ Alpha.10 is the first phase to run the complete local visual-foundry loop with t
 
 | Workstream | Status | Acceptance evidence |
 | --- | --- | --- |
-| First-person weapon art | **CANDIDATE GREEN — HUMAN ART REVIEW OPEN** | Project-original deterministic Blender source plus manifested Pawstol, Barkshot, and Fetch Launcher GLBs; mechanical, leather-sleeve, and Cobie-paw silhouettes; Godot import/asset contracts and native captures green |
-| Weapon switching and feedback | **CANDIDATE GREEN — HUMAN FEEL OPEN** | Timed resource-driven raise/lower states, eased viewmodel motion, reduced-motion path, overwrite-only queue, richer kill/destructible/world/miss crosshair states, legacy signal compatibility, focused tests, adversarial reload switching, and 500-transition soak |
-| Salmon Creek readability | **CANDIDATE GREEN — HUMAN ART REVIEW OPEN** | Bounded shadowless work/key/fill lights, hazard/guide markings, and zone labels in shed, lab, tunnel, and Walker arena; collision/navigation unchanged; canonical captures reviewed by root |
+| First-person weapon art | **PUBLIC — HUMAN ART REVIEW OPEN** | Project-original deterministic Blender source plus manifested Pawstol, Barkshot, and Fetch Launcher GLBs; mechanical, leather-sleeve, and Cobie-paw silhouettes; Godot import/asset contracts and native captures green |
+| Weapon switching and feedback | **PUBLIC — HUMAN FEEL OPEN** | Timed resource-driven raise/lower states, eased viewmodel motion, reduced-motion path, overwrite-only queue, richer kill/destructible/world/miss crosshair states, legacy signal compatibility, focused tests, adversarial reload switching, and 500-transition soak |
+| Salmon Creek readability | **PUBLIC — HUMAN ART REVIEW OPEN** | Bounded shadowless work/key/fill lights, hazard/guide markings, and zone labels in shed, lab, tunnel, and Walker arena; collision/navigation unchanged; canonical captures reviewed by root |
 | Native performance | **GREEN** | Apple M4 1080p Compatibility profile: opening p95/p99 19.378/19.481 ms, lab 17.931/18.524 ms, tunnels 17.787/19.092 ms, Walker 17.583/18.341 ms; static memory below 81 MB |
 | Packaged Web trace | **GREEN WITH HUMAN DEVICE GATE** | Chrome DevTools on a real packaged Web export at 1024×768 touch, Fast 4G, and 2× CPU: LCP 797 ms, CLS 0.00, clean Godot/WebGL console, 24.32 MB PCK, 39.51 MB WASM, correct loading screen and title render. Physical iPad thermals/input remain open |
 | Independent review | **PASS** | Explicit `gpt-5.3-codex-spark` reviewer found no evidence-backed defect; root test runs supersede the worker sandbox's unavailable Godot user-data path |
+| Release evidence | **COMPLETE — ALPHA.10 PUBLIC** | Full `QA_EXPORTS=1` matrix, source PR #38, prerelease `v0.6.0-alpha.10`, website PR #120, Vercel production success, live browser bootstrap, and public PCK byte identity green |
 
 Human-only throughout: subjective weapon feel/art, physical iPad Safari simultaneous touch/thermal/audio, target-Mac clean playthrough, mix, difficulty, boss fairness, humor, and photosensitivity.
 
@@ -43,7 +44,7 @@ Alpha.9 deliberately narrows the difference between public and internal developm
 | Opening safety | **INTEGRATED** | Pointer-wait protection plus ten-second Vancouver initial/retry protection; mission-host and adversarial tests cover both contracts |
 | Human validation | **OPEN** | Physical iPad Safari, Chrome/Safari full routes, Vancouver pacing/fairness/art/mix, and family comprehension remain human-only |
 
-Alpha.9 is the current public baseline. Alpha.8 remains the retained rollback release and artifact set.
+Alpha.9 is the immediate rollback release. Alpha.8 remains an older retained rollback artifact set.
 
 ### Visual Quality Foundry pilot ledger
 
@@ -51,13 +52,13 @@ The 2026-07-16 pilot converts visual iteration from one-off asset generation int
 
 | Workstream | Status | Acceptance evidence |
 | --- | --- | --- |
-| Toolchain and repository memory | **INTEGRATED ON CANDIDATE** | Godot/Blender/Material Maker verifier green; Chrome telemetry/CrUX disabled; Context7 docs-only; skill metadata/forward test green |
-| Salmon Creek opening pilot | **INTEGRATED ON CANDIDATE — HUMAN ART REVIEW OPEN** | Original deterministic Blender source and eight-surface GLB replace procedural goal/fence/lights/trees/bleachers while preserving gameplay collision/navigation; asset/import contracts green |
+| Toolchain and repository memory | **INTEGRATED PUBLIC** | Godot/Blender/Material Maker verifier green; Chrome telemetry/CrUX disabled; Context7 docs-only; skill metadata/forward test green |
+| Salmon Creek opening pilot | **INTEGRATED PUBLIC — HUMAN ART REVIEW OPEN** | Original deterministic Blender source and eight-surface GLB replace procedural goal/fence/lights/trees/bleachers while preserving gameplay collision/navigation; asset/import contracts green |
 | Visual and motion QA | **IMPLEMENTED — BASELINE APPROVAL OPEN** | Ten canonical adapters, real 16:9/16:10/4:3/ultrawide capture projects, wrong-dimension/blank/alpha/contrast gates, local diffs, 30/60/120 FPS and 10-TPS captures |
 | 4:3 touch presentation | **AUTOMATED CANDIDATE GREEN — DEVICE OPEN** | Genuine 1024×768 Movie Maker evidence exposed and fixed the overlong onboarding line; twin-stick layout remains unchanged; physical iPad ergonomics remain human-only |
 | Performance | **NATIVE PILOT GREEN** | Against merged `main`, opening field improves 442→426 draw calls, 567→552 nodes, and 3,169→3,135 objects; candidate p95 17.511 ms and p99 17.800 ms |
 | Hero enemy source pipeline | **DEFERRED HIGH-PRIORITY ART WORK** | Existing manifested Hound/Walker atlases and PR #36 scale contracts are retained because a rushed procedural replacement would be a regression; reproducible Blender rigs and genuinely bespoke directional motion remain open |
-| Packaged-Web trace | **TOOL READY — FRESH-TASK RUN OPEN** | Chrome DevTools MCP was installed during this task and is not callable until Codex reloads MCP inventory; no Web trace is falsely claimed |
+| Packaged-Web trace | **COMPLETE — HUMAN HARDWARE OPEN** | Fresh-task Chrome DevTools trace covers 1024×768 touch, Fast 4G, and 2× CPU with LCP 797 ms, CLS 0.00, no game-origin console error, and correct loading/title behavior; physical iPad remains open |
 
 ### Alpha.8 Rain City Forge ledger
 
@@ -104,13 +105,13 @@ This section is the first place a new Codex or external-auditor run should read.
 | 1. Gameplay systems foundation | **VERTICAL-SLICE FOUNDATION IMPLEMENTED — IN REVIEW** | Previous foundation plus profile-driven feel/combat, encounter schema v2, shared mission host, event registries, navigation, reusable directional shields, and reusable moving set pieces | Final human feel/balance and broader mission-host adoption |
 | 2. Content-production pipeline | **PRODUCTION PIPELINE EXERCISED BY TWO MISSIONS** | Versioned manifests, validators, authoring guides, provenance gates, Salmon interaction/environment content, public-beta Vancouver data, and the visual-foundry art/capture loop | Encounter visual editor tooling, final Vancouver art/navigation bake, and human pacing review |
 | 3. World and episode structure | **MISSION 2 PUBLIC BETA — HUMAN REVIEW OPEN** | Vancouver has five connected authored zones, route/objectives/checkpoints/secrets, a new enemy, interactions, and a citation-convoy finale; Mount Hood, Moon, and Ventura remain illustrated briefs | Vancouver human production review and polish; later missions remain unbuilt |
-| 4. Combat and presentation expansion | **ALPHA.8 PRODUCTION TRANCHE IN VALIDATION** | Existing combat/audio plus bespoke Hound/Walker atlases, Salmon environment materials/landmarks, adaptive mission audio, ambience, event-driven Cobie barks, shield enemy, and convoy spectacle | Human art, animation, mix, boss, encounter, and effects review |
-| 5. Accessibility, persistence, observability | **SAVE V4 + TOUCH + VISUAL QA FOUNDATION IMPLEMENTED** | Save schema v4, campaign/checkpoint separation, route snapshots, local metrics, accessible HUD/touch controls, and canonical visual/motion capture tooling | Human-approved visual baselines, complete settings review, Chrome packaged-Web traces, and physical devices |
-| 6. Alpha, beta, release | **PUBLIC ALPHA PROGRAM ACTIVE** | Reproducible CI/export/package/deploy gates and public Alpha.3–Alpha.8 evidence; Alpha.9 public-beta candidate in validation | Human/device/browser matrices, content completion, signing/notarization, legal review, store readiness |
+| 4. Combat and presentation expansion | **ALPHA.10 PRODUCTION TRANCHE PUBLIC** | Existing combat/audio plus bespoke Hound/Walker atlases, Salmon environment materials/landmarks, adaptive mission audio, ambience, event-driven Cobie barks, production weapon viewmodels/lifecycle, shield enemy, and convoy spectacle | Human art, animation, mix, boss, encounter, and effects review |
+| 5. Accessibility, persistence, observability | **SAVE V4 + TOUCH + VISUAL/WEB QA FOUNDATION IMPLEMENTED** | Save schema v4, campaign/checkpoint separation, route snapshots, local metrics, accessible HUD/touch controls, canonical visual/motion captures, and packaged-Web trace tooling | Human-approved visual baselines, complete settings review, long-session Web memory evidence, and physical devices |
+| 6. Alpha, beta, release | **PUBLIC ALPHA PROGRAM ACTIVE** | Reproducible CI/export/package/deploy gates and public Alpha.3–Alpha.10 evidence; Vancouver public beta remains explicitly unfinished | Human/device/browser matrices, content completion, signing/notarization, legal review, store readiness |
 
 ### Immediate next gate
 
-**2026-07-16 Alpha.10 production-foundry candidate:** the visual-foundry pilot is merged and its first full production application is green at feature revision `20649be`. Chrome DevTools now validates the real packaged Web bootstrap and 1024×768 title path; three original weapon viewmodels replace the primitive placeholders; explicit lifecycle/feedback is fuzzed; and the remaining Salmon Creek interiors have readable authored lighting. Complete `QA_EXPORTS=1`, stamp/merge/package/deploy, and public byte-identity verification are the remaining machine gates. Human review must still approve weapon feel/art, the opening/interior direction, touch hierarchy, and physical-device behavior before captures become approved taste baselines.
+**2026-07-16 Alpha.10 production-foundry release:** the visual-foundry pilot and its first full production application are public at feature revision `20649be`. Chrome DevTools validates the real packaged Web bootstrap and 1024×768 title path; three original weapon viewmodels replace the primitive placeholders; explicit lifecycle/feedback is fuzzed; and the remaining Salmon Creek interiors have readable authored lighting. `QA_EXPORTS=1`, source PR #38, GitHub prerelease `v0.6.0-alpha.10`, website PR #120, Vercel production deployment, browser startup, and public PCK byte identity are green. Human review must still approve weapon feel/art, the opening/interior direction, touch hierarchy, complete routes, and physical-device behavior before captures become approved taste baselines.
 
 **Gate passed 2026-07-11.** Accepted critical Fable findings are addressed, the stamped build is public through the owner website, and the touch-first iPad browser path has automated and tablet-viewport regression evidence. The remaining hardware gate is a real iPad Safari feel/thermal/network pass.
 

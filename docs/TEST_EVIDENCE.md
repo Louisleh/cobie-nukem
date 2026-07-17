@@ -2,11 +2,19 @@
 
 This is a durable evidence template, not a claim that every listed check has run against the current working tree. Add one section per candidate; never overwrite older evidence.
 
-## Candidate 0.6.0-alpha.10 Production Foundry — 2026-07-16
+## Shipped 0.6.0-alpha.10 Production Foundry — 2026-07-16
+
+| Field | Value |
+| --- | --- |
+| Version | `0.6.0-alpha.10` / build `2026-07-16-production-foundry` |
+| Runtime feature revision | `20649be` |
+| Source integration | `2515e19` through [PR #38](https://github.com/Louisleh/cobie-nukem/pull/38) |
+| Website deployment | `e7e2c6b` through `Louisleh/louislehmann-site` [PR #120](https://github.com/Louisleh/louislehmann-site/pull/120) |
+| Release | [GitHub prerelease `v0.6.0-alpha.10`](https://github.com/Louisleh/cobie-nukem/releases/tag/v0.6.0-alpha.10) |
 
 | Check | Result | Evidence |
 | --- | --- | --- |
-| Feature revision | Pass | `20649be` contains project-original Blender weapon source/GLBs, Salmon readability, and the corrected Spark lifecycle integration; release stamp remains separate |
+| Feature revision | Pass | `20649be` contains project-original Blender weapon source/GLBs, Salmon readability, and the corrected Spark lifecycle integration; stamped runtime identity matches the release |
 | Spark acceleration | Pass with one rejection | Four model-pinned read-only audits, two model-pinned writers, and a model-pinned independent reviewer. Root rejected the pickup/auto-aim writer after reproducing engine errors and a reliability regression |
 | Weapon lifecycle and combat feedback | Pass | Combat, integrated combat, adversarial reload-switch, and 500-transition soak pass; exactly one viewmodel remains visible during spam and one active weapon remains after settling |
 | Asset/provenance contracts | Pass | Three weapon GLBs import, meet authored-part minimums, remain presentation-only, and have deterministic Blender source plus SHA-256 provenance |
@@ -15,7 +23,20 @@ This is a durable evidence template, not a claim that every listed check has run
 | Packaged Web trace | Pass with hardware gate | Chrome DevTools 1024×768 touch, Fast 4G, 2× CPU: LCP 797 ms, CLS 0.00, clean console, 24.32 MB PCK, 39.51 MB WASM, correct loading/title presentation |
 | Architecture/content/IP gates | Pass | Player controller remains below 500 lines; no generated export/bridge/unowned timer; two manifests validate; asset/IP heuristic passes |
 | Independent Spark review | Pass | No evidence-backed defect in the integrated diff; root's unrestricted tests provide runtime evidence unavailable to the read-only worker sandbox |
+| Complete release/export matrix | Pass | Final `QA_EXPORTS=1 bash tools/release_validate.sh` completed parser/import, unit, integration, route, adversarial, save, content, smoke, soak, performance, architecture, IP, Web export, and unsigned Universal macOS export gates |
+| Public deployment | Pass | Vercel reports website commit `e7e2c6b` Ready/Current/Production; ordinary and cache-busted pages identify Alpha.10, the live canvas becomes visible after truthful loading, and no game-origin browser warning/error was observed |
+| Public artifact identity | Pass | Public PCK is 24,320,648 bytes and SHA-256 `59753bc9dc40c18a7f292e89f30b126ef84553515379ec1e020970ed33310696`, byte-identical to the website/package artifact |
 | Physical device and human playthrough | Not run | iPad Safari comfort/thermal/audio, target-Mac clean route, weapon feel/art, mix, balance, humor, and photosensitivity remain human-only |
+
+### Release artifacts
+
+| Artifact | Bytes | SHA-256 |
+| --- | ---: | --- |
+| `cobie-nukem-0.6.0-alpha.10-itch.zip` | 33,924,578 | `ac0286b6984017b3f2975fcdcb80a399234b6ab16c09f877e7a8e136e24c5b9c` |
+| `cobie-nukem-0.6.0-alpha.10-macos-unsigned.zip` | 83,289,836 | `5291dc864c3209b3ef4ed089167f68d380932292d56fa4c7c0608137bf39d712` |
+| Web PCK | 24,320,648 | `59753bc9dc40c18a7f292e89f30b126ef84553515379ec1e020970ed33310696` |
+
+Publication state: source PR #38 merged as `2515e19`; GitHub prerelease `v0.6.0-alpha.10` is published; website PR #120 merged as `e7e2c6b`; Vercel reports the exact website commit Ready, Current, and Production. The ordinary and cache-busted landing identify Alpha.10 and reference cache-keyed Alpha.10 JS/WASM/PCK. The public PCK re-download matched the packaged SHA-256 above.
 
 ## Visual Quality Foundry source candidate — 2026-07-16
 

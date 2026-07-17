@@ -2,9 +2,9 @@
 
 This file distinguishes confirmed product limitations from unperformed validation. Update it for every release candidate; do not silently convert “not tested” into “passed.”
 
-## `0.6.0-alpha.10` candidate human gates
+## `0.6.0-alpha.10` public human gates
 
-- Until the Alpha.10 deployment completes, the public URL remains Alpha.9. The source candidate includes PR #36, the visual-foundry harness, production weapon models/lifecycle feedback, and Salmon Creek readability work.
+- Alpha.10 is public and byte-identical to the packaged Web artifact. Source PR #38 includes PR #36, the visual-foundry harness, production weapon models/lifecycle feedback, and Salmon Creek readability work. The release does not convert the human/device checks below into automated passes.
 
 - Right-stick profiles are automated for response, frame-rate stability, cancellation, and settings wiring, but final friction/boost strength and thumb comfort require physical iPad Safari testing.
 - The Web bootstrap and title preload are browser-tested; slow real-world mobile networks still need a physical first-load timing pass.
@@ -15,7 +15,7 @@ This file distinguishes confirmed product limitations from unperformed validatio
 - Salmon Creek now instantiates 16 data-authored breakable, explosive, loot, and secret interactions across five arenas. Damaging steam hazard zones were removed from Salmon Creek after iPad playtest feedback (their flat beige visual read as a random slab and dealt unexplained damage in the finale approach); the reusable HAZARD_ZONE kind remains available and is still used by Vancouver. Their collision, grounding, reset, bounded effects, and route safety are automated; visual density, discoverability, and whether each placement feels meaningfully useful require a human playthrough.
 - Walker weak-point phase floors, Golden Ball defeat, summon caps, recovery drops, and repeated reset behavior are automated. Boss telegraph fairness, perceived speed, spectacle, and the approximately 1,000-HP pacing target still require human play.
 - Vancouver uses intentionally original low-poly preview geometry and authored route contracts. Its public badge and launch notice identify it as unfinished rather than final mission completion.
-- Alpha.8 native 1080p Compatibility profiling passes: gameplay p95 is 16.907–18.183 ms and p99 is 17.339–24.872 ms, with one isolated 94.584 ms tunnel maximum; observed static memory remained below 78 MB. Exported Web/tablet performance and physical-device thermals remain release/human gates rather than being inferred from native results.
+- Alpha.10 native 1080p Compatibility profiling passes: opening p95/p99 is 19.378/19.481 ms, lab 17.931/18.524 ms, tunnels 17.787/19.092 ms, and Walker 17.583/18.341 ms; observed static memory remained below 81 MB. A packaged-Web Fast 4G/2× CPU trace is green, but long-session Web memory and physical-device thermals remain human/hardware gates.
 
 ## Distribution and legal
 
