@@ -64,6 +64,17 @@ func _test_vancouver_campaign_gate() -> void:
 	_expect(VANCOUVER_CARD.prerequisite_mission_id == &"episode_1_level_1", "Vancouver requires Salmon completion")
 	_expect(not VANCOUVER_CARD.is_available(campaign_runtime), "Vancouver is unavailable before Salmon completion")
 
+	# Alpha.10 exposed Vancouver as a public beta. A player who completed that
+	# preview retains access even when their save predates the Salmon prerequisite.
+	campaign_runtime.record_completion(VANCOUVER_CARD.level_id, {})
+	campaign_runtime.load_progress()
+	_expect(VANCOUVER_CARD.is_available(campaign_runtime), "Completed Vancouver preview retains campaign access")
+	campaign_runtime.reset_progress()
+	campaign_runtime.unlock_mission(VANCOUVER_CARD.level_id)
+	campaign_runtime.load_progress()
+	_expect(VANCOUVER_CARD.is_available(campaign_runtime), "Explicitly unlocked Vancouver remains available without prerequisite completion")
+	campaign_runtime.reset_progress()
+
 	campaign_runtime.record_completion(&"episode_1_level_1", {})
 	campaign_runtime.load_progress()
 	_expect(campaign_runtime.is_mission_completed(&"episode_1_level_1"), "Campaign runtime records Salmon completion")

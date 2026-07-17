@@ -10,13 +10,18 @@ static func consume_requested(metadata: LevelMetadata, content_revision: int, ch
 	if String(saved.get("level_id", "")) != String(metadata.level_id):
 		return {}
 	var checkpoint_id := StringName(saved.get("checkpoint_id", ""))
-	var position := Vector3.ZERO
-	if int(saved.get("content_revision", 0)) != content_revision and checkpoint_positions.has(checkpoint_id):
+	var values: Array = saved.get("position", [])
+	var revision_matches := int(saved.get("content_revision", 0)) == content_revision
+	var position: Variant = null
+	if revision_matches and values.size() == 3:
+		position = Vector3(float(values[0]), float(values[1]), float(values[2]))
+	elif checkpoint_positions.has(checkpoint_id):
+		# Authored checkpoint anchors are authoritative whenever old content moved
+		# or the persisted position is absent. Never invent Vector3.ZERO for a
+		# structurally valid but incomplete checkpoint.
 		position = checkpoint_positions[checkpoint_id]
-	else:
-		var values: Array = saved.get("position", [])
-		if values.size() == 3:
-			position = Vector3(float(values[0]), float(values[1]), float(values[2]))
+	if position == null:
+		return {}
 	return {"payload": saved, "position": position}
 
 

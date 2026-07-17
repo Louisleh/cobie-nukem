@@ -86,6 +86,7 @@ run_godot_test res://tests/unit/umbrella_shield_enforcer_test.gd
 run_godot_test res://tests/unit/compliance_gull_test.gd
 run_godot_test res://tests/unit/campaign_progress_runtime_test.gd
 run_godot_test res://tests/unit/rain_city_campaign_test.gd
+run_godot_test res://tests/unit/rain_city_checkpoint_state_test.gd
 run_godot_test res://tests/unit/mission_loadout_profile_test.gd
 run_godot_test res://tests/unit/alpha8_resource_contract_test.gd
 run_godot_test res://tests/integration/integration_test_runner.gd

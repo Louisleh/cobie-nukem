@@ -24,6 +24,7 @@ func _initialize() -> void:
 	_test_checkpoint_isolation()
 	_test_atomic_replacement_and_recovery()
 	_test_corrupt_and_future_save_recovery()
+	_test_v4_preview_completion_retains_access()
 	_test_reset_is_campaign_only()
 	runtime.queue_free()
 	save_manager.delete_slot(CAMPAIGN_SLOT)
@@ -124,6 +125,23 @@ func _test_corrupt_and_future_save_recovery() -> void:
 	_write_path(path, future)
 	_expect(runtime.load_progress() == CampaignProgressPayload.sanitize({}), "future campaign schema is rejected safely")
 	_expect(_read_path(path) == future, "future campaign save remains untouched for the newer build")
+
+
+func _test_v4_preview_completion_retains_access() -> void:
+	var path := _slot_path(CAMPAIGN_SLOT)
+	_write_path(path, JSON.stringify({
+		"version": 4,
+		"payload": {
+			"completed_missions": ["episode_1_vancouver_waterfront"],
+			"unlocked_missions": ["episode_1_vancouver_waterfront"],
+			"mission_records": {"episode_1_vancouver_waterfront": {"rank": "C"}},
+		},
+	}))
+	runtime.load_progress()
+	var rain_city_card: LevelCardData = preload("res://resources/level/rain_city_card.tres")
+	_expect(runtime.is_mission_completed(&"episode_1_vancouver_waterfront"), "v4 Vancouver completion migrates without requiring Salmon")
+	_expect(rain_city_card.is_available(runtime), "migrated Alpha.10 Vancouver completion retains Rain City access")
+	runtime.reset_progress()
 
 
 func _test_reset_is_campaign_only() -> void:

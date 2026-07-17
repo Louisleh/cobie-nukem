@@ -32,8 +32,14 @@ func is_available(campaign_progress: CampaignProgressRuntime = null, development
 		UnlockPolicy.CAMPAIGN:
 			if development_override:
 				return true
+			if campaign_progress == null:
+				return false
+			# A player who completed an earlier public preview keeps access even if
+			# that preview predated the campaign prerequisite chain.
+			if level_id != &"" and (campaign_progress.is_mission_completed(level_id) or campaign_progress.is_mission_unlocked(level_id)):
+				return true
 			var prerequisite := String(prerequisite_mission_id).strip_edges()
-			if prerequisite.is_empty() or campaign_progress == null:
+			if prerequisite.is_empty():
 				return false
 			return campaign_progress.is_mission_completed(StringName(prerequisite))
 		_:
