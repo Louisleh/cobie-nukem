@@ -57,6 +57,7 @@ var _interaction_runtime: MissionInteractionRuntime
 var _mission_presentation: MissionPresentation
 var _set_piece_runtime: MovingSetPieceRuntime
 var _convoy_coordinator: MovingSetPieceEncounterCoordinator
+var _active_convoy: CitationConvoyActor
 var _route_recovery_timer: Timer
 var _completion_timer: Timer
 var _last_combat_zone: StringName = &""
@@ -203,7 +204,9 @@ func _setup_presentation() -> void:
 		player,
 		get_node_or_null("/root/GameState"),
 		&"downtown_alley",
-		&"harbour_pier"
+		&"harbour_pier",
+		{},
+		"MUNICIPAL TOWMASTER // APPEAL DENIED"
 	)
 	_mission_presentation.bind_restart_requests(restart_from_checkpoint)
 
@@ -463,7 +466,10 @@ func _on_convoy_actor_started(actor: Node3D, generation: int) -> void:
 	if convoy == null:
 		push_error("Citation convoy scene does not implement CitationConvoyActor")
 		return
+	_active_convoy = convoy
 	convoy.module_destroyed.connect(func(module_id: StringName) -> void:
+		if _mission_presentation != null:
+			_mission_presentation.play_spatial_cue(&"rain_city_module_break", convoy.global_position)
 		if _convoy_coordinator != null:
 			_convoy_coordinator.report_module_destroyed(module_id, generation)
 	)
@@ -480,6 +486,8 @@ func _on_convoy_phase_changed(phase_index: int, phase_id: StringName, generation
 		return
 	if phase_index >= 0 and phase_index < CONVOY_PHASE_CAPTIONS.size():
 		boss_phase_caption.emit(CONVOY_PHASE_CAPTIONS[phase_index], 2.6)
+	if _mission_presentation != null and is_instance_valid(_active_convoy):
+		_mission_presentation.play_spatial_cue(&"rain_city_convoy_move", _active_convoy.global_position)
 	var state := _set_piece_runtime.current_state()
 	var maximum := maxf(1.0, float(state.get("max_boss_health", 1000.0)))
 	var current := clampf(float(state.get("current_boss_health", maximum)), 0.0, maximum)
@@ -504,6 +512,8 @@ func _on_convoy_completed(event_id: StringName, _generation: int) -> void:
 		return
 	boss_state_changed.emit(&"defeated", 0.0)
 	boss_phase_caption.emit("CASE CLOSED // MUNICIPAL TOWMASTER DISABLED", 3.0)
+	if _mission_presentation != null and is_instance_valid(_active_convoy):
+		_mission_presentation.play_spatial_cue(&"rain_city_convoy_defeat", _active_convoy.global_position)
 	_mission_runtime.record_objective(ObjectiveDefinition.Kind.DEFEAT, &"citation_convoy")
 	_mission_runtime.activate_checkpoint(&"checkpoint_harbour_clear")
 	narrative_message.emit("CITATION CONVOY DISABLED. MUNICIPAL JOY RESTORED.", 3.0)

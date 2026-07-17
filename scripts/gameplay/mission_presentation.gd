@@ -19,6 +19,7 @@ var _victory_screen: VictoryScreen
 var _combat_audio: CombatAudioBridge
 var _mobile_controls: MobileControls
 var _mission_audio_director: MissionAudioDirector
+var _mission_sfx: SampleAudioEmitter
 var _player: Node3D
 var _actors: Node
 var _level: Node
@@ -39,10 +40,10 @@ var _zone_actor_counts: Dictionary = {}
 var _zone_ambience: Dictionary = {}
 var _boss_zone_id: StringName = &""
 var _initial_zone_id: StringName = &""
-var _boss_display_name := &""
+var _boss_display_name := ""
 
 
-func configure(level: Node, content_manifest: ContentManifest, actors: Node, encounter_runner: EncounterRunner = null, mission_runtime: MissionRuntime = null, player: Node3D = null, game_state: Node = null, initial_zone_id: StringName = &"", boss_zone_id: StringName = &"", boss_display_name: String = "", zone_ambience: Dictionary = {}) -> bool:
+func configure(level: Node, content_manifest: ContentManifest, actors: Node, encounter_runner: EncounterRunner = null, mission_runtime: MissionRuntime = null, player: Node3D = null, game_state: Node = null, initial_zone_id: StringName = &"", boss_zone_id: StringName = &"", zone_ambience: Dictionary = {}, boss_display_name: String = "") -> bool:
 	if level == null:
 		return false
 	if _configured and (_level != level or _mission_runtime != mission_runtime or _encounter_runner != encounter_runner):
@@ -114,7 +115,17 @@ func bind_warning_enemy(enemy: Node) -> void:
 		return
 	enemy.set_meta(&"mission_presentation_warning_bound", true)
 	_enemy_warning_bound[enemy.get_instance_id()] = weakref(enemy)
-	enemy.telegraph_started.connect(_on_enemy_telegraph)
+	var enemy_ref: WeakRef = weakref(enemy)
+	enemy.telegraph_started.connect(_on_enemy_telegraph.bind(enemy_ref))
+	if enemy is ComplianceGull:
+		var gull := enemy as ComplianceGull
+		gull.target_marked.connect(_on_gull_target_marked.bind(enemy_ref))
+		gull.attack_fired.connect(_on_gull_attack_fired.bind(enemy_ref))
+		gull.dive_interrupted.connect(_on_gull_dive_interrupted.bind(enemy_ref))
+		gull.died.connect(_on_gull_died.bind(enemy_ref))
+	elif enemy is UmbrellaShieldEnforcer:
+		var enforcer := enemy as UmbrellaShieldEnforcer
+		enforcer.guard_state_changed.connect(_on_umbrella_guard_state_changed.bind(enemy_ref))
 
 
 func bind_warning_enemies() -> void:
@@ -164,6 +175,12 @@ func on_boss_phase_caption(message: String, duration: float) -> void:
 func on_boss_state_changed(state: StringName, fraction: float) -> void:
 	if _hud != null:
 		_hud.set_boss_state(_boss_display_name, state, fraction)
+
+
+func play_spatial_cue(cue_id: StringName, world_position: Vector3) -> bool:
+	if _mission_sfx == null:
+		return false
+	return _mission_sfx.play_at(cue_id, world_position)
 
 
 func on_player_died(_source: Node) -> void:
@@ -258,6 +275,8 @@ func reset_for_checkpoint() -> void:
 		_death_screen.visible = false
 	if _mobile_controls != null:
 		_mobile_controls.release_all()
+	if _mission_sfx != null:
+		_mission_sfx.stop_all()
 	_zone_actor_counts.clear()
 	_current_audio_state = &""
 	_request_audio_state(&"exploration")
@@ -334,6 +353,10 @@ func _create_presentation_nodes() -> void:
 	_mission_audio_director = MissionAudioDirector.new()
 	_mission_audio_director.name = "MissionAudioDirector"
 	add_child(_mission_audio_director)
+	_mission_sfx = SampleAudioEmitter.new()
+	_mission_sfx.name = "MissionSampleAudioEmitter"
+	_mission_sfx.library = MissionAudioLibrary
+	add_child(_mission_sfx)
 
 
 func _on_pause_restart() -> void:
@@ -452,9 +475,45 @@ func _bind_existing_enemies() -> void:
 		bind_warning_enemy(actor)
 
 
-func _on_enemy_telegraph(kind: StringName, _duration: float) -> void:
+func _on_enemy_telegraph(kind: StringName, _duration: float, _enemy_ref: WeakRef) -> void:
 	if _hud != null:
 		_hud.show_caption("%s WARNING" % String(kind).replace("_", " "), GameHUD.CaptionCategory.ENEMY_WARNING, 1.2)
+
+
+func _on_gull_target_marked(_target: Node3D, _duration: float, enemy_ref: WeakRef) -> void:
+	_play_enemy_cue(&"rain_city_gull_mark", enemy_ref)
+
+
+func _on_gull_attack_fired(kind: StringName, enemy_ref: WeakRef) -> void:
+	if kind == &"gull_mark_dive":
+		_play_enemy_cue(&"rain_city_gull_dive", enemy_ref)
+
+
+func _on_gull_dive_interrupted(enemy_ref: WeakRef) -> void:
+	_play_enemy_cue(&"rain_city_gull_dive", enemy_ref)
+
+
+func _on_gull_died(_enemy: EnemyAgent, _source: Node, enemy_ref: WeakRef) -> void:
+	_play_enemy_cue(&"rain_city_gull_death", enemy_ref)
+
+
+func _on_umbrella_guard_state_changed(_previous: UmbrellaShieldEnforcer.GuardState, current: UmbrellaShieldEnforcer.GuardState, enemy_ref: WeakRef) -> void:
+	match current:
+		UmbrellaShieldEnforcer.GuardState.GUARDING:
+			_play_enemy_cue(&"rain_city_shield_brace", enemy_ref)
+		UmbrellaShieldEnforcer.GuardState.OPENING:
+			_play_enemy_cue(&"rain_city_shield_open", enemy_ref)
+		UmbrellaShieldEnforcer.GuardState.BROKEN:
+			_play_enemy_cue(&"rain_city_shield_break", enemy_ref)
+
+
+func _play_enemy_cue(cue_id: StringName, enemy_ref: WeakRef) -> bool:
+	if enemy_ref == null:
+		return false
+	var enemy := enemy_ref.get_ref() as Node3D
+	if enemy == null or not is_instance_valid(enemy):
+		return false
+	return play_spatial_cue(cue_id, enemy.global_position)
 
 
 func _prune_enemy_bindings() -> void:
@@ -465,21 +524,21 @@ func _prune_enemy_bindings() -> void:
 
 
 func _resolve_boss_display_name(level: Node, configured_name: String, boss_zone_id: StringName) -> String:
-	var requested := configured_name.strip_edges()
+	var requested: String = configured_name.strip_edges()
 	if not requested.is_empty():
 		return requested.to_upper()
 	if level == null:
 		return &""
 	if level.has_meta(&"boss_display_name"):
-		var meta_name := level.get_meta(&"boss_display_name")
+		var meta_name: Variant = level.get_meta(&"boss_display_name")
 		if meta_name is String:
-			var text := meta_name.strip_edges()
+			var text: String = (meta_name as String).strip_edges()
 			if not text.is_empty():
 				return text.to_upper()
-	if level.scene_file_path.contains("episode_1_vancouver_waterfront"):
-		return "MUNICIPAL TOWMASTER // APPEAL DENIED"
-	if boss_zone_id == &"walker_arena":
-		return "ANIMAL CONTROL WALKER"
+	# Mission-specific names are configuration, not shared presentation policy.
+	# Retain a neutral fallback only for legacy or test hosts.
+	if boss_zone_id != &"":
+		return "BOSS"
 	return &""
 
 
@@ -490,3 +549,5 @@ func _exit_tree() -> void:
 		_mobile_controls.release_all()
 	if _mission_audio_director != null:
 		_mission_audio_director.reset()
+	if _mission_sfx != null:
+		_mission_sfx.stop_all()
