@@ -63,6 +63,8 @@ Record build/commit: __________  Godot: __________  OS/device: __________  Teste
 
 ## Rain City Run RC / public beta
 
+Automated/package note (2026-07-16): the exact RC package rendered the title and mission selector at 1024×768, accepted the first activation tap without a focus-recovery detour, and emitted no game-origin Chrome error. The unchecked items below still require human route/device judgment.
+
 - [ ] The normal mission selector shows `BETA`, `START BETA`, and a visible work-in-progress warning before launch.
 - [ ] A fresh campaign locks Rain City; completing Salmon Creek unlocks `CONTINUE TO RAIN CITY`; development override does not leak into release behavior.
 - [ ] `PLAY AGAIN` reloads the completed mission rather than always returning to Salmon Creek.

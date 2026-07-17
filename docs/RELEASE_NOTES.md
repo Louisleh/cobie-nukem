@@ -16,7 +16,8 @@ Candidate built on 2026-07-16 with Godot `4.7.stable.official.5b4e0cb0f`. Final 
 - Save schema v5 adds deterministic v4 migration, content-revision checkpoint remapping, mission loadouts/upgrades, and campaign/checkpoint isolation.
 - Gameplay layout/collision/navigation remain independent of replaceable presentation art.
 - Mission warning/audio routing, loadouts, set-piece path/phase state, Rain City checkpoint state, and convoy presentation now have focused owners; all production scripts meet the 500-line architecture gate except the documented Salmon Creek legacy exemption.
-- The non-export matrix passes parser/import, unit/integration/content/smoke, 100 route/checkpoint/touch/effect cycles, 500 weapon transitions, 100 convoy cycles, provenance/IP, architecture, and drift/performance gates.
+- The complete export matrix passes parser/import, unit/integration/content/smoke, 100 route/checkpoint/touch/effect cycles, 500 weapon transitions, 100 convoy cycles, provenance/IP, architecture, drift/performance, Web export, and unsigned Universal macOS export gates.
+- The exact packaged Web build passes a 1024×768 Chrome startup check: normalized title, first-tap activation, responsive menu, fitted mission selection, and no game-origin console errors.
 
 ## Honest RC boundary
 
