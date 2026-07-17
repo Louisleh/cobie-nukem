@@ -1,17 +1,23 @@
 class_name CheckpointPayload
 extends RefCounted
 
-## Canonical v3 checkpoint payload contract (v4 envelope-compatible).
+## Canonical v3 checkpoint payload contract (v5 envelope-compatible).
 ##
 ## {
 ##   "scene_path": "res://…​.tscn"    — must exist as a PackedScene
 ##   "level_id": String              — non-empty
 ##   "checkpoint_id": String         — defaults to "start"
 ##   "position": [x, y, z]           — finite floats; omitted when unusable
-##   "difficulty_id": String         — key of GameState.DIFFICULTY_PATHS
+##   "content_revision": int          — non-negative content revision marker
+##   "difficulty_id": String          — key of GameState.DIFFICULTY_PATHS
 ##   "objective_snapshot": Dictionary — sanitized ObjectiveTracker state
 ##   "encounter_snapshot": Dictionary — completed encounter ids only
 ##   "route_snapshot": Dictionary     — strict ordered-route restore state
+##   "unlocked_weapons": [String]     — valid weapon ids unlocked for this checkpoint
+##   "active_mission_upgrades": Dictionary
+##     { "mission_id": StringName, "selected_weapon": String,
+##       "unlocked_weapons": [String], "weapon_ammo": { "weapon_id":
+##       {"magazine": int, "reserve": int} }, "mission_upgrades": [String] }
 ##   "secrets": Dictionary            — discovered secret id → title
 ## }
 ##
@@ -19,6 +25,7 @@ extends RefCounted
 ## boot, continue, and level restore must all pass loaded payloads through it.
 
 const GameStateScript := preload("res://scripts/core/game_state.gd")
+const MissionLoadoutProfileScript := preload("res://scripts/gameplay/mission_loadout_profile.gd")
 const DEFAULT_DIFFICULTY := "classic"
 
 static func sanitize(raw: Dictionary) -> Dictionary:
@@ -38,11 +45,18 @@ static func sanitize(raw: Dictionary) -> Dictionary:
 		"level_id": level_id,
 		"checkpoint_id": checkpoint_id,
 		"difficulty_id": valid_difficulty(raw.get("difficulty_id")),
+		"content_revision": _content_revision(raw.get("content_revision")),
 		"objective_snapshot": _objective_snapshot(raw.get("objective_snapshot", {})),
 		"encounter_snapshot": _encounter_snapshot(raw.get("encounter_snapshot", {})),
 		"route_snapshot": _route_snapshot(raw.get("route_snapshot", {})),
 		"secrets": _secrets(raw.get("secrets", {})),
 	}
+	var unlocked := _weapon_ids(raw.get("unlocked_weapons", []))
+	if not unlocked.is_empty():
+		sanitized["unlocked_weapons"] = unlocked
+	var active_upgrades := _active_mission_upgrades(raw.get("active_mission_upgrades", {}))
+	if not active_upgrades.is_empty():
+		sanitized["active_mission_upgrades"] = active_upgrades
 	var position := _finite_position(raw.get("position"))
 	if not position.is_empty():
 		sanitized["position"] = position
@@ -54,6 +68,13 @@ static func valid_difficulty(value: Variant) -> String:
 		if GameStateScript.DIFFICULTY_PATHS.has(id):
 			return String(id)
 	return DEFAULT_DIFFICULTY
+
+static func _content_revision(value: Variant) -> int:
+	if value is int:
+		return value if value >= 0 else 0
+	if value is float and is_finite(value):
+		return int(value) if value >= 0.0 else 0
+	return 0
 
 static func _string_field(raw: Dictionary, key: String) -> String:
 	var value: Variant = raw.get(key)
@@ -154,3 +175,29 @@ static func _ordered_string_array(value: Variant) -> Variant:
 			return null
 		result.append(text)
 	return result
+
+static func _active_mission_upgrades(raw: Variant) -> Dictionary:
+	if raw is not Dictionary:
+		return {}
+	var payload: Dictionary = MissionLoadoutProfileScript.sanitize_payload(raw)
+	if payload.has("selected_weapon") or payload.has("unlocked_weapons") or payload.has("weapon_ammo") or payload.has("mission_upgrades") or payload.has("mission_id"):
+		return payload
+	return {}
+
+static func _weapon_ids(raw: Variant) -> Array[String]:
+	if raw is not Array:
+		return []
+	var result: Array[String] = []
+	for entry: Variant in raw:
+		if entry is String or entry is StringName:
+			var weapon_id := String(entry).strip_edges()
+			if weapon_id.is_empty():
+				continue
+			if not _is_valid_weapon_id(weapon_id) or weapon_id in result:
+				continue
+			result.append(weapon_id)
+	result.sort()
+	return result
+
+static func _is_valid_weapon_id(weapon_id: String) -> bool:
+	return ResourceLoader.exists("res://resources/weapons/%s.tres" % weapon_id)

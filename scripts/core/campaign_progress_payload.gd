@@ -14,6 +14,9 @@ extends RefCounted
 ##       "total_secrets": int >= 0,
 ##     }
 ##   }
+##   "campaign_upgrades": {           # mission_id -> sorted unique upgrade ids
+##     "mission_id": [String],
+##   }
 ## }
 
 const GameStateScript := preload("res://scripts/core/game_state.gd")
@@ -26,6 +29,7 @@ static func sanitize(raw: Variant) -> Dictionary:
 			"completed_missions": [],
 			"unlocked_missions": [],
 			"mission_records": {},
+			"campaign_upgrades": {},
 		}
 
 	var payload := raw as Dictionary
@@ -33,6 +37,7 @@ static func sanitize(raw: Variant) -> Dictionary:
 		"completed_missions": _string_set(payload.get("completed_missions", [])),
 		"unlocked_missions": _string_set(payload.get("unlocked_missions", [])),
 		"mission_records": _mission_records(payload.get("mission_records", {})),
+		"campaign_upgrades": _campaign_upgrades(payload.get("campaign_upgrades", {})),
 	}
 
 static func _string_set(value: Variant) -> Array[String]:
@@ -58,6 +63,19 @@ static func _mission_records(value: Variant) -> Dictionary:
 		var record := _mission_record(value[raw_id])
 		if not record.is_empty():
 			result[mission_id] = record
+	return result
+
+static func _campaign_upgrades(value: Variant) -> Dictionary:
+	var result := {}
+	if value is not Dictionary:
+		return result
+	for raw_id: Variant in value:
+		var mission_id := _string_id(raw_id)
+		if mission_id.is_empty():
+			continue
+		var upgrades := _string_set(value[raw_id])
+		if not upgrades.is_empty():
+			result[mission_id] = upgrades
 	return result
 
 static func _mission_record(value: Variant) -> Dictionary:
