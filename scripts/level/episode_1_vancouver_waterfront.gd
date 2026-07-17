@@ -392,7 +392,7 @@ func _save_checkpoint(checkpoint_id: StringName, position_value: Vector3) -> voi
 		return
 	var runtime_snapshot := _mission_runtime.snapshot()
 	var game_state := get_node_or_null("/root/GameState")
-	var active_loadout := player.mission_loadout_snapshot(metadata.level_id, _mission_upgrades) if player is CobiePlayer else {}
+	var active_loadout: Dictionary = player.mission_loadout_snapshot(metadata.level_id, _mission_upgrades) if player is CobiePlayer else {}
 	save_manager.save_slot(&"checkpoint", {
 		"scene_path": "res://scenes/levels/episode_1_vancouver_waterfront.tscn",
 		"level_id": String(metadata.level_id),

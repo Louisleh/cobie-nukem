@@ -1,0 +1,15 @@
+{
+  "type": "graph", "name": "rain_city_harbour_steel", "label": "Rain City harbour steel",
+  "connections": [
+    {"from":"steel_grain","from_port":0,"to":"steel_color","to_port":0},
+    {"from":"steel_color","from_port":0,"to":"Material","to_port":0},
+    {"from":"steel_grain","from_port":0,"to":"surface_normal","to_port":0},
+    {"from":"surface_normal","from_port":0,"to":"Material","to_port":4}
+  ],
+  "nodes": [
+    {"name":"steel_grain","type":"pattern","node_position":{"x":-420,"y":160},"parameters":{"mix":2,"x_scale":160,"x_wave":1,"y_scale":18,"y_wave":4}},
+    {"name":"steel_color","type":"colorize","node_position":{"x":-130,"y":70},"parameters":{"gradient":{"type":"Gradient","interpolation":1,"points":[{"pos":0.10,"r":0.07,"g":0.10,"b":0.11,"a":1},{"pos":0.72,"r":0.22,"g":0.29,"b":0.30,"a":1},{"pos":0.96,"r":0.38,"g":0.43,"b":0.43,"a":1}]}}},
+    {"name":"surface_normal","type":"normal_map","node_position":{"x":130,"y":260},"parameters":{"amount":0.12,"param0":11,"param1":0.99,"param2":0,"param3":0,"param4":1,"size":2}},
+    {"name":"Material","type":"material","node_position":{"x":450,"y":110},"parameters":{"albedo_color":{"type":"Color","r":0.18,"g":0.23,"b":0.24,"a":1},"ao_light_affect":1,"depth_scale":1,"emission_energy":1,"metallic":0.72,"normal_scale":0.20,"resolution":1,"roughness":0.31,"size":11,"subsurf_scatter_strength":0}}
+  ], "parameters": {}, "node_position": {"x":0,"y":0}
+}
