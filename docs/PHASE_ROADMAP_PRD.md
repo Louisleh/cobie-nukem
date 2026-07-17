@@ -1,21 +1,34 @@
 # Cobie Nukem — Multi-Phase Production PRD
 
-**Status:** Active production source of truth; `0.7.0-alpha.1-rc2` Rain City is public as an honestly labelled RC while human route/device/feel gates remain open
+**Status:** Active production source of truth; `0.7.0-alpha.1-rc3` Rain City is public as an honestly labelled RC while human route/device/feel gates remain open
 
 **Created:** 2026-07-11
 
-**Last status review:** 2026-07-16
+**Last status review:** 2026-07-17
 
-**Current public baseline:** `0.7.0-alpha.1-rc2` (`0d80348` gameplay/runtime revision; source integration `e016e44`; website deployment `c0d7171`; PCK SHA-256 `03a3fe985217b303bc90bad881fd79760761e9119aff696091a29d0e7906abe2`)
+**Current public baseline:** `0.7.0-alpha.1-rc3` (`ba7c449` gameplay/runtime revision; source integration `93984f1`; website deployment `03f15c0`; PCK SHA-256 `d4c763ae8e3a74fcd2671992aad520b8866cb01d5dbbcdd6db15f00f2359d2cb`)
 
-**Unreleased development baseline:** None. Source `main`, the GitHub prerelease package, and the deployed Web artifact are aligned on RC2. RC1 remains the immediate rollback release.
+**Unreleased development baseline:** None. Source `main`, the GitHub prerelease package, and the deployed Web artifact are aligned on RC3. RC2 remains the immediate rollback release.
 
-**Last released alpha:** `0.7.0-alpha.1-rc2` (`0d80348`) — live at <https://www.louislehmann.fyi/games/cobie-nukem/>; the `BETA` badge remains because human full-route and physical-device validation are open
+**Last released alpha:** `0.7.0-alpha.1-rc3` (`ba7c449`) — live at <https://www.louislehmann.fyi/games/cobie-nukem/>; the `BETA` badge remains because human full-route and physical-device validation are open
 
 **Engine:** Godot 4.7 stable, GDScript, Compatibility renderer
 **Purpose:** Turn the family-playtest vertical slice into a sustainable, original multi-level game without sacrificing responsiveness, humor, Web support, or unusual-controller accessibility.
 
 ## 0. Current status dashboard
+
+### Rain City Run `0.7.0-alpha.1-rc3` public startup-stability RC
+
+RC3 publishes the already-merged iPad portrait/sign/connector/interaction/Walker-finale corrections and closes the owner-reported first-minute friction: cards select without launching, Start is explicit, the trusted Web pointer lock survives scene startup, and `R` proactively reloads partial magazines with HUD and authored audio feedback.
+
+| Workstream | Status | Evidence |
+| --- | --- | --- |
+| Mission selection | **PUBLIC — AUTOMATED/BROWSER GREEN** | Card press remains on the selector with `SELECTED // PRESS START`; Start is the only launch route and double activation is guarded |
+| Pointer capture | **PUBLIC — PACKAGED/LIVE CHROME GREEN** | Start enters gameplay with canvas focus and pointer lock; one direct click restores a released lock; no game-origin console errors |
+| Reload | **PUBLIC — AUTOMATED/PACKAGED GREEN** | `R` reloads a 14/15 Pawstol magazine, HUD exposes available/active state, and imported per-weapon reload start/step/finish cues remain bounded |
+| Prior owner fixes | **PUBLIC — AUTOMATED GREEN, HUMAN REVIEW OPEN** | Two-state iPad portrait, forward-facing signs, stable connector top surfaces, bounded interactions, zero-HP Walker defeat, summon cleanup, and post-defeat Golden Ball sequencing ship in the exact PCK |
+| Release identity | **BYTE-VERIFIED** | Source PR #47/integration `93984f1`, prerelease `v0.7.0-alpha.1-rc3`, website PR #124/deployment `03f15c0`, and public 26,282,532-byte PCK SHA-256 `d4c763ae8e3a74fcd2671992aad520b8866cb01d5dbbcdd6db15f00f2359d2cb` |
+| Human-only | **OPEN** | Physical iPad Safari, full target-Mac route, Safari completion, pacing, art, mix, humor, fairness, touch comfort, and photosensitivity |
 
 ### Rain City Run `0.7.0-alpha.1-rc2` public stabilization RC
 

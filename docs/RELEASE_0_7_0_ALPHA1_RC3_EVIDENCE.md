@@ -31,4 +31,9 @@
 
 ## Publication record
 
-Source PR/integration, GitHub prerelease, website PR/deployment, public runtime identity, and downloaded PCK byte verification are appended after the publication transactions complete.
+- Source [PR #47](https://github.com/Louisleh/cobie-nukem/pull/47) merged at `93984f1f95b2679c2209ea3c087ea67b4b4ec271` after `validate-package` passed.
+- GitHub prerelease [`v0.7.0-alpha.1-rc3`](https://github.com/Louisleh/cobie-nukem/releases/tag/v0.7.0-alpha.1-rc3) contains the exact validated Web and unsigned Universal macOS packages.
+- Website [PR #124](https://github.com/Louisleh/louislehmann-site/pull/124) merged at deployment `03f15c03b5aba47b5f76e7131b80b855dd9059c2`; its main-branch CI and Vercel production deployment passed.
+- The ordinary and cache-busted public landing/play URLs identify `0.7.0-alpha.1-rc3` / `ba7c449`, and the homepage carousel places Cobie immediately beside Renaissance.
+- The downloaded public PCK is exactly 26,282,532 bytes with SHA-256 `d4c763ae8e3a74fcd2671992aad520b8866cb01d5dbbcdd6db15f00f2359d2cb`, matching the packaged artifact byte-for-byte.
+- A fresh public 1024×768 Chrome run confirmed selection-only cards, explicit Start, immediate pointer capture, and a clean game-origin console.
