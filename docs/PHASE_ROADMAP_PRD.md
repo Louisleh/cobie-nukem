@@ -17,13 +17,17 @@
 
 ## 0. Current status dashboard
 
+### Rain City Run `0.7.0-alpha.1-rc4` selector/public-beta candidate
+
+The mission selector now has an explicit commit boundary: hover and focus never change mission details or the footer action; click, touch, Enter, or controller accept commits a card. Locked future cards remain intentionally selectable for their descriptions, while Start remains disabled. Rain City Run is restored to an always-available public `BETA` with `START BETA`, independent of campaign-save state. Focused UI tests exercise crossing a locked card after selecting Rain City, deliberate locked-card selection, and direct public-beta availability.
+
 ### Rain City Run `0.7.0-alpha.1-rc3` public startup-stability RC
 
 RC3 publishes the already-merged iPad portrait/sign/connector/interaction/Walker-finale corrections and closes the owner-reported first-minute friction: cards select without launching, Start is explicit, the trusted Web pointer lock survives scene startup, and `R` proactively reloads partial magazines with HUD and authored audio feedback.
 
 | Workstream | Status | Evidence |
 | --- | --- | --- |
-| Mission selection | **PUBLIC — AUTOMATED/BROWSER GREEN** | Card press remains on the selector with `SELECTED // PRESS START`; Start is the only launch route and double activation is guarded |
+| Mission selection | **RC4 CANDIDATE — AUTOMATED TESTING** | Hover/focus are non-committing; card activation alone updates details/action; Start is the only launch route; locked teasers remain inspectable; Rain City is public `BETA` |
 | Pointer capture | **PUBLIC — PACKAGED/LIVE CHROME GREEN** | Start enters gameplay with canvas focus and pointer lock; one direct click restores a released lock; no game-origin console errors |
 | Reload | **PUBLIC — AUTOMATED/PACKAGED GREEN** | `R` reloads a 14/15 Pawstol magazine, HUD exposes available/active state, and imported per-weapon reload start/step/finish cues remain bounded |
 | Prior owner fixes | **PUBLIC — AUTOMATED GREEN, HUMAN REVIEW OPEN** | Two-state iPad portrait, forward-facing signs, stable connector top surfaces, bounded interactions, zero-HP Walker defeat, summon cleanup, and post-defeat Golden Ball sequencing ship in the exact PCK |
@@ -52,7 +56,7 @@ This candidate turns the public Vancouver beta into the campaign's second produc
 
 | Workstream | Status | Acceptance evidence |
 | --- | --- | --- |
-| Campaign continuity | **INTEGRATED — AUTOMATED GREEN** | Campaign-gated Vancouver unlock, mission-aware Replay/Continue, Salmon Creek `CONTINUE TO RAIN CITY`, locked future teasers, direct development override, and canonical mission IDs |
+| Campaign continuity | **INTEGRATED — AUTOMATED GREEN** | Rain City public-beta access, mission-aware Replay/Continue, Salmon Creek `CONTINUE TO RAIN CITY`, locked future teasers, direct development override, and canonical mission IDs |
 | Persistence/loadout | **SAVE V5 INTEGRATED** | Deterministic v4 migration, checkpoint content revision/remap, campaign/checkpoint isolation, Vancouver loadout, weapon/upgrade snapshots, stale-route recovery, and Municipal Recall Override persistence |
 | Authored mission route | **INTEGRATED — HUMAN ROUTE REVIEW OPEN** | Five separated gameplay/presentation zones, vertical lanes, checkpoints, harbour kill plane, four secrets, original jokes/landmarks, 26 authored enemies, and Story/Classic/Mayhem pressure caps of 2/3/4 |
 | Enemies and boss | **INTEGRATED — HUMAN FEEL OPEN** | Compliance Gull telegraph/dive/interrupt contracts; manifested 8×4 Umbrella atlas; four typed convoy phases/modules/waves; shared 1,000-HP budget; persistent Towmaster wreck and bounded defeat effects |

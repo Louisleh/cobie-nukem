@@ -23,6 +23,7 @@ var _cards: Array[Button] = []
 var _difficulty_buttons: Array[Button] = []
 var _campaign_progress: CampaignProgressRuntime
 var _difficulty_group := ButtonGroup.new()
+var _mission_group := ButtonGroup.new()
 var _launching := false
 
 func _ready() -> void:
@@ -36,10 +37,10 @@ func _ready() -> void:
 	%BackButton.pressed.connect(_back)
 	play_button.focus_neighbor_bottom = play_button.get_path_to(%BackButton)
 	%BackButton.focus_neighbor_top = %BackButton.get_path_to(play_button)
-	var first_enabled := _first_selectable_index()
-	if first_enabled >= 0:
-		_select(first_enabled)
-		_cards[first_enabled].grab_focus()
+	var first_available := _first_available_index()
+	if first_available >= 0:
+		_select(first_available)
+		_cards[first_available].grab_focus()
 	elif not _cards.is_empty():
 		_selected = -1
 		play_button.disabled = true
@@ -61,10 +62,8 @@ func _build_cards() -> void:
 	for child in card_row.get_children():
 		child.queue_free()
 	_cards.clear()
-	var focusable_cards: Array[Button] = []
 	for index in levels.size():
 		var data := levels[index]
-		var available := data.is_available(_campaign_progress, _development_unlock_override())
 		var card := Button.new()
 		card.custom_minimum_size = Vector2(105.0, 43.0)
 		card.add_theme_font_size_override("font_size", 6)
@@ -72,27 +71,24 @@ func _build_cards() -> void:
 		card.icon = data.preview
 		card.expand_icon = true
 		card.tooltip_text = data.description
-		card.disabled = not available
-		card.focus_mode = Control.FOCUS_NONE if card.disabled else Control.FOCUS_ALL
-		if not card.disabled:
-			focusable_cards.append(card)
-		card.mouse_entered.connect(func() -> void:
-			card.grab_focus()
-			_select(index)
-		)
-		card.focus_entered.connect(func() -> void: _select(index))
+		# Hover and keyboard focus are previews of intent, not committed mission
+		# choices. All cards remain activatable so locked teasers can deliberately
+		# show their details; only their footer Start action stays disabled.
+		card.focus_mode = Control.FOCUS_ALL
+		card.toggle_mode = true
+		card.button_group = _mission_group
 		# A mission card is a selection control, not a disguised Start button.
 		# Keeping launch behind the explicit footer action prevents an exploratory
 		# click (or a touch used to inspect a card) from dropping into gameplay.
 		card.pressed.connect(_on_card_pressed.bind(index))
 		card_row.add_child(card)
 		_cards.append(card)
-	if focusable_cards.size() == 0:
+	if _cards.is_empty():
 		return
-	for index in focusable_cards.size():
-		var current := focusable_cards[index]
-		var previous := focusable_cards[(index - 1 + focusable_cards.size()) % focusable_cards.size()]
-		var next := focusable_cards[(index + 1) % focusable_cards.size()]
+	for index in _cards.size():
+		var current := _cards[index]
+		var previous := _cards[(index - 1 + _cards.size()) % _cards.size()]
+		var next := _cards[(index + 1) % _cards.size()]
 		current.focus_neighbor_left = current.get_path_to(previous)
 		current.focus_neighbor_right = current.get_path_to(next)
 		if _difficulty_buttons.is_empty():
@@ -124,13 +120,12 @@ func _build_difficulty_selector() -> void:
 		button.focus_neighbor_right = button.get_path_to(next)
 		button.focus_neighbor_bottom = button.get_path_to(play_button)
 		if not _cards.is_empty():
-			var first_selectable := _first_selectable_index()
-			if first_selectable >= 0:
-				button.focus_neighbor_top = button.get_path_to(_cards[first_selectable])
+			var first_available := _first_available_index()
+			if first_available >= 0:
+				button.focus_neighbor_top = button.get_path_to(_cards[first_available])
 	if not _difficulty_buttons.is_empty():
 		for card in _cards:
-			if not card.disabled:
-				card.focus_neighbor_bottom = card.get_path_to(_difficulty_buttons[0])
+			card.focus_neighbor_bottom = card.get_path_to(_difficulty_buttons[0])
 		play_button.focus_neighbor_top = play_button.get_path_to(_difficulty_buttons[0])
 	_update_difficulty_blurb()
 
@@ -167,6 +162,8 @@ func _select(index: int) -> void:
 	if index < 0 or index >= levels.size():
 		return
 	_selected = index
+	for card_index in _cards.size():
+		_cards[card_index].set_pressed_no_signal(card_index == index)
 	var data := levels[index]
 	var available := data.is_available(_campaign_progress, _development_unlock_override())
 	episode_label.text = data.episode
@@ -227,18 +224,18 @@ func _activate(index: int) -> void:
 
 
 func _set_launch_controls_disabled(disabled: bool) -> void:
-	play_button.disabled = disabled
-	play_button.focus_mode = Control.FOCUS_NONE if disabled else Control.FOCUS_ALL
+	var selected_available := _selected >= 0 and _selected < levels.size() and levels[_selected].is_available(_campaign_progress, _development_unlock_override())
+	play_button.disabled = disabled or not selected_available
+	play_button.focus_mode = Control.FOCUS_NONE if play_button.disabled else Control.FOCUS_ALL
 	for index in _cards.size():
-		var data := levels[index]
-		_cards[index].disabled = disabled or not data.is_available(_campaign_progress, _development_unlock_override())
+		_cards[index].disabled = disabled
 
 func _back() -> void:
 	SceneRouter.go_to(menu_scene_path)
 
-func _first_selectable_index() -> int:
-	for index in _cards.size():
-		if not _cards[index].disabled:
+func _first_available_index() -> int:
+	for index in levels.size():
+		if levels[index].is_available(_campaign_progress, _development_unlock_override()):
 			return index
 	return -1
 
