@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="AudioCueLibrary" load_steps=49 format=3]
+[gd_resource type="Resource" script_class="AudioCueLibrary" load_steps=85 format=3]
 
 [ext_resource type="Script" path="res://scripts/audio/audio_cue_set.gd" id="1"]
 [ext_resource type="Script" path="res://scripts/audio/audio_cue_library.gd" id="2"]
@@ -28,6 +28,33 @@
 [ext_resource type="AudioStream" path="res://assets/audio/characters/walker_01.wav" id="w1"]
 [ext_resource type="AudioStream" path="res://assets/audio/characters/walker_02.wav" id="w2"]
 [ext_resource type="AudioStream" path="res://assets/audio/characters/walker_03.wav" id="w3"]
+[ext_resource type="AudioStream" path="res://assets/audio/enemies/compliance_gull/death_01.wav" id="rg1"]
+[ext_resource type="AudioStream" path="res://assets/audio/enemies/compliance_gull/death_02.wav" id="rg2"]
+[ext_resource type="AudioStream" path="res://assets/audio/enemies/compliance_gull/death_03.wav" id="rg3"]
+[ext_resource type="AudioStream" path="res://assets/audio/enemies/compliance_gull/dive_01.wav" id="rg4"]
+[ext_resource type="AudioStream" path="res://assets/audio/enemies/compliance_gull/dive_02.wav" id="rg5"]
+[ext_resource type="AudioStream" path="res://assets/audio/enemies/compliance_gull/dive_03.wav" id="rg6"]
+[ext_resource type="AudioStream" path="res://assets/audio/enemies/compliance_gull/mark_01.wav" id="rg7"]
+[ext_resource type="AudioStream" path="res://assets/audio/enemies/compliance_gull/mark_02.wav" id="rg8"]
+[ext_resource type="AudioStream" path="res://assets/audio/enemies/compliance_gull/mark_03.wav" id="rg9"]
+[ext_resource type="AudioStream" path="res://assets/audio/enemies/umbrella_enforcer/brace_01.wav" id="rg10"]
+[ext_resource type="AudioStream" path="res://assets/audio/enemies/umbrella_enforcer/brace_02.wav" id="rg11"]
+[ext_resource type="AudioStream" path="res://assets/audio/enemies/umbrella_enforcer/brace_03.wav" id="rg12"]
+[ext_resource type="AudioStream" path="res://assets/audio/enemies/umbrella_enforcer/break_01.wav" id="rg13"]
+[ext_resource type="AudioStream" path="res://assets/audio/enemies/umbrella_enforcer/break_02.wav" id="rg14"]
+[ext_resource type="AudioStream" path="res://assets/audio/enemies/umbrella_enforcer/break_03.wav" id="rg15"]
+[ext_resource type="AudioStream" path="res://assets/audio/enemies/umbrella_enforcer/open_01.wav" id="rg16"]
+[ext_resource type="AudioStream" path="res://assets/audio/enemies/umbrella_enforcer/open_02.wav" id="rg17"]
+[ext_resource type="AudioStream" path="res://assets/audio/enemies/umbrella_enforcer/open_03.wav" id="rg18"]
+[ext_resource type="AudioStream" path="res://assets/audio/set_pieces/citation_convoy/module_break_01.wav" id="rg19"]
+[ext_resource type="AudioStream" path="res://assets/audio/set_pieces/citation_convoy/module_break_02.wav" id="rg20"]
+[ext_resource type="AudioStream" path="res://assets/audio/set_pieces/citation_convoy/module_break_03.wav" id="rg21"]
+[ext_resource type="AudioStream" path="res://assets/audio/set_pieces/citation_convoy/move_01.wav" id="rg22"]
+[ext_resource type="AudioStream" path="res://assets/audio/set_pieces/citation_convoy/move_02.wav" id="rg23"]
+[ext_resource type="AudioStream" path="res://assets/audio/set_pieces/citation_convoy/move_03.wav" id="rg24"]
+[ext_resource type="AudioStream" path="res://assets/audio/set_pieces/citation_convoy/defeat_01.wav" id="rg25"]
+[ext_resource type="AudioStream" path="res://assets/audio/set_pieces/citation_convoy/defeat_02.wav" id="rg26"]
+[ext_resource type="AudioStream" path="res://assets/audio/set_pieces/citation_convoy/defeat_03.wav" id="rg27"]
 
 [sub_resource type="Resource" id="MusicExplore"]
 script = ExtResource("1")
@@ -235,6 +262,123 @@ spatial = true
 max_distance = 52.0
 unit_size = 6.0
 
+[sub_resource type="Resource" id="ComplianceGullMark"]
+script = ExtResource("1")
+id = &"rain_city_gull_mark"
+streams = Array[AudioStream]([ExtResource("rg7"), ExtResource("rg8"), ExtResource("rg9")])
+bus = &"SFX"
+volume_db = -7.0
+pitch_min = 0.94
+pitch_max = 1.06
+maximum_polyphony = 3
+spatial = true
+max_distance = 40.0
+unit_size = 3.5
+
+[sub_resource type="Resource" id="ComplianceGullDive"]
+script = ExtResource("1")
+id = &"rain_city_gull_dive"
+streams = Array[AudioStream]([ExtResource("rg4"), ExtResource("rg5"), ExtResource("rg6")])
+bus = &"SFX"
+volume_db = -6.5
+pitch_min = 0.94
+pitch_max = 1.06
+maximum_polyphony = 2
+spatial = true
+max_distance = 40.0
+unit_size = 3.5
+
+[sub_resource type="Resource" id="ComplianceGullDeath"]
+script = ExtResource("1")
+id = &"rain_city_gull_death"
+streams = Array[AudioStream]([ExtResource("rg1"), ExtResource("rg2"), ExtResource("rg3")])
+bus = &"SFX"
+volume_db = -5.5
+pitch_min = 0.94
+pitch_max = 1.06
+maximum_polyphony = 2
+spatial = true
+max_distance = 42.0
+unit_size = 4.5
+
+[sub_resource type="Resource" id="UmbrellaBrace"]
+script = ExtResource("1")
+id = &"rain_city_shield_brace"
+streams = Array[AudioStream]([ExtResource("rg10"), ExtResource("rg11"), ExtResource("rg12")])
+bus = &"SFX"
+volume_db = -6.0
+pitch_min = 0.94
+pitch_max = 1.06
+maximum_polyphony = 3
+spatial = true
+max_distance = 38.0
+unit_size = 4.0
+
+[sub_resource type="Resource" id="UmbrellaOpen"]
+script = ExtResource("1")
+id = &"rain_city_shield_open"
+streams = Array[AudioStream]([ExtResource("rg16"), ExtResource("rg17"), ExtResource("rg18")])
+bus = &"SFX"
+volume_db = -7.0
+pitch_min = 0.94
+pitch_max = 1.06
+maximum_polyphony = 2
+spatial = true
+max_distance = 36.0
+unit_size = 3.8
+
+[sub_resource type="Resource" id="UmbrellaBreak"]
+script = ExtResource("1")
+id = &"rain_city_shield_break"
+streams = Array[AudioStream]([ExtResource("rg13"), ExtResource("rg14"), ExtResource("rg15")])
+bus = &"SFX"
+volume_db = -5.0
+pitch_min = 0.94
+pitch_max = 1.06
+maximum_polyphony = 3
+spatial = true
+max_distance = 40.0
+unit_size = 4.0
+
+[sub_resource type="Resource" id="CitationConvoyMove"]
+script = ExtResource("1")
+id = &"rain_city_convoy_move"
+streams = Array[AudioStream]([ExtResource("rg22"), ExtResource("rg23"), ExtResource("rg24")])
+bus = &"SFX"
+volume_db = -6.0
+pitch_min = 0.94
+pitch_max = 1.06
+maximum_polyphony = 3
+spatial = true
+max_distance = 45.0
+unit_size = 5.0
+
+[sub_resource type="Resource" id="CitationConvoyModuleBreak"]
+script = ExtResource("1")
+id = &"rain_city_module_break"
+streams = Array[AudioStream]([ExtResource("rg19"), ExtResource("rg20"), ExtResource("rg21")])
+bus = &"SFX"
+volume_db = -5.0
+pitch_min = 0.94
+pitch_max = 1.06
+maximum_polyphony = 3
+spatial = true
+max_distance = 45.0
+unit_size = 5.0
+
+[sub_resource type="Resource" id="CitationConvoyDefeat"]
+script = ExtResource("1")
+id = &"rain_city_convoy_defeat"
+streams = Array[AudioStream]([ExtResource("rg25"), ExtResource("rg26"), ExtResource("rg27")])
+bus = &"SFX"
+volume_db = -4.5
+pitch_min = 0.94
+pitch_max = 1.06
+maximum_polyphony = 3
+spatial = true
+max_distance = 48.0
+unit_size = 6.0
+
 [resource]
 script = ExtResource("2")
-cues = Array[ExtResource("1")]([SubResource("MusicExplore"), SubResource("MusicTension"), SubResource("MusicCombat"), SubResource("MusicBoss"), SubResource("MusicVictory"), SubResource("VancouverMusicExplore"), SubResource("VancouverMusicTension"), SubResource("VancouverMusicCombat"), SubResource("VancouverMusicBoss"), SubResource("VancouverMusicVictory"), SubResource("AmbExterior"), SubResource("AmbTunnel"), SubResource("AmbLab"), SubResource("AmbArena"), SubResource("AmbVanRain"), SubResource("AmbVanTerminal"), SubResource("AmbVanHarbour"), SubResource("CobieBark"), SubResource("HoundVocal"), SubResource("WalkerVocal")])
+cues = Array[ExtResource("1")]([SubResource("MusicExplore"), SubResource("MusicTension"), SubResource("MusicCombat"), SubResource("MusicBoss"), SubResource("MusicVictory"), SubResource("VancouverMusicExplore"), SubResource("VancouverMusicTension"), SubResource("VancouverMusicCombat"), SubResource("VancouverMusicBoss"), SubResource("VancouverMusicVictory"), SubResource("AmbExterior"), SubResource("AmbTunnel"), SubResource("AmbLab"), SubResource("AmbArena"), SubResource("AmbVanRain"), SubResource("AmbVanTerminal"), SubResource("AmbVanHarbour"), SubResource("CobieBark"), SubResource("HoundVocal"), SubResource("WalkerVocal"), SubResource("ComplianceGullMark"), SubResource("ComplianceGullDive"), SubResource("ComplianceGullDeath"), SubResource("UmbrellaBrace"), SubResource("UmbrellaOpen"), SubResource("UmbrellaBreak"), SubResource("CitationConvoyMove"), SubResource("CitationConvoyModuleBreak"), SubResource("CitationConvoyDefeat")])
