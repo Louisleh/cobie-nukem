@@ -422,14 +422,9 @@ func _reset_requirements() -> void:
 		_phase_encounter_completed = []
 		_phase_module_completed = []
 		_phase_completed_ids.clear()
-		_phase_encounter_requirements.resize(_phase_count)
-		_phase_module_requirements.resize(_phase_count)
-		_phase_ids.resize(_phase_count)
-		_phase_health_max.resize(_phase_count)
-		_phase_health_current.resize(_phase_count)
 		for index in range(_phase_count):
-			_phase_encounter_completed[index] = false
-			_phase_module_completed[index] = false
+			_phase_encounter_completed.append(false)
+			_phase_module_completed.append(false)
 			_phase_health_current[index] = _phase_health_max[index]
 		_max_boss_health = 0.0
 		for value in _phase_health_max:
@@ -638,8 +633,6 @@ func _configure_definitions() -> bool:
 	_phase_module_requirements.resize(_phase_count)
 	_phase_ids.resize(_phase_count)
 	_wave_to_phase_index.resize(_phase_count)
-	_phase_encounter_completed.resize(_phase_count)
-	_phase_module_completed.resize(_phase_count)
 	for index in range(_phase_count):
 		_wave_to_phase_index[index] = -1
 
@@ -653,8 +646,8 @@ func _configure_definitions() -> bool:
 		_phase_module_requirements[index] = phase.required_module_id
 		_phase_health_max[index] = phase.health_allocation if is_finite(phase.health_allocation) else 0.0
 		_phase_health_current[index] = 0.0
-		_phase_encounter_completed[index] = false
-		_phase_module_completed[index] = false
+		_phase_encounter_completed.append(false)
+		_phase_module_completed.append(false)
 		_wave_to_phase_index[phase.encounter_wave_index] = index
 		_encounter_requirements.append(phase.encounter_id)
 		_module_requirements.append(phase.required_module_id)

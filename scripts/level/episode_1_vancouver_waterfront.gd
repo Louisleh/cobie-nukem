@@ -17,6 +17,12 @@ const WorldBuilderScript = preload("res://scripts/level/vancouver_waterfront_wor
 const PLAYER_SCENE := "res://scenes/player/cobie_player.tscn"
 const CONTENT_REVISION := 2
 const MUNICIPAL_RECALL_OVERRIDE := &"municipal_recall_override"
+const CONVOY_PHASE_CAPTIONS: Array[String] = [
+	"APPEAL FILED // DISABLE LEFT DRIVE",
+	"APPEAL DENIED // DISABLE SIGNAL DISH",
+	"FINAL NOTICE // DISABLE RIGHT DRIVE",
+	"CASE CLOSED // CITATION CORE EXPOSED",
+]
 const CHECKPOINT_POSITIONS: Dictionary = {
 	&"checkpoint_downtown_alley": Vector3(0, 1.1, 8),
 	&"checkpoint_ruse_block": Vector3(0, 1.1, -23),
@@ -86,7 +92,9 @@ func _ready() -> void:
 func _setup_runtime() -> void:
 	var pressure := get_node_or_null("/root/CombatPressure")
 	if pressure != null:
-		_baseline_attack_budget = 2 if GameState.difficulty_id == &"story" else (4 if GameState.difficulty_id == &"mayhem" else 3)
+		var game_state := get_node_or_null("/root/GameState")
+		var difficulty_id := StringName(game_state.difficulty_id) if game_state != null else &"classic"
+		_baseline_attack_budget = 2 if difficulty_id == &"story" else (4 if difficulty_id == &"mayhem" else 3)
 		pressure.configure_limit(_baseline_attack_budget)
 	_spawn_registry = MissionSpawnRegistry.new()
 	_spawn_registry.name = "MissionSpawnRegistry"
@@ -157,6 +165,8 @@ func _setup_convoy() -> void:
 		return
 	_set_piece_runtime.started.connect(_on_convoy_actor_started)
 	_set_piece_runtime.completed.connect(_on_convoy_completed)
+	_set_piece_runtime.phase_changed.connect(_on_convoy_phase_changed)
+	_set_piece_runtime.boss_health_changed.connect(_on_convoy_health_changed)
 	_convoy_coordinator = MovingSetPieceEncounterCoordinator.new()
 	_convoy_coordinator.name = "CitationConvoyCoordinator"
 	add_child(_convoy_coordinator)
@@ -457,11 +467,43 @@ func _on_convoy_actor_started(actor: Node3D, generation: int) -> void:
 		if _convoy_coordinator != null:
 			_convoy_coordinator.report_module_destroyed(module_id, generation)
 	)
+	var state := _set_piece_runtime.current_state() if _set_piece_runtime != null else {}
+	_on_convoy_health_changed(float(state.get("current_boss_health", 1000.0)), float(state.get("max_boss_health", 1000.0)), generation)
+	var phase_ids: Array = state.get("phase_ids", [])
+	var active_phase := int(state.get("active_phase_index", 0))
+	var active_phase_id := StringName(phase_ids[active_phase]) if active_phase >= 0 and active_phase < phase_ids.size() else &"appeal_filed"
+	_on_convoy_phase_changed(active_phase, active_phase_id, generation)
+
+
+func _on_convoy_phase_changed(phase_index: int, phase_id: StringName, generation: int) -> void:
+	if _set_piece_runtime == null or generation != _set_piece_runtime.generation():
+		return
+	if phase_index >= 0 and phase_index < CONVOY_PHASE_CAPTIONS.size():
+		boss_phase_caption.emit(CONVOY_PHASE_CAPTIONS[phase_index], 2.6)
+	var state := _set_piece_runtime.current_state()
+	var maximum := maxf(1.0, float(state.get("max_boss_health", 1000.0)))
+	var current := clampf(float(state.get("current_boss_health", maximum)), 0.0, maximum)
+	boss_state_changed.emit(phase_id, current / maximum)
+
+
+func _on_convoy_health_changed(current_health: float, maximum_health: float, generation: int) -> void:
+	if _set_piece_runtime == null or generation != _set_piece_runtime.generation():
+		return
+	var maximum := maxf(1.0, maximum_health)
+	var state := _set_piece_runtime.current_state()
+	var phase_ids: Array = state.get("phase_ids", [])
+	var phase_index := int(state.get("active_phase_index", 0))
+	var phase_id := &"appeal_filed"
+	if phase_index >= 0 and phase_index < phase_ids.size():
+		phase_id = StringName(phase_ids[phase_index])
+	boss_state_changed.emit(phase_id, clampf(current_health / maximum, 0.0, 1.0))
 
 
 func _on_convoy_completed(event_id: StringName, _generation: int) -> void:
 	if event_id != &"citation_convoy_stopped":
 		return
+	boss_state_changed.emit(&"defeated", 0.0)
+	boss_phase_caption.emit("CASE CLOSED // MUNICIPAL TOWMASTER DISABLED", 3.0)
 	_mission_runtime.record_objective(ObjectiveDefinition.Kind.DEFEAT, &"citation_convoy")
 	_mission_runtime.activate_checkpoint(&"checkpoint_harbour_clear")
 	narrative_message.emit("CITATION CONVOY DISABLED. MUNICIPAL JOY RESTORED.", 3.0)

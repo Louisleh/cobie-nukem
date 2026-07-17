@@ -123,7 +123,12 @@ func _exercise_convoy(mission: EpisodeOneVancouverWaterfront) -> void:
 	_expect(mission._convoy_coordinator != null, "convoy coordinator exists")
 	if mission._set_piece_runtime == null or mission._convoy_coordinator == null:
 		return
-	for wave_index in 3:
+	var convoy := _find_convoy(mission._world_builder.actors)
+	_expect(convoy != null, "convoy actor remains available through all boss phases")
+	if convoy == null:
+		return
+	var module_ids: Array[StringName] = [&"citation_drive_left", &"citation_signal_dish", &"citation_drive_right", &"citation_core"]
+	for wave_index in 4:
 		mission._set_piece_runtime._physics_process(100.0)
 		var coordinator_state := mission._convoy_coordinator.current_state()
 		_expect(int(coordinator_state.get("active_wave_index", -1)) == wave_index, "convoy stop %d starts wave %d" % [wave_index, wave_index])
@@ -132,15 +137,12 @@ func _exercise_convoy(mission: EpisodeOneVancouverWaterfront) -> void:
 		_defeat_active_wave(mission, wave_index)
 		await process_frame
 		_expect(bool(mission._convoy_coordinator.current_state().waves_completed[wave_index]), "convoy wave %d completes" % wave_index)
-
-	var convoy := _find_convoy(mission._world_builder.actors)
-	_expect(convoy != null, "convoy actor remains available for module destruction")
-	if convoy != null:
-		for child in convoy.get_children():
-			var module := child as WorldInteraction
-			if module != null:
-				module.apply_damage(9999.0)
-		_expect(convoy.destroyed_module_count() == 2, "both convoy compliance modules are destructible")
+		var module := _find_convoy_module(convoy, module_ids[wave_index])
+		_expect(module != null and module.visible, "convoy phase %d exposes only its authored module" % wave_index)
+		if module != null:
+			module.apply_damage(9999.0)
+		await process_frame
+		_expect(convoy.destroyed_module_count() == wave_index + 1, "convoy phase %d records one module destruction" % wave_index)
 	mission._set_piece_runtime._physics_process(100.0)
 	await process_frame
 	var final_state := mission._set_piece_runtime.current_state()
@@ -172,6 +174,14 @@ func _find_convoy(parent: Node) -> CitationConvoyActor:
 	for child in parent.get_children():
 		if child is CitationConvoyActor:
 			return child as CitationConvoyActor
+	return null
+
+
+func _find_convoy_module(convoy: CitationConvoyActor, module_id: StringName) -> WorldInteraction:
+	for child in convoy.get_children():
+		var module := child as WorldInteraction
+		if module != null and module.definition != null and module.definition.id == module_id:
+			return module
 	return null
 
 
