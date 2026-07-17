@@ -77,9 +77,7 @@ func _run() -> void:
 	# never clamp the actor beneath open water. A repeated invalid recovery then
 	# resolves deterministically instead of leaving a living unreachable enemy.
 	var safe_position := ground_enemy.global_position
-	ground_enemy._last_safe_ground_position = safe_position
-	ground_enemy._has_safe_ground_position = true
-	ground_enemy._consecutive_ground_recoveries = 0
+	ground_enemy._ground_recovery.configure(safe_position)
 	ground_enemy.global_position = safe_position + Vector3(5.0, -3.0, 0.0)
 	ground_enemy._stabilize_ground_height()
 	_expect(ground_enemy.global_position.distance_to(safe_position + Vector3.UP * 0.05) < 0.1, "Fallen ground enemy returns to its last bounded safe position")

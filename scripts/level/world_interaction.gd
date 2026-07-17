@@ -115,8 +115,6 @@ func _apply_breakable_damage(amount: float, source: Node) -> float:
 	if _current_health <= 0.0:
 		_activate_breakable(source)
 	return applied
-
-
 func receive_chain_reaction(source: Node, remaining_budget: int) -> void:
 	if remaining_budget <= 0:
 		return
