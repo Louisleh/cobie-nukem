@@ -7,6 +7,8 @@ signal encounter_requested(id: StringName, generation: int)
 signal path_completed(generation: int)
 signal completed(id: StringName, generation: int)
 signal reset_completed(generation: int)
+signal phase_changed(phase_index: int, phase_id: StringName, generation: int)
+signal boss_health_changed(current_health: float, max_health: float, generation: int)
 
 const ERROR_NONE := &""
 const ERROR_MISSING_DEFINITION := &"missing_definition"
@@ -25,6 +27,8 @@ var _waiting_for_stop := false
 var _path_completed := false
 var _completion_emitted := false
 var _completion_event_id: StringName = &""
+var _schema_version := 1
+var _phase_count := 0
 var _path_points: Array[Vector3] = []
 var _stop_fractions: Array[float] = []
 var _stop_distances: Array[float] = []
@@ -33,10 +37,23 @@ var _segment_directions: Array[Vector3] = []
 var _total_path_length := 0.0
 var _distance_along_path := 0.0
 var _next_stop_index := 0
+var _active_phase_index := 0
+var _active_wave_index := -1
 var _encounter_requirements: Array[StringName] = []
 var _module_requirements: Array[StringName] = []
 var _encounter_completed: Dictionary = {}
 var _module_destroyed: Dictionary = {}
+var _phase_encounter_requirements: Array[StringName] = []
+var _phase_module_requirements: Array[StringName] = []
+var _phase_ids: Array[StringName] = []
+var _phase_health_max: Array[float] = []
+var _phase_health_current: Array[float] = []
+var _phase_encounter_completed: Array[bool] = []
+var _phase_module_completed: Array[bool] = []
+var _phase_completed_ids: Array[StringName] = []
+var _wave_to_phase_index: Array[int] = []
+var _max_boss_health := 0.0
+var _current_boss_health := 0.0
 
 
 func generation() -> int:
@@ -53,8 +70,16 @@ func current_state() -> Dictionary:
 		"path_completed": _path_completed,
 		"completion_emitted": _completion_emitted,
 		"next_stop_index": _next_stop_index,
+		"active_phase_index": _active_phase_index,
+		"phase_index": _active_phase_index,
+		"phase_ids": _phase_ids.duplicate(),
 		"encounter_gates": _encounter_completed.duplicate(),
 		"module_gates": _module_destroyed.duplicate(),
+		"completed_phase_ids": _phase_completed_ids.duplicate(),
+		"phase_health": _phase_health_current.duplicate(),
+		"phase_health_max": _phase_health_max.duplicate(),
+		"current_boss_health": _current_boss_health,
+		"max_boss_health": _max_boss_health,
 	}
 
 
@@ -88,22 +113,16 @@ func configure(definition: Object, actor_parent: Node = null) -> StringName:
 		return ERROR_INVALID_ACTOR_PARENT
 
 	_definition = definition.duplicate(true)
+	_schema_version = int(_definition.get("schema_version", 1))
 	_actor_scene = scene
 	_actor_parent = parent
 	_path_points = _definition.path_points.duplicate()
-	_stop_fractions = _definition.stop_markers.duplicate()
-	_encounter_requirements = _definition.encounter_trigger_ids.duplicate()
-	_module_requirements = _definition.destructible_module_ids.duplicate()
-
-	# Callers are responsible for collision-safe authored paths and non-degenerate movement geometry.
-	if _encounter_requirements.size() > _stop_fractions.size():
-		clear()
-		return ERROR_INVALID_DEFINITION
-	if _has_duplicate_stop_markers(_stop_fractions):
-		clear()
-		return ERROR_INVALID_DEFINITION
-
 	_completion_event_id = StringName(_definition.completion_event)
+
+	if not _configure_definitions():
+		clear()
+		return ERROR_INVALID_DEFINITION
+
 	_build_path_data()
 	_reset_progress()
 	_generation += 1
@@ -168,14 +187,32 @@ func mark_encounter_completed(id: StringName, observed_generation: int = -1) -> 
 		return false
 	if observed_generation != -1 and observed_generation != _generation:
 		return false
-	var key := String(id).strip_edges().to_lower()
-	if key.is_empty():
+	if _schema_version == 1:
+		var key := String(id).strip_edges().to_lower()
+		if key.is_empty():
+			return false
+		if not _encounter_completed.has(key):
+			return false
+		if bool(_encounter_completed[key]):
+			return false
+		_encounter_completed[key] = true
+		_evaluate_completion_gates()
+		return true
+
+	var phase_index := _active_phase_index
+	var mapped_phase_index := _phase_index_for_wave(_active_wave_index)
+	if mapped_phase_index != -1:
+		phase_index = mapped_phase_index
+	if phase_index < 0 or phase_index >= _phase_encounter_requirements.size():
 		return false
-	if not _encounter_completed.has(key):
+	var expected := String(_phase_encounter_requirements[phase_index]).strip_edges().to_lower()
+	var candidate := String(id).strip_edges().to_lower()
+	if candidate.is_empty() or candidate != expected:
 		return false
-	if bool(_encounter_completed[key]):
+	if _phase_encounter_completed[phase_index]:
 		return false
-	_encounter_completed[key] = true
+	_phase_encounter_completed[phase_index] = true
+	_try_finalize_active_phase()
 	_evaluate_completion_gates()
 	return true
 
@@ -185,14 +222,33 @@ func mark_module_destroyed(id: StringName, observed_generation: int = -1) -> boo
 		return false
 	if observed_generation != -1 and observed_generation != _generation:
 		return false
-	var key := String(id).strip_edges().to_lower()
-	if key.is_empty():
+	if _schema_version == 1:
+		var key := String(id).strip_edges().to_lower()
+		if key.is_empty():
+			return false
+		if not _module_destroyed.has(key):
+			return false
+		if bool(_module_destroyed[key]):
+			return false
+		_module_destroyed[key] = true
+		_evaluate_completion_gates()
+		return true
+
+	var phase_index := _active_phase_index
+	if phase_index < 0 or phase_index >= _phase_module_requirements.size():
 		return false
-	if not _module_destroyed.has(key):
+	var expected := String(_phase_module_requirements[phase_index]).strip_edges().to_lower()
+	var candidate := String(id).strip_edges().to_lower()
+	if candidate.is_empty() or candidate != expected:
 		return false
-	if bool(_module_destroyed[key]):
+	if _phase_module_completed[phase_index]:
 		return false
-	_module_destroyed[key] = true
+	_phase_module_completed[phase_index] = true
+	var previous := _phase_health_current[phase_index] if phase_index >= 0 and phase_index < _phase_health_current.size() else 0.0
+	_phase_health_current[phase_index] = 0.0
+	_current_boss_health = max(0.0, _current_boss_health - previous)
+	boss_health_changed.emit(_current_boss_health, _max_boss_health, _generation)
+	_try_finalize_active_phase()
 	_evaluate_completion_gates()
 	return true
 
@@ -207,10 +263,12 @@ func clear() -> void:
 	_waiting_for_stop = false
 	_path_completed = false
 	_completion_emitted = false
+	_active_wave_index = -1
 	_completion_event_id = &""
 	_distance_along_path = 0.0
 	_next_stop_index = 0
-	_total_path_length = 0.0
+	_active_phase_index = 0
+	_schema_version = 1
 	_path_points.clear()
 	_stop_fractions.clear()
 	_stop_distances.clear()
@@ -218,8 +276,19 @@ func clear() -> void:
 	_segment_directions.clear()
 	_encounter_requirements.clear()
 	_module_requirements.clear()
+	_phase_encounter_requirements.clear()
+	_phase_module_requirements.clear()
+	_phase_ids.clear()
+	_phase_health_max.clear()
+	_phase_health_current.clear()
+	_phase_encounter_completed.clear()
+	_phase_module_completed.clear()
+	_phase_completed_ids.clear()
+	_wave_to_phase_index.clear()
 	_encounter_completed.clear()
 	_module_destroyed.clear()
+	_max_boss_health = 0.0
+	_current_boss_health = 0.0
 	set_physics_process(false)
 
 
@@ -265,11 +334,15 @@ func _physics_process(delta: float) -> void:
 
 
 func _handle_stop_reached(stop_index: int, fraction: float) -> void:
+	if _schema_version == 2:
+		_active_wave_index = stop_index
 	_next_stop_index += 1
 	_waiting_for_stop = true
 	_moving = false
 	set_physics_process(false)
 	stop_reached.emit(stop_index, fraction)
+	if _schema_version == 2 and stop_index < _phase_encounter_requirements.size():
+		phase_changed.emit(_phase_index_for_wave(stop_index), _phase_id_for_wave(stop_index), _generation)
 	var encounter_id := _encounter_id_for_index(stop_index)
 	if encounter_id != &"":
 		encounter_requested.emit(encounter_id, _generation)
@@ -289,12 +362,21 @@ func _handle_path_completed() -> void:
 func _evaluate_completion_gates() -> void:
 	if _definition == null or _completion_emitted:
 		return
-	if not _path_completed:
-		return
-	if not _all_gates_complete():
-		return
+	if _schema_version == 2:
+		if not _path_completed:
+			return
+		if _active_phase_index < _phase_count:
+			return
+	else:
+		if not _path_completed:
+			return
+		if not _all_gates_complete():
+			return
 	_completion_emitted = true
 	completed.emit(_completion_event_id, _generation)
+	if _schema_version == 2:
+		phase_changed.emit(_active_phase_index, _active_phase_id(), _generation)
+		boss_health_changed.emit(_current_boss_health, _max_boss_health, _generation)
 	if _definition.reset_policy == 2:
 		_start_loop_cycle()
 
@@ -326,26 +408,49 @@ func _build_path_data() -> void:
 
 func _reset_requirements() -> void:
 	_encounter_completed.clear()
-	for id in _encounter_requirements:
-		var key := String(id).strip_edges().to_lower()
-		if not key.is_empty():
-			_encounter_completed[key] = false
 	_module_destroyed.clear()
-	for id in _module_requirements:
-		var key := String(id).strip_edges().to_lower()
-		if not key.is_empty():
-			_module_destroyed[key] = false
+	if _schema_version == 1:
+		for id in _encounter_requirements:
+			var key := String(id).strip_edges().to_lower()
+			if not key.is_empty():
+				_encounter_completed[key] = false
+		for id in _module_requirements:
+			var key := String(id).strip_edges().to_lower()
+			if not key.is_empty():
+				_module_destroyed[key] = false
+	else:
+		_phase_encounter_completed = []
+		_phase_module_completed = []
+		_phase_completed_ids.clear()
+		_phase_encounter_requirements.resize(_phase_count)
+		_phase_module_requirements.resize(_phase_count)
+		_phase_ids.resize(_phase_count)
+		_phase_health_max.resize(_phase_count)
+		_phase_health_current.resize(_phase_count)
+		for index in range(_phase_count):
+			_phase_encounter_completed[index] = false
+			_phase_module_completed[index] = false
+			_phase_health_current[index] = _phase_health_max[index]
+		_max_boss_health = 0.0
+		for value in _phase_health_max:
+			if is_finite(value):
+				_max_boss_health += value
+		_current_boss_health = _max_boss_health
 
 
 func _reset_progress() -> void:
 	_completion_emitted = false
 	_distance_along_path = 0.0
 	_next_stop_index = 0
-	_path_completed = false
+	_active_phase_index = 0
+	_active_wave_index = -1
 	_waiting_for_stop = false
 	_moving = false
+	_path_completed = false
 	_reset_requirements()
 	set_physics_process(false)
+	_emit_phase_state()
+	_emit_boss_health_state()
 
 
 func _clear_actor() -> void:
@@ -386,8 +491,7 @@ func _process_stops_at_distance() -> void:
 		var stop_distance: float = _stop_distances[_next_stop_index]
 		if _distance_along_path + EPSILON >= stop_distance:
 			var stop_fraction: float = _stop_fractions[_next_stop_index]
-			var index := _next_stop_index
-			_handle_stop_reached(index, stop_fraction)
+			_handle_stop_reached(_next_stop_index, stop_fraction)
 			can_process = _moving
 		else:
 			can_process = false
@@ -431,13 +535,54 @@ func _encounter_id_for_index(stop_index: int) -> StringName:
 
 
 func _all_gates_complete() -> bool:
-	for key in _encounter_completed.keys():
-		if bool(_encounter_completed[key]) == false:
-			return false
-	for key in _module_destroyed.keys():
-		if bool(_module_destroyed[key]) == false:
+	if _schema_version == 1:
+		for key in _encounter_completed.keys():
+			if bool(_encounter_completed[key]) == false:
+				return false
+		for key in _module_destroyed.keys():
+			if bool(_module_destroyed[key]) == false:
+				return false
+		return true
+	for phase_index in range(_phase_count):
+		if not _is_phase_complete(phase_index):
 			return false
 	return true
+
+
+func _is_phase_complete(phase_index: int) -> bool:
+	if phase_index < 0 or phase_index >= _phase_count:
+		return false
+	return bool(_phase_encounter_completed[phase_index]) and bool(_phase_module_completed[phase_index])
+
+
+func _try_finalize_active_phase() -> void:
+	var changed := false
+	while _active_phase_index < _phase_count and _is_phase_complete(_active_phase_index):
+		var phase_id := _phase_ids[_active_phase_index]
+		if phase_id != &"" and not _phase_completed_ids.has(phase_id):
+			_phase_completed_ids.append(phase_id)
+		_active_phase_index += 1
+		changed = true
+	if changed:
+		phase_changed.emit(_active_phase_index, _active_phase_id(), _generation)
+
+
+func _active_phase_id() -> StringName:
+	if _active_phase_index < 0 or _active_phase_index >= _phase_ids.size():
+		return &""
+	return _phase_ids[_active_phase_index]
+
+
+func _emit_phase_state() -> void:
+	if _schema_version != 2:
+		return
+	phase_changed.emit(_active_phase_index, _active_phase_id(), _generation)
+
+
+func _emit_boss_health_state() -> void:
+	if _schema_version != 2:
+		return
+	boss_health_changed.emit(_current_boss_health, _max_boss_health, _generation)
 
 
 func _start_loop_cycle() -> void:
@@ -450,11 +595,79 @@ func _start_loop_cycle() -> void:
 		set_physics_process(false)
 
 
-func _has_duplicate_stop_markers(stop_markers: Array[float]) -> bool:
-	var seen_markers: Dictionary = {}
-	for marker in stop_markers:
-		var key := "%0.6f" % marker
-		if seen_markers.has(key):
-			return true
-		seen_markers[key] = true
-	return false
+func _configure_definitions() -> bool:
+	_encounter_requirements = []
+	_module_requirements = []
+	_phase_encounter_requirements = []
+	_phase_module_requirements = []
+	_phase_ids = []
+	_phase_health_max = []
+	_phase_health_current = []
+	_wave_to_phase_index = []
+	_phase_encounter_completed = []
+	_phase_module_completed = []
+	_phase_count = 0
+	_active_phase_index = 0
+	_stop_fractions = []
+	_encounter_completed.clear()
+	_module_destroyed.clear()
+
+	if _schema_version == 1:
+		_stop_fractions = _definition.stop_markers.duplicate()
+		_encounter_requirements = _definition.encounter_trigger_ids.duplicate()
+		_module_requirements = _definition.destructible_module_ids.duplicate()
+		if _encounter_requirements.size() > _stop_fractions.size():
+			return false
+		return true
+
+	if not (_definition.phases is Array) or _definition.phases.is_empty():
+		return false
+
+	_phase_count = _definition.phases.size()
+	_stop_fractions = []
+	_phase_health_max.resize(_phase_count)
+	_phase_health_current.resize(_phase_count)
+	_phase_encounter_requirements.resize(_phase_count)
+	_phase_module_requirements.resize(_phase_count)
+	_phase_ids.resize(_phase_count)
+	_wave_to_phase_index.resize(_phase_count)
+	_phase_encounter_completed.resize(_phase_count)
+	_phase_module_completed.resize(_phase_count)
+	for index in range(_phase_count):
+		_wave_to_phase_index[index] = -1
+
+	for index in range(_phase_count):
+		var phase := _definition.phases[index] as MovingSetPiecePhaseDefinition
+		if phase == null:
+			return false
+		_stop_fractions.append(phase.stop_marker)
+		_phase_ids[index] = phase.phase_id
+		_phase_encounter_requirements[index] = phase.encounter_id
+		_phase_module_requirements[index] = phase.required_module_id
+		_phase_health_max[index] = phase.health_allocation if is_finite(phase.health_allocation) else 0.0
+		_phase_health_current[index] = 0.0
+		_phase_encounter_completed[index] = false
+		_phase_module_completed[index] = false
+		_wave_to_phase_index[phase.encounter_wave_index] = index
+		_encounter_requirements.append(phase.encounter_id)
+		_module_requirements.append(phase.required_module_id)
+
+	_phase_health_current = _phase_health_max.duplicate()
+	_max_boss_health = 0.0
+	for health in _phase_health_max:
+		_max_boss_health += health if is_finite(health) else 0.0
+	_current_boss_health = _max_boss_health
+	return true
+
+
+func _phase_index_for_wave(wave_index: int) -> int:
+	if wave_index < 0 or wave_index >= _wave_to_phase_index.size():
+		return -1
+	return _wave_to_phase_index[wave_index]
+
+
+func _phase_id_for_wave(wave_index: int) -> StringName:
+	var phase_index := _phase_index_for_wave(wave_index)
+	if phase_index < 0 or phase_index >= _phase_ids.size():
+		return &""
+	return _phase_ids[phase_index]

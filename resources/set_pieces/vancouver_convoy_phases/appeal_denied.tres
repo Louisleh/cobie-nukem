@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="MovingSetPiecePhaseDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/gameplay/moving_set_piece_phase_definition.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+schema_version = 2
+phase_id = &"appeal_denied"
+stop_marker = 0.51
+encounter_wave_index = 1
+encounter_id = &"vancouver_convoy_showdown"
+required_module_id = &"citation_signal_dish"
+display_caption = "APPEAL DENIED"
+health_allocation = 250.0
+music_intensity = 0.55

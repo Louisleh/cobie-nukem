@@ -23,6 +23,8 @@ var _zone_started := false
 var _stops_started: Array[bool] = []
 var _waves_completed: Array[bool] = []
 var _configured := false
+var _schema_version := 1
+var _schema2_encounter_ids_by_wave: Array[StringName] = []
 
 
 func configure(set_piece_runtime: MovingSetPieceRuntime, mission_runtime: MissionRuntime, definition: Object, encounter_zone_id: StringName) -> StringName:
@@ -35,8 +37,6 @@ func configure(set_piece_runtime: MovingSetPieceRuntime, mission_runtime: Missio
 		return ERROR_MISSING_DEFINITION
 	if encounter_zone_id == &"":
 		return ERROR_MISSING_ENCOUNTER_ZONE
-	if definition.encounter_trigger_ids == null or definition.encounter_trigger_ids.is_empty():
-		return ERROR_MISMATCHED_DEFINITION
 	if mission_runtime.encounters == null:
 		return ERROR_MISSING_MISSION_RUNTIME
 	if not mission_runtime.encounters.definitions.has(encounter_zone_id):
@@ -50,20 +50,49 @@ func configure(set_piece_runtime: MovingSetPieceRuntime, mission_runtime: Missio
 	var wave_count: int = int(encounter_definition.effective_waves().size())
 	if wave_count == 0:
 		return ERROR_MISMATCHED_DEFINITION
-	# A moving set piece owns one encounter completion gate. Stop markers pace
-	# that encounter's externally-authored waves; they are not fake encounter IDs.
-	if definition.encounter_trigger_ids.size() != 1:
+
+	var schema_version := int(definition.get("schema_version", 1))
+	_schema_version = schema_version
+	if schema_version == 1:
+		if definition.encounter_trigger_ids == null or definition.encounter_trigger_ids.is_empty():
+			return ERROR_MISMATCHED_DEFINITION
+		if definition.encounter_trigger_ids.size() != 1:
+			return ERROR_MISMATCHED_DEFINITION
+		if definition.encounter_trigger_ids[0] != encounter_definition.id:
+			return ERROR_MISMATCHED_DEFINITION
+		_encounter_requirement = definition.encounter_trigger_ids[0]
+	elif schema_version == 2:
+		if not _is_schema2_encounter_valid(definition, encounter_definition):
+			return ERROR_MISMATCHED_DEFINITION
+		_encounter_requirement = _encounter_id_for_schema2_definition(definition)
+		if _encounter_requirement == &"":
+			return ERROR_MISMATCHED_DEFINITION
+		if definition.phases is Array and definition.phases.size() != wave_count:
+			return ERROR_MISMATCHED_DEFINITION
+		if definition.phases is Array:
+			_schema2_encounter_ids_by_wave.clear()
+			_schema2_encounter_ids_by_wave.resize(wave_count)
+			for wave_index in range(wave_count):
+				_schema2_encounter_ids_by_wave[wave_index] = &""
+			for phase in definition.phases:
+				if phase == null:
+					return ERROR_MISMATCHED_DEFINITION
+				var phase_wave_index := int(phase.get("encounter_wave_index", -1))
+				if phase_wave_index < 0 or phase_wave_index >= wave_count:
+					return ERROR_MISMATCHED_DEFINITION
+				var encounter_id := phase.get("encounter_id", &"") as StringName
+				if String(encounter_id).strip_edges().is_empty():
+					return ERROR_MISMATCHED_DEFINITION
+				_schema2_encounter_ids_by_wave[phase_wave_index] = encounter_id
+	else:
 		return ERROR_MISMATCHED_DEFINITION
-	if definition.encounter_trigger_ids[0] != encounter_definition.id:
-		return ERROR_MISMATCHED_DEFINITION
-	if definition.stop_markers.size() != wave_count:
+	if definition.stop_markers.size() != 0 and definition.stop_markers.size() != wave_count:
 		return ERROR_MISMATCHED_DEFINITION
 
 	_set_piece_runtime = set_piece_runtime
 	_mission_runtime = mission_runtime
 	_encounter_zone_id = encounter_zone_id
 	_encounter_wave_count = wave_count
-	_encounter_requirement = definition.encounter_trigger_ids[0]
 	_expected_generation = _set_piece_runtime.generation()
 	_reset_stage_state()
 	_configure_success()
@@ -97,6 +126,7 @@ func clear() -> void:
 	_zone_started = false
 	_stops_started.clear()
 	_waves_completed.clear()
+	_schema2_encounter_ids_by_wave.clear()
 	_configured = false
 
 
@@ -198,12 +228,20 @@ func _on_mission_wave_completed(definition: EncounterDefinition, wave_index: int
 		return
 	if not _is_wave_active_with_matching_generation_and_empty(wave_index):
 		return
-
 	_waves_completed[wave_index] = true
-	if wave_index == _encounter_wave_count - 1:
-		if not _set_piece_runtime.mark_encounter_completed(_encounter_requirement, _expected_generation):
-			_waves_completed[wave_index] = false
-			return
+	if _schema_version == 1 and wave_index != _encounter_wave_count - 1:
+		_set_piece_runtime.resume_from_stop()
+		return
+
+	var encounter_id := _encounter_requirement
+	if _schema_version == 2:
+		encounter_id = _encounter_id_for_wave_index(wave_index)
+	if encounter_id == &"":
+		_waves_completed[wave_index] = false
+		return
+	if not _set_piece_runtime.mark_encounter_completed(encounter_id, _expected_generation):
+		_waves_completed[wave_index] = false
+		return
 	_set_piece_runtime.resume_from_stop()
 
 
@@ -256,6 +294,53 @@ func _current_zone_generation() -> int:
 	return int(active_state.get("generation", -1))
 
 
+func _is_schema2_encounter_valid(definition: Object, encounter_definition: EncounterDefinition) -> bool:
+	if definition == null or not (definition.phases is Array):
+		return false
+	var phase_count: int = definition.phases.size()
+	if phase_count == 0:
+		return false
+	var found := false
+	var encounter_id: StringName = &""
+	var seen_wave_indices: Dictionary = {}
+	for phase in definition.phases:
+		if phase == null:
+			return false
+		if int(phase.get("schema_version", 0)) != 2:
+			return false
+		var required_id := phase.get("encounter_id", &"") as StringName
+		if String(required_id).strip_edges().is_empty():
+			return false
+		if not found:
+			encounter_id = required_id
+			found = true
+		elif String(required_id) != String(encounter_id):
+			return false
+		var wave_index := int(phase.get("encounter_wave_index", -1))
+		if seen_wave_indices.has(wave_index):
+			return false
+		seen_wave_indices[wave_index] = true
+	return found and String(encounter_id) == String(encounter_definition.id)
+
+
+func _encounter_id_for_wave_index(wave_index: int) -> StringName:
+	if wave_index < 0 or wave_index >= _schema2_encounter_ids_by_wave.size():
+		return &""
+	return _schema2_encounter_ids_by_wave[wave_index]
+
+
+func _encounter_id_for_schema2_definition(definition: Object) -> StringName:
+	if definition == null or not (definition.phases is Array) or definition.phases.is_empty():
+		return &""
+	var phase := definition.phases[0] as Object
+	if phase == null:
+		return &""
+	var required_id := phase.get("encounter_id", &"") as StringName
+	if String(required_id).strip_edges().is_empty():
+		return &""
+	return required_id
+
+
 func _reset_stage_state() -> void:
 	_next_expected_stop_index = 0
 	_active_wave_index = -1
@@ -268,4 +353,3 @@ func _reset_stage_state() -> void:
 	for stop_index in range(_encounter_wave_count):
 		_stops_started[stop_index] = false
 		_waves_completed[stop_index] = false
-

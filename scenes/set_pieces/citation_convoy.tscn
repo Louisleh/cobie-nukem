@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=3]
+[gd_scene load_steps=18 format=3]
 
 [ext_resource type="Script" path="res://scripts/level/citation_convoy_actor.gd" id="1"]
 [ext_resource type="Script" path="res://scripts/level/world_interaction.gd" id="2"]
@@ -15,6 +15,11 @@ albedo_color = Color(1, 0.55, 0.04, 1)
 emission_enabled = true
 emission = Color(0.55, 0.16, 0.01, 1)
 
+[sub_resource type="StandardMaterial3D" id="CoreMaterial"]
+albedo_color = Color(0.82, 0.07, 0.07, 1)
+metallic = 0.45
+roughness = 0.25
+
 [sub_resource type="BoxMesh" id="VehicleMesh"]
 material = SubResource("VehicleMaterial")
 size = Vector3(3.2, 1.25, 4.6)
@@ -29,6 +34,18 @@ top_radius = 0.42
 bottom_radius = 0.42
 height = 0.35
 
+[sub_resource type="CylinderMesh" id="DishMesh"]
+material = SubResource("CitationMaterial")
+top_radius = 0.31
+bottom_radius = 0.31
+height = 0.15
+
+[sub_resource type="CylinderMesh" id="CoreCoreMesh"]
+material = SubResource("CoreMaterial")
+top_radius = 0.52
+bottom_radius = 0.52
+height = 0.58
+
 [sub_resource type="Resource" id="LeftModuleDefinition"]
 script = ExtResource("3")
 id = &"citation_drive_left"
@@ -38,8 +55,20 @@ visual_size = Vector3(0.8, 0.8, 0.8)
 visual_color = Color(1, 0.35, 0.04, 1)
 surface_type = &"metal"
 description = "Overclocked municipal paperwork projector."
-breakable_health = 60.0
-breakable_reset_health = 60.0
+breakable_health = 250.0
+breakable_reset_health = 250.0
+
+[sub_resource type="Resource" id="DishModuleDefinition"]
+script = ExtResource("3")
+id = &"citation_signal_dish"
+kind = 0
+prompt = "DISABLE SIGNAL DISH"
+visual_size = Vector3(0.55, 0.4, 0.55)
+visual_color = Color(0.16, 0.56, 0.9, 1)
+surface_type = &"metal"
+description = "Jam the signal dish so convoy can't call in reinforcements."
+breakable_health = 250.0
+breakable_reset_health = 250.0
 
 [sub_resource type="Resource" id="RightModuleDefinition"]
 script = ExtResource("3")
@@ -50,8 +79,20 @@ visual_size = Vector3(0.8, 0.8, 0.8)
 visual_color = Color(1, 0.35, 0.04, 1)
 surface_type = &"metal"
 description = "Redundant citation generator, because one was unreasonable."
-breakable_health = 60.0
-breakable_reset_health = 60.0
+breakable_health = 250.0
+breakable_reset_health = 250.0
+
+[sub_resource type="Resource" id="CoreModuleDefinition"]
+script = ExtResource("3")
+id = &"citation_core"
+kind = 0
+prompt = "DISABLE CITATION CORE"
+visual_size = Vector3(0.7, 0.9, 0.7)
+visual_color = Color(0.8, 0.18, 0.18, 1)
+surface_type = &"metal"
+description = "Disable the citation core's routing node."
+breakable_health = 250.0
+breakable_reset_health = 250.0
 
 [node name="CitationConvoy" type="Node3D"]
 script = ExtResource("1")
@@ -82,6 +123,12 @@ position = Vector3(1.72, 0.42, -1.25)
 rotation_degrees = Vector3(0, 0, 90)
 mesh = SubResource("WheelMesh")
 
+[node name="CitationSignalDish" type="StaticBody3D" parent="."]
+position = Vector3(0, 1.45, -2.0)
+collision_layer = 1
+script = ExtResource("2")
+definition = SubResource("DishModuleDefinition")
+
 [node name="CitationDriveLeft" type="StaticBody3D" parent="."]
 position = Vector3(-1.1, 1.15, -2.1)
 collision_layer = 1
@@ -93,3 +140,9 @@ position = Vector3(1.1, 1.15, -2.1)
 collision_layer = 1
 script = ExtResource("2")
 definition = SubResource("RightModuleDefinition")
+
+[node name="CitationCore" type="StaticBody3D" parent="."]
+position = Vector3(0, 1.0, -3.2)
+collision_layer = 1
+script = ExtResource("2")
+definition = SubResource("CoreModuleDefinition")
