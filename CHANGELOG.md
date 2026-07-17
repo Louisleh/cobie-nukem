@@ -42,7 +42,7 @@ All notable changes are recorded here. This project follows a lightweight form o
 ### Fixed
 
 - Mission cards now select without launching; an explicit `START` action owns the transition, prevents double launches, and preserves the browser's trusted pointer-lock handoff into gameplay.
-- The desktop reload action now reaches the active weapon before raw-key shortcuts consume the event, so `R` reloads any partially depleted magazine and exposes the existing authored reload sequence through HUD and audio feedback.
+- The desktop reload action now reaches the active weapon before raw-key shortcuts consume the event, so `R` reloads any partially depleted magazine and exposes the existing authored reload sequence through HUD-owned presentation and audio feedback without expanding the player controller.
 - Boss encounters now require and consume an explicit completion target; retry clears stale gameplay audio, timers, actors, summons, and phase rewards.
 - Continue restores sanitized checkpoint identity immediately, and catalog loot/secrets remain deterministic across checkpoint retry.
 - Authored interaction props no longer sink into floors or obstruct the Walker's central pressure lane.
