@@ -2,9 +2,9 @@
 
 This file distinguishes confirmed product limitations from unperformed validation. Update it for every release candidate; do not silently convert “not tested” into “passed.”
 
-## `0.6.0-alpha.9` candidate human gates
+## `0.6.0-alpha.10` candidate human gates
 
-- PR #36 is merged to source `main` but not deployed: title touch readiness, corrected Hound/Walker world scale, removal of confusing Salmon Creek damage slabs, and the revised critical-health portrait are newer than the public Alpha.9 artifact.
+- Until the Alpha.10 deployment completes, the public URL remains Alpha.9. The source candidate includes PR #36, the visual-foundry harness, production weapon models/lifecycle feedback, and Salmon Creek readability work.
 
 - Right-stick profiles are automated for response, frame-rate stability, cancellation, and settings wiring, but final friction/boost strength and thumb comfort require physical iPad Safari testing.
 - The Web bootstrap and title preload are browser-tested; slow real-world mobile networks still need a physical first-load timing pass.
@@ -46,7 +46,7 @@ This file distinguishes confirmed product limitations from unperformed validatio
 - Headless drift smoke and native 1080p Compatibility-renderer zone profiling are green, including draw calls, object/node counts, and static memory. Compatibility/OpenGL does not expose useful GPU task timing here; Web/iPad thermal behavior and audio-voice saturation remain unmeasured hardware evidence.
 - Salmon Creek now combines the validated ball-return prop with a deterministic Blender-authored opening kit and an editable Material Maker pilot graph. The opening kit improves current-main draw calls/nodes/objects, but final scale, lighting, visual cohesion, projectile feel, and placement still need a human playthrough; shed/lab/tunnel/arena structural geometry remains intentionally simple.
 - Existing Hound/Walker atlases are visually stronger than a quick procedural substitute and were retained. PR #36 corrects their world scale, but editable Blender rigs, fully bespoke directional animation, and a human motion/readability review remain open.
-- Chrome DevTools MCP and Context7 were added during the visual-foundry task. They require a fresh Codex process before their tools become callable, so a packaged-Web trace, heap snapshot, and real WebGL network/stall review are open rather than inferred from native profiling.
+- Chrome DevTools now covers a real packaged-Web load at 1024×768 touch under Fast 4G and 2× CPU: LCP 797 ms, CLS 0.00, no game console warnings/errors, and a correctly rendered loading/title path. The MCP filesystem allowlist prevented persisting a heap snapshot; long-session Web memory growth, physical iPad thermals, and device input remain open.
 
 ## Reporting policy
 
