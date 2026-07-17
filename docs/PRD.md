@@ -6,7 +6,7 @@
 **Primary platform:** macOS, especially Apple-silicon Mac mini  
 **Secondary platform:** Browser-playable Web export  
 **Engine:** Godot 4.7 stable, standard/GDScript build  
-**Product scope:** Salmon Creek is the definitive vertical slice; Vancouver is an explicitly labeled public beta preview, while later campaign missions remain locked teasers
+**Product scope:** Salmon Creek is the definitive opening mission; Rain City Run is the second production mission and remains explicitly labeled public beta/RC until human gates pass, while later campaign missions remain locked teasers
 **Core fantasy:** Play as Cobie, an aviator-sunglasses-and-leather-jacket labradoodle action hero, in an original 1990s-style retro FPS designed to feel unusually good on a low-cost flight stick.
 
 ---
@@ -24,6 +24,10 @@ The primary control novelty is a **flight-stick mode** with exaggerated auto-aim
 ## 1.1 Alpha.9 public-beta checkpoint
 
 Alpha.9 preserves the Rain City Forge systems and exposes Vancouver through an unmistakable `BETA` mission card and work-in-progress warning so source and public development remain closely aligned. Browser pointer capture is scene-owned, requested from the trusted mission-launch gesture, recoverable with one non-firing click, and backed by a visible HUD prompt plus activation safety protection. Vancouver adds a ten-second opening protection window but remains a rough production preview without a claimed human end-to-end playthrough. The detailed completed/remaining ledger, evidence, and human gates live only in `docs/PHASE_ROADMAP_PRD.md`.
+
+## 1.2 Rain City Run RC checkpoint
+
+The `0.7.0-alpha.1-rc1` candidate promotes Rain City Run from a straight beta corridor into a campaign-unlocked second mission. It uses five authored gameplay/presentation zones, 26 enemies with difficulty-specific pressure caps, the Compliance Gull, a production Umbrella Shield Enforcer atlas, four secrets, save schema v5, a persistent Municipal Recall Override, and a four-phase 1,000-HP Municipal Towmaster finale. The `BETA` badge and opening warning remain until physical iPad, target-Mac, browser, pacing, art, mix, fairness, humor, and photosensitivity gates receive human approval. Automated completion evidence and release identity are maintained in `docs/PHASE_ROADMAP_PRD.md`.
 
 ---
 

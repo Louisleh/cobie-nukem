@@ -61,15 +61,22 @@ Record build/commit: __________  Godot: __________  OS/device: __________  Teste
 - [ ] Sign read three times, cracked wall, and ball-return secrets each count once and reward the player.
 - [ ] Victory totals and rank reflect the run; enemies/secrets cannot exceed declared totals.
 
-## Public Vancouver beta preview
+## Rain City Run RC / public beta
 
 - [ ] The normal mission selector shows `BETA`, `START BETA`, and a visible work-in-progress warning before launch.
+- [ ] A fresh campaign locks Rain City; completing Salmon Creek unlocks `CONTINUE TO RAIN CITY`; development override does not leak into release behavior.
+- [ ] `PLAY AGAIN` reloads the completed mission rather than always returning to Salmon Creek.
 - [ ] The opening grants enough time to establish mouse/touch control without a spawn death and announces `PUBLIC BETA PREVIEW`.
 - [ ] Downtown alley, Rain City Slice block, waterfront lanes, terminal service, and harbour pier form one continuous readable route.
 - [ ] Four objectives and their checkpoints cannot be consumed early or restored into a dead end.
 - [ ] All twenty authored interactions are grounded, discoverable, reset-safe, and tactically useful; all four secrets count once.
 - [ ] Umbrella Shield Enforcer communicates brace, attack opening, shield break, hurt/stagger, and death; flanking, Barkshot, explosives, and Fetch ricochet remain viable counters.
-- [ ] All three citation-convoy stops change cover and spawn the intended wave; module destruction, death, Continue, restart, and exit reset exactly once.
+- [ ] All four Towmaster phases—Appeal Filed, Appeal Denied, Final Notice, and Case Closed—change state and spawn the intended wave; module destruction, death, Continue, restart, and exit reset exactly once.
+- [ ] The boss bar reads `MUNICIPAL TOWMASTER // APPEAL DENIED`, totals approximately 1,000 Classic HP, exposes modules in order, and leaves a persistent wreck.
+- [ ] Compliance Gulls visibly mark, telegraph, dive, recover, and can be interrupted; no invisible buff or unavoidable attack occurs.
+- [ ] Terminal Service awards Municipal Recall Override; Fetch recall is 35% faster and first recalled contact doubles shield/module stagger without increasing primary damage; checkpoint and campaign persistence behave correctly.
+- [ ] Exactly 26 authored enemies appear over the mission while no more than 2/3/4 attack simultaneously on Story/Classic/Mayhem.
+- [ ] Harbour water/out-of-bounds falls kill and restore at the pier checkpoint rather than falling forever.
 - [ ] Completing the convoy unlocks the departure control and campaign result; no earlier interaction can consume the departure switch.
 - [ ] Route target: ______ minutes (15–22); human pacing, landmark, humor, art, and mix findings recorded separately.
 
