@@ -224,24 +224,28 @@ func _check_responsive_main_menu_contract() -> void:
 func _check_cobie_portrait_contract() -> void:
 	for path in [
 		"res://assets/ui/portraits/cobie_healthy.png",
-		"res://assets/ui/portraits/cobie_hurt.png",
 		"res://assets/ui/portraits/cobie_critical.png",
 	]:
 		var texture := load(path) as Texture2D
-		if texture == null or texture.get_width() != 256 or texture.get_height() != 256:
-			failures.append("Cobie HUD portrait must be a loadable 256x256 texture: " + path)
+		if texture == null or texture.get_width() != 512 or texture.get_height() != 512:
+			failures.append("Cobie HUD portrait must be a loadable 512x512 Retina-ready texture: " + path)
+	if ResourceLoader.exists("res://assets/ui/portraits/cobie_hurt.png"):
+		failures.append("Cobie HUD must expose only the selected healthy and critical portrait assets")
 	var portrait := CobiePortrait.new()
 	portrait.health_ratio = 1.0
-	if portrait.portrait_state() != CobiePortrait.State.HEALTHY: failures.append("70-100% health must use healthy Cobie portrait")
-	portrait.health_ratio = 0.7
-	if portrait.portrait_state() != CobiePortrait.State.HEALTHY: failures.append("70% boundary must remain healthy")
-	portrait.health_ratio = 0.69
-	if portrait.portrait_state() != CobiePortrait.State.HURT: failures.append("30-70% health must use hurt Cobie portrait")
-	portrait.health_ratio = 0.3
-	if portrait.portrait_state() != CobiePortrait.State.HURT: failures.append("30% boundary must remain hurt")
-	portrait.health_ratio = 0.29
-	if portrait.portrait_state() != CobiePortrait.State.CRITICAL: failures.append("0-30% health must use critical Cobie portrait")
+	if portrait.portrait_state() != CobiePortrait.State.HEALTHY: failures.append("65-100% health must use healthy Cobie portrait")
+	portrait.health_ratio = 0.65
+	if portrait.portrait_state() != CobiePortrait.State.HEALTHY: failures.append("65% boundary must remain healthy")
+	portrait.health_ratio = 0.649
+	if portrait.portrait_state() != CobiePortrait.State.CRITICAL: failures.append("Below 65% health must use critical Cobie portrait")
 	portrait.free()
+	var packed := load("res://scenes/ui/hud.tscn") as PackedScene
+	if packed != null:
+		var hud := packed.instantiate()
+		var runtime_portrait := hud.get_node_or_null("Root/BottomBar/CobiePortrait") as Control
+		if runtime_portrait == null or minf(runtime_portrait.size.x, runtime_portrait.size.y) < 100.0:
+			failures.append("Cobie portrait must retain at least a 100px logical edge for 4:3 iPad readability")
+		hud.free()
 
 func _check_caption_contracts() -> void:
 	var packed := load("res://scenes/ui/hud.tscn") as PackedScene

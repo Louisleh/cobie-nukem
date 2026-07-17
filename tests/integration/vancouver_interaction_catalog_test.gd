@@ -38,6 +38,7 @@ func _run() -> void:
 	_test_zone_density(catalog)
 	_test_transform_and_zone_bounds(catalog, route)
 	_test_asset_and_effect_bounds(catalog)
+	_test_readable_physical_challenges(catalog)
 	_test_secret_and_persistence_contracts(catalog)
 	_test_runtime_reset_and_restore_contract(catalog)
 	_finish()
@@ -156,6 +157,26 @@ func _test_asset_and_effect_bounds(catalog: InteractionCatalog) -> void:
 					_expect(not String(definition.persistence_id).contains(FORBIDDEN_ID_FRAGMENT), "Secret %s excludes forbidden persistence id" % definition.id)
 			_:
 				_expect(false, "Unknown interaction kind present in %s" % definition.id)
+
+
+func _test_readable_physical_challenges(catalog: InteractionCatalog) -> void:
+	var explosive_placements: Array[InteractionPlacement] = []
+	for placement in catalog.placements:
+		if placement == null or placement.definition == null:
+			continue
+		var definition := placement.definition as WorldInteractionDefinition
+		_expect(definition.kind != WorldInteractionDefinition.Kind.HAZARD_ZONE, "Rain City excludes silent floor-slab chip-damage hazards: %s" % definition.id)
+		_expect(not (definition.prompt in ["VENT THE FISHGAS", "AIM FOR THE WIND", "FLUSH THE DUCT"]), "Rain City excludes dead hazard prompt data: %s" % definition.id)
+		if definition.kind == WorldInteractionDefinition.Kind.EXPLOSIVE_PROP and placement.zone_id == &"harbour_pier":
+			explosive_placements.append(placement)
+	_expect(explosive_placements.size() >= 2, "Harbour finale has a readable explosive-chain challenge")
+	if explosive_placements.size() >= 2:
+		var first := explosive_placements[0]
+		var second := explosive_placements[1]
+		var distance := first.transform.origin.distance_to(second.transform.origin)
+		var first_radius := (first.definition as WorldInteractionDefinition).chain_reaction_radius
+		var second_radius := (second.definition as WorldInteractionDefinition).chain_reaction_radius
+		_expect(distance <= maxf(first_radius, second_radius), "Harbour explosive pair sits within authored chain-reaction reach")
 
 
 func _test_secret_and_persistence_contracts(catalog: InteractionCatalog) -> void:

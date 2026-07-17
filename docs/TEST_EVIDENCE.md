@@ -1,5 +1,18 @@
 # Test Evidence
 
+## 2026-07-17 — Set A portrait, iPad readability, sign-facing, and Level 2 QA follow-up
+
+| Check | Result | Evidence |
+| --- | --- | --- |
+| Two-state portrait contract | Pass | Healthy at `>= 0.65`, critical below; only two 512×512 runtime assets load |
+| 4:3 tablet composition | Pass (simulated) | `builds/visual-quality/candidates/ipad-portrait-signs-20260717/touch_hud_4_3_1024x768.png`; approximately 220px portrait, unobstructed health/armor and twin-stick controls |
+| Fresh packaged-Web tablet route | Pass | Fresh Web export at `1024×768` with `?touch=1`: title → menu → mission select → Salmon Creek gameplay; large portrait, forward-facing field sign, full twin-stick HUD, and zero captured browser warnings/errors |
+| Salmon Creek sign-facing contract | Pass | Five landmark labels are single-sided; scoreboard faces the playable field; 1024×768 opening/sports-field captures show forward-facing authored text |
+| Rain City hazard cleanup | Pass | No `HAZARD_ZONE` or dead hazard prompts remain; harbour explosive pair is within chain-reaction reach |
+| Mission 2 enemy scale | Pass | Compliance Gull and Umbrella Shield Enforcer added to visible-extent and calibrated-HP contracts |
+| Presentation teardown stress | Pass | `mission_presentation_test.gd` completed 20/20 runs without `ERROR`, warning, leak, or orphan output |
+| Physical iPad follow-up | Not run | Manny’s report is addressed by a simulated candidate; real Safari device comfort/readability remains human-only |
+
 This is a durable evidence template, not a claim that every listed check has run against the current working tree. Add one section per candidate; never overwrite older evidence.
 
 ## Shipped 0.6.0-alpha.10 Production Foundry — 2026-07-16

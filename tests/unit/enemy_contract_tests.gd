@@ -6,6 +6,8 @@ const ENEMY_SCENES := [
 	"res://scenes/enemies/squirrel_trooper.tscn",
 	"res://scenes/enemies/compliance_hound.tscn",
 	"res://scenes/enemies/animal_control_walker.tscn",
+	"res://scenes/enemies/compliance_gull.tscn",
+	"res://scenes/enemies/umbrella_shield_enforcer.tscn",
 ]
 const EXPECTED_HEALTH := {
 	"leash_enforcement_drone": 40.0,
@@ -13,6 +15,8 @@ const EXPECTED_HEALTH := {
 	"squirrel_trooper": 30.0,
 	"compliance_hound": 220.0,
 	"animal_control_walker": 1000.0,
+	"compliance_gull": 42.0,
+	"umbrella_shield_enforcer": 150.0,
 }
 
 var failures: Array[String] = []
@@ -54,6 +58,10 @@ func _run() -> void:
 			var sprite_height := detailed.get_aabb().size.y * detailed.scale.y
 			_expect(sprite_height >= 0.8, "Primary sprite is not a tiny speck: %s (%.2f)" % [scene_path, sprite_height])
 			_expect(sprite_height <= 6.0, "Primary sprite is not an oversized sheet: %s (%.2f)" % [scene_path, sprite_height])
+		else:
+			var visible_extent := _visible_mesh_extent(enemy.get_node_or_null("Visual"))
+			_expect(visible_extent >= 0.8, "Mesh-primary enemy is not a tiny speck: %s (%.2f)" % [scene_path, visible_extent])
+			_expect(visible_extent <= 6.0, "Mesh-primary enemy is not implausibly oversized: %s (%.2f)" % [scene_path, visible_extent])
 		var health_bar := enemy.get_node_or_null("EnemyHealthBar") as Node3D
 		_expect(health_bar != null, "World-space health bar exists: %s" % scene_path)
 		var health_fill := enemy.get_node_or_null("EnemyHealthBar/Fill") as MeshInstance3D
@@ -66,7 +74,7 @@ func _run() -> void:
 			enemy._stabilize_ground_height()
 			_expect(enemy.global_position.y >= 0.0, "Ground enemy recovers above floor: %s" % scene_path)
 		else:
-			_expect(enemy is LeashEnforcementDrone, "Only flying enemies bypass gravity: %s" % scene_path)
+			_expect(enemy is LeashEnforcementDrone or enemy is ComplianceGull, "Only authored flying enemies bypass gravity: %s" % scene_path)
 		var before := enemy.health
 		var applied := enemy.apply_damage(5.0, null, enemy.global_position)
 		_expect(applied > 0.0, "Damage hook applies: %s" % scene_path)
@@ -87,6 +95,20 @@ func _run() -> void:
 		for failure in failures:
 			push_error(failure)
 		quit(1)
+
+
+func _visible_mesh_extent(visual: Node) -> float:
+	if visual == null:
+		return 0.0
+	var extent := 0.0
+	for candidate in visual.find_children("*", "MeshInstance3D", true, false):
+		var mesh_instance := candidate as MeshInstance3D
+		if not mesh_instance.visible or mesh_instance.mesh == null:
+			continue
+		var bounds := mesh_instance.get_aabb()
+		var scaled := bounds.size * mesh_instance.scale.abs()
+		extent = maxf(extent, maxf(scaled.x, maxf(scaled.y, scaled.z)))
+	return extent
 
 func _test_hound_shield() -> void:
 	var hound := preload("res://scenes/enemies/compliance_hound.tscn").instantiate() as ComplianceHound

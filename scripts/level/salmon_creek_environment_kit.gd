@@ -26,7 +26,9 @@ func _build_field_landmarks() -> void:
 	var opening_foundry := OpeningFoundryScene.instantiate()
 	opening_foundry.name = "SalmonCreekOpeningFoundry"
 	add_child(opening_foundry)
-	_label("SALMON CREEK\nHOME  0  •  DOGS  1", Vector3(-10.08, 3.45, -12.5), Vector3(0, -90, 0), 52, Color("ffd05a"))
+	# The scoreboard face points toward the playable field (+X). A -90 degree
+	# rotation exposed Label3D's mirrored back face to the player on iPad.
+	_label("SALMON CREEK\nHOME  0  •  DOGS  1", Vector3(-10.08, 3.45, -12.5), Vector3(0, 90, 0), 52, Color("ffd05a"))
 
 
 func _build_shed_landmarks() -> void:
@@ -108,7 +110,7 @@ func _sphere(node_name: String, position_value: Vector3, radius: float, surface:
 
 
 func _label(text: String, position_value: Vector3, rotation_value: Vector3, font_size: int, color: Color) -> void:
-	var label := Label3D.new(); label.text = text; label.position = position_value; label.rotation_degrees = rotation_value; label.font_size = font_size; label.pixel_size = 0.0028; label.modulate = color; label.outline_size = 6; add_child(label)
+	var label := Label3D.new(); label.text = text; label.position = position_value; label.rotation_degrees = rotation_value; label.font_size = font_size; label.pixel_size = 0.0028; label.modulate = color; label.outline_size = 6; label.double_sided = false; add_child(label)
 
 
 func _omni_light(node_name: String, position_value: Vector3, color: Color, energy: float, range_value: float) -> void:
