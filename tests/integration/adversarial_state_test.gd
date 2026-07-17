@@ -24,6 +24,7 @@ func _run() -> void:
 	await _test_pause_suppression_during_death_and_victory()
 	await _test_mobile_input_release_on_exit_and_focus_loss()
 	await _test_desktop_pointer_capture_recovery()
+	await _test_manual_reload_key_before_empty()
 	await _test_weapon_switch_spam_during_reload()
 	await _test_pause_freezes_reload_and_grace()
 	await _test_level_lifecycle_twice_in_one_process()
@@ -220,6 +221,30 @@ func _test_desktop_pointer_capture_recovery() -> void:
 	_expect(pointer_capture.capture_required, "rejected headless capture keeps the recovery prompt active")
 	player.free()
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+	await process_frame
+
+
+func _test_manual_reload_key_before_empty() -> void:
+	var player := PlayerScene.instantiate() as CobiePlayer
+	root.add_child(player)
+	await process_frame
+	var weapon := player.weapons[player.current_weapon_index]
+	weapon.ammo = maxi(1, weapon.definition.magazine_size - 3)
+	weapon.reserve_ammo = maxi(weapon.reserve_ammo, 3)
+	var reload_events := [0]
+	weapon.reload_started.connect(func(_active_weapon: WeaponBase, _duration: float) -> void:
+		reload_events[0] += 1
+	)
+	var reload_key := InputEventKey.new()
+	reload_key.keycode = KEY_R
+	reload_key.physical_keycode = KEY_R
+	reload_key.unicode = 114
+	reload_key.pressed = true
+	player._input(reload_key)
+	_expect(weapon.is_reloading, "R starts a proactive reload before the magazine reaches zero")
+	_expect(reload_events[0] == 1, "manual R reload emits one visible/audio lifecycle event")
+	weapon.cancel_reload()
+	player.free()
 	await process_frame
 
 

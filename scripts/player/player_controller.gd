@@ -117,6 +117,11 @@ func _ready() -> void:
 func _input(event: InputEvent) -> void:
 	if is_dead or get_tree().paused:
 		return
+	# Named actions must run before raw-key weapon shortcuts so R reaches reload.
+	if event.is_action_pressed(&"reload"):
+		request_reload()
+		get_viewport().set_input_as_handled()
+		return
 	# Arrow keys replace momentum-heavy trackpad scrolling. Ignore key repeat so
 	# one physical press always produces exactly one visible weapon change.
 	if event is InputEventKey and event.pressed and not event.echo:
@@ -147,9 +152,6 @@ func _input(event: InputEvent) -> void:
 		get_viewport().set_input_as_handled()
 	elif event.is_action_pressed("weapon_previous"):
 		select_weapon(current_weapon_index - 1)
-		get_viewport().set_input_as_handled()
-	elif event.is_action_pressed("reload"):
-		request_reload()
 		get_viewport().set_input_as_handled()
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -372,8 +374,7 @@ func _current_weapon_fire(secondary: bool) -> void:
 	else:
 		weapon.fire_primary()
 func request_reload() -> bool:
-	if weapons.is_empty() or is_dead:
-		return false
+	if weapons.is_empty() or is_dead: return false
 	return weapons[current_weapon_index].request_reload()
 func _update_footsteps(running: bool) -> void:
 	var horizontal_delta := Vector2(global_position.x - _last_step_position.x, global_position.z - _last_step_position.z).length()
@@ -481,8 +482,6 @@ func _on_died(source: Node) -> void:
 	collision_shape.disabled = true
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 	died.emit(source)
-
-
 func _apply_feel_profile() -> void:
 	if feel_profile == null: return
 	walk_speed = feel_profile.walk_speed

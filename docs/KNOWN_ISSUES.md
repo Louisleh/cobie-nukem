@@ -4,6 +4,7 @@ This file distinguishes confirmed product limitations from unperformed validatio
 
 ## `0.7.0-alpha.1-rc2` Rain City human gates
 
+- The pending RC3 startup fix separates card selection from launch, retains Web pointer lock across the Start transition, and enables proactive `R` reloads with authored HUD/audio feedback. Packaged Chrome verifies the automated pointer and reload contracts; Safari, physical iPad, and full human route confirmation remain open.
 - The Rain City RC is intended for open public development with an explicit `BETA` badge and warning. Automated gates do not convert the human/device checks below into passes; final publication identity and hashes are recorded only after deployment.
 
 - Right-stick profiles are automated for response, frame-rate stability, cancellation, and settings wiring, but final friction/boost strength and thumb comfort require physical iPad Safari testing.

@@ -5,6 +5,7 @@ extends CanvasLayer
 @onready var armor_label: Label = %ArmorLabel
 @onready var ammo_label: Label = %AmmoLabel
 @onready var weapon_label: Label = %WeaponLabel
+@onready var reload_hint: Label = %ReloadHint
 @onready var interaction_label: Label = %InteractionLabel
 @onready var notification_label: Label = %NotificationLabel
 @onready var portrait: CobiePortrait = %CobiePortrait
@@ -18,6 +19,9 @@ extends CanvasLayer
 
 var _notification_tween: Tween
 var _caption_tween: Tween
+var _reload_active := false
+var _reload_available := false
+var _bound_player: CobiePlayer
 var _boss_hide_tween: Tween
 var _caption_queue: Array[Dictionary] = []
 var _active_caption: Dictionary = {}
@@ -74,6 +78,11 @@ func bind_player(player: Node) -> void:
 	if player.has_signal("weapon_ammo_state_changed"):
 		player.weapon_ammo_state_changed.connect(_on_weapon_ammo_state_changed)
 	if player is CobiePlayer and not player.weapons.is_empty():
+		_bound_player = player
+		for weapon in player.weapons:
+			weapon.reload_started.connect(_on_weapon_reload_started)
+			weapon.reload_finished.connect(_on_weapon_reload_finished)
+			weapon.reload_cancelled.connect(_on_weapon_reload_cancelled)
 		var current: WeaponBase = player.weapons[player.current_weapon_index]
 		_on_weapon_ammo_state_changed(current.definition.display_name, current.ammo, current.definition.magazine_size, current.reserve_ammo, current.definition.infinite_reserve)
 	if player.has_signal("interaction_available"):
@@ -357,9 +366,36 @@ func _on_weapon_changed(display_name: String, ammo: int, maximum_ammo: int) -> v
 	weapon_label.text = display_name.to_upper()
 	ammo_label.text = "∞" if maximum_ammo <= 0 else "%02d" % ammo
 
-func _on_weapon_ammo_state_changed(display_name: String, loaded: int, _capacity: int, reserve: int, infinite_reserve: bool) -> void:
+func _on_weapon_ammo_state_changed(display_name: String, loaded: int, capacity: int, reserve: int, infinite_reserve: bool) -> void:
 	weapon_label.text = display_name.to_upper()
 	ammo_label.text = "%02d / %s" % [loaded, "∞" if infinite_reserve else "%02d" % reserve]
+	_reload_available = capacity > 0 and loaded < capacity and (infinite_reserve or reserve > 0)
+	_update_reload_hint()
+
+
+func _on_weapon_reload_started(weapon: WeaponBase, _duration: float) -> void:
+	if _is_active_weapon(weapon):
+		_reload_active = true
+		_update_reload_hint()
+
+
+func _on_weapon_reload_finished(weapon: WeaponBase) -> void:
+	if _is_active_weapon(weapon):
+		_reload_active = false
+		_update_reload_hint()
+
+
+func _on_weapon_reload_cancelled(weapon: WeaponBase) -> void:
+	_on_weapon_reload_finished(weapon)
+
+
+func _is_active_weapon(weapon: WeaponBase) -> bool:
+	return _bound_player != null and not _bound_player.weapons.is_empty() and weapon == _bound_player.weapons[_bound_player.current_weapon_index]
+
+
+func _update_reload_hint() -> void:
+	reload_hint.visible = _reload_active or _reload_available
+	reload_hint.text = "RELOADING..." if _reload_active else "[R] RELOAD"
 
 func _on_interaction_available(label: String) -> void:
 	interaction_label.visible = not label.is_empty()

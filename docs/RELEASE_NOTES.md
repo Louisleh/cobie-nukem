@@ -1,4 +1,39 @@
-# Release Notes — 0.7.0-alpha.1-rc2 Rain City Stabilization
+# Release Notes — 0.7.0-alpha.1-rc3 Startup Stability
+
+Built on 2026-07-17 with Godot `4.7.stable.official.5b4e0cb0f`. Runtime feature revision: `ba7c449`; stamped candidate: `4a65031`.
+
+## Player-visible changes since RC2
+
+- Mission cards now select and preview without launching. Gameplay begins only from the explicit `START MISSION` action, with double-launch protection and a clear `SELECTED // PRESS START` state.
+- Desktop Web launch preserves the trusted Start-action pointer-lock request through scene startup. Packaged Chrome enters gameplay focused and captured; a released lock is restored by one direct canvas click.
+- `R` proactively reloads a partially depleted magazine instead of waiting for empty. The HUD exposes reload availability and progress, while the existing original weapon-specific mechanical samples provide start, step, and completion feedback.
+- The previously integrated iPad portrait sizing, two-state Cobie health art, forward-facing Salmon Creek signs, stable connector surfaces, bounded interaction placements, and deterministic Walker finale are included in this exact public candidate.
+
+## Engineering and validation
+
+- Reload presentation observes weapon lifecycle directly from the HUD, keeping `CobiePlayer` under the repository's 500-line responsibility gate.
+- Focused UI, input, adversarial-state, imported-audio, and packaged-Web checks cover selection-only cards, explicit launch, pointer capture, proactive reload, and HUD lifecycle feedback.
+- The complete release matrix passes parser/import, all unit/integration/content/smoke suites, 100 route/checkpoint/touch/effect cycles, 500 weapon transitions, 100 convoy cycles, architecture/provenance/IP/performance gates, Web export, and unsigned Universal macOS export.
+- The exact cache-keyed package passes a fresh 1024×768 Chrome flow with no game-origin console warnings or errors.
+
+## Honest RC boundary
+
+- The Rain City `BETA` badge remains. Physical iPad Safari, target-Mac full routes, Safari completion, pacing, art, mix, fairness, humor, touch comfort, and photosensitivity remain human-only gates.
+- The macOS ZIP is unsigned and unnotarized. The working title still requires clearance before commercial distribution.
+
+## Artifacts
+
+| Artifact | Bytes | SHA-256 |
+| --- | ---: | --- |
+| `cobie-nukem-0.7.0-alpha.1-rc3-itch.zip` | 35,790,399 | `422d57137d327597d974e80511e135b987ff6b60545e9c3e47f8c11f6a370221` |
+| `cobie-nukem-0.7.0-alpha.1-rc3-macos-unsigned.zip` | 85,155,304 | `976d6172336bb684392bcd7d2e2951837ccc6af7e6cf0158b6cb2d62810a7066` |
+| Packaged Web PCK | 26,282,532 | `d4c763ae8e3a74fcd2671992aad520b8866cb01d5dbbcdd6db15f00f2359d2cb` |
+
+Source integration, GitHub prerelease, website deployment, and downloaded public byte identity are recorded in `docs/RELEASE_0_7_0_ALPHA1_RC3_EVIDENCE.md` after publication.
+
+---
+
+# Prior Release Notes — 0.7.0-alpha.1-rc2 Rain City Stabilization
 
 Built on 2026-07-16 with Godot `4.7.stable.official.5b4e0cb0f`. Runtime feature revision: `0d80348`; stamped candidate: `6228ecd`.
 

@@ -23,6 +23,7 @@ var _cards: Array[Button] = []
 var _difficulty_buttons: Array[Button] = []
 var _campaign_progress: CampaignProgressRuntime
 var _difficulty_group := ButtonGroup.new()
+var _launching := false
 
 func _ready() -> void:
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
@@ -80,7 +81,10 @@ func _build_cards() -> void:
 			_select(index)
 		)
 		card.focus_entered.connect(func() -> void: _select(index))
-		card.pressed.connect(func() -> void: _activate(index))
+		# A mission card is a selection control, not a disguised Start button.
+		# Keeping launch behind the explicit footer action prevents an exploratory
+		# click (or a touch used to inspect a card) from dropping into gameplay.
+		card.pressed.connect(_on_card_pressed.bind(index))
 		card_row.add_child(card)
 		_cards.append(card)
 	if focusable_cards.size() == 0:
@@ -179,19 +183,29 @@ func _select(index: int) -> void:
 	elif data.is_preview_release(_campaign_progress, _development_unlock_override()):
 		status_label.text = data.launch_notice if not data.launch_notice.strip_edges().is_empty() else "%s // PUBLIC WORK IN PROGRESS" % data.status_badge(_campaign_progress, _development_unlock_override())
 	else:
-		status_label.text = "READY"
+		status_label.text = "SELECTED // PRESS START"
+
+
+func _on_card_pressed(index: int) -> void:
+	if _launching or index < 0 or index >= levels.size():
+		return
+	_select(index)
+	sounds.play(ProceduralAudio.Cue.ACCEPT, -6.0)
 
 func _activate_selected() -> void:
 	_activate(_selected)
 
 func _activate(index: int) -> void:
-	if index < 0 or index >= levels.size():
+	if _launching or index < 0 or index >= levels.size():
 		return
 	var data := levels[index]
 	if not data.is_available(_campaign_progress, _development_unlock_override()) or data.scene_path.is_empty():
 		status_label.text = "LOCKED // ANIMAL CONTROL SEALED THIS COURSE"
 		sounds.play(ProceduralAudio.Cue.ERROR)
 		return
+	_launching = true
+	_set_launch_controls_disabled(true)
+	status_label.text = "LOADING %s..." % data.title.to_upper()
 	SaveManager.delete_slot(&"checkpoint")
 	GameState.continue_requested = false
 	GameState.begin_run(data.level_id)
@@ -201,12 +215,23 @@ func _activate(index: int) -> void:
 	# while the Start button gesture is still active; the player retains a safe
 	# click-to-aim fallback for focus loss and keyboard-only launches.
 	if not MobileControls.touchscreen_expected():
-		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+		PointerCaptureController.request_from_launch_gesture()
 	var result := SceneRouter.go_to(data.scene_path)
 	if result != OK:
+		_launching = false
+		_set_launch_controls_disabled(false)
 		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 		status_label.text = "MISSION ROUTE OFFLINE"
 		sounds.play(ProceduralAudio.Cue.ERROR)
+		_select(index)
+
+
+func _set_launch_controls_disabled(disabled: bool) -> void:
+	play_button.disabled = disabled
+	play_button.focus_mode = Control.FOCUS_NONE if disabled else Control.FOCUS_ALL
+	for index in _cards.size():
+		var data := levels[index]
+		_cards[index].disabled = disabled or not data.is_available(_campaign_progress, _development_unlock_override())
 
 func _back() -> void:
 	SceneRouter.go_to(menu_scene_path)

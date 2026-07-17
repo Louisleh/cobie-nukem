@@ -23,6 +23,7 @@ func _initialize() -> void:
 	]:
 		_check_scene(path)
 	_check_level_select_contract()
+	await _check_level_select_activation_contract()
 	await _check_difficulty_selector_contract()
 	await _check_responsive_title_contract()
 	_check_responsive_main_menu_contract()
@@ -115,6 +116,42 @@ func _check_level_select_contract() -> void:
 	if scroll == null or scroll.horizontal_scroll_mode == ScrollContainer.SCROLL_MODE_DISABLED:
 		failures.append("Level cards must remain reachable in narrow viewports")
 	instance.free()
+
+
+func _check_level_select_activation_contract() -> void:
+	var packed := load("res://scenes/menus/level_select.tscn") as PackedScene
+	if packed == null:
+		return
+	# Keep the test dynamically typed so loading this scene does not force its
+	# global class ahead of the project's autoload names in a fresh headless HOME.
+	var instance := packed.instantiate()
+	root.add_child(instance)
+	await process_frame
+	var sounds := instance.get_node_or_null("ProceduralAudio")
+	if sounds != null:
+		sounds.set("_player", null)
+	var row := instance.get_node_or_null("SafeArea/Main/CourseScroll/CardRow") as HBoxContainer
+	if row == null or row.get_child_count() == 0:
+		failures.append("Level select needs selectable mission cards")
+	else:
+		var first_card := row.get_child(0) as Button
+		var selects_only := false
+		for connection in first_card.pressed.get_connections():
+			var callable: Callable = connection.get("callable", Callable())
+			if callable.is_valid() and callable.get_method() == &"_on_card_pressed":
+				selects_only = true
+				break
+		if not selects_only:
+			failures.append("Mission-card press must select only; explicit Start owns scene launch")
+		instance.set("_selected", -1)
+		instance.call("_on_card_pressed", 0)
+		if int(instance.get("_selected")) != 0 or bool(instance.get("_launching")):
+			failures.append("Mission-card click must update selection without entering launch state")
+		var status := instance.get_node_or_null("SafeArea/Main/Footer/StatusLabel") as Label
+		if status == null or "PRESS START" not in status.text:
+			failures.append("Selected mission must clearly instruct the player to press Start")
+	instance.free()
+	await process_frame
 
 func _check_difficulty_selector_contract() -> void:
 	var packed := load("res://scenes/menus/level_select.tscn") as PackedScene

@@ -4,20 +4,30 @@ extends Node
 signal capture_required_changed(required: bool)
 signal capture_requested
 
+const LAUNCH_CAPTURE_GRACE_MSEC := 2000
+
+enum StartupPolicy { TOUCH_VISIBLE, NATIVE_CAPTURE, WEB_PRESERVE }
+
+static var _launch_capture_requested_msec := -1
+
 var capture_required := false
 
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
-	if MobileControls.touchscreen_expected():
-		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
-	elif not OS.has_feature("web") or Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
-		request_capture()
-	else:
-		# Web pointer lock cannot be granted from scene startup. The mission-launch
-		# gesture normally captures before this scene arrives; direct routes and
-		# keyboard launches deliberately use the visible activation prompt.
-		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+	match startup_policy(MobileControls.touchscreen_expected(), OS.has_feature("web")):
+		StartupPolicy.TOUCH_VISIBLE:
+			Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+		StartupPolicy.NATIVE_CAPTURE:
+			request_capture()
+		StartupPolicy.WEB_PRESERVE:
+			# Never write VISIBLE here. A Start-button request can still be pending in
+			# the browser while the gameplay scene enters the tree; forcing visibility
+			# at that instant cancels the trusted pointer-lock request and produces the
+			# familiar "pause, then resume to fix the mouse" failure. Direct routes are
+			# already visible and will naturally expose the click-to-aim prompt.
+			if Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
+				_launch_capture_requested_msec = -1
 	call_deferred("_sync_capture_state")
 
 
@@ -45,6 +55,27 @@ static func needs_capture(touch_expected: bool, mouse_mode: Input.MouseMode) -> 
 	return not touch_expected and mouse_mode != Input.MOUSE_MODE_CAPTURED
 
 
+static func startup_policy(touch_expected: bool, web_build: bool) -> StartupPolicy:
+	if touch_expected:
+		return StartupPolicy.TOUCH_VISIBLE
+	return StartupPolicy.WEB_PRESERVE if web_build else StartupPolicy.NATIVE_CAPTURE
+
+
+static func request_from_launch_gesture() -> void:
+	# Called synchronously by an explicit mission Start action. This timestamp is
+	# intentionally process-local: it only protects the handoff into the next
+	# scene and is never save data.
+	_launch_capture_requested_msec = Time.get_ticks_msec()
+	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+
+
+static func launch_capture_pending(now_msec := -1) -> bool:
+	if _launch_capture_requested_msec < 0:
+		return false
+	var now := Time.get_ticks_msec() if now_msec < 0 else now_msec
+	return now - _launch_capture_requested_msec <= LAUNCH_CAPTURE_GRACE_MSEC
+
+
 func request_capture() -> void:
 	if not _gameplay_active():
 		return
@@ -55,6 +86,8 @@ func request_capture() -> void:
 
 
 func _sync_capture_state() -> void:
+	if Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
+		_launch_capture_requested_msec = -1
 	var required := _gameplay_active() and needs_capture(MobileControls.touchscreen_expected(), Input.mouse_mode)
 	if required == capture_required:
 		return
