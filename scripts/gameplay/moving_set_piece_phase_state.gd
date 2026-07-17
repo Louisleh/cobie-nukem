@@ -107,6 +107,35 @@ func mark_module(id: StringName) -> bool:
 	return true
 
 
+func update_module_health(id: StringName, module_health: float, module_max_health: float) -> bool:
+	if active_index < 0 or active_index >= module_requirements.size():
+		return false
+	if String(id).strip_edges().to_lower() != String(module_requirements[active_index]).strip_edges().to_lower():
+		return false
+	if not is_finite(module_health) or not is_finite(module_max_health) or module_max_health <= 0.0:
+		return false
+	var authored_max: float = health_max[active_index]
+	var next_health := authored_max * clampf(module_health / module_max_health, 0.0, 1.0)
+	if is_equal_approx(next_health, health_current[active_index]):
+		return false
+	current_health = clampf(current_health + next_health - health_current[active_index], 0.0, max_health)
+	health_current[active_index] = next_health
+	return true
+
+
+func restore_completed() -> void:
+	completed_ids = ids.duplicate()
+	encounter_completed.resize(ids.size())
+	module_completed.resize(ids.size())
+	encounter_completed.fill(true)
+	module_completed.fill(true)
+	health_current.resize(ids.size())
+	health_current.fill(0.0)
+	active_index = ids.size()
+	current_health = 0.0
+	last_health_delta = 0.0
+
+
 func finalize_completed() -> bool:
 	var changed := false
 	while active_index < ids.size() and is_complete(active_index):

@@ -65,6 +65,7 @@ func _run() -> void:
 	await process_frame
 	await _test_opening_safety_window()
 	await _test_harbour_checkpoint_rehydration()
+	await _test_completed_checkpoint_rehydrates_wreck()
 	await _test_stale_route_snapshot_fallback()
 	if failures.is_empty():
 		print("VANCOUVER MISSION HOST TEST: PASS")
@@ -101,6 +102,43 @@ func _test_harbour_checkpoint_rehydration() -> void:
 	_expect(mission.current_zone == &"harbour_pier", "harbour Continue restores controller zone truth")
 	_expect(mission._set_piece_runtime != null and bool(mission._set_piece_runtime.current_state().get("has_actor", false)), "harbour Continue rehydrates the citation convoy")
 	_expect(not mission._world_builder.departure_switch.enabled, "restored departure remains locked until convoy objective completes")
+	mission.queue_free()
+	await process_frame
+
+
+func _test_completed_checkpoint_rehydrates_wreck() -> void:
+	var mission := MissionScene.instantiate() as EpisodeOneVancouverWaterfront
+	mission.spawn_player = false
+	mission.start_run_automatically = false
+	mission.setup_presentation = false
+	mission._restored_checkpoint = {
+		"objective_snapshot": {
+			"progress": {"reach_waterfront": 1, "restore_terminal": 1, "stop_citation_convoy": 1},
+			"completed": ["reach_waterfront", "restore_terminal", "stop_citation_convoy"],
+		},
+		"encounter_snapshot": {"completed": ["harbour_pier"]},
+		"route_snapshot": {
+			"route_id": "vancouver_mission2_route",
+			"current_zone": "harbour_pier",
+			"current_index": 4,
+			"visited_zones": ["downtown_alley", "ruse_block", "waterfront_seawall", "terminal_service", "harbour_pier"],
+			"checkpoint_id": "checkpoint_harbour_clear",
+			"is_completed": true,
+		},
+		"secrets": {},
+	}
+	root.add_child(mission)
+	await process_frame
+	var state := mission._set_piece_runtime.current_state()
+	_expect(bool(state.get("completion_emitted", false)), "Completed Continue restores terminal convoy state without replaying the boss")
+	_expect(is_equal_approx(float(state.get("current_boss_health", -1.0)), 0.0), "Completed Continue restores zero boss health")
+	var wreck := _find_convoy(mission._world_builder.actors)
+	_expect(wreck != null and wreck.defeat_started(), "Completed Continue restores the persistent defeated wreck")
+	_expect(mission._world_builder.departure_switch.enabled, "Completed Continue keeps departure control enabled")
+	var generation := mission._set_piece_runtime.generation()
+	mission.restart_from_checkpoint()
+	_expect(mission._set_piece_runtime.generation() == generation, "Post-victory retry never resets or resurrects the convoy")
+	_expect(bool(mission._set_piece_runtime.current_state().get("completion_emitted", false)), "Post-victory retry preserves terminal convoy state")
 	mission.queue_free()
 	await process_frame
 

@@ -250,16 +250,12 @@ func _apply_requested_checkpoint() -> void:
 		return
 	_restored_checkpoint = restored.payload
 	checkpoint_position = restored.position
-
-
 func _restore_runtime_state() -> void:
 	var restored := RainCityCheckpointState.restore(_restored_checkpoint, _mission_runtime, _route_runtime, content_manifest.route_definition)
 	if restored.is_empty():
 		return
 	secrets = restored.secrets
 	current_zone = restored.current_zone
-
-
 func _rehydrate_restored_gameplay() -> void:
 	if _restored_checkpoint.is_empty() or _route_runtime == null:
 		return
@@ -267,28 +263,24 @@ func _rehydrate_restored_gameplay() -> void:
 	var convoy_complete := _mission_runtime.objectives.completed.has(&"stop_citation_convoy")
 	if _world_builder != null and _world_builder.departure_switch != null:
 		_world_builder.departure_switch.set_enabled(convoy_complete)
-	if current_zone == &"harbour_pier" and not convoy_complete:
+	if convoy_complete:
+		_last_combat_zone = &""
+		if _set_piece_runtime != null and not bool(_set_piece_runtime.current_state().get("completion_emitted", false)):
+			_set_piece_runtime.restore_completed_state()
+	elif current_zone == &"harbour_pier":
 		_last_combat_zone = &"harbour_pier"
 		if _set_piece_runtime != null and not bool(_set_piece_runtime.current_state().get("has_actor", false)):
 			_set_piece_runtime.start()
 	elif current_zone != &"" and not _mission_runtime.encounters.completed.has(current_zone):
 		_activate_zone_encounter(current_zone)
-
-
 func _poll_route_position() -> void:
 	if is_instance_valid(player):
 		_submit_route_position(player.global_position)
-
-
 func _submit_route_position(position: Vector3) -> void:
 	_mission_runtime.submit_actor_position(position)
-
-
 func _on_world_zone_entered(_zone_id: StringName, _title: String, actor: Node) -> void:
 	if actor is Node3D:
 		_submit_route_position((actor as Node3D).global_position)
-
-
 func _on_route_zone_entered(zone_id: StringName, title: String) -> void:
 	if current_zone == zone_id:
 		return
@@ -305,8 +297,6 @@ func _on_route_zone_entered(zone_id: StringName, title: String) -> void:
 	elif _set_piece_runtime != null and _set_piece_runtime.current_state().get("has_actor", false) == false:
 		_last_combat_zone = &"harbour_pier"
 		_set_piece_runtime.start()
-
-
 func _clear_abandoned_encounters(entering_zone: StringName) -> void:
 	if _mission_runtime == null or _mission_runtime.encounters == null:
 		return
@@ -415,6 +405,9 @@ func _on_objective_completed(definition: ObjectiveDefinition) -> void:
 	if definition.id == &"restore_terminal":
 		_award_municipal_recall_override()
 	if definition.id == &"stop_citation_convoy" and _world_builder != null and _world_builder.departure_switch != null:
+		# Once the clear checkpoint is authoritative, death/retry must preserve the
+		# wreck instead of treating the harbour as an active encounter reset.
+		_last_combat_zone = &""
 		_world_builder.departure_switch.set_enabled(true)
 	if definition.id == &"complete_harbour_pier":
 		_begin_completion()

@@ -3,6 +3,7 @@ extends Node3D
 
 signal module_destroyed(module_id: StringName)
 signal module_staggered(module_id: StringName, multiplier: float)
+signal module_health_changed(module_id: StringName, current_health: float, maximum_health: float, applied_amount: float)
 
 const PHASE_MODULE_IDS: Array[StringName] = [
 	&"citation_drive_left",
@@ -32,6 +33,7 @@ func _ready() -> void:
 			_phase_module_collision_layers[key] = interaction.collision_layer
 		interaction.interaction_completed.connect(_on_interaction_completed)
 		interaction.recall_staggered.connect(_on_module_staggered)
+		interaction.health_changed.connect(_on_module_health_changed)
 
 	_set_module_enabled(&"", false)
 	_active_phase_index = 0
@@ -54,6 +56,10 @@ func _on_interaction_completed(interaction_id: StringName, kind: int) -> void:
 
 func _on_module_staggered(module_id: StringName, multiplier: float) -> void:
 	module_staggered.emit(module_id, multiplier)
+
+
+func _on_module_health_changed(module_id: StringName, current_health: float, maximum_health: float, applied_amount: float) -> void:
+	module_health_changed.emit(module_id, current_health, maximum_health, applied_amount)
 
 
 func destroyed_module_count() -> int:

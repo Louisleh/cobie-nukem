@@ -19,6 +19,8 @@ const EnemyDeathEffectScript := preload("res://scripts/ai/enemy_death_effect.gd"
 @export var attack_kind: StringName = &"attack"
 @export var uses_gravity := true
 @export var ground_height := 0.0
+@export_range(0.5, 8.0, 0.1) var ground_recovery_drop_distance := 1.5
+@export_range(0, 4, 1) var ground_recovery_retry_limit := 1
 
 var state := State.IDLE
 var health := 1.0
@@ -44,9 +46,17 @@ var _stagger_accumulator := 0.0
 var _visual_base_position := Vector3.ZERO
 var _presentation_tween: Tween
 var _navigator: EnemyNavigator
+var _last_safe_ground_position := Vector3.ZERO
+var _has_safe_ground_position := false
+var _consecutive_ground_recoveries := 0
 
 func _ready() -> void:
 	floor_snap_length = 0.45
+	# Authored spawn points are the initial bounded fallback. Once physics confirms
+	# a floor contact this is replaced by the latest real grounded position. This
+	# prevents an actor knocked off a pier from being clamped under open water.
+	_last_safe_ground_position = global_position
+	_has_safe_ground_position = global_position.is_finite()
 	add_to_group(&"enemies")
 	add_to_group(&"auto_aim_targets")
 	if definition == null:
@@ -297,10 +307,28 @@ func _move_toward(destination: Vector3, speed: float, delta: float) -> void:
 		_navigator.observe_motion(desired.length_squared() > 0.01, delta)
 
 func _stabilize_ground_height() -> void:
-	if not uses_gravity or global_position.y >= ground_height:
+	if not uses_gravity or is_dead:
 		return
-	global_position.y = ground_height
-	velocity.y = 0.0
+	if is_on_floor():
+		_last_safe_ground_position = global_position
+		_has_safe_ground_position = true
+		_consecutive_ground_recoveries = 0
+		return
+	if not _has_safe_ground_position:
+		return
+	if global_position.y > _last_safe_ground_position.y - ground_recovery_drop_distance:
+		return
+	if _consecutive_ground_recoveries >= ground_recovery_retry_limit:
+		# A spawn or recovery point that still cannot retain the actor must not
+		# leave a living, unreachable encounter participant. Deterministic defeat
+		# lets the EncounterDirector complete and clean up normally.
+		navigation_recovery_requested.emit(self, &"fell_out_of_bounds")
+		_die(null)
+		return
+	_consecutive_ground_recoveries += 1
+	global_position = _last_safe_ground_position + Vector3.UP * 0.05
+	velocity = Vector3.ZERO
+	reset_physics_interpolation()
 	if _navigator != null:
 		_navigator.reset_after_teleport()
 

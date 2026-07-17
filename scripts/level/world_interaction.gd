@@ -9,6 +9,10 @@ signal explosion_fired(origin: Vector3, damage: float)
 signal chain_reaction_dispatched(from_interaction: StringName, to_interaction: StringName, remaining_budget: int)
 signal hazardous_tick_damaged(targets: int)
 signal recall_staggered(interaction_id: StringName, multiplier: float)
+signal health_changed(interaction_id: StringName, current_health: float, maximum_health: float, applied_amount: float)
+
+const RECALL_STAGGER_HEALTH_FRACTION := 0.10
+const RECALL_STAGGER_HEALTH_CAP_FRACTION := 0.25
 
 @export var definition: WorldInteractionDefinition
 
@@ -77,11 +81,7 @@ func apply_damage(amount: float, source: Node = null, hit_position: Vector3 = Ve
 		return 0.0
 	match definition.kind:
 		WorldInteractionDefinition.Kind.BREAKABLE_PROP:
-			var applied := minf(_current_health, amount)
-			_current_health -= applied
-			if _current_health <= 0.0:
-				_activate_breakable(source)
-			return applied
+			return _apply_breakable_damage(amount, source)
 		WorldInteractionDefinition.Kind.EXPLOSIVE_PROP:
 			var applied := minf(_current_health, amount)
 			_current_health -= applied
@@ -93,13 +93,28 @@ func apply_damage(amount: float, source: Node = null, hit_position: Vector3 = Ve
 	return 0.0
 
 
-func apply_recall_stagger(multiplier: float) -> void:
+func apply_recall_stagger(multiplier: float) -> float:
 	if not _is_authorized() or _activated or definition.kind != WorldInteractionDefinition.Kind.BREAKABLE_PROP:
-		return
+		return 0.0
 	if multiplier <= 1.0:
-		return
+		return 0.0
+	var maximum := definition.starting_health()
+	var requested := maximum * RECALL_STAGGER_HEALTH_FRACTION * (clampf(multiplier, 1.0, 3.0) - 1.0)
+	var applied := _apply_breakable_damage(minf(requested, maximum * RECALL_STAGGER_HEALTH_CAP_FRACTION), null)
 	recall_staggered.emit(definition.id, multiplier)
 	_spawn_temporary_effect()
+	return applied
+
+
+func _apply_breakable_damage(amount: float, source: Node) -> float:
+	if amount <= 0.0 or _activated:
+		return 0.0
+	var applied := minf(_current_health, amount)
+	_current_health -= applied
+	health_changed.emit(definition.id, _current_health, definition.starting_health(), applied)
+	if _current_health <= 0.0:
+		_activate_breakable(source)
+	return applied
 
 
 func receive_chain_reaction(source: Node, remaining_budget: int) -> void:

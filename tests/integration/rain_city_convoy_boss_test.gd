@@ -45,6 +45,8 @@ func _run() -> void:
 	if failures.is_empty():
 		await _validate_actor_presentation()
 	if failures.is_empty():
+		await _validate_completed_wreck_restore()
+	if failures.is_empty():
 		await _test_deterministic_reset_cycles()
 	if failures.is_empty():
 		print("RAIN CITY CONVOY BOSS SOAK TEST: PASS")
@@ -108,11 +110,33 @@ func _validate_actor_presentation() -> void:
 	var tickets := actor.get_node_or_null("TicketDebris") as CPUParticles3D
 	var sparks := actor.get_node_or_null("DefeatSparks") as CPUParticles3D
 	_expect(tickets != null and tickets.one_shot and tickets.amount <= 28, "ticket debris is one-shot and bounded")
-	_expect(sparks != null and sparks.one_shot and sparks.amount <= 18, "defeat sparks are one-shot and bounded")
+	_expect(sparks != null and sparks.one_shot and sparks.amount <= 18, "defeat sparks is one-shot and bounded")
 	_expect(actor.play_defeat_sequence(), "convoy defeat presentation starts exactly once")
 	_expect(actor.defeat_started(), "convoy records persistent defeat state")
 	_expect(not actor.play_defeat_sequence(), "convoy rejects duplicate defeat presentation")
 	actor.queue_free()
+	await process_frame
+
+
+func _validate_completed_wreck_restore() -> void:
+	var runtime := _make_set_piece_runtime()
+	if runtime == null:
+		return
+	var completion_events := [0]
+	runtime.completed.connect(func(_id: StringName, _generation: int) -> void: completion_events[0] += 1)
+	_expect(runtime.restore_completed_state(), "completed checkpoint restores a persistent convoy wreck")
+	await process_frame
+	var state := runtime.current_state()
+	_expect(bool(state.get("path_completed", false)), "restored wreck remains at completed path state")
+	_expect(bool(state.get("completion_emitted", false)), "restored wreck records terminal completion state")
+	_expect(is_equal_approx(float(state.get("current_boss_health", -1.0)), 0.0), "restored wreck has zero boss health")
+	_expect(completion_events[0] == 0, "wreck restoration never re-emits mission objective completion")
+	_expect(runtime.get_child_count() == 1, "wreck restoration owns exactly one actor")
+	var wreck := runtime.get_child(0) as CitationConvoyActor
+	_expect(wreck != null and wreck.defeat_started(), "restored actor immediately applies persistent defeat presentation")
+	if wreck != null:
+		_expect(wreck.position.is_equal_approx(CONVOY_DEFINITION.path_points[-1]), "restored wreck is positioned at the authored path end")
+	runtime.queue_free()
 	await process_frame
 
 
@@ -164,12 +188,17 @@ func _test_deterministic_reset_cycles() -> void:
 
 			var module_id := EXPECTED_MODULE_IDS[phase_index]
 			var module_first := cycle % 2 == 0
+			if phase_index == 0:
+				_expect(runtime.update_module_health(module_id, 125.0, 250.0, cycle_generation), "cycle %d accepts continuous partial module health" % cycle)
+				_expect(is_equal_approx(float(runtime.current_state().get("current_boss_health", 0.0)), 875.0), "cycle %d reports partial module damage in the shared boss budget" % cycle)
 			if module_first:
 				_expect(coordinator.report_module_destroyed(module_id, cycle_generation), "cycle %d marks module-first gate for phase %d" % [cycle, phase_index])
 				_expect(not coordinator.report_module_destroyed(module_id, cycle_generation), "cycle %d rejects duplicate module gate for phase %d" % [cycle, phase_index])
+				_expect(bool(runtime.current_state().get("waiting_for_stop", false)), "cycle %d phase %d remains stopped until its wave gate completes" % [cycle, phase_index])
 				_expect(_kill_active_wave(mission_runtime, ENCOUNTER_ZONE_ID), "cycle %d completes wave %d" % [cycle, phase_index])
 			else:
 				_expect(_kill_active_wave(mission_runtime, ENCOUNTER_ZONE_ID), "cycle %d completes wave %d" % [cycle, phase_index])
+				_expect(bool(runtime.current_state().get("waiting_for_stop", false)), "cycle %d phase %d remains stopped until its module gate completes" % [cycle, phase_index])
 				_expect(coordinator.report_module_destroyed(module_id, cycle_generation), "cycle %d marks module gate for phase %d" % [cycle, phase_index])
 				_expect(not coordinator.report_module_destroyed(module_id, cycle_generation), "cycle %d rejects duplicate module gate for phase %d" % [cycle, phase_index])
 

@@ -25,6 +25,10 @@ func _run() -> void:
 	_test_visible_telegraph()
 	_test_interrupt_clears_telegraph()
 	_test_attack_mark_signal_emission()
+	_test_commit_does_not_deal_instant_damage()
+	_test_dive_hits_then_recovers()
+	_test_locked_dive_can_miss()
+	_test_committed_dive_is_interruptible()
 	_test_state_change_cleanup()
 
 	if fake_pressure != null:
@@ -79,6 +83,74 @@ func _test_attack_mark_signal_emission() -> void:
 	gull.queue_free()
 
 
+func _test_commit_does_not_deal_instant_damage() -> void:
+	var gull := _spawn_gull()
+	var started := [false]
+	gull.dive_started.connect(func(_position: Vector3) -> void:
+		started[0] = true
+	)
+	gull._perform_attack()
+	_expect(started[0] and gull.is_dive_active(), "Attack commit begins a physical Gull dive")
+	_expect(is_zero_approx(fake_target.damage_received), "Gull commit never deals instant unavoidable damage")
+	gull.queue_free()
+
+
+func _test_dive_hits_then_recovers() -> void:
+	var gull := _spawn_gull()
+	var results: Array[bool] = []
+	gull.dive_resolved.connect(func(hit: bool) -> void:
+		results.append(hit)
+	)
+	gull._perform_attack()
+	for _step in 24:
+		gull._advance_dive(0.05)
+		if not gull.is_dive_active():
+			break
+	_expect(not results.is_empty() and results[0], "Gull resolves a physical hit only after reaching the marked point")
+	_expect(fake_target.damage_received > 0.0, "Physical Gull contact applies authored damage")
+	_expect(gull.is_dive_recovering(), "Gull exposes a readable recovery window after contact")
+	for _step in 48:
+		gull._advance_dive(0.05)
+		if not gull.is_dive_recovering():
+			break
+	_expect(not gull.is_dive_recovering(), "Gull recovery ends deterministically")
+	gull.queue_free()
+
+
+func _test_locked_dive_can_miss() -> void:
+	var gull := _spawn_gull()
+	var results: Array[bool] = []
+	gull.dive_resolved.connect(func(hit: bool) -> void:
+		results.append(hit)
+	)
+	gull._perform_attack()
+	fake_target.position.x = 6.0
+	for _step in 24:
+		gull._advance_dive(0.05)
+		if not gull.is_dive_active():
+			break
+	_expect(not results.is_empty() and results[0] == false, "Moving away from the marked point makes the readable dive miss")
+	_expect(is_zero_approx(fake_target.damage_received), "A missed Gull dive applies no damage")
+	gull.queue_free()
+
+
+func _test_committed_dive_is_interruptible() -> void:
+	var gull := _spawn_gull()
+	var interrupted := [false]
+	gull.dive_interrupted.connect(func() -> void:
+		interrupted[0] = true
+	)
+	gull._perform_attack()
+	_expect(gull.is_dive_active(), "Gull is in committed dive before interruption")
+	gull.apply_damage(1.0, fake_target, gull.global_position)
+	_expect(interrupted[0], "Damage interrupts a committed Gull dive")
+	_expect(not gull.is_dive_active(), "Interrupted Gull cannot continue its damage path")
+	for _step in 24:
+		gull._advance_dive(0.05)
+	_expect(is_zero_approx(fake_target.damage_received), "Interrupted Gull never applies stale dive damage")
+	gull.queue_free()
+
+
 func _test_state_change_cleanup() -> void:
 	var gull := _spawn_gull()
 	gull._begin_attack()
@@ -95,7 +167,8 @@ func _spawn_gull() -> ComplianceGull:
 	gull.initial_target = fake_target
 	test_scene.add_child(gull)
 	fake_target.is_dead = false
-	fake_target.position = Vector3.ZERO
+	fake_target.position = Vector3(0.0, 0.0, -6.0)
+	fake_target.damage_received = 0.0
 	return gull
 
 
@@ -109,9 +182,11 @@ class FakeCombatPressure extends Node:
 
 class FakePlayerTarget extends Node3D:
 	var is_dead := false
+	var damage_received := 0.0
 
-	func apply_damage(_amount: float, _source: Node = null, _hit_position: Vector3 = Vector3.ZERO) -> float:
-		return _amount
+	func apply_damage(amount: float, _source: Node = null, _hit_position: Vector3 = Vector3.ZERO) -> float:
+		damage_received += amount
+		return amount
 
 
 func _expect(condition: bool, label: String) -> void:

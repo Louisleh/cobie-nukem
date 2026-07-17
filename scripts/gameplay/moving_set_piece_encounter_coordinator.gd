@@ -242,7 +242,8 @@ func _on_mission_wave_completed(definition: EncounterDefinition, wave_index: int
 	if not _set_piece_runtime.mark_encounter_completed(encounter_id, _expected_generation):
 		_waves_completed[wave_index] = false
 		return
-	_set_piece_runtime.resume_from_stop()
+	if _schema_version == 1:
+		_set_piece_runtime.resume_from_stop()
 
 
 func _start_initial_encounter_wave() -> bool:

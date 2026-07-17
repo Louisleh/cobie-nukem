@@ -40,10 +40,8 @@ var _encounter_completed: Dictionary = {}
 var _module_destroyed: Dictionary = {}
 var _phase_state := MovingSetPiecePhaseState.new()
 
-
 func generation() -> int:
 	return _generation
-
 
 func current_state() -> Dictionary:
 	var state := {
@@ -60,7 +58,6 @@ func current_state() -> Dictionary:
 	}
 	state.merge(_phase_state.snapshot(), true)
 	return state
-
 
 func configure(definition: Object, actor_parent: Node = null) -> StringName:
 	clear()
@@ -107,7 +104,6 @@ func configure(definition: Object, actor_parent: Node = null) -> StringName:
 	_generation += 1
 	return ERROR_NONE
 
-
 func start() -> bool:
 	if _definition == null:
 		return false
@@ -119,7 +115,6 @@ func start() -> bool:
 	_reset_progress()
 	_clear_actor()
 	return _spawn_actor(true)
-
 
 func reset() -> bool:
 	if _definition == null:
@@ -151,7 +146,6 @@ func reset() -> bool:
 	reset_completed.emit(_generation)
 	return true
 
-
 func resume_from_stop() -> bool:
 	if not _running or not _waiting_for_stop or _moving:
 		return false
@@ -159,7 +153,6 @@ func resume_from_stop() -> bool:
 	_moving = true
 	set_physics_process(true)
 	return true
-
 
 func mark_encounter_completed(id: StringName, observed_generation: int = -1) -> bool:
 	if not _running or _definition == null:
@@ -183,7 +176,6 @@ func mark_encounter_completed(id: StringName, observed_generation: int = -1) -> 
 	_try_finalize_active_phase()
 	_evaluate_completion_gates()
 	return true
-
 
 func mark_module_destroyed(id: StringName, observed_generation: int = -1) -> bool:
 	if not _running or _definition == null:
@@ -209,6 +201,44 @@ func mark_module_destroyed(id: StringName, observed_generation: int = -1) -> boo
 	_evaluate_completion_gates()
 	return true
 
+func update_module_health(id: StringName, current_health: float, maximum_health: float, observed_generation: int = -1) -> bool:
+	if not _running or _schema_version != 2:
+		return false
+	if observed_generation != -1 and observed_generation != _generation:
+		return false
+	if not _phase_state.update_module_health(id, current_health, maximum_health):
+		return false
+	boss_health_changed.emit(_phase_state.current_health, _phase_state.max_health, _generation)
+	return true
+
+func restore_completed_state() -> bool:
+	if _definition == null or _schema_version != 2 or _actor_scene == null or _actor_parent == null:
+		return false
+	_generation += 1
+	_clear_actor()
+	_distance_along_path = _path.total_length
+	_next_stop_index = _stop_fractions.size()
+	_active_wave_index = _stop_fractions.size() - 1
+	_running = false
+	_moving = false
+	_waiting_for_stop = false
+	_path_completed = true
+	_completion_emitted = true
+	_phase_state.restore_completed()
+	set_physics_process(false)
+	var instance := _actor_scene.instantiate() as Node3D
+	if instance == null:
+		return false
+	_actor = instance
+	_actor.position = _path.position_at(_distance_along_path)
+	_actor_parent.add_child(_actor)
+	_sync_actor_phase()
+	_actor.reset_physics_interpolation()
+	started.emit(_actor, _generation)
+	if _actor.has_method("play_defeat_sequence"):
+		_actor.call("play_defeat_sequence")
+	_emit_boss_health_state()
+	return true
 
 func clear() -> void:
 	_clear_actor()
@@ -235,14 +265,11 @@ func clear() -> void:
 	_module_destroyed.clear()
 	set_physics_process(false)
 
-
 func _ready() -> void:
 	set_physics_process(false)
 
-
 func _exit_tree() -> void:
 	clear()
-
 
 func _physics_process(delta: float) -> void:
 	if not _running or not _moving or _definition == null:
@@ -276,7 +303,6 @@ func _physics_process(delta: float) -> void:
 	_distance_along_path = target_distance
 	_apply_position()
 
-
 func _handle_stop_reached(stop_index: int, fraction: float) -> void:
 	if _schema_version == 2:
 		_active_wave_index = stop_index
@@ -291,7 +317,6 @@ func _handle_stop_reached(stop_index: int, fraction: float) -> void:
 	if encounter_id != &"":
 		encounter_requested.emit(encounter_id, _generation)
 
-
 func _handle_path_completed() -> void:
 	if _path_completed:
 		return
@@ -301,7 +326,6 @@ func _handle_path_completed() -> void:
 	set_physics_process(false)
 	path_completed.emit(_generation)
 	_evaluate_completion_gates()
-
 
 func _evaluate_completion_gates() -> void:
 	if _definition == null or _completion_emitted:
@@ -324,11 +348,9 @@ func _evaluate_completion_gates() -> void:
 	if _definition.reset_policy == 2:
 		_start_loop_cycle()
 
-
 func _build_path_data() -> void:
 	_path.configure(_path_points, _stop_fractions)
 	_reset_requirements()
-
 
 func _reset_requirements() -> void:
 	_encounter_completed.clear()
@@ -345,7 +367,6 @@ func _reset_requirements() -> void:
 	else:
 		_phase_state.reset()
 
-
 func _reset_progress() -> void:
 	_completion_emitted = false
 	_distance_along_path = 0.0
@@ -360,12 +381,10 @@ func _reset_progress() -> void:
 	_emit_phase_state()
 	_emit_boss_health_state()
 
-
 func _clear_actor() -> void:
 	if is_instance_valid(_actor):
 		_actor.queue_free()
 	_actor = null
-
 
 func _spawn_actor(moving: bool) -> bool:
 	if _actor_scene == null:
@@ -393,7 +412,6 @@ func _spawn_actor(moving: bool) -> bool:
 	_process_stops_at_distance()
 	return true
 
-
 func _process_stops_at_distance() -> void:
 	var can_process := true
 	while can_process and _next_stop_index < _path.stop_distances.size():
@@ -405,18 +423,15 @@ func _process_stops_at_distance() -> void:
 		else:
 			can_process = false
 
-
 func _apply_position() -> void:
 	if _actor == null or not is_instance_valid(_actor):
 		return
 	_actor.position = _path.position_at(_distance_along_path)
 
-
 func _encounter_id_for_index(stop_index: int) -> StringName:
 	if stop_index < 0 or stop_index >= _encounter_requirements.size():
 		return &""
 	return _encounter_requirements[stop_index]
-
 
 func _all_gates_complete() -> bool:
 	if _schema_version == 1:
@@ -429,29 +444,26 @@ func _all_gates_complete() -> bool:
 		return true
 	return _phase_state.all_complete()
 
-
 func _try_finalize_active_phase() -> void:
 	if _phase_state.finalize_completed():
 		_sync_actor_phase()
 		phase_changed.emit(_phase_state.active_index, _phase_state.active_id(), _generation)
-
+		if _waiting_for_stop:
+			resume_from_stop()
 
 func _emit_phase_state() -> void:
 	if _schema_version != 2:
 		return
 	phase_changed.emit(_phase_state.active_index, _phase_state.active_id(), _generation)
 
-
 func _emit_boss_health_state() -> void:
 	if _schema_version != 2:
 		return
 	boss_health_changed.emit(_phase_state.current_health, _phase_state.max_health, _generation)
 
-
 func _sync_actor_phase() -> void:
 	if is_instance_valid(_actor) and _actor.has_method("set_active_phase"):
 		_actor.call("set_active_phase", _phase_state.active_index)
-
 
 func _start_loop_cycle() -> void:
 	if _definition == null:
@@ -461,7 +473,6 @@ func _start_loop_cycle() -> void:
 	if not _spawn_actor(true):
 		_running = false
 		set_physics_process(false)
-
 
 func _configure_definitions() -> bool:
 	_encounter_requirements = []
