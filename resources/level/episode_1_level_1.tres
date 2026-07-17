@@ -1,6 +1,7 @@
-[gd_resource type="Resource" script_class="LevelMetadata" load_steps=2 format=3]
+[gd_resource type="Resource" script_class="LevelMetadata" load_steps=3 format=3]
 
 [ext_resource type="Script" path="res://scripts/level/level_metadata.gd" id="1"]
+[ext_resource type="Resource" path="res://resources/loadouts/salmon_creek_loadout.tres" id="2"]
 
 [resource]
 script = ExtResource("1")
@@ -15,7 +16,7 @@ replay_scene = "res://scenes/levels/episode_1_level_1.tscn"
 next_mission_id = "episode_1_vancouver_waterfront"
 next_mission_scene = "res://scenes/levels/episode_1_vancouver_waterfront.tscn"
 next_mission_title = "RAIN CITY RUN"
-loadout_reference = ""
+mission_loadout = ExtResource("2")
 zones = Array[Dictionary]([{
 "id": &"forbidden_field",
 "title": "FORBIDDEN FIELD",

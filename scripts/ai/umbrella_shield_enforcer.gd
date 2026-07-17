@@ -135,6 +135,15 @@ func get_recovery_window_seconds() -> float:
 	return _recovery_window_seconds
 
 
+func apply_recall_stagger(multiplier: float) -> void:
+	if is_dead:
+		return
+	# The upgrade changes shield-control utility, never primary projectile damage.
+	if directional_shield != null and directional_shield.is_guarding():
+		directional_shield.apply_stagger_multiplier(multiplier)
+	stun(0.7 * maxf(multiplier, 1.0))
+
+
 func _start_guard_recovery() -> void:
 	if is_dead or _is_shield_broken():
 		_set_guard_state(GuardState.BROKEN if _is_shield_broken() else GuardState.DISABLED)
@@ -237,4 +246,3 @@ func _is_shield_broken() -> bool:
 	if directional_shield == null:
 		return false
 	return directional_shield.is_permanently_broken()
-

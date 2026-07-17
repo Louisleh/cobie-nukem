@@ -8,6 +8,7 @@ signal loot_requested(loot_scene: String, count: int, source: Node)
 signal explosion_fired(origin: Vector3, damage: float)
 signal chain_reaction_dispatched(from_interaction: StringName, to_interaction: StringName, remaining_budget: int)
 signal hazardous_tick_damaged(targets: int)
+signal recall_staggered(interaction_id: StringName, multiplier: float)
 
 @export var definition: WorldInteractionDefinition
 
@@ -90,6 +91,15 @@ func apply_damage(amount: float, source: Node = null, hit_position: Vector3 = Ve
 		_:
 			return 0.0
 	return 0.0
+
+
+func apply_recall_stagger(multiplier: float) -> void:
+	if not _is_authorized() or _activated or definition.kind != WorldInteractionDefinition.Kind.BREAKABLE_PROP:
+		return
+	if multiplier <= 1.0:
+		return
+	recall_staggered.emit(definition.id, multiplier)
+	_spawn_temporary_effect()
 
 
 func receive_chain_reaction(source: Node, remaining_budget: int) -> void:

@@ -132,6 +132,17 @@ func add_ammo(amount: int) -> int:
 	_emit_ammo_state()
 	return reserve_ammo - previous
 
+
+func set_ammo_state(loaded: int, reserve: int) -> bool:
+	if definition == null:
+		return false
+	if loaded < 0 or reserve < 0:
+		return false
+	ammo = mini(loaded, definition.magazine_size)
+	reserve_ammo = 0 if definition.infinite_reserve else mini(reserve, definition.reserve_capacity)
+	_emit_ammo_state()
+	return true
+
 func request_reload() -> bool:
 	if definition == null or is_reloading or ammo >= definition.magazine_size or definition.magazine_size <= 0:
 		return false

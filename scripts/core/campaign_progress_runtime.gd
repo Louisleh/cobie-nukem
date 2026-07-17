@@ -69,7 +69,7 @@ func unlock_mission(mission_id: StringName) -> Error:
 	return _persist(candidate)
 
 
-func record_completion(mission_id: StringName, result: Dictionary, unlocked_missions: Array = []) -> Error:
+func record_completion(mission_id: StringName, result: Dictionary, unlocked_missions: Array = [], campaign_upgrades: Array = []) -> Error:
 	var normalized_id := _mission_id(mission_id)
 	if normalized_id.is_empty():
 		return ERR_INVALID_PARAMETER
@@ -88,6 +88,15 @@ func record_completion(mission_id: StringName, result: Dictionary, unlocked_miss
 		if not unlock_id.is_empty() and unlock_id not in unlocked:
 			unlocked.append(unlock_id)
 	candidate["unlocked_missions"] = unlocked
+	var upgrades_by_mission: Dictionary = candidate.get("campaign_upgrades", {}).duplicate(true)
+	var durable_upgrades: Array = upgrades_by_mission.get(normalized_id, []).duplicate()
+	for raw_upgrade: Variant in campaign_upgrades:
+		var upgrade_id := _mission_id(raw_upgrade)
+		if not upgrade_id.is_empty() and upgrade_id not in durable_upgrades:
+			durable_upgrades.append(upgrade_id)
+	if not durable_upgrades.is_empty():
+		upgrades_by_mission[normalized_id] = durable_upgrades
+	candidate["campaign_upgrades"] = upgrades_by_mission
 
 	var records: Dictionary = candidate.get("mission_records", {}).duplicate(true)
 	var current: Dictionary = records.get(normalized_id, {}).duplicate(true)
@@ -99,6 +108,14 @@ func record_completion(mission_id: StringName, result: Dictionary, unlocked_miss
 	if save_error == OK:
 		mission_completed.emit(StringName(normalized_id), mission_record(StringName(normalized_id)))
 	return save_error
+
+
+func mission_upgrades(mission_id: StringName) -> Array[String]:
+	var upgrades: Dictionary = _progress.get("campaign_upgrades", {})
+	var result: Array[String] = []
+	for raw_upgrade: Variant in upgrades.get(String(mission_id), []):
+		result.append(String(raw_upgrade))
+	return result
 
 
 func reset_progress() -> Error:

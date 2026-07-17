@@ -14,6 +14,40 @@ extends Resource
 
 const WEAPON_PATH := "res://resources/weapons/"
 
+@export var mission_id: StringName = &""
+@export var selected_weapon: StringName = &"pawstol"
+@export var unlocked_weapons: Array[StringName] = []
+@export var weapon_ammo: Dictionary = {}
+@export var mission_upgrades: Array[StringName] = []
+
+
+func to_payload() -> Dictionary:
+	return sanitize_payload({
+		"mission_id": mission_id,
+		"selected_weapon": selected_weapon,
+		"unlocked_weapons": unlocked_weapons,
+		"weapon_ammo": weapon_ammo,
+		"mission_upgrades": mission_upgrades,
+	})
+
+
+func validate() -> PackedStringArray:
+	var errors := PackedStringArray()
+	var payload := to_payload()
+	if mission_id == &"" or String(payload.get("mission_id", "")).is_empty():
+		errors.append("mission loadout has empty mission_id")
+	if unlocked_weapons.is_empty():
+		errors.append("mission loadout %s has no unlocked weapons" % mission_id)
+	if String(payload.get("selected_weapon", "")).is_empty():
+		errors.append("mission loadout %s has invalid selected weapon" % mission_id)
+	elif String(payload.get("selected_weapon", "")) not in payload.get("unlocked_weapons", []):
+		errors.append("mission loadout %s selected weapon is not unlocked" % mission_id)
+	if payload.get("unlocked_weapons", []).size() != unlocked_weapons.size():
+		errors.append("mission loadout %s contains invalid or duplicate weapon ids" % mission_id)
+	if payload.get("weapon_ammo", {}).size() != unlocked_weapons.size():
+		errors.append("mission loadout %s requires ammo state for every unlocked weapon" % mission_id)
+	return errors
+
 static func sanitize_payload(raw: Variant) -> Dictionary:
 	if raw is not Dictionary:
 		return {}
@@ -66,7 +100,11 @@ static func _string_set(value: Variant) -> Array[String]:
 
 
 static func _weapon_ids(value: Variant) -> Array[String]:
-	return _string_set(value)
+	var result: Array[String] = []
+	for candidate in _string_set(value):
+		if _is_valid_weapon_id(candidate):
+			result.append(candidate)
+	return result
 
 
 static func _weapon_ammo_map(value: Variant, unlocked_weapons: Array[String]) -> Dictionary:

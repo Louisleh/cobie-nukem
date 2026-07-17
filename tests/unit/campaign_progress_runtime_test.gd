@@ -63,7 +63,7 @@ func _test_completion_merges_best_results() -> void:
 		"best_secrets": 3,
 		"total_secrets": 4,
 	}
-	_expect(runtime.record_completion(&"episode_1_level_1", improved, [&"episode_1_vancouver_waterfront"]) == OK, "improved completion persists")
+	_expect(runtime.record_completion(&"episode_1_level_1", improved, [&"episode_1_vancouver_waterfront"], [&"municipal_recall_override", &"municipal_recall_override"]) == OK, "improved completion persists")
 	var worse := {
 		"best_time_msec": 800000,
 		"rank": "B",
@@ -79,6 +79,7 @@ func _test_completion_merges_best_results() -> void:
 	_expect(record.get("rank") == "A", "highest rank remains best")
 	_expect(record.get("difficulty") == "mayhem", "highest completed difficulty remains best")
 	_expect(record.get("best_secrets") == 3 and record.get("total_secrets") == 4, "best secret result and authored total remain stable")
+	_expect(runtime.mission_upgrades(&"episode_1_level_1") == ["municipal_recall_override"], "campaign upgrades persist uniquely by mission")
 	runtime.load_progress()
 	_expect(runtime.mission_record(&"episode_1_level_1") == record, "best result survives disk reload")
 

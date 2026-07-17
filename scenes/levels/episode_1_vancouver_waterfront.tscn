@@ -1,8 +1,14 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene load_steps=5 format=3]
 
 [ext_resource type="Script" path="res://scripts/level/episode_1_vancouver_waterfront.gd" id="1"]
 [ext_resource type="Resource" path="res://resources/level/episode_1_vancouver_waterfront.tres" id="2"]
+[ext_resource type="PackedScene" path="res://scenes/levels/vancouver/rain_city_gameplay_layout.tscn" id="3"]
+[ext_resource type="PackedScene" path="res://scenes/levels/vancouver/rain_city_presentation.tscn" id="4"]
 
 [node name="Episode1VancouverWaterfront" type="Node3D"]
 script = ExtResource("1")
 metadata = ExtResource("2")
+
+[node name="GameplayLayout" parent="." instance=ExtResource("3")]
+
+[node name="Presentation" parent="." instance=ExtResource("4")]

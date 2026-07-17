@@ -99,6 +99,21 @@ func get_health_fraction() -> float:
 	return clampf(current_shield_health / maximum_shield_health, 0.0, 1.0)
 
 
+func apply_stagger_multiplier(multiplier: float) -> bool:
+	if not is_guarding() or multiplier <= 1.0:
+		return false
+	current_shield_health = maxf(0.0, current_shield_health - shield_hit_cost * (multiplier - 1.0))
+	if current_shield_health > 0.0:
+		return true
+	shield_active = false
+	shield_is_broken = true
+	_guarding_requested = false
+	_apply_visual()
+	shield_guard_state_changed.emit(false, true)
+	shield_broken.emit()
+	return true
+
+
 func damage_multiplier(owner_body: Node3D, hit_position: Vector3, _incoming_damage: float = 0.0) -> float:
 	var body := owner_body if owner_body != null else _configured_owner
 	if body == null or hit_position == Vector3.ZERO or maximum_shield_health <= 0.0:

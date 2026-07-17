@@ -36,10 +36,11 @@ func _test_public_beta_contract() -> void:
 	if LEVEL_CARD == null:
 		return
 	_expect(LEVEL_CARD.level_id == &"episode_1_vancouver_waterfront", "Mission card keeps stable level id")
-	_expect(LEVEL_CARD.title == "RAIN CITY SLICE", "Mission card uses the fictionalized Rain City Slice title")
-	_expect(LEVEL_CARD.unlocked, "Vancouver is playable from the public level selection")
+	_expect(LEVEL_CARD.title == "RAIN CITY RUN", "Mission card uses the canonical Rain City Run title")
+	_expect(LEVEL_CARD.unlock_policy == LevelCardData.UnlockPolicy.CAMPAIGN, "Vancouver uses campaign-gated availability")
+	_expect(LEVEL_CARD.prerequisite_mission_id == &"episode_1_level_1", "Vancouver unlocks after Salmon Creek")
 	_expect(LEVEL_CARD.scene_path == "res://scenes/levels/episode_1_vancouver_waterfront.tscn", "Vancouver beta card routes to the production preview scene")
-	_expect(LEVEL_CARD.status_badge() == "BETA", "Vancouver is explicitly labeled BETA")
+	_expect(LEVEL_CARD.release_badge == "BETA", "Vancouver is explicitly labeled BETA while human gates remain open")
 	_expect(not LEVEL_CARD.launch_notice.strip_edges().is_empty(), "Vancouver beta declares its work-in-progress status")
 
 
@@ -112,8 +113,13 @@ func _test_encounter_spawn_contract() -> void:
 	var harbour: EncounterDefinition = _encounter_for_zone(&"harbour_pier")
 	_expect(harbour != null, "Harbour convoy encounter exists")
 	if harbour != null:
-		_expect(harbour.waves.size() == 3, "Citation convoy retains one bounded wave per authored stop")
+		_expect(harbour.waves.size() == 4, "Citation convoy owns one bounded reinforcement wave per boss phase")
 		_expect(harbour.wave_progression == EncounterDefinition.WaveProgression.EXTERNAL, "Citation convoy waves advance only through the moving-set-piece coordinator")
+	var authored_total := 0
+	for encounter: EncounterDefinition in MANIFEST.encounters:
+		for wave: Dictionary in encounter.effective_waves():
+			authored_total += (wave.get("spawns", []) as Array).size()
+	_expect(authored_total == 26, "Rain City authors the approved 26-enemy mission budget")
 
 
 func _test_audio_reference_contract() -> void:

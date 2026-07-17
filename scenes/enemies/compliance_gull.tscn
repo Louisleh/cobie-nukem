@@ -1,0 +1,108 @@
+[gd_scene load_steps=13 format=3]
+
+[ext_resource type="Script" path="res://scripts/ai/compliance_gull.gd" id="1"]
+[ext_resource type="Resource" path="res://resources/enemies/compliance_gull.tres" id="2"]
+
+[sub_resource type="CapsuleShape3D" id="Collision"]
+radius = 0.32
+height = 0.75
+
+[sub_resource type="StandardMaterial3D" id="BodyMaterial"]
+albedo_color = Color(0.78, 0.82, 0.83, 1)
+roughness = 0.72
+
+[sub_resource type="StandardMaterial3D" id="WingMaterial"]
+albedo_color = Color(0.14, 0.22, 0.25, 1)
+roughness = 0.52
+
+[sub_resource type="StandardMaterial3D" id="EyeMaterial"]
+shading_mode = 0
+albedo_color = Color(1, 0.22, 0.06, 1)
+emission_enabled = true
+emission = Color(1, 0.08, 0.02, 1)
+emission_energy_multiplier = 3.0
+
+[sub_resource type="StandardMaterial3D" id="SearchlightMaterial"]
+shading_mode = 0
+transparency = 1
+albedo_color = Color(1, 0.75, 0.18, 0.24)
+emission_enabled = true
+emission = Color(1, 0.55, 0.08, 1)
+emission_energy_multiplier = 1.4
+
+[sub_resource type="SphereMesh" id="BodyMesh"]
+material = SubResource("BodyMaterial")
+radius = 0.45
+height = 0.7
+
+[sub_resource type="PrismMesh" id="WingMesh"]
+material = SubResource("WingMaterial")
+size = Vector3(1.0, 0.08, 0.55)
+
+[sub_resource type="SphereMesh" id="EyeMesh"]
+material = SubResource("EyeMaterial")
+radius = 0.1
+height = 0.18
+
+[sub_resource type="CylinderMesh" id="SearchlightMesh"]
+material = SubResource("SearchlightMaterial")
+top_radius = 0.18
+bottom_radius = 1.8
+height = 4.8
+
+[sub_resource type="StandardMaterial3D" id="TelegraphMaterial"]
+shading_mode = 0
+transparency = 1
+albedo_color = Color(1, 0.32, 0.04, 0.64)
+emission_enabled = true
+emission = Color(1, 0.12, 0.02, 1)
+
+[sub_resource type="CylinderMesh" id="TelegraphMesh"]
+material = SubResource("TelegraphMaterial")
+top_radius = 1.5
+bottom_radius = 1.5
+height = 0.04
+
+[node name="ComplianceGull" type="CharacterBody3D"]
+collision_layer = 4
+collision_mask = 3
+script = ExtResource("1")
+definition = ExtResource("2")
+target_height = 0.45
+death_linger_seconds = 0.62
+uses_gravity = false
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("Collision")
+
+[node name="Visual" type="Node3D" parent="."]
+
+[node name="Body" type="MeshInstance3D" parent="Visual"]
+mesh = SubResource("BodyMesh")
+
+[node name="WingLeft" type="MeshInstance3D" parent="Visual"]
+position = Vector3(-0.62, 0, 0)
+rotation_degrees = Vector3(0, 0, 9)
+mesh = SubResource("WingMesh")
+
+[node name="WingRight" type="MeshInstance3D" parent="Visual"]
+position = Vector3(0.62, 0, 0)
+rotation_degrees = Vector3(0, 180, -9)
+mesh = SubResource("WingMesh")
+
+[node name="Eye" type="MeshInstance3D" parent="Visual"]
+position = Vector3(0, 0.05, -0.42)
+mesh = SubResource("EyeMesh")
+
+[node name="Searchlight" type="MeshInstance3D" parent="Visual"]
+visible = false
+position = Vector3(0, -2.3, -0.3)
+mesh = SubResource("SearchlightMesh")
+
+[node name="Telegraph" type="MeshInstance3D" parent="."]
+visible = false
+position = Vector3(0, -2.8, 0)
+mesh = SubResource("TelegraphMesh")
+
+[node name="AutoAimTarget" type="Marker3D" parent="."]
+position = Vector3(0, 0.1, 0)

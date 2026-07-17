@@ -10,9 +10,15 @@ spawns = []
 waves = Array[Dictionary]([{
 "spawns": [
 	{"scene":"res://scenes/enemies/compliance_hound.tscn","position":Vector3(-2,0,-96)},
-	{"scene":"res://scenes/enemies/umbrella_shield_enforcer.tscn","position":Vector3(2,0,-102)}
+	{"scene":"res://scenes/enemies/umbrella_shield_enforcer.tscn","position":Vector3(2,0,-102)},
+	{"scene":"res://scenes/enemies/squirrel_trooper.tscn","position":Vector3(7,0,-108)}
+]}, {
+"delay_seconds": 2.0,
+"spawns": [
+	{"scene":"res://scenes/enemies/compliance_gull.tscn","position":Vector3(-7,4,-116)},
+	{"scene":"res://scenes/enemies/leash_enforcement_drone.tscn","position":Vector3(6,3,-122)}
 ]}])
-enemy_budget = 4
-maximum_simultaneous_attackers = 2
+enemy_budget = 5
+maximum_simultaneous_attackers = 4
 music_intensity = 0.75
 reward_policy = &"authored"

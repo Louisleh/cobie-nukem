@@ -1,0 +1,33 @@
+[gd_resource type="Resource" script_class="EnemyDefinition" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/ai/enemy_definition.gd" id="1"]
+[ext_resource type="Resource" path="res://resources/enemies/reaction_light.tres" id="2"]
+
+[resource]
+script = ExtResource("1")
+id = &"compliance_gull"
+display_name = "COMPLIANCE GULL"
+archetype = 5
+warning_text = "GULL SEARCHLIGHT // BREAK LINE OR SHOOT IT DOWN"
+max_health = 42.0
+move_speed = 5.8
+acceleration = 25.0
+detection_range = 36.0
+attack_range = 12.0
+attack_damage = 8.0
+attack_cooldown = 2.4
+telegraph_seconds = 0.9
+threat_weight = 0.8
+threat_value = 3
+navigation_radius = 0.35
+weak_point_multiplier = 1.35
+reaction_profile = ExtResource("2")
+alert_sound = &"enemy_alert"
+attack_sound_set = &"enemy_attack"
+death_sound_set = &"enemy_death"
+allowed_encounter_tags = Array[StringName]([&"flying", &"support", &"vancouver"])
+score_value = 360
+drop_id = &""
+preferred_distance = 8.5
+retreat_distance = 4.0
+

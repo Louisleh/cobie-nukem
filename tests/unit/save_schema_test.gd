@@ -22,6 +22,7 @@ func _initialize() -> void:
 	_test_current_version_round_trip()
 	_test_campaign_round_trip()
 	_test_campaign_migration_from_v3()
+	_test_v4_schema_migration()
 	_test_campaign_sanitize_shape()
 	_test_checkpoint_and_campaign_slot_isolation()
 	_test_unversioned_legacy_payload()
@@ -86,6 +87,18 @@ func _test_campaign_migration_from_v3() -> void:
 	var loaded: Dictionary = save_manager.load_slot(CAMPAIGN_SLOT)
 	var expected := CampaignProgressPayload.sanitize(raw_payload)
 	_expect(CampaignProgressPayload.sanitize(loaded) == expected, "v3 campaign migration preserves values")
+
+
+func _test_v4_schema_migration() -> void:
+	var checkpoint_payload := _checkpoint_payload()
+	_write_raw(JSON.stringify({"version": 4, "payload": checkpoint_payload}), SLOT)
+	var checkpoint_loaded: Dictionary = save_manager.load_slot(SLOT)
+	_expect(checkpoint_loaded.get("content_revision") == 0, "v4 checkpoint gains safe content revision")
+	_expect(checkpoint_loaded.get("unlocked_weapons") == [], "v4 checkpoint gains empty unlocked weapons")
+	_expect(checkpoint_loaded.get("active_mission_upgrades") == {}, "v4 checkpoint gains empty active upgrades")
+	var campaign_payload := _campaign_payload()
+	_write_raw(JSON.stringify({"version": 4, "payload": campaign_payload}), CAMPAIGN_SLOT)
+	_expect(save_manager.load_slot(CAMPAIGN_SLOT).get("campaign_upgrades") == {}, "v4 campaign gains empty upgrade map")
 
 
 func _test_campaign_sanitize_shape() -> void:
@@ -221,7 +234,7 @@ func _test_sanitize_canonical_shape() -> void:
 	noisy["telemetry"] = {"clicks": 9000}
 	noisy["cloud_id"] = "nope"
 	var sanitized := CheckpointPayload.sanitize(noisy)
-	var expected_keys := ["scene_path", "level_id", "checkpoint_id", "difficulty_id", "position", "objective_snapshot", "encounter_snapshot", "route_snapshot", "secrets"]
+	var expected_keys := ["scene_path", "level_id", "checkpoint_id", "difficulty_id", "content_revision", "position", "objective_snapshot", "encounter_snapshot", "route_snapshot", "secrets", "unlocked_weapons", "active_mission_upgrades"]
 	for key: String in sanitized:
 		_expect(key in expected_keys, "sanitize drops unknown key: %s" % key)
 	var missing_scene := _checkpoint_payload()

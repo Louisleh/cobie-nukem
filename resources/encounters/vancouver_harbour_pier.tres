@@ -10,20 +10,25 @@ spawns = []
 waves = Array[Dictionary]([{
 "spawns": [
 	{"scene":"res://scenes/enemies/compliance_hound.tscn","position":Vector3(-4,0,-130)},
-	{"scene":"res://scenes/enemies/compliance_hound.tscn","position":Vector3(4,0,-136)}
+	{"scene":"res://scenes/enemies/umbrella_shield_enforcer.tscn","position":Vector3(4,0,-136)}
 ]}, {
 "delay_seconds": 2.5,
 "spawns": [
-	{"scene":"res://scenes/enemies/leash_enforcement_drone.tscn","position":Vector3(1,2,-146)},
+	{"scene":"res://scenes/enemies/compliance_gull.tscn","position":Vector3(1,4,-146)},
 	{"scene":"res://scenes/enemies/leash_enforcement_drone.tscn","position":Vector3(-4,2,-148)}
 ]}, {
 "delay_seconds": 2.5,
 "spawns": [
 	{"scene":"res://scenes/enemies/mutant_groundskeeper.tscn","position":Vector3(0,0,-158)},
 	{"scene":"res://scenes/enemies/umbrella_shield_enforcer.tscn","position":Vector3(2,0,-156)}
+]}, {
+"delay_seconds": 2.0,
+"spawns": [
+	{"scene":"res://scenes/enemies/compliance_gull.tscn","position":Vector3(-7,4,-165)},
+	{"scene":"res://scenes/enemies/compliance_hound.tscn","position":Vector3(7,0,-169)}
 ]}])
-enemy_budget = 6
-maximum_simultaneous_attackers = 2
+enemy_budget = 8
+maximum_simultaneous_attackers = 4
 music_intensity = 0.9
 reward_policy = &"authored"
 wave_progression = 1

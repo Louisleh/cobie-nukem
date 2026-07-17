@@ -12,6 +12,8 @@ signal shot_resolved(kind: StringName, position: Vector3)
 @export var recall_damage := 32.0
 @export var max_bounces := 8
 @export var collision_mask_for_blast := 4
+@export_range(1.0, 3.0, 0.05) var recall_speed_multiplier := 1.0
+@export_range(1.0, 3.0, 0.05) var recall_stagger_multiplier := 1.0
 
 var instigator: Node3D
 var direction := Vector3.FORWARD
@@ -31,7 +33,7 @@ func _physics_process(delta: float) -> void:
 	_age += delta
 	if recalling and is_instance_valid(instigator):
 		direction = global_position.direction_to(instigator.global_position + Vector3.UP * 1.0)
-		velocity = direction * speed * 1.65
+		velocity = direction * speed * 1.65 * recall_speed_multiplier
 	elif not is_on_floor():
 		velocity.y -= 9.8 * delta * 0.35
 	var collision := move_and_collide(velocity * delta)
@@ -57,6 +59,7 @@ func _handle_collision(collision: KinematicCollision3D) -> void:
 			if not _damaged_on_recall.has(receiver):
 				_damaged_on_recall[receiver] = true
 				_damage_receiver(receiver, recall_damage)
+				_apply_recall_stagger(receiver)
 				shot_resolved.emit(&"enemy", global_position)
 			global_position += direction * 0.24
 		else:
@@ -108,6 +111,7 @@ func _damage_recall_overlaps() -> void:
 		if receiver != null and receiver != instigator and not _damaged_on_recall.has(receiver):
 			_damaged_on_recall[receiver] = true
 			_damage_receiver(receiver, recall_damage)
+			_apply_recall_stagger(receiver)
 			shot_resolved.emit(&"enemy", global_position)
 
 func _damage_receiver(receiver: Node, amount: float) -> void:
@@ -115,6 +119,15 @@ func _damage_receiver(receiver: Node, amount: float) -> void:
 		receiver.apply_damage(amount, instigator, global_position)
 	elif receiver.has_method("damage"):
 		receiver.damage(amount)
+
+
+func _apply_recall_stagger(receiver: Node) -> void:
+	if recall_stagger_multiplier <= 1.0:
+		return
+	if receiver.has_method("apply_recall_stagger"):
+		receiver.apply_recall_stagger(recall_stagger_multiplier)
+	elif receiver.has_method("stun"):
+		receiver.stun(0.7 * recall_stagger_multiplier)
 
 func _find_damage_receiver(value: Variant) -> Node:
 	var node := value as Node

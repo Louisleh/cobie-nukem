@@ -6,10 +6,10 @@
 script = ExtResource("1")
 mission_id = &"episode_1_vancouver_waterfront"
 selected_weapon = &"pawstol"
-unlocked_weapons = Array[String]([&"pawstol", &"barkshot", &"fetch_launcher"])
+unlocked_weapons = Array[StringName]([&"pawstol", &"barkshot", &"fetch_launcher"])
 weapon_ammo = {
 &"pawstol": {"magazine": 15, "reserve": 0},
 &"barkshot": {"magazine": 6, "reserve": 12},
 &"fetch_launcher": {"magazine": 3, "reserve": 6}
 }
-mission_upgrades = []
+mission_upgrades = Array[StringName]([])

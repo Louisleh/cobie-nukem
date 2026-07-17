@@ -12,7 +12,7 @@ extends Resource
 @export var next_mission_id: StringName = &""
 @export_file("*.tscn") var next_mission_scene := ""
 @export var next_mission_title := ""
-@export_file("*.tres") var loadout_reference := ""
+@export var mission_loadout: MissionLoadoutProfile
 @export var zones: Array[Dictionary] = []
 
 func has_next_mission() -> bool:

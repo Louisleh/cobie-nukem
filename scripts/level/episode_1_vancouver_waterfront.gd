@@ -15,6 +15,8 @@ signal level_completed(summary: Dictionary)
 
 const WorldBuilderScript = preload("res://scripts/level/vancouver_waterfront_world_builder.gd")
 const PLAYER_SCENE := "res://scenes/player/cobie_player.tscn"
+const CONTENT_REVISION := 2
+const MUNICIPAL_RECALL_OVERRIDE := &"municipal_recall_override"
 const CHECKPOINT_POSITIONS: Dictionary = {
 	&"checkpoint_downtown_alley": Vector3(0, 1.1, 8),
 	&"checkpoint_ruse_block": Vector3(0, 1.1, -23),
@@ -53,6 +55,8 @@ var _route_recovery_timer: Timer
 var _completion_timer: Timer
 var _last_combat_zone: StringName = &""
 var _resetting_encounter := false
+var _mission_upgrades: Array[StringName] = []
+var _baseline_attack_budget := 3
 
 
 func _ready() -> void:
@@ -80,6 +84,10 @@ func _ready() -> void:
 
 
 func _setup_runtime() -> void:
+	var pressure := get_node_or_null("/root/CombatPressure")
+	if pressure != null:
+		_baseline_attack_budget = 2 if GameState.difficulty_id == &"story" else (4 if GameState.difficulty_id == &"mayhem" else 3)
+		pressure.configure_limit(_baseline_attack_budget)
 	_spawn_registry = MissionSpawnRegistry.new()
 	_spawn_registry.name = "MissionSpawnRegistry"
 	add_child(_spawn_registry)
@@ -195,13 +203,38 @@ func _spawn_player() -> void:
 	if player == null:
 		return
 	if player is CobiePlayer:
-		(player as CobiePlayer).health_armor.grant_invulnerability(opening_protection_seconds)
+		var cobie := player as CobiePlayer
+		cobie.health_armor.grant_invulnerability(opening_protection_seconds)
+		if metadata.mission_loadout != null:
+			cobie.apply_mission_loadout(metadata.mission_loadout, _restored_checkpoint)
+		_load_campaign_upgrades()
+		var restored_upgrades: Dictionary = _restored_checkpoint.get("active_mission_upgrades", {})
+		for raw_upgrade: Variant in restored_upgrades.get("mission_upgrades", []):
+			var upgrade_id := StringName(raw_upgrade)
+			if upgrade_id != &"" and upgrade_id not in _mission_upgrades:
+				_mission_upgrades.append(upgrade_id)
+		_apply_active_mission_upgrades(cobie)
 	if _mission_presentation != null:
 		_mission_presentation.set_player(player)
 	if player.has_signal("died"):
 		player.died.connect(_on_player_died)
 	if player.has_signal("restart_requested"):
 		player.restart_requested.connect(restart_from_checkpoint)
+
+
+func _load_campaign_upgrades() -> void:
+	var save_manager := get_node_or_null("/root/SaveManager")
+	if save_manager == null:
+		return
+	var campaign := CampaignProgressRuntime.new()
+	add_child(campaign)
+	if campaign.configure(save_manager):
+		campaign.load_progress()
+		for raw_upgrade: Variant in campaign.mission_upgrades(metadata.level_id):
+			var upgrade_id := StringName(raw_upgrade)
+			if upgrade_id != &"" and upgrade_id not in _mission_upgrades:
+				_mission_upgrades.append(upgrade_id)
+	campaign.queue_free()
 
 
 func _apply_requested_checkpoint() -> void:
@@ -214,8 +247,11 @@ func _apply_requested_checkpoint() -> void:
 		game_state.continue_requested = false
 		return
 	_restored_checkpoint = saved
+	var checkpoint_id := StringName(saved.get("checkpoint_id", ""))
 	var values: Array = saved.get("position", [])
-	if values.size() == 3:
+	if int(saved.get("content_revision", 0)) != CONTENT_REVISION and CHECKPOINT_POSITIONS.has(checkpoint_id):
+		checkpoint_position = CHECKPOINT_POSITIONS[checkpoint_id]
+	elif values.size() == 3:
 		checkpoint_position = Vector3(float(values[0]), float(values[1]), float(values[2]))
 	game_state.continue_requested = false
 
@@ -324,6 +360,9 @@ func _activate_zone_encounter(zone_id: StringName) -> void:
 		return
 	_last_combat_zone = zone_id
 	var definition := _mission_runtime.encounters.definitions[zone_id] as EncounterDefinition
+	var pressure := get_node_or_null("/root/CombatPressure")
+	if pressure != null:
+		pressure.configure_limit(mini(_baseline_attack_budget, definition.maximum_simultaneous_attackers))
 	_spawn_registry.prepare_encounter(definition, _resetting_encounter)
 	var spawned := _mission_runtime.activate_zone(zone_id, player)
 	if not spawned.is_empty() or _mission_runtime.encounters.active.has(zone_id):
@@ -353,16 +392,20 @@ func _save_checkpoint(checkpoint_id: StringName, position_value: Vector3) -> voi
 		return
 	var runtime_snapshot := _mission_runtime.snapshot()
 	var game_state := get_node_or_null("/root/GameState")
+	var active_loadout := player.mission_loadout_snapshot(metadata.level_id, _mission_upgrades) if player is CobiePlayer else {}
 	save_manager.save_slot(&"checkpoint", {
 		"scene_path": "res://scenes/levels/episode_1_vancouver_waterfront.tscn",
 		"level_id": String(metadata.level_id),
 		"checkpoint_id": String(checkpoint_id),
+		"content_revision": CONTENT_REVISION,
 		"position": [position_value.x, position_value.y, position_value.z],
 		"difficulty_id": String(game_state.difficulty_id) if game_state != null else CheckpointPayload.DEFAULT_DIFFICULTY,
 		"objective_snapshot": runtime_snapshot.objective_snapshot,
 		"encounter_snapshot": runtime_snapshot.encounter_snapshot,
 		"route_snapshot": _route_runtime.snapshot(),
 		"secrets": secrets.duplicate(true),
+		"unlocked_weapons": active_loadout.get("unlocked_weapons", []),
+		"active_mission_upgrades": active_loadout,
 	})
 
 
@@ -434,10 +477,33 @@ func _on_objective_activated(definition: ObjectiveDefinition) -> void:
 
 
 func _on_objective_completed(definition: ObjectiveDefinition) -> void:
+	if definition.id == &"restore_terminal":
+		_award_municipal_recall_override()
 	if definition.id == &"stop_citation_convoy" and _world_builder != null and _world_builder.departure_switch != null:
 		_world_builder.departure_switch.set_enabled(true)
 	if definition.id == &"complete_harbour_pier":
 		_begin_completion()
+
+
+func _award_municipal_recall_override() -> void:
+	if MUNICIPAL_RECALL_OVERRIDE in _mission_upgrades:
+		return
+	_mission_upgrades.append(MUNICIPAL_RECALL_OVERRIDE)
+	if player is CobiePlayer:
+		_apply_active_mission_upgrades(player as CobiePlayer)
+	narrative_message.emit("MUNICIPAL RECALL OVERRIDE // FETCH RETURN SPEED +35% // DOUBLE SHIELD STAGGER", 4.0)
+	if _mission_presentation != null:
+		_mission_presentation.on_checkpoint_caption("UPGRADE: MUNICIPAL RECALL OVERRIDE")
+	var checkpoint_id := _route_runtime.current_checkpoint_id if _route_runtime != null else &"checkpoint_terminal_service"
+	_save_checkpoint(checkpoint_id, CHECKPOINT_POSITIONS.get(checkpoint_id, checkpoint_position))
+
+
+func _apply_active_mission_upgrades(cobie: CobiePlayer) -> void:
+	if MUNICIPAL_RECALL_OVERRIDE not in _mission_upgrades:
+		return
+	for weapon in cobie.weapons:
+		if weapon is FetchLauncher:
+			(weapon as FetchLauncher).apply_municipal_recall_override()
 
 
 func _begin_completion() -> void:
@@ -459,7 +525,7 @@ func _finalize_completion() -> void:
 		game_state.finish_run(summary)
 	var save_manager := get_node_or_null("/root/SaveManager")
 	if save_manager != null:
-		_mission_runtime.record_campaign_completion(metadata.level_id, summary, save_manager, game_state.difficulty_id if game_state != null else &"classic")
+		_mission_runtime.record_campaign_completion(metadata.level_id, summary, save_manager, game_state.difficulty_id if game_state != null else &"classic", [], _mission_upgrades)
 
 
 func get_level_summary() -> Dictionary:

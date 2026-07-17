@@ -23,6 +23,14 @@ func apply_damage(amount: float, source: Node = null, hit_position := Vector3.ZE
 func _on_directional_shield_broken() -> void:
 	shield_broken.emit()
 
+
+func apply_recall_stagger(multiplier: float) -> void:
+	if is_dead:
+		return
+	if directional_shield != null:
+		directional_shield.apply_stagger_multiplier(multiplier)
+	stun(0.7 * maxf(multiplier, 1.0))
+
 func _perform_attack() -> void:
 	if not _target_valid():
 		return
