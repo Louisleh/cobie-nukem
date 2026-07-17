@@ -512,6 +512,8 @@ func _on_convoy_completed(event_id: StringName, _generation: int) -> void:
 		return
 	boss_state_changed.emit(&"defeated", 0.0)
 	boss_phase_caption.emit("CASE CLOSED // MUNICIPAL TOWMASTER DISABLED", 3.0)
+	if is_instance_valid(_active_convoy):
+		_active_convoy.play_defeat_sequence()
 	if _mission_presentation != null and is_instance_valid(_active_convoy):
 		_mission_presentation.play_spatial_cue(&"rain_city_convoy_defeat", _active_convoy.global_position)
 	_mission_runtime.record_objective(ObjectiveDefinition.Kind.DEFEAT, &"citation_convoy")

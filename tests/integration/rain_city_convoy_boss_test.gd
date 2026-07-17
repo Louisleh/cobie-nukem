@@ -28,6 +28,7 @@ const BOSS_HEALTH_BUDGET := 1000.0
 
 const CONVOY_DEFINITION := preload("res://resources/set_pieces/vancouver_citation_convoy.tres") as MovingSetPieceDefinition
 const VANCOUVER_MANIFEST := preload("res://resources/content/vancouver_waterfront_manifest.tres") as ContentManifest
+const CONVOY_SCENE := preload("res://scenes/set_pieces/citation_convoy.tscn")
 
 var failures: Array[String] = []
 var _completion_signal_count := 0
@@ -41,6 +42,8 @@ func _initialize() -> void:
 
 func _run() -> void:
 	_validate_convoy_contract()
+	if failures.is_empty():
+		await _validate_actor_presentation()
 	if failures.is_empty():
 		await _test_deterministic_reset_cycles()
 	if failures.is_empty():
@@ -91,6 +94,26 @@ func _validate_convoy_contract() -> void:
 	_expect(wave_indices == EXPECTED_WAVE_INDICES, "convoy wave indexes are canonical")
 	_expect(_float_arrays_match(health_values, EXPECTED_HEALTH_ALLOCATION), "convoy health allocations are canonical")
 	_expect(is_equal_approx(total_health, BOSS_HEALTH_BUDGET), "convoy health budget totals 1000")
+
+
+func _validate_actor_presentation() -> void:
+	var actor := CONVOY_SCENE.instantiate() as CitationConvoyActor
+	_expect(actor != null, "production convoy actor instantiates")
+	if actor == null:
+		return
+	root.add_child(actor)
+	await process_frame
+	_expect(actor.get_node_or_null("LeadVehicle") != null, "convoy owns authored lead vehicle presentation")
+	_expect(actor.get_node_or_null("EscortLeft") != null and actor.get_node_or_null("EscortRight") != null, "convoy owns two escort vehicles")
+	var tickets := actor.get_node_or_null("TicketDebris") as CPUParticles3D
+	var sparks := actor.get_node_or_null("DefeatSparks") as CPUParticles3D
+	_expect(tickets != null and tickets.one_shot and tickets.amount <= 28, "ticket debris is one-shot and bounded")
+	_expect(sparks != null and sparks.one_shot and sparks.amount <= 18, "defeat sparks are one-shot and bounded")
+	_expect(actor.play_defeat_sequence(), "convoy defeat presentation starts exactly once")
+	_expect(actor.defeat_started(), "convoy records persistent defeat state")
+	_expect(not actor.play_defeat_sequence(), "convoy rejects duplicate defeat presentation")
+	actor.queue_free()
+	await process_frame
 
 
 func _test_deterministic_reset_cycles() -> void:
