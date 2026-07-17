@@ -1,0 +1,236 @@
+work_id: mount-hood-off-leash-summit-production
+target: >
+  Mission 3 "Off-Leash Summit" full visual identity: snowbound alpine pursuit from a
+  forest highway pullout, through a maintenance yard and a historic timber lodge, into
+  service tunnels, and up a chairlift/slope to a summit relay finale. Covers the zone
+  environment kit, ground/snow surface families, three new enemies (Ski-Patrol Ranger,
+  Snowcat Plow Tank, Avalanche Recon Drone), the lodge-siege → chairlift set piece, and
+  the mission-2 HUD/touch presentation carried forward.
+baseline_revision: 1d1043c
+canonical_views:
+  - mission_selection            # Mount Hood card, cold blue-white with warm lodge windows
+  - highway_pullout              # Sandy/Government-Camp-style green signage, snowbank berms
+  - maintenance_yard             # lift machinery, groomers, service sheds
+  - timber_lodge_exterior        # dominant landmark silhouette at thumbnail scale
+  - grand_lodge_interior         # warm refuge: fireplace, timber beams, trail map
+  - boiler_service_tunnel        # dark warm mechanical contrast beat
+  - chairlift_slope_finale       # summit relay + open exposure + boss set piece
+  - ski_patrol_ranger            # hero enemy sheet
+  - snowcat_plow_tank            # heavy enemy / mini-boss sheet
+  - tablet_4_3_touch_hud         # snow glare must not wash out HUD/telegraphs
+
+gameplay_readability: >
+  Snow is the biggest readability risk in the game so far: a white ground plus white
+  weather can erase pickups, telegraphs, and edges. The player must read, in order, the
+  forward route up the mountain, the current objective, hostile silhouettes and their
+  warm telegraphs, slippery/exposed floor zones vs. safe traction, warming-shelter
+  refuges, lift-traversal boarding points, secrets, pickups, and lethal fall edges —
+  all before decorative snowfall. Every threat and interactable holds at least one full
+  value step darker or warmer than the snow behind it at combat distance. No full-frame
+  blizzard, bloom, or white overlay may flatten that separation; snowfall is a bounded,
+  low-density particle layer, never a screen wash.
+
+silhouette_goal: >
+  A cold, high-key vertical ascent that reads as unmistakably alpine, never a snow-recolor
+  of Salmon Creek. The dominant landmark is the timber lodge: a heavy stone-and-timber
+  A-frame mass with a tall stone chimney and lit warm windows, recognizable as a black
+  shape at thumbnail. Enemies stay officious and boxy against the organic snow: the
+  Ski-Patrol Ranger is an upright rescue-cross ranged unit, the Snowcat Plow Tank is a
+  wide low tracked wedge with an angled front blade, and the Avalanche Recon Drone is a
+  small high-contrast airborne cross with a warning strobe. Firs are clustered conic
+  masses, not stretched spheres; rock is faceted, not noise.
+
+visual_story: >
+  Automated municipal compliance has requisitioned a beloved mountain: a stolen
+  weather-control beacon is burying the slopes in "administrative snow," and the lodge
+  that should be a warm refuge has been retrofitted with cold teal enforcement machinery.
+  Warm lodge/refuge pockets and hand-lettered mountain-town humor push back against the
+  cold blue-white municipal freeze.
+
+palette: >
+  Cold blue-white exterior snow and sky; faceted grey-blue exposed rock; deep evergreen
+  fir; warm timber brown and stone grey for the lodge; warm amber/ember refuge and
+  fireplace light as the only large warm pools; cold teal for municipal enforcement
+  machinery and airborne markers; hostile warm red/orange telegraphs; cyan reserved for
+  technological weak points and the beacon system; tennis-ball gold for progression and
+  secrets. Keep threats one value step off the snow; wetness/ice darkens and gloss-lowers
+  selectively, never a universal mirror.
+
+value_hierarchy: >
+  1) immediate threat / slippery-vs-safe floor / fall edge; 2) route up-mountain and the
+  lodge landmark; 3) Cobie HUD + objective; 4) refuge pockets, signage jokes, lift
+  boarding cues; 5) snowfall, distant firs, atmospheric haze. Snow is quiet supporting
+  value; it never occupies the highest local contrast.
+
+materials:
+  texel_density_note: >
+    Match Salmon Creek/Rain City texel density per zone; snow reads by value and
+    micro-normal sparkle, not by busy albedo. Do not bake tracks, paw prints, blood, or
+    markings into tiling snow — those are separate decal layers so repetition never shows.
+  families:
+    - packed_snow_traction     # safe walkable snow; brighter, slightly warm, subtle compression
+    - loose_powder_slip        # slippery/exposed zones; cooler, softer normal, faint drift ripple
+    - groomed_corduroy_slope   # the finale slope; directional corduroy ridging as a normal detail, not baked stripes
+    - alpine_rock_faceted      # exposed grey-blue rock, faceted low-freq normal
+    - lodge_timber_beam        # rain/snow-darkened warm structural wood
+    - lodge_fieldstone         # cool grey stacked stone for chimney/base
+    - service_metal_frost      # cold municipal enforcement metal with frost rime edge-decal
+    - warming_shelter_ember    # warm emissive-supported interior surface for refuges
+  decal_layers: [tracks_and_pawprints, ice_sheen, frost_rime, trail_paint, signage, grime]
+
+lighting_and_fog: >
+  Cold blue-white key from a low winter sun establishing up-slope direction; warm authored
+  interior/refuge pools at the lodge, fireplaces, and warming shelters; restrained cool
+  distance fog for peak separation only — never a combat-distance whiteout. Reserve dynamic
+  lights for the beacon, boss impacts, and lift machinery. Snow gets subtle authored
+  emissive fill in shadow so silhouettes never crush to pure black or blow to pure white.
+
+enemy_roster:
+  sprite_contract: >
+    Follow docs/ART_BIBLE.md character contract exactly. Directional heroes use one fixed
+    8x4 atlas (row0 idle, row1 locomotion-A, row2 locomotion-B, row3 reactions:
+    alert/telegraph/attack/hurt/stagger/milestone/death), 1536x1024 (192x256 cells),
+    orthographic render, transparent padding, ONE feet baseline across every state and
+    direction. Set Sprite3D.pixel_size = intended_world_height / opaque_frame_height and
+    record both numbers + result in ASSET_MANIFEST. Never re-tune scale per device. Bosses
+    may not render as a tiny cell; reactions may not expose a full sheet. Simpler support
+    units may ship mesh-primary (like Compliance Gull) when 8-direction art is not budgeted.
+  units:
+    - id: ski_patrol_ranger
+      role: RANGED   # PRD "ski-patrol ranged unit"
+      pipeline: directional_sprite   # hero readability enemy for this mission
+      silhouette: >
+        Upright bipedal enforcement ranger, ski-patrol rescue-cross chest plate, snow
+        goggles as a cold cyan lens band, a flare/ice-dart launcher held across the body,
+        rigid officious posture. Boxy municipal shoulders vs. Cobie's rounded shapes.
+      palette: cold teal shell, frost-white trim, red rescue-cross + red muzzle telegraph, cyan goggle lens
+      intended_world_height_m: 1.75
+      collision_capsule_height_m: 1.55
+      feet_baseline: bottom-center opaque row seated on cell floor
+      behavior_hook: keeps preferred_distance, lobs a telegraphed ice-dart; brief wind-up flare
+      telegraph: red muzzle glow + goggle flare on row3 telegraph frame, orientation preserved
+      distant_animation_rate_fps: 4
+    - id: snowcat_plow_tank
+      role: TANK    # PRD "snowplow tank"; doubles as the zone mini-boss
+      pipeline: directional_sprite_or_blender_mesh   # heavy, low silhouette; mesh acceptable if art budget is tight
+      silhouette: >
+        Wide low tracked snowcat with an angled front plow blade, municipal beacon roof
+        bar, twin exhausts. Reads as a moving wall of cold metal; the plow is the danger
+        edge, the exposed rear engine is the cyan weak point.
+      palette: municipal teal body, frost-rimed treads, red plow warning chevrons, cyan rear-core weak point
+      intended_world_height_m: 2.6
+      collision_box_height_m: 2.4
+      feet_baseline: track bottom on cell floor; no vertical bob
+      behavior_hook: slow charge/plow-shove along lanes; exposes cyan rear core after a plow commit
+      telegraph: plow-lift + chevron strobe before a charge; readable brake before impact
+    - id: avalanche_recon_drone
+      role: FLYING / SUPPORT   # airborne marker, snow-country cousin of the Compliance Gull
+      pipeline: mesh_primary   # small, cheap, mesh like ComplianceGull; no 8-dir atlas needed
+      silhouette: >
+        Small high-contrast airborne cross/quad-rotor with a downward warning strobe and a
+        stubby siren horn; hovers, tags the player's floor with a cold marker ring, calls a
+        snow-shove or a ranger volley.
+      palette: white body, cold teal arms, red strobe, cyan sensor eye
+      intended_world_height_m: 0.9
+      collision_capsule_height_m: 0.8
+      uses_gravity: false
+      behavior_hook: mark-and-support (reuse Gull mark/dive vocabulary); does not brawl
+  boss_or_set_piece:
+    id: grooming_leviathan_relay   # PRD set piece: "lodge siege into chairlift/slope assault"
+    concept: >
+      A summit-relay finale: a scaled-up automated grooming/beacon rig anchored to the
+      chairlift line. Reuse the MovingSetPiece + multi-phase boss vocabulary from the
+      Municipal Towmaster rather than a bespoke fork. Phases move the fight up the lift line
+      (siege the lodge → board/defend a chairlift → summit relay shutdown). Weak points are
+      cyan beacon dishes; telegraphs are warm; the reward beat frees the mountain from the
+      administrative snow.
+    reward: cold-resistant armor plating OR a charged Fetch shot (PRD) — presentation-only until Codex wires the upgrade.
+
+environment_props:
+  landmarks:
+    - timber_lodge_A_frame        # dominant; stone chimney + warm windows; thumbnail-legible
+    - chairlift_line_and_towers   # traversal + finale spine; cables read as thin authored lines
+    - snowcat_groomer_parked      # yard storytelling; echoes the tank enemy shape
+    - distant_summit_and_ridge    # original fictional peak silhouette, not a copied Mt Hood photo
+  props: [snowbank_berms, fir_clusters, faceted_rock, ski_racks, lift_chairs, trail_map_board, hot_cocoa_stand, fireplace, timber_beams, warming_shelter_hut, service_shed, sandbag_and_flare_kit, tennis_ball_gold_pickup]
+  signage_jokes:   # original hand-lettered art, not generic labels; verify sign/trademark before commercial release
+    - "CHAIRLIFT RESERVED FOR GOOD DOGS"
+    - "AVALANCHE CONTROL / BARK TWICE"
+    - "SANDY: LAST TREATS FOR 37 MILES"
+    - "GOVERNMENT CAMP — PERMITS FOR ZOOMIES AT WINDOW 4"
+  environmental_joke_required: >
+    At least one location-specific gag, e.g. a "warming shelter" whose sign reads
+    "REFUGE FOR COLD NOSES ONLY" that also functions as a health/secret refuge.
+
+ground_and_surfaces: >
+  The floor is a gameplay-legible traction map, not a white blanket: packed_snow_traction
+  marks safe lanes (brighter, faint warm), loose_powder_slip marks slippery/exposed zones
+  (cooler, soft), groomed_corduroy_slope defines the finale descent. Traction changes read
+  by value + subtle normal, reinforced by a thin authored edge decal — never by hue alone
+  and never by baked stripes inside a tiling material. Fall edges use a consistent authored
+  danger lip. This ground read is the mission's "new mechanic" (slippery/exposure zones)
+  and must survive tablet glare.
+
+animation_or_state_vocabulary: >
+  Ranger: idle/patrol/alert/telegraph/attack(lob)/hurt/stagger/death. Snowcat: idle/rev/
+  plow-charge/blade-impact/core-expose/hurt/phase/death. Drone: hover/search/mark/support-
+  call/recover/hurt/death (Gull-style). Boss/relay: siege/board/phase-change/dish-expose/
+  defeat. Reaction frames preserve orientation or use a designed transition; no orientation
+  snap.
+
+platform_budgets: >
+  Match Rain City: native 1080p p95 <=20 ms, p99 <=33.3 ms; Web/tablet p95 <=33.3 ms,
+  p99 <=50 ms; <=4 active enemies; unreviewed zone <=650 draw calls; Web transfer stays
+  within the episode target; native memory <1 GB. Snowfall particles are bounded, pooled,
+  reduced-flash-aware, and the first thing cut on the Web/tablet quality tier.
+
+source_and_license: >
+  Original deterministic Blender + Material Maker sources authored for Cobie Nukem; concept/
+  reference images allowed but Blender owns final directional renders (visual-foundry skill).
+  No copied maps, photography, logos, floorplans, or protected character/game IP. Timberline
+  Lodge, Sandy/Government Camp, and Mt Hood are evoked through original silhouettes and
+  fictionalized signage only — verify any place/sign/trademark use before commercial release.
+
+owned_paths:
+  - assets/source/blender/mount_hood/
+  - assets/source/material_maker/mount_hood/
+  - assets/models/mount_hood/
+  - assets/materials/mount_hood/
+  - assets/sprites/enemies/            # ski_patrol_ranger + snowcat_plow_tank atlases
+  - assets/textures/mount_hood/        # snow/rock/timber/stone surface kit + PROVENANCE.md
+  - scenes/levels/mount_hood/
+  - docs/ASSET_MANIFEST.md
+
+preserved_gameplay_contracts: >
+  Presentation only. Stable mission/zone/objective/encounter/interaction IDs; authored
+  collision + navigation stay separate from replaceable art; slippery/exposure traction is a
+  gameplay contract owned by level code, not by the visual material. All progression,
+  checkpoints, and the finale remain recoverable without any of these art assets present.
+
+acceptance_evidence: >
+  Deterministic Godot import; enemy presentation/scale contract test (intended vs. collision
+  height, feet baseline, no full-sheet reaction); four-aspect captures incl. 1024x768 tablet;
+  30/60/120 FPS motion + 10-TPS diagnostic for plow charge and drone mark; native metrics;
+  packaged-Web trace; ASSET_MANIFEST provenance + hashes; reset/cleanup baselines for
+  snowfall particles, boss dishes, and lift machinery.
+
+human_review_questions: >
+  Does the snow read as alpine and not a Salmon Creek recolor? Are pickups/telegraphs
+  legible against white at combat distance and under tablet glare? Do slippery vs. safe
+  floors read instantly without hue-only cues? Is the lodge unmistakable at thumbnail? Do
+  the ranger/snowcat/drone silhouettes stay distinct in a group? Is the lift/summit finale
+  legible and fair? Do the jokes land? Is comfort/photosensitivity acceptable with snowfall on?
+
+out_of_scope: >
+  Real Timberline Lodge / Mt Hood reproduction; real trademarked signage; new gameplay
+  systems (reuse MovingSetPiece + shared enemy/interaction contracts); Moon and Ventura
+  content; final upgrade balancing (cold armor / charged Fetch are presentation stubs here).
+
+notes_for_codex: >
+  Highest-timeliness brief — Mission 3 is in active buildout. Start with the snow ground
+  traction read and the lodge landmark (they define the identity), then the Ski-Patrol
+  Ranger as the hero readability enemy. The Snowcat can begin mesh-primary and graduate to a
+  directional atlas later. Reuse the Municipal Towmaster MovingSetPiece + phase vocabulary
+  for the summit relay instead of a bespoke boss. Do NOT ship flat beige/white slabs with
+  invisible damage (explicitly prohibited in the art bible) — the earlier Salmon Creek and
+  Rain City hazard reports came from exactly that anti-pattern.

@@ -1,0 +1,226 @@
+work_id: ventura-pier-showdown-production
+target: >
+  Mission 5 "Ventura Pier" full visual identity: a sun-bleached coastal California
+  showdown across a beach approach, a concrete promenade, a marina/service yard, and a
+  pier finale over the surf. Covers the coastal environment kit, sand/concrete/marine
+  surface families, a proposed new-enemy roster, a pier boss set piece, and the
+  carried-forward HUD/touch presentation.
+baseline_revision: 1d1043c
+
+# ============================================================================
+# SPEC GAP — READ FIRST
+# Ventura has an ART_BIBLE.md identity row but NO PRD Phase-3 route brief (the PRD
+# episode plan currently ends at Mission 4 / Moon, whose reward is "episode completion +
+# New Game+"). So the ROUTE, NEW MECHANIC, ENEMY ROSTER, and BOSS below are a proposed,
+# internally-consistent starting point derived from the ART_BIBLE identity and episode
+# logic — NOT owner-ratified design. Before Ventura enters production, the owner must
+# confirm: (1) whether Ventura is a post-Moon epilogue, a New Game+ destination, or a
+# relocated finale; (2) the route/mechanic; (3) the enemy additions; (4) the boss/set
+# piece. Everything else (palette, materials, lighting, silhouette discipline, sprite
+# contract, IP rules) follows the established art bible and is safe to lock now.
+# ============================================================================
+
+canonical_views:
+  - mission_selection            # Ventura card: warm late-day sun, surf teal, pier silhouette
+  - beach_approach               # sand, palms, lifeguard towers, warm haze
+  - concrete_promenade           # boardwalk shops, bike lane, promenade combat lane
+  - marina_service_yard          # boats, cranes, fuel docks, cooler contrast beat
+  - pier_finale_over_surf        # pier structure + boss + ocean drop
+  - beach_patrol_unit            # hero enemy sheet (proposed)
+  - meter_enforcement_tank       # heavy enemy / set-piece sheet (proposed)
+  - tablet_4_3_touch_hud         # bright sun + haze must not wash HUD/telegraphs
+
+gameplay_readability: >
+  The coastal risk is warm haze + bright sand washing out ranged threats and telegraphs at
+  distance (the ART_BIBLE identity explicitly says "haze supports depth without hiding
+  ranged threats"). The player must read, in order, the immediate threat and its telegraph,
+  the forward route along the promenade/pier, pier-edge and water fall lines, the objective,
+  cover and flank lanes, secrets, and pickups — before decorative surf/haze. Ranged enemies
+  keep a warm rim/telegraph that survives the haze; sand stays a quiet mid value so warm
+  reds/oranges pop.
+
+silhouette_goal: >
+  A warm, open, sun-bleached coast that reads as unmistakably Southern-California pier and
+  never a beach-recolor of another mission. Dominant landmark is the pier: a long timber/
+  concrete deck on piling rows marching into the surf, boss-legible at thumbnail. Palms are
+  distinct fan silhouettes, not stretched spheres. Municipal enforcement machines stay boxy
+  and officious against the loose organic coast.
+
+visual_story: >
+  Compliance enforcement has colonized a laid-back beach town: automated parking meters,
+  citation drones, and "lifeguard compliance" towers police joy on the sand. Warm late-day
+  optimism and boardwalk humor push back against cold municipal machinery — the sunset
+  counterpoint to Rain City's rain and the Moon's void.
+
+palette: >
+  Warm late-day gold sunlight; sun-bleached sand (warm neutral, quiet mid value); surf teal
+  and cool ocean fill; weathered concrete promenade grey; faded boardwalk timber; palm
+  green; cold municipal teal for enforcement machines; hostile warm red/orange telegraphs
+  (must survive haze); cyan weak points; tennis-ball gold progression. Haze is warm, thin,
+  and depth-only — never a flat wash over combat distance.
+
+value_hierarchy: >
+  1) immediate threat + telegraph + pier/water edge; 2) route along promenade/pier + the
+  pier landmark; 3) Cobie HUD + objective; 4) shops, towers, signage jokes, cover lanes;
+  5) surf, haze, gulls-at-distance, palms. Haze and sand are quiet supporting layers.
+
+materials:
+  texel_density_note: >
+    Consistent texel density; sand reads by soft value + micro-normal ripple, not busy
+    albedo. Do NOT bake footprints, tire tracks, or tide lines into tiling sand — decal
+    layers only. Concrete/boardwalk read by value + wear decals.
+  families:
+    - beach_sand_dry            # warm neutral loose sand; soft ripple normal
+    - wet_tide_sand             # cooler darker damp band near the surf; selective gloss
+    - promenade_concrete        # weathered painted coastal concrete
+    - boardwalk_timber_faded    # sun-bleached plank decking with gap normal
+    - marine_steel_salt         # salt-rimed dock/crane metal + rust edge decal
+    - municipal_teal_machine    # cold enforcement machine skin
+    - pier_piling_barnacle      # wet piling with barnacle/algae decal band at waterline
+  decal_layers: [footprints_and_tiretracks, tide_line, salt_rime, barnacle_algae, bike_lane_paint, signage, grime]
+
+lighting_and_fog: >
+  Warm low late-day key establishing along-shore direction; cool ocean bounce fill; thin
+  warm depth haze that separates distance WITHOUT hiding ranged threats at combat range
+  (identity contract). Reserve dynamic lights for the boss, marina machinery, and impacts.
+  Prove ranged-enemy telegraphs stay legible through the haze at max engagement distance and
+  on the tablet tier.
+
+enemy_roster:
+  status: PROPOSED — requires owner ratification (see SPEC GAP)
+  sprite_contract: >
+    Same ART_BIBLE contract: 8x4 directional atlas for heroes (192x256 cells, one feet
+    baseline, Sprite3D.pixel_size = intended_world_height / opaque_frame_height, recorded in
+    manifest); mesh-primary allowed for small units. Never re-tune scale per device; no
+    tiny-cell bosses, no full-sheet reactions.
+  units:
+    - id: beach_patrol_skirmisher
+      role: SKIRMISHER   # fast flanking coastal unit
+      pipeline: directional_sprite
+      silhouette: >
+        A municipal beach-patrol enforcement unit on a low quad/ATV or hover-board frame:
+        wide stance, red hazard light bar, citation-printer arm, cyan visor. Fast lateral
+        flanking on the open sand; the printer arm is the attack tell, the exposed rear
+        drive is the cyan weak point.
+      palette: municipal teal + sun-faded white, red light bar/telegraph, cyan visor + weak point
+      intended_world_height_m: 1.5
+      collision_capsule_height_m: 1.35
+      feet_baseline: drive/wheel contact on cell floor
+      behavior_hook: preferred/retreat distance strafing on open sand (reuse SKIRMISHER)
+    - id: meter_enforcement_tank
+      role: TANK   # boss-adjacent heavy; the promenade set-piece unit
+      pipeline: directional_sprite_or_blender_mesh
+      silhouette: >
+        A wide, low automated parking-meter/citation rig on treads — a rolling wall of
+        coin-slots and clamp arms with a warm warning beacon; deploys wheel-clamp traps
+        (ties into the Rain City "towable offence" joke language). Front clamp is the danger
+        edge; exposed meter-core is the cyan weak point.
+      palette: faded municipal teal, coin-brass accents, red clamp warning, cyan core
+      intended_world_height_m: 2.4
+      collision_box_height_m: 2.2
+      behavior_hook: slow advance + telegraphed clamp-trap; exposes core after a clamp commit
+    - id: lifeguard_compliance_tower
+      role: RANGED / SUPPORT   # stationary-ish ranged control point
+      pipeline: mesh_primary   # tall thin tower; cheap mesh; ranged suppression
+      silhouette: >
+        A retrofitted lifeguard tower turned enforcement turret: tall thin A-frame with a
+        cyan scanning lens and a red hailer horn; suppresses a lane with telegraphed
+        warning-shot volleys and calls skirmishers. Tall thin silhouette contrasts the low
+        tank and the fast skirmisher.
+      palette: sun-faded timber + municipal teal turret, red hailer, cyan lens
+      intended_world_height_m: 3.2
+      collision_box_height_m: 3.0
+      behavior_hook: lane-suppression ranged control point; priority target
+  boss_or_set_piece:
+    id: pier_citation_crane   # PROPOSED
+    concept: >
+      A pier-mounted automated citation crane / boardwalk enforcement engine as the finale,
+      fought out along the pier deck over the surf with the sunset behind it. Reuse the
+      MovingSetPiece + multi-phase boss vocabulary (Towmaster/Walker lineage); phases walk
+      the fight down the pier toward the end deck; weak points are cyan winch/lens arrays;
+      the ocean drop is the arena's lethal edge. Owner to confirm whether this is the
+      episode's true finale, an epilogue, or a New Game+ set piece.
+
+environment_props:
+  landmarks:
+    - pier_over_surf            # dominant; piling rows into the ocean; thumbnail-legible
+    - boardwalk_shopfront_row   # promenade combat lane + warm humor pockets
+    - marina_cranes_and_boats   # service-yard silhouette; echoes the tank/crane shapes
+    - distant_headland_and_sun  # original fictional coastal skyline + setting sun anchor
+  props: [lifeguard_towers, palms, beach_umbrellas, surfboard_racks, bike_lane_markings, promenade_benches, marina_fuel_dock, buoys, cooler_and_treat_stand, arcade_facade, gold_tennis_ball_pickup, vancouver_and_moon_callback_props]
+  signage_jokes:   # original art/typography only
+    - "NO DOGS ON PIER (DOGS: DISREGARD)"
+    - "PARKING: 2 MIN ZOOMIES / TOW ZONE"
+    - "LIFEGUARD ON DUTY — COMPLIANCE ONLY"
+    - "SUNSET DELAYED PENDING PERMIT REVIEW"
+  environmental_joke_required: >
+    At least one location-specific gag, e.g. an automated meter that prints a citation for
+    "excessive tail wagging" and drops a treat/secret when broken.
+
+ground_and_surfaces: >
+  Warm quiet beach_sand_dry across the open approach, a cooler wet_tide_sand band as the
+  readable "waterline" boundary, promenade_concrete + boardwalk_timber_faded on the built
+  lanes, and pier_piling_barnacle at the finale. The sand's quiet mid value is what lets
+  warm red/orange telegraphs pop through the haze. Footprints, tide lines, and tire tracks
+  are decals so tiling sand never visibly repeats; the pier/water fall edge uses a
+  consistent authored danger lip.
+
+animation_or_state_vocabulary: >
+  Skirmisher: idle/strafe/alert/telegraph/attack(print)/hurt/stagger/death. Meter tank:
+  idle/advance/clamp-telegraph/clamp/core-expose/hurt/phase/death. Lifeguard tower: scan/
+  telegraph/volley/call/hurt/death. Boss: enter/walk-pier/phase-change/winch-expose/defeat.
+  Reactions preserve orientation.
+
+platform_budgets: >
+  Same envelope as the rest of the episode: native 1080p p95 <=20 ms / p99 <=33.3 ms;
+  Web/tablet p95 <=33.3 ms / p99 <=50 ms; <=4 active enemies; unreviewed zone <=650 draw
+  calls; native memory <1 GB. Surf/haze are bounded and the first thing cut on the Web tier;
+  the ocean is a cheap shader/plane, not a particle field.
+
+source_and_license: >
+  Original deterministic Blender + Material Maker sources; concepts allowed, Blender owns
+  final renders. Ventura/California coast evoked through original silhouettes and
+  fictionalized signage; no copied photography, maps, pier floorplans, business logos, or
+  protected character/game IP.
+
+owned_paths:
+  - assets/source/blender/ventura/
+  - assets/source/material_maker/ventura/
+  - assets/models/ventura/
+  - assets/materials/ventura/
+  - assets/sprites/enemies/            # beach_patrol_skirmisher (+ meter_enforcement_tank) atlases
+  - assets/textures/ventura/           # sand/concrete/timber/marine surface kit + PROVENANCE.md
+  - scenes/levels/ventura/
+  - docs/ASSET_MANIFEST.md
+
+preserved_gameplay_contracts: >
+  Presentation only. Stable IDs once design is ratified; authored collision/navigation
+  separate from art; pier/water edges and any tide mechanic are level-code contracts art
+  only makes legible; progression/checkpoints recoverable without art assets.
+
+acceptance_evidence: >
+  Deterministic import; enemy scale/feet/silhouette contract test; four-aspect captures incl.
+  1024x768 tablet proving ranged telegraphs survive haze; 30/60/120 FPS motion + 10-TPS
+  diagnostic; native metrics; packaged-Web trace; provenance + hashes; reset/cleanup
+  baselines for boss winch, clamp traps, and surf VFX.
+
+human_review_questions: >
+  Does the coast read as sunny California pier and not a beach recolor? Do ranged
+  telegraphs survive the warm haze at combat distance and on tablet? Is the pier
+  unmistakable at thumbnail? Do skirmisher/tank/tower silhouettes stay distinct? Is the
+  sunset finale legible and fair over the water edge? Do the jokes land? And — the gating
+  question — is the proposed route/mechanic/boss the direction the owner wants, or should
+  Ventura be reframed?
+
+out_of_scope: >
+  Real Ventura reproduction; real business branding; NEW gameplay systems (reuse
+  MovingSetPiece + shared contracts); Mount Hood and Moon content; any production before the
+  SPEC GAP items are owner-ratified.
+
+notes_for_codex: >
+  Do NOT start Ventura production before the SPEC GAP is resolved with the owner — the
+  palette/material/silhouette/sprite discipline is locked, but route/mechanic/enemy/boss are
+  proposals. Ventura is the sunny tonal counterpoint that completes the episode's weather
+  arc (storm → rain → snow → void → sunset); lean into warmth and boardwalk humor. Reuse the
+  MovingSetPiece + boss vocabulary; do not fork. Same anti-pattern warning as the others: no
+  flat slabs with invisible damage.

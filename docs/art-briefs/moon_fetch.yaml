@@ -1,0 +1,219 @@
+work_id: moon-one-giant-fetch-production
+target: >
+  Mission 4 "One Giant Fetch" full visual identity: an airless lunar compliance outpost
+  from a landing pad, through low-gravity exterior trenches and a kennel research habitat,
+  into an observatory/control core, and out to a crater arena for the episode boss. Covers
+  the lunar environment kit, regolith/habitat surface families, the low-gravity readability
+  contract, two new enemies (Vacuum Recon Drone + Constellation Support Node), the
+  crater-scale boss with Earth in the sky, and the carried-forward HUD/touch presentation.
+baseline_revision: 1d1043c
+canonical_views:
+  - mission_selection            # Moon card: black sky, hard white light, Earth marble accent
+  - lunar_landing_pad            # arrival beat; lander, floods, paw-print boot marks
+  - lowgrav_exterior_trench      # traversal identity: long shadows, arcing jumps, black sky
+  - kennel_research_habitat      # warm-ish pressurized interior contrast beat
+  - observatory_control_core     # cyan systems, the beacon's origin, Earth framed in glass
+  - crater_boss_arena            # finale: crater rim, Earthrise landmark, boss dominance
+  - vacuum_recon_drone           # hero enemy sheet
+  - constellation_support_node   # support enemy sheet
+  - tablet_4_3_touch_hud         # extreme value contrast must not crush HUD or telegraphs
+
+gameplay_readability: >
+  The Moon's risk is the opposite of Mount Hood: extreme contrast. A near-black sky and
+  hard white light can crush shadow detail to pure black and blow highlights to pure white,
+  hiding threats, edges, and traversal boundaries. The player must read, in order, the
+  immediate threat and any decompression/airlock timing, the low-gravity jump arc and where
+  it lands, traversal boundaries (trench lips, crater edges, the lethal void), the current
+  objective, hostile silhouettes and warm telegraphs, oxygen/refuge points, secrets, and
+  pickups — all before starfield decoration. Authored ambient/emissive fill keeps shadowed
+  silhouettes off pure black; safety amber/red rim light keeps traversal boundaries
+  unmistakable. No full-frame black crush and no lens-flare wash.
+
+silhouette_goal: >
+  A hard-edged, high-contrast airless outpost that reads as unmistakably lunar and never a
+  grey Salmon-Creek recolor. Dominant landmark is Earth: a blue-white marble hung in a black
+  sky, the emotional and directional anchor of the finale. Modular hard habitats are crisp
+  boxes and cylinders with cyan seams; the ground is soft rolling regolith and crater rims.
+  Enemies are officious municipal machines that float or skitter: the Vacuum Recon Drone is
+  a compact hovering intake unit with a cyan sensor eye, the Constellation Support Node is a
+  small satellite-cross that links beams to allies. Cobie stays rounded and warm against the
+  cold geometry.
+
+visual_story: >
+  Municipal compliance has followed the Golden Tennis Ball to the Moon and stamped Earth
+  itself "NO DOGS." An absurd bureaucratic outpost enforces leash law in a vacuum; retro
+  space-program optimism and dog-eared humor collide with cold automated enforcement, and
+  the finale reframes Earth as the thing worth fetching home.
+
+palette: >
+  Hard white/cyan key light; deep controlled black-blue shadow (never pure black); warm
+  cream/parchment for pressurized interiors and retro posters; safety amber and red for
+  traversal boundaries, hazards, and hostile telegraphs; cyan for technological weak points,
+  seams, and the beacon/observatory systems; Earth's blue-white marble and tennis-ball gold
+  as the two emotional accents. Regolith is warm-neutral grey, not blue.
+
+value_hierarchy: >
+  1) immediate threat / airlock timing / jump-arc landing / void edge; 2) traversal
+  boundaries + the objective direction; 3) Cobie HUD + objective + (low-gravity) state cue;
+  4) Earth landmark, oxygen/refuge points, signage jokes; 5) starfield, dust, distant relief.
+  The starfield is the quietest layer and never competes with a telegraph.
+
+materials:
+  texel_density_note: >
+    Consistent texel density per zone. Regolith reads by soft value and micro-normal, not
+    busy albedo; do NOT bake craters, boot prints, or rover tracks into the tiling base —
+    those are decal layers. Habitat panels read by clean seams + cyan emissive trim, not
+    grime noise.
+  families:
+    - lunar_regolith_soft        # rolling grey exterior dust; soft low-freq normal
+    - crater_rim_rock            # harder faceted rim rock; sharper normal, rim-lit
+    - habitat_panel_pressurized  # clean modular interior panel, warm-neutral, cyan seam trim
+    - hard_hull_exterior         # cold exterior module skin, high spec control, cyan seams
+    - observatory_glass_systems  # cyan-emissive control surfaces + framed-Earth glass
+    - safety_hazard_stripe       # amber/black boundary decal family for trench/crater edges
+  decal_layers: [boot_and_pawprints, rover_tracks, crater_pocks, seam_glow, hazard_stripe, mission_patch, signage]
+
+lighting_and_fog: >
+  A single hard white/cyan key (the sun) with near-zero atmospheric scatter — but authored
+  ambient/emissive fill and colored rim light keep shadows readable and boundaries legible.
+  No fog exterior (airless); interiors may use restrained pressurized haze. Earthlight is a
+  soft cool secondary fill in the crater finale. Reserve dynamic lights for the beacon,
+  boss, and impacts. This is the game's highest-contrast lighting scenario — prove it holds
+  on the Web/tablet tier without crushing.
+
+lowgravity_readability_contract: >
+  The signature mechanic is controlled low gravity + decompression/airlock timing. The jump
+  arc must be visually predictable: a subtle authored landing-target/shadow cue under the
+  player during long arcs, consistent trench/crater lip lips, and unmistakable void edges.
+  Airlock/decompression sequences use a bounded, clearly telegraphed amber/red cycle with a
+  countdown-readable state — never a surprise instant death. Gravity and airlock timing are
+  gameplay contracts owned by level code; art only makes them legible.
+
+enemy_roster:
+  sprite_contract: >
+    Same as ART_BIBLE: 8x4 directional atlas for heroes (192x256 cells, one feet baseline,
+    Sprite3D.pixel_size = intended_world_height / opaque_frame_height, recorded in manifest);
+    mesh-primary acceptable for small support units. Airborne units set uses_gravity=false
+    and animate hover, not a feet baseline, but still declare intended_world_height vs.
+    collision height so they never render as a tiny cell or a full sheet.
+  units:
+    - id: vacuum_recon_drone
+      role: FLYING   # PRD "vacuum drone"
+      pipeline: directional_sprite   # hero readability enemy in a low-detail environment
+      silhouette: >
+        Compact hovering municipal intake unit: rounded-box body, downward vacuum maw, a
+        single large cyan sensor eye, short amber warning fins. Reads as a floating cyclops
+        vacuum; the maw is the danger tell, the eye is the cyan weak point.
+      palette: cold white/teal hull, cyan eye + weak point, amber warning fins, red intake telegraph
+      intended_world_height_m: 1.1
+      collision_capsule_height_m: 1.0
+      uses_gravity: false
+      feet_baseline: n/a (hover); declare world height for scale contract
+      behavior_hook: drifts, telegraphs a suction/void-pull cone toward the player near edges (thematic low-grav hazard), then a short lunge
+      telegraph: cyan eye flare + amber fin flare + intake glow on row3 telegraph frame
+      distant_animation_rate_fps: 4
+    - id: constellation_support_node
+      role: SUPPORT   # PRD "support constellation"
+      pipeline: mesh_primary   # small satellite; cheap mesh; links beams
+      silhouette: >
+        Small satellite-cross with a central lens and four short antenna arms; hovers in a
+        loose formation ("constellation") and links thin cyan support beams to nearby
+        enemies (shield/heal/speed buff). Killing a node visibly drops the beam it fed.
+      palette: pale hull, cyan lens + link beams, amber solar-fin accents
+      intended_world_height_m: 0.8
+      collision_capsule_height_m: 0.7
+      uses_gravity: false
+      behavior_hook: non-brawling force multiplier; priority target; reuse SUPPORT archetype
+      telegraph: beam brightens before applying its buff; clear "cut the beam" read
+  boss_or_set_piece:
+    id: earthrise_compliance_engine   # PRD "crater-scale boss with Earth in the sky"
+    concept: >
+      A crater-scale automated enforcement engine framed against Earthrise — the episode's
+      climactic boss. Reuse the multi-phase boss + MovingSetPiece vocabulary (Towmaster/
+      Walker lineage), not a bespoke fork. Phases orbit the crater rim so Earth stays in
+      frame; weak points are cyan dish/lens arrays; low-gravity jump arcs are part of the
+      dodge language. Defeat = episode completion beat and the New Game+ difficulty unlock
+      (presentation stub; balancing owned by Codex).
+    reward: episode completion + New Game+ unlock (PRD); Earth-fetch payoff moment.
+
+environment_props:
+  landmarks:
+    - earth_marble_in_black_sky   # dominant emotional/directional landmark, esp. finale
+    - modular_habitat_cluster     # hard-edged pressurized outpost silhouette
+    - observatory_dish_array      # beacon origin; cyan systems; frames Earth in glass
+    - crater_rim_and_lander       # arrival + finale bookends
+  props: [lunar_lander, oxygen_hydrants, antenna_masts, rover_with_chew_marks, tennis_ball_craters, freeze_dried_treat_crates, mission_patches, retro_space_posters, cargo_pallets_with_callback_props, pawprint_boot_marks, gold_tennis_ball_pickup]
+  signage_jokes:   # original art/typography only
+    - "MOON LEASHES MUST BE 384,400 KM OR SHORTER"
+    - "EARTHRISE: NOT A FETCH TOY"
+    - "ONE SMALL STEP FOR DOG"
+    - "NO DOGS (SEE: EARTH)"
+  callback_props_required: >
+    Include cargo pallets carrying recognizable Vancouver (Ruse Slice box) and Mount Hood
+    (hot-cocoa / lift-chair) callback props — cheap continuity that rewards a second look.
+
+ground_and_surfaces: >
+  Exterior is soft rolling lunar_regolith_soft with crater_rim_rock at edges; the traversal
+  read (trench lips, crater edges, void) is carried by consistent amber/black hazard-stripe
+  edge decals + rim light, NOT by hue alone and never baked into the tiling base. Interiors
+  swap to clean habitat_panel_pressurized with cyan seams. Boot prints, rover tracks, and
+  tennis-ball crater pocks are decal layers so the tiling regolith never visibly repeats.
+
+animation_or_state_vocabulary: >
+  Vacuum drone: hover/search/telegraph(intake)/attack(lunge or pull)/hurt/stagger/death.
+  Support node: hover/link/boost/unlink/hurt/death. Boss: enter/orbit/phase-change/dish-
+  expose/overload/defeat. Reactions preserve orientation; airborne units hover-animate
+  rather than snap.
+
+platform_budgets: >
+  Same envelope as Rain City/Mount Hood: native 1080p p95 <=20 ms / p99 <=33.3 ms;
+  Web/tablet p95 <=33.3 ms / p99 <=50 ms; <=4 active enemies; unreviewed zone <=650 draw
+  calls; native memory <1 GB. The starfield + Earth are cheap skybox/emissive elements, not
+  particle-heavy; dynamic lights stay bounded. Prove the extreme-contrast lighting holds on
+  the Web tier without banding.
+
+source_and_license: >
+  Original deterministic Blender + Material Maker sources; concepts allowed, Blender owns
+  final directional renders. No NASA/mission photography, no copied insignia, logos, or
+  protected character/game IP. Earth, craters, and retro space iconography are original
+  stylizations, not traced photographs.
+
+owned_paths:
+  - assets/source/blender/moon/
+  - assets/source/material_maker/moon/
+  - assets/models/moon/
+  - assets/materials/moon/
+  - assets/sprites/enemies/            # vacuum_recon_drone atlas
+  - assets/textures/moon/              # regolith/rim/habitat surface kit + PROVENANCE.md
+  - scenes/levels/moon/
+  - docs/ASSET_MANIFEST.md
+
+preserved_gameplay_contracts: >
+  Presentation only. Stable IDs; authored collision/navigation separate from art; low-gravity
+  and airlock timing are level-code contracts art only makes legible; all progression,
+  checkpoints, and the finale/New-Game+ unlock remain recoverable without art assets.
+
+acceptance_evidence: >
+  Deterministic import; enemy scale/feet(or hover)/silhouette contract test; four-aspect
+  captures incl. 1024x768 tablet proving no black-crush/white-blowout of threats; 30/60/120
+  FPS motion + 10-TPS diagnostic for jump arcs and airlock cycles; native metrics;
+  packaged-Web trace including the high-contrast skybox; provenance + hashes; reset/cleanup
+  baselines for boss dishes, support beams, and airlock VFX.
+
+human_review_questions: >
+  Does the Moon read as airless and lunar, not a grey recolor? Are threats/edges legible
+  against near-black and near-white without crushing? Is the low-gravity jump arc
+  predictable and are void/airlock deaths always telegraphed? Is Earth a satisfying finale
+  anchor? Do the drone/support-node silhouettes stay distinct? Do the jokes and callbacks
+  land? Photosensitivity OK given the hard contrast?
+
+out_of_scope: >
+  Real NASA imagery/insignia; new gameplay systems (reuse MovingSetPiece + shared enemy/
+  interaction contracts); Mount Hood and Ventura content; New Game+ balancing (unlock beat
+  is a presentation stub here).
+
+notes_for_codex: >
+  Build after Mount Hood. The two make-or-break identity elements are (1) the high-contrast
+  lighting holding up without crushing threats, and (2) a predictable low-gravity jump-arc
+  read with always-telegraphed void/airlock death. Earth is the cheapest highest-impact
+  landmark — get it in the skybox early. Reuse boss + MovingSetPiece vocabulary; do not fork.
