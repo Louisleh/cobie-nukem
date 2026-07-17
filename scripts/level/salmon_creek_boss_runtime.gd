@@ -15,6 +15,7 @@ var _golden_ball: GoldenBallFinale
 var _objectives: ObjectiveTracker
 var _spawn_pickup: Callable
 var _cannon_attacks := 0
+var _reward_timer: Timer
 
 
 func configure(pacing: SalmonCreekPacingProfile, golden_ball: GoldenBallFinale, objectives: ObjectiveTracker, spawn_pickup: Callable) -> bool:
@@ -37,8 +38,6 @@ func bind_walker(value: Node) -> bool:
 		walker.definition.retreat_distance = _pacing.pressure_distance.x
 		boss_state_changed.emit(_pacing.phase_id(0), walker.health_fraction())
 		narrative_message.emit(_pacing.phase_cue(0), 2.5)
-	if walker.has_signal("golden_ball_enabled"):
-		walker.golden_ball_enabled.connect(_on_golden_ball_enabled)
 	if walker.has_signal("boss_phase_changed"):
 		walker.boss_phase_changed.connect(_on_phase_changed)
 	if walker.has_signal("attack_fired"):
@@ -53,6 +52,9 @@ func has_active_walker() -> bool:
 
 
 func reset(clear_summons := true) -> void:
+	_cancel_reward_timer()
+	if _golden_ball != null:
+		_golden_ball.reset_reward()
 	walker = null
 	phase_rewards.clear()
 	_cannon_attacks = 0
@@ -63,12 +65,6 @@ func reset(clear_summons := true) -> void:
 	if clear_summons and is_inside_tree():
 		for summon in get_tree().get_nodes_in_group(&"boss_summons"):
 			summon.queue_free()
-
-
-func _on_golden_ball_enabled(target: Node) -> void:
-	_golden_ball.enable_for_boss(target)
-	objective_changed.emit("FETCH THE GOLDEN TENNIS BALL")
-
 
 func _on_phase_changed(_previous: int, phase: int) -> void:
 	if not is_instance_valid(walker):
@@ -102,3 +98,46 @@ func _on_attack_fired(_kind: StringName) -> void:
 func _on_walker_defeated() -> void:
 	boss_state_changed.emit(&"defeated", 0.0)
 	_objectives.record(ObjectiveDefinition.Kind.DEFEAT, &"animal_control_walker")
+	_clear_boss_summons()
+	_schedule_finale_reward()
+
+
+func _schedule_finale_reward() -> void:
+	_cancel_reward_timer()
+	_reward_timer = Timer.new()
+	_reward_timer.name = "FinaleRewardTimer"
+	_reward_timer.one_shot = true
+	# The ball is a victory reward, not a concurrent boss mechanic. Wait through
+	# the Walker's complete authored collapse and every summoned enemy's pop.
+	var linger := float(walker.get("death_linger_seconds")) if is_instance_valid(walker) else 2.8
+	_reward_timer.wait_time = maxf(linger + 0.08, 0.1)
+	_reward_timer.timeout.connect(_reveal_finale_reward)
+	_reward_timer.timeout.connect(_reward_timer.queue_free)
+	add_child(_reward_timer)
+	_reward_timer.start()
+
+
+func _reveal_finale_reward() -> void:
+	_reward_timer = null
+	_clear_boss_summons()
+	_golden_ball.enable_as_reward()
+	objective_changed.emit("RECOVER THE GOLDEN TENNIS BALL")
+	narrative_message.emit("WALKER DESTROYED — GOLDEN BALL RELEASED.", 3.0)
+
+
+func _clear_boss_summons() -> void:
+	if not is_inside_tree():
+		return
+	for summon in get_tree().get_nodes_in_group(&"boss_summons"):
+		if not is_instance_valid(summon):
+			continue
+		if summon is EnemyAgent and not summon.is_dead:
+			summon.apply_damage(1000000.0, walker, summon.global_position)
+		elif not summon is EnemyAgent:
+			summon.queue_free()
+
+
+func _cancel_reward_timer() -> void:
+	if _reward_timer != null and is_instance_valid(_reward_timer):
+		_reward_timer.queue_free()
+	_reward_timer = null

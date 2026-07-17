@@ -13,8 +13,9 @@ CAPTURE_SEED="${CAPTURE_SEED:-2026071601}"
 TEMP_DIR="$(mktemp -d)"
 trap 'rm -rf "$TEMP_DIR"' EXIT
 CAPTURE_PROJECT="$TEMP_DIR/project"
+CAPTURE_HOME="$TEMP_DIR/home"
 
-mkdir -p "$OUTPUT_DIR"
+mkdir -p "$OUTPUT_DIR" "$CAPTURE_HOME"
 python3 tools/visual_quality/prepare_capture_project.py "$PWD" "$CAPTURE_PROJECT" "$CAPTURE_WIDTH" "$CAPTURE_HEIGHT"
 
 user_args=(--capture-size="${CAPTURE_WIDTH}x${CAPTURE_HEIGHT}" --capture-seed="$CAPTURE_SEED" --physics-tps="$CAPTURE_PHYSICS_TPS")
@@ -22,7 +23,7 @@ if [[ "$CAPTURE_FORCE_TOUCH" == "1" ]]; then
   user_args+=(--force-touch)
 fi
 
-"$GODOT_BIN" --path "$CAPTURE_PROJECT" --resolution "${CAPTURE_WIDTH}x${CAPTURE_HEIGHT}" \
+HOME="$CAPTURE_HOME" "$GODOT_BIN" --path "$CAPTURE_PROJECT" --resolution "${CAPTURE_WIDTH}x${CAPTURE_HEIGHT}" \
   --write-movie "$TEMP_DIR/capture.png" --fixed-fps "$CAPTURE_FPS" --quit-after 220 \
   res://scenes/debug/vertical_slice_capture.tscn -- "${user_args[@]}"
 
@@ -41,6 +42,7 @@ copy_frame 55 02-equipment-shed
 copy_frame 85 03-maintenance-tunnels
 copy_frame 115 04-compliance-lab
 copy_frame 145 05-walker-arena
+copy_frame 150 05b-walker-defeat
 copy_frame 175 06-death
 copy_frame 205 07-victory
 

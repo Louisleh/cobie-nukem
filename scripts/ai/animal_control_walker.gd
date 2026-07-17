@@ -3,19 +3,19 @@ extends EnemyAgent
 
 signal boss_phase_changed(previous: BossPhase, current: BossPhase)
 signal armor_panels_broken
-signal golden_ball_enabled(boss: AnimalControlWalker)
 signal walker_defeated
 
-enum BossPhase { CANNONS, EXPOSED_CORE, CHARGE, GOLDEN_BALL, DEFEATED }
+enum BossPhase { CANNONS, EXPOSED_CORE, CHARGE, FINAL_VULNERABILITY, DEFEATED }
 
 const BOLT := preload("res://scenes/enemies/enemy_bolt.tscn")
 const DRONE := preload("res://scenes/enemies/leash_enforcement_drone.tscn")
+const WalkerDefeatEffect := preload("res://scripts/ai/walker_defeat_effect.gd")
 
 @export var combat_profile: WalkerCombatProfile
 
 var boss_phase := BossPhase.CANNONS
 var _attack_count := 0
-var _finishing_with_ball := false
+var _defeat_effect_spawned := false
 var summon_attack_interval := 3
 
 
@@ -37,29 +37,28 @@ func _ready() -> void:
 
 
 func apply_damage(amount: float, source: Node = null, hit_position := Vector3.ZERO) -> float:
-	if boss_phase == BossPhase.GOLDEN_BALL and not _finishing_with_ball:
-		return 0.0
-	# A normal weapon hit may reach the next phase boundary but cannot kill the
-	# Walker or consume several authored phases at once. This preserves each
-	# telegraph and recovery window even under extreme damage or difficulty mods.
+	# One weapon hit may reach one authored phase boundary but cannot skip several
+	# telegraphs at once. Once the final core is exposed, ordinary weapon damage
+	# is authoritative and drives the Walker all the way to zero.
 	var bounded_amount := amount
-	if not _finishing_with_ball and boss_phase < BossPhase.GOLDEN_BALL:
+	if boss_phase < BossPhase.FINAL_VULNERABILITY:
 		var floor_health := _max_health * combat_profile.phase_transition_fraction(boss_phase)
 		var multiplier := maxf(_damage_multiplier(hit_position), 0.001)
 		bounded_amount = minf(amount, maxf(0.0, health - floor_health) / multiplier)
 	var applied := super.apply_damage(bounded_amount, source, hit_position)
 	_update_phase()
+	if is_dead and not _defeat_effect_spawned:
+		_defeat_effect_spawned = true
+		WalkerDefeatEffect.spawn(self)
 	return applied
 
 
 func strike_with_golden_ball(source: Node = null) -> void:
-	if boss_phase != BossPhase.GOLDEN_BALL or is_dead:
+	# Legacy development hook retained for old QA fixtures. The Golden Ball is now
+	# the post-defeat mission reward, not a hidden mandatory damage type.
+	if boss_phase != BossPhase.FINAL_VULNERABILITY or is_dead:
 		return
-	_finishing_with_ball = true
-	super.apply_damage(maxf(health, 1.0), source, get_auto_aim_position())
-	_finishing_with_ball = false
-	if is_dead:
-		_set_boss_phase(BossPhase.DEFEATED)
+	apply_damage(maxf(health, 1.0), source, get_auto_aim_position())
 
 
 func _damage_multiplier(hit_position: Vector3) -> float:
@@ -101,15 +100,12 @@ func _update_phase() -> void:
 		_set_boss_phase(BossPhase.DEFEATED)
 		return
 	var fraction: float = health_fraction()
-	if boss_phase == BossPhase.GOLDEN_BALL:
+	if boss_phase == BossPhase.FINAL_VULNERABILITY:
 		return
 	var next_phase := boss_phase + 1
 	if next_phase < BossPhase.DEFEATED:
 		var threshold: float = combat_profile.phase_transition_fraction(boss_phase)
 		if fraction <= threshold:
-			if next_phase == BossPhase.GOLDEN_BALL:
-				health = maxf(health, definition.max_health * combat_profile.golden_ball_health_floor_fraction)
-				_update_health_bar()
 			_set_boss_phase(next_phase)
 
 
@@ -126,11 +122,8 @@ func _set_boss_phase(next: BossPhase) -> void:
 				var panel := get_node_or_null("Visual/%s" % panel_name) as Node3D
 				if panel != null:
 					panel.visible = false
-		BossPhase.GOLDEN_BALL:
-			health = maxf(health, definition.max_health * combat_profile.golden_ball_health_floor_fraction)
-			_update_health_bar()
+		BossPhase.FINAL_VULNERABILITY:
 			velocity = Vector3.ZERO
-			golden_ball_enabled.emit(self)
 		BossPhase.DEFEATED:
 			walker_defeated.emit()
 		_:
@@ -172,6 +165,21 @@ func _apply_phase_tuning(phase: BossPhase) -> void:
 	definition.attack_cooldown = combat_profile.phase_attack_cooldown(phase)
 	definition.telegraph_seconds = combat_profile.phase_telegraph_seconds_for_phase(phase)
 	attack_kind = combat_profile.phase_attack_kind(phase)
-	if phase == BossPhase.GOLDEN_BALL:
-		health = maxf(health, definition.max_health * combat_profile.golden_ball_health_floor_fraction)
-		_update_health_bar()
+
+
+func _play_death_animation(visual: Node3D) -> void:
+	# The boss earns a longer readable collapse than regular enemies: recoil,
+	# unstable power surges, then a grounded implosion timed with the bounded
+	# multi-burst effect. The root never falls through the arena.
+	visual.rotation = Vector3.ZERO
+	var start_position := visual.position
+	var tween := visual.create_tween().set_trans(Tween.TRANS_QUAD)
+	tween.tween_property(visual, "position", start_position + Vector3.UP * 0.32, 0.16)
+	tween.tween_property(visual, "position", start_position + Vector3(0.18, 0.18, 0.0), 0.12)
+	tween.tween_property(visual, "position", start_position + Vector3(-0.18, 0.12, 0.0), 0.12)
+	tween.tween_property(visual, "position", start_position, 0.12)
+	var scale_tween := visual.create_tween().set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	scale_tween.tween_property(visual, "scale", Vector3(1.16, 0.84, 1.16), 0.18)
+	scale_tween.tween_property(visual, "scale", Vector3(0.82, 1.12, 0.82), 0.22)
+	scale_tween.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+	scale_tween.tween_property(visual, "scale", Vector3.ZERO, 0.34)

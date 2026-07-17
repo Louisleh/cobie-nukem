@@ -7,7 +7,6 @@ signal unavailable(message: String)
 @export var prompt := "FETCH THE GOLDEN TENNIS BALL"
 var enabled := false
 var claimed_once := false
-var walker: Node
 
 
 func _ready() -> void:
@@ -16,14 +15,35 @@ func _ready() -> void:
 	collision_layer = 1 if enabled else 0
 
 
-func enable_for_boss(target: Node) -> void:
-	walker = target; enabled = true; visible = true; collision_layer = 1
+func enable_as_reward() -> void:
+	enabled = true
+	claimed_once = false
+	visible = true
+	collision_layer = 1
 	# Joining the proximity-interaction group only once claimable keeps the
-	# hidden ball from answering the use key before the boss releases it.
+	# hidden ball from answering the use key before the complete boss defeat.
 	if not is_in_group(&"interactables"):
 		add_to_group(&"interactables")
 	var registry := get_node_or_null("/root/WorldRegistry")
-	if registry != null: registry.register_interactable(self)
+	if registry != null:
+		registry.register_interactable(self)
+
+
+func enable_for_boss(_target: Node = null) -> void:
+	# Compatibility alias for development routes created before the finale reward
+	# was decoupled from boss damage.
+	enable_as_reward()
+
+
+func reset_reward() -> void:
+	enabled = false
+	claimed_once = false
+	visible = false
+	collision_layer = 0
+	remove_from_group(&"interactables")
+	var registry := get_node_or_null("/root/WorldRegistry")
+	if registry != null:
+		registry.unregister(self)
 
 
 func get_interaction_label() -> String:
@@ -35,7 +55,13 @@ func interact(actor: Node) -> void:
 		unavailable.emit("THE BALL IS STILL CONTAINED.")
 		return
 	claimed_once = true
-	if walker and walker.has_method("strike_with_golden_ball"): walker.strike_with_golden_ball(actor)
+	enabled = false
+	visible = false
+	collision_layer = 0
+	remove_from_group(&"interactables")
+	var registry := get_node_or_null("/root/WorldRegistry")
+	if registry != null:
+		registry.unregister(self)
 	claimed.emit(actor)
 
 

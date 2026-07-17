@@ -96,7 +96,7 @@ schema_version = 1
 id = &"forbidden_field_loot_crate_1"
 zone_id = &"forbidden_field"
 definition = SubResource("LootDefinition")
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.7, 0.375, -21.0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.4, 0.375, -16.0)
 
 [sub_resource type="Resource" id="PlacementShedBreakableA"]
 script = ExtResource("2")
@@ -120,7 +120,7 @@ schema_version = 1
 id = &"equipment_shed_loot_crate_1"
 zone_id = &"equipment_shed"
 definition = SubResource("LootDefinition")
-transform = Transform3D(1, 0, 0, 0, 0.95, 0, 0, 0, 1, -8.1, 0.35625, -44.2)
+transform = Transform3D(1, 0, 0, 0, 0.95, 0, 0, 0, 1, -6.2, 0.35625, -42.8)
 
 [sub_resource type="Resource" id="PlacementTunnelsBreakableA"]
 script = ExtResource("2")
@@ -144,7 +144,7 @@ schema_version = 1
 id = &"maintenance_tunnels_breakable_console_2"
 zone_id = &"maintenance_tunnels"
 definition = SubResource("BreakableDefinition")
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.8, 0.375, -59.2)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.1, 0.375, -59.2)
 
 [sub_resource type="Resource" id="PlacementLabBreakableA"]
 script = ExtResource("2")

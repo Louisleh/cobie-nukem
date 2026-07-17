@@ -175,6 +175,24 @@
       }
     },
     {
+      "id": "salmon_walker_defeat",
+      "scene_path": "res://scenes/levels/episode_1_level_1.tscn",
+      "staging_id": "walker_defeat",
+      "capture_support": "supported",
+      "adapter": "native_vertical_slice_capture",
+      "seed": 2026071601,
+      "frame": 150,
+      "capture": {
+        "source_file": "05b-walker-defeat.png"
+      },
+      "filenames": {
+        "1280x720": "salmon_walker_defeat_1280x720.png",
+        "1680x1050": "salmon_walker_defeat_1680x1050.png",
+        "1024x768": "salmon_walker_defeat_1024x768.png",
+        "3440x1440": "salmon_walker_defeat_3440x1440.png"
+      }
+    },
+    {
       "id": "vancouver_waterfront",
       "scene_path": "res://scenes/levels/episode_1_vancouver_waterfront.tscn",
       "staging_id": "waterfront_seawall",

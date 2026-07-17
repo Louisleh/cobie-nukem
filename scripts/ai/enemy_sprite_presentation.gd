@@ -146,7 +146,7 @@ func _is_distant() -> bool:
 	var registry := get_node_or_null("/root/WorldRegistry")
 	var actor_point: Vector3 = _actor_position(_actor)
 	var compare_point: Vector3 = actor_point
-	if _actor.target is Node3D:
+	if is_instance_valid(_actor.target) and _actor.target is Node3D:
 		compare_point = _actor_position(_actor.target as Node3D)
 	elif registry != null and registry.has_method(&"primary_player"):
 		var player: Node3D = registry.primary_player()

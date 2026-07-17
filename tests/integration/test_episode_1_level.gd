@@ -26,6 +26,15 @@ func _initialize() -> void:
 	check(bridge != null and bridge.size.x >= 2.0 and bridge.size.z >= 5.0, "Secret dog park has no continuous floor bridge")
 	check(level.get_node_or_null("Geometry/LabEastBoundaryRear") != null, "Rear lab boundary segment missing")
 	check(level.get_node_or_null("Geometry/LabEastBoundaryFront") != null, "Front lab boundary segment missing")
+	for connector_name in ["ConnectorA", "ConnectorB", "ConnectorC", "ConnectorD"]:
+		var connector := level.get_node_or_null("Geometry/%s" % connector_name) as CSGBox3D
+		check(connector != null, "%s route connector is missing" % connector_name)
+		if connector != null:
+			check(connector.position.y + connector.size.y * 0.5 <= -0.035, "%s visible surface is depth-separated from adjacent floors" % connector_name)
+	var tunnel_sign := level.get_node_or_null("Interactables/TunnelPolicySign") as NarrativeSign
+	check(tunnel_sign != null, "Tunnel policy sign has a stable authored identity")
+	if tunnel_sign != null:
+		check(tunnel_sign.position.x <= -4.7 and is_equal_approx(tunnel_sign.rotation_degrees.y, 90.0), "Tunnel policy sign is wall-mounted instead of intersecting the corridor")
 	var runtime := level._interaction_runtime
 	check(runtime != null, "Mission interaction runtime is initialized")
 	if runtime != null:

@@ -54,18 +54,18 @@ Use the standard Godot build, not .NET/C#.
 
 Use **true 3D geometry presented as 2.5D retro art**:
 
-- Low-poly level geometry.
-- Billboarded sprite enemies.
-- Low-resolution weapon sprites or low-poly weapons rendered into a pixelated viewport.
-- Internal render resolution of 320×180 by default.
-- Nearest-neighbor integer scaling.
-- Optional 640×360 “clean retro” mode.
-- Fog, vertex color, simple baked or unshaded lighting, limited dynamic lights.
-- 64×64 and 128×128 textures.
-- Deliberately low animation frame counts for enemies.
+- Authored low-poly 3D level geometry, collision, navigation, landmarks, and modular production kits.
+- Original high-resolution illustrated or Blender-rendered directional billboard enemies.
+- Original illustrated or low-poly weapon viewmodels with stable proportions and explicit animation states.
+- A 640×360 clean-retro internal baseline with linear canvas filtering; lower quality tiers reduce effects and density rather than shrinking characters into unreadable pixels.
+- Fog, authored baked/static lighting, restrained dynamic key lights, decals, and bounded VFX selected by quality profile.
+- Web-safe texture atlases sized from the canonical view and performance budget rather than an arbitrary 64px limit.
+- Deliberately economical animation timing without duplicated placeholder frames or inconsistent directional scale.
+- A fixed sprite-authoring contract: atlas cell size, opaque-frame height, feet baseline, direction order, intended world height, and `pixel_size = intended_world_height / opaque_frame_height` are manifested and mechanically validated.
+- A distinct environmental identity for every mission, defined in `docs/ART_BIBLE.md` before production art is accepted.
 - No requirement for a custom raycasting or Build-engine clone.
 
-This captures the visual language while avoiding unnecessary engine work.
+This captures the speed and readability of classic 2.5D shooters while retaining modern clarity. A pure pixel-art rewrite is explicitly out of scope: it would reduce asset complexity, but would discard the current authored-world direction and would not solve inconsistent scale, animation, collision, or encounter design. Those are addressed through the shared production contract instead.
 
 ## 2.3 Distribution decision
 

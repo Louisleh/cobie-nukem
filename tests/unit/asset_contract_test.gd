@@ -123,6 +123,7 @@ func _test_salmon_sign_faces() -> void:
 	_expect(scoreboard != null, "Salmon Creek scoreboard label exists")
 	if scoreboard != null:
 		_expect(is_equal_approx(scoreboard.rotation_degrees.y, 90.0), "Scoreboard text faces the playable field instead of rendering backwards")
+		_expect(scoreboard.transform.basis.z.dot(Vector3.RIGHT) > 0.9, "Scoreboard front face—not its mirrored back—points east toward the playable field")
 	parent.queue_free()
 	await process_frame
 

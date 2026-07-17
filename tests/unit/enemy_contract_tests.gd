@@ -222,12 +222,11 @@ func _test_walker_phases() -> void:
 	walker.apply_damage(300.0)
 	_expect(walker.boss_phase == AnimalControlWalker.BossPhase.CHARGE, "Walker charges below 45%")
 	walker.apply_damage(300.0)
-	_expect(walker.boss_phase == AnimalControlWalker.BossPhase.GOLDEN_BALL, "Walker requires Golden Ball below 15%")
-	var protected_health := walker.health
+	_expect(walker.boss_phase == AnimalControlWalker.BossPhase.FINAL_VULNERABILITY, "Walker exposes its final core at 25%")
 	walker.apply_damage(999.0)
-	_expect(is_equal_approx(walker.health, protected_health), "Regular damage cannot finish Walker")
-	walker.strike_with_golden_ball()
-	_expect(walker.is_dead, "Golden Ball finishes Walker")
+	_expect(walker.is_dead and is_zero_approx(walker.health), "Regular weapon damage finishes the Walker at zero health")
+	_expect(walker.boss_phase == AnimalControlWalker.BossPhase.DEFEATED, "Zero health reaches the explicit defeated phase")
+	_expect(root.find_child("WalkerDefeatExplosion", true, false) != null, "Walker defeat spawns its bounded multi-burst spectacle")
 	walker.free()
 
 func _test_death_animation() -> void:

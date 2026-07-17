@@ -4,7 +4,7 @@
 
 [resource]
 script = ExtResource("1")
-phase_ids = Array[StringName]([&"cannons", &"exposed_core", &"charge", &"golden_ball", &"defeated"])
+phase_ids = Array[StringName]([&"cannons", &"exposed_core", &"charge", &"final_vulnerability", &"defeated"])
 phase_transition_fractions = [0.75, 0.45, 0.25]
 phase_attack_kinds = Array[StringName]([&"walker_cannons", &"core_barrage", &"walker_charge", &"final_vulnerability", &"attack"])
 phase_attack_ranges = [7.0, 7.0, 5.0, 7.0, 7.0]
@@ -17,5 +17,4 @@ phase_weak_point_multipliers = [1.0, 2.0, 1.0, 1.0, 1.0]
 summon_scene = null
 summon_attack_interval = 3
 max_live_summons = 3
-golden_ball_health_floor_fraction = 0.1
 followup_bolt_delay = 0.15

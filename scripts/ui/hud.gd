@@ -18,6 +18,7 @@ extends CanvasLayer
 
 var _notification_tween: Tween
 var _caption_tween: Tween
+var _boss_hide_tween: Tween
 var _caption_queue: Array[Dictionary] = []
 var _active_caption: Dictionary = {}
 var _caption_visible := false
@@ -165,9 +166,12 @@ func show_boss_phase_caption(message: String, seconds: float = CAPTION_DEFAULT_S
 
 func set_boss_state(display_name: String, state: StringName, fraction: float) -> void:
 	var safe_fraction := _sanitize_fraction(fraction)
-	if safe_fraction <= 0.0 or state.to_lower() == "defeated":
+	if safe_fraction < 0.0:
 		_hide_boss_panel()
 		return
+	if _boss_hide_tween != null:
+		_boss_hide_tween.kill()
+		_boss_hide_tween = null
 	var title_text := display_name.strip_edges()
 	if title_text.is_empty():
 		title_text = "BOSS"
@@ -178,6 +182,15 @@ func set_boss_state(display_name: String, state: StringName, fraction: float) ->
 	boss_health_label.text = "%d%% HEALTH" % percentage
 	boss_health_bar.value = safe_fraction
 	boss_panel.visible = true
+	if safe_fraction <= 0.0 or state.to_lower() == "defeated":
+		# Hold a truthful zero for the authored boss explosion instead of making the
+		# panel disappear on the same frame as the killing hit.
+		boss_state_label.text = "STATE // DESTROYED"
+		boss_health_label.text = "0% HEALTH"
+		boss_health_bar.value = 0.0
+		_boss_hide_tween = create_tween()
+		_boss_hide_tween.tween_interval(1.35)
+		_boss_hide_tween.tween_callback(_hide_boss_panel)
 
 func show_checkpoint_caption(message: String, seconds: float = CAPTION_DEFAULT_SECONDS) -> void:
 	show_caption(message, CaptionCategory.CHECKPOINT, seconds)
@@ -288,17 +301,28 @@ func _update_caption_layout() -> void:
 
 func _update_boss_layout() -> void:
 	var viewport_size := _caption_viewport.get_visible_rect().size if _caption_viewport != null else get_viewport().get_visible_rect().size
-	var panel_width := clampf(viewport_size.x * 0.44, 320.0, 620.0)
-	var left_margin := maxf(12.0, viewport_size.x - panel_width - 12.0)
-	var top_margin := maxf(64.0, viewport_size.y * 0.082)
+	var layout := _boss_layout_for(viewport_size)
 	boss_panel.anchor_left = 0.0
 	boss_panel.anchor_top = 0.0
 	boss_panel.anchor_right = 0.0
 	boss_panel.anchor_bottom = 0.0
-	boss_panel.offset_left = left_margin
-	boss_panel.offset_top = top_margin
-	boss_panel.offset_right = left_margin + panel_width
-	boss_panel.offset_bottom = top_margin + 74.0
+	boss_panel.offset_left = layout.position.x
+	boss_panel.offset_top = layout.position.y
+	boss_panel.offset_right = layout.end.x
+	boss_panel.offset_bottom = layout.end.y
+
+func _boss_layout_for(viewport_size: Vector2) -> Rect2:
+	# Keep the final-boss treatment visually distinct without covering the
+	# crosshair or dominating tablet layouts. Desktop keeps the upper-right boss
+	# card; 4:3 moves a narrower card below the onboarding row on the left so it
+	# cannot collide with the right stick's reload/jump/use/fire cluster.
+	var aspect := viewport_size.x / maxf(viewport_size.y, 1.0)
+	var tablet_layout := aspect <= 1.5
+	var panel_width := clampf(viewport_size.x * 0.46, 220.0, 360.0) if tablet_layout else clampf(viewport_size.x * 0.34, 260.0, 460.0)
+	var left_margin := 12.0 if tablet_layout else maxf(12.0, viewport_size.x - panel_width - 12.0)
+	var top_margin := maxf(96.0, viewport_size.y * 0.26) if tablet_layout else maxf(66.0, viewport_size.y * 0.086)
+	var panel_height := 64.0 if tablet_layout else 68.0
+	return Rect2(left_margin, top_margin, panel_width, panel_height)
 
 func _sanitize_fraction(value: float) -> float:
 	if not is_finite(value):
@@ -313,6 +337,7 @@ func _readable_state_text(state: StringName) -> String:
 
 func _hide_boss_panel() -> void:
 	boss_panel.visible = false
+	_boss_hide_tween = null
 
 func set_access_item(label: String) -> void:
 	%AccessLabel.text = label

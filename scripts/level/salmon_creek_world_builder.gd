@@ -109,12 +109,15 @@ func _build_route_geometry() -> void:
 	_box("DogParkFloor", Vector3(22, -0.5, -103), Vector3(18, 1, 22), Color("3d6b45"))
 	_box("SecretDogParkBridge", Vector3(12.5, -0.5, -103), Vector3(2, 1, 6), Color("46634f"))
 	_box("ArenaFloor", Vector3(0, -0.5, -147), Vector3(36, 1, 40), Color("80736b"), &"arena")
-	_box("ConnectorA", Vector3(0, -0.5, -20), Vector3(8, 1, 5), Color("555b60"))
-	_box("ConnectorB", Vector3(0, -0.5, -45), Vector3(8, 1, 4), Color("414b50"))
-	_box("ConnectorC", Vector3(0, -0.5, -84), Vector3(8, 1, 4), Color("4b575d"))
+	# Route connectors overlap neighboring collision to keep the navigation mesh
+	# continuous, but their visible top faces sit 4 cm lower. Coplanar top faces
+	# previously fought for the same depth values and flickered blue while aiming.
+	_box("ConnectorA", Vector3(0, -0.52, -20), Vector3(8, 0.96, 5), Color("555b60"))
+	_box("ConnectorB", Vector3(0, -0.52, -45), Vector3(8, 0.96, 4), Color("414b50"))
+	_box("ConnectorC", Vector3(0, -0.52, -84), Vector3(8, 0.96, 4), Color("4b575d"))
 	# Overlap the arena floor by more than one agent diameter. The previous
 	# half-metre visual seam became a disconnected island after radius erosion.
-	_box("ConnectorD", Vector3(0, -0.5, -124), Vector3(10, 1, 8), Color("564949"))
+	_box("ConnectorD", Vector3(0, -0.52, -124), Vector3(10, 0.96, 8), Color("564949"))
 	# Side boundaries leave the main route readable while stopping accidental skips.
 	_wall_pair(13, 0, 36)
 	_wall_pair(7.5, -32, 25)
@@ -202,12 +205,15 @@ func _build_story_objects() -> void:
 	opening_sign.read.connect(_on_sign_read)
 	opening_sign.secret_requested.connect(_on_secret_discovered)
 	interactables.add_child(opening_sign)
-	_sign("MUTANT-FREE ZONE\n(Inspection Pending)", Vector3(5, 1.5, -27), 180)
-	_sign("LEASH LENGTH SUBJECT TO\nALGORITHMIC REVIEW", Vector3(-4, 1.5, -58), 180)
-	_sign("GOOD DOG STATUS:\nREVOKED", Vector3(6, 1.5, -91), 180)
-	_sign("EMPLOYEE OF THE MONTH:\nVACUUM CLEANER", Vector3(-7, 1.5, -108), 180)
-	_sign("JOY EVENT DETECTED.\nINCIDENT CREATED.", Vector3(7, 1.5, -116), 180)
-	_sign("FETCH THIS!", Vector3(0, 2.0, -164), 180)
+	_sign("MUTANT-FREE ZONE\n(Inspection Pending)", Vector3(5, 1.5, -27), 180, "ShedPolicySign")
+	# Mount the tunnel policy board flat against the west wall, facing inward.
+	# Its former across-corridor orientation buried half the four-metre board in
+	# the boundary and created a large invisible collision obstruction.
+	_sign("LEASH LENGTH SUBJECT TO\nALGORITHMIC REVIEW", Vector3(-4.78, 2.05, -58), 90, "TunnelPolicySign")
+	_sign("GOOD DOG STATUS:\nREVOKED", Vector3(6, 1.5, -91), 180, "LabStatusSign")
+	_sign("EMPLOYEE OF THE MONTH:\nVACUUM CLEANER", Vector3(-7, 1.5, -108), 180, "LabEmployeeSign")
+	_sign("JOY EVENT DETECTED.\nINCIDENT CREATED.", Vector3(7, 1.5, -116), 180, "LabIncidentSign")
+	_sign("FETCH THIS!", Vector3(0, 2.0, -164), 180, "ArenaFinaleSign")
 
 	var shed_gate := DoorScene.instantiate() as LevelDoor
 	shed_gate.name = "ShedGate"
@@ -302,8 +308,9 @@ func _add_zone(id: StringName, title: String, position_value: Vector3, size: Vec
 	interactables.add_child(trigger)
 
 
-func _sign(text: String, position_value: Vector3, rotation_y: float) -> void:
+func _sign(text: String, position_value: Vector3, rotation_y: float, node_name := "NarrativeSign") -> void:
 	var sign := SignScene.instantiate() as NarrativeSign
+	sign.name = node_name
 	sign.sign_text = text
 	sign.position = position_value
 	sign.rotation_degrees.y = rotation_y

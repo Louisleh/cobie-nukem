@@ -9,6 +9,7 @@ func _initialize() -> void:
 
 func _run() -> void:
 	_test_valid_catalog()
+	_test_salmon_placements_stay_inside_walkable_zones()
 	_test_invalid_catalog_catches_structural_errors()
 	_test_manifest_consumes_catalog()
 	if failures.is_empty():
@@ -113,6 +114,27 @@ func _test_invalid_catalog_catches_structural_errors() -> void:
 	var underfilled_allowed_zones: Array[StringName] = [&"forbidden_field", &"equipment_shed", &"maintenance_tunnels", &"compliance_lab", &"walker_arena"]
 	var underfilled_errors := underfilled.validate(underfilled_allowed_zones, &"episode_1_level_1")
 	_expect(_contains_error(underfilled_errors, "requires at least 3 placements"), "below-minimum zone density is rejected")
+
+
+func _test_salmon_placements_stay_inside_walkable_zones() -> void:
+	var catalog := _load_catalog()
+	if catalog == null:
+		_expect(false, "salmon interaction catalog loads for walkable-bounds checks")
+		return
+	var bounds := {
+		&"forbidden_field": Rect2(-13.0, -18.0, 26.0, 36.0),
+		&"equipment_shed": Rect2(-7.5, -44.5, 15.0, 25.0),
+		&"maintenance_tunnels": Rect2(-5.0, -83.5, 10.0, 39.0),
+		&"compliance_lab": Rect2(-12.0, -122.0, 24.0, 38.0),
+		&"walker_arena": Rect2(-18.0, -167.0, 36.0, 40.0),
+	}
+	for placement: InteractionPlacement in catalog.placements:
+		var zone_bounds := bounds.get(placement.zone_id, Rect2()) as Rect2
+		var half_size := placement.definition.visual_size * 0.5
+		var origin := placement.transform.origin
+		var minimum := Vector2(origin.x - half_size.x, origin.z - half_size.z)
+		var maximum := Vector2(origin.x + half_size.x, origin.z + half_size.z)
+		_expect(zone_bounds.has_point(minimum) and zone_bounds.has_point(maximum), "%s stays fully inside the authored walkable %s floor" % [placement.id, placement.zone_id])
 
 
 func _test_manifest_consumes_catalog() -> void:

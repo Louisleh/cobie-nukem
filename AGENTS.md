@@ -11,6 +11,8 @@ These rules apply to the entire repository.
 5. Read `docs/design/README.md` for the contract of any subsystem you touch.
 6. For agent-assisted game work, use the installed `cobie-godot-production` skill and follow `docs/design/agentic-toolchain.md`.
 7. For environment art, character sprites, animation atlases, materials, lighting, VFX, HUD/touch presentation, or visual regression work, invoke the repo skill `cobie-visual-foundry`. Preserve gameplay collision/navigation, require editable sources and provenance, and treat automated image differences as review prompts rather than taste decisions.
+8. Cobie's authoritative visual model is high-resolution retro 2.5D: authored low-poly 3D environments and collision with consistently scaled directional billboard characters. Do not pivot the project to a pure pixel-art game or reintroduce intentionally pixelated output. Every mission must declare and preserve a distinct environmental identity in `docs/ART_BIBLE.md`.
+9. Billboard scale is data, not per-scene taste. Every manifested sprite atlas records a fixed cell size, opaque-frame height, feet baseline, direction order, intended world height, and `pixel_size = intended_world_height / opaque_frame_height`; validation must reject missing or implausible scale metadata.
 
 ## Spark acceleration
 

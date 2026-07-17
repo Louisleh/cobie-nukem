@@ -29,6 +29,7 @@ func _initialize() -> void:
 	_check_cobie_portrait_contract()
 	await _check_death_screen_contract()
 	await _check_caption_contracts()
+	await _check_boss_hud_contract()
 	if failures.is_empty():
 		print("UI SCENE TESTS: PASS")
 		call_deferred("_quit_after_cleanup", 0)
@@ -246,6 +247,31 @@ func _check_cobie_portrait_contract() -> void:
 		if runtime_portrait == null or minf(runtime_portrait.size.x, runtime_portrait.size.y) < 100.0:
 			failures.append("Cobie portrait must retain at least a 100px logical edge for 4:3 iPad readability")
 		hud.free()
+
+
+func _check_boss_hud_contract() -> void:
+	var packed := load("res://scenes/ui/hud.tscn") as PackedScene
+	if packed == null:
+		failures.append("HUD scene must load for boss presentation contracts")
+		return
+	var hud := packed.instantiate() as GameHUD
+	root.add_child(hud)
+	await process_frame
+	hud.set_boss_state("ANIMAL CONTROL WALKER", &"cannons", 1.0)
+	if not hud.boss_panel.visible or not is_equal_approx(hud.boss_health_bar.value, 1.0):
+		failures.append("Boss HUD shows the live Walker at full health")
+	var viewport_width := root.get_visible_rect().size.x
+	if hud.boss_panel.size.x > 461.0 or hud.boss_panel.position.x < viewport_width * 0.5:
+		failures.append("Boss HUD remains compact and anchored to the right half of the viewport")
+	var tablet_layout := hud._boss_layout_for(Vector2(480.0, 360.0))
+	if tablet_layout.position.x > 20.0 or tablet_layout.size.x > 221.0 or tablet_layout.end.x > 240.0 or tablet_layout.position.y < 96.0:
+		failures.append("Boss HUD uses the compact left safety lane at tablet 4:3 instead of overlapping right actions: %s" % tablet_layout)
+	hud.set_boss_state("ANIMAL CONTROL WALKER", &"defeated", 0.0)
+	if not hud.boss_panel.visible or not is_zero_approx(hud.boss_health_bar.value) or hud.boss_health_label.text != "0% HEALTH":
+		failures.append("Boss HUD visibly reaches zero during the defeat spectacle")
+	hud._hide_boss_panel()
+	hud.queue_free()
+	await process_frame
 
 func _check_caption_contracts() -> void:
 	var packed := load("res://scenes/ui/hud.tscn") as PackedScene
