@@ -7,26 +7,34 @@ const MAX_P95_MSEC := 50.0
 const MAX_P99_MSEC := 100.0
 const MAX_SINGLE_FRAME_MSEC := 250.0
 const MAX_OBJECT_DRIFT := 8
+const SCENE_PATHS := [
+	"res://scenes/levels/episode_1_level_1.tscn",
+	"res://scenes/levels/episode_1_vancouver_waterfront.tscn",
+]
 
-var samples: Array[float] = []
+var failures: Array[String] = []
 
 func _initialize() -> void:
 	call_deferred("_run")
 
 func _run() -> void:
-	var scene_path := _first_scene("res://scenes/levels")
-	if scene_path.is_empty():
-		scene_path = "res://scenes/boot/boot.tscn"
-		print("PENDING: no level scene; measuring boot composition only")
+	for scene_path in SCENE_PATHS:
+		await _measure_scene(scene_path)
+	quit(0 if failures.is_empty() else 1)
+
+func _measure_scene(scene_path: String) -> void:
 	var packed := load(scene_path) as PackedScene
 	if packed == null:
-		push_error("PERFORMANCE: cannot load %s" % scene_path)
-		quit(1)
+		failures.append("cannot load %s" % scene_path)
 		return
 	var instance := packed.instantiate()
+	if instance is EpisodeOneVancouverWaterfront:
+		(instance as EpisodeOneVancouverWaterfront).build_navigation = false
+		(instance as EpisodeOneVancouverWaterfront).start_run_automatically = false
 	root.add_child(instance)
 	for _index in WARMUP_FRAMES:
 		await process_frame
+	var samples: Array[float] = []
 	var initial_objects := int(Performance.get_monitor(Performance.OBJECT_COUNT))
 	var initial_nodes := int(Performance.get_monitor(Performance.OBJECT_NODE_COUNT))
 	var initial_memory := int(Performance.get_monitor(Performance.MEMORY_STATIC))
@@ -60,6 +68,10 @@ func _run() -> void:
 		print("RENDERED PERFORMANCE: display=%s renderer=%s" % [display_name, RenderingServer.get_rendering_device() if RenderingServer.get_rendering_device() != null else "Compatibility/OpenGL"])
 	var timing_ok := average <= MAX_AVERAGE_MSEC and p95 <= MAX_P95_MSEC and p99 <= MAX_P99_MSEC and maximum <= MAX_SINGLE_FRAME_MSEC
 	var lifetime_ok := object_drift <= MAX_OBJECT_DRIFT and node_drift <= MAX_OBJECT_DRIFT
+	if not timing_ok:
+		failures.append("%s exceeds headless stall budget" % scene_path)
+	if not lifetime_ok:
+		failures.append("%s leaks objects or nodes during sample" % scene_path)
 	instance.free()
 	instance = null
 	packed = null
@@ -69,7 +81,6 @@ func _run() -> void:
 	# instead of intermittently quitting between stop and mixer release.
 	for _cleanup_frame in 4:
 		await process_frame
-	quit(0 if timing_ok and lifetime_ok else 1)
 
 
 func _percentile(ordered: Array[float], fraction: float) -> float:
@@ -77,14 +88,3 @@ func _percentile(ordered: Array[float], fraction: float) -> float:
 		return 0.0
 	var index := clampi(ceili(fraction * ordered.size()) - 1, 0, ordered.size() - 1)
 	return ordered[index]
-
-func _first_scene(path: String) -> String:
-	var directory := DirAccess.open(path)
-	if directory == null:
-		return ""
-	var entries := directory.get_files()
-	entries.sort()
-	for entry in entries:
-		if entry.ends_with(".tscn"):
-			return path.path_join(entry)
-	return ""

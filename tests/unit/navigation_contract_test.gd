@@ -73,6 +73,16 @@ func _run() -> void:
 	_expect(recoveries[0] == 1, "Persistent path stalls emit one bounded recovery event")
 	_expect(ground_enemy._navigator.recovery_count == 1, "Navigation recovery is counted for local diagnostics")
 
+	var local_recovery := ground_enemy.global_position + Vector3(1.0, 0.0, 0.0)
+	ground_enemy._on_navigation_recovery(&"path_unreachable", local_recovery)
+	_expect(ground_enemy.global_position.distance_to(local_recovery + Vector3.UP * 0.05) < 0.1, "Disconnected actor uses a nearby navigation recovery point")
+	var unreachable_enemy := preload("res://scenes/enemies/mutant_groundskeeper.tscn").instantiate() as EnemyAgent
+	unreachable_enemy.position = Vector3(0.0, 0.1, -140.0)
+	level.get_node("Actors").add_child(unreachable_enemy)
+	await physics_frame
+	unreachable_enemy._on_navigation_recovery(&"path_unreachable", unreachable_enemy.global_position + Vector3(20.0, 0.0, 0.0))
+	_expect(unreachable_enemy.is_dead, "Unbounded disconnected actor resolves through defeat instead of deadlocking its encounter")
+
 	# Falling off an authored platform must recover to the last grounded point,
 	# never clamp the actor beneath open water. A repeated invalid recovery then
 	# resolves deterministically instead of leaving a living unreachable enemy.

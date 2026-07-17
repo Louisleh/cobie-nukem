@@ -8,7 +8,7 @@
 
 **Current public baseline:** `0.7.0-alpha.1-rc1` (`3144a22` gameplay/runtime revision; source integration `1dcb28c`; website deployment `ecfdcd6`; PCK SHA-256 `462120a8057db93badb1d8b033701fbca31187326031ee4617a6b0bec787bc8d`)
 
-**Unreleased development baseline:** none. Source `main`, packaged release, and the public Web artifact are aligned at the Rain City RC. `0.6.0-alpha.10` remains the immediate rollback artifact.
+**Unreleased development baseline:** `0.7.0-alpha.1-rc2` stabilization candidate on `codex/rain-city-stabilization`; RC1 remains the public artifact until the complete export/package/deployment gate passes.
 
 **Last released alpha:** `0.7.0-alpha.1-rc1` (`3144a22`) — live at <https://www.louislehmann.fyi/games/cobie-nukem/>; the `BETA` badge remains because human full-route and physical-device validation are open
 
@@ -16,6 +16,21 @@
 **Purpose:** Turn the family-playtest vertical slice into a sustainable, original multi-level game without sacrificing responsiveness, humor, Web support, or unusual-controller accessibility.
 
 ## 0. Current status dashboard
+
+### Rain City Run `0.7.0-alpha.1-rc2` stabilization candidate
+
+This focused pass diagnoses the repeated local Godot crash notifications and hardens Level 2 against progression, persistence, physics, navigation, and performance regressions. Recent macOS reports were attributable to overlapping Codex-launched Godot processes: two orphaned mission-host tests retained blocked output pipes while duplicate Godot MCP servers and an old editor process competed for the same project. The new serialized runner gives each invocation an atomic project lock, isolated test save root, bounded timeout, unique log, descendant cleanup, and stale-lock recovery. No new Godot crash report was observed after the cleanup and guarded runs.
+
+| Workstream | Candidate status | Evidence |
+| --- | --- | --- |
+| Process/crash stability | **AUTOMATED GREEN** | `tools/run_godot_safe.sh` plus runner tests cover lock contention, timeout cleanup, stale recovery, and isolated HOME/save state; release validation routes every Godot invocation through it |
+| Route/progression | **AUTOMATED GREEN** | Four visible encounter gates prevent combat skips; mission-host coverage defeats each wave before advancing; checkpoint-restored gates synchronize from encounter state |
+| Saves/completion | **AUTOMATED GREEN** | Checkpoints announce only after successful writes; campaign completion is transactional and retryable; secrets autosave exactly once; failed completion preserves checkpoint and departure retry |
+| Physics/enemies | **AUTOMATED GREEN** | Umbrella front/rear/open/break damage routes through the shield; Gull movement and attack-token ownership are single-authority; Hound/Groundskeeper attacks require line of sight and consume difficulty damage; pooled projectiles reset interpolation after final placement |
+| Grounding/navigation | **AUTOMATED GREEN** | Pickup collision roots remain authoritative while visual children bob; unreachable enemies use bounded recovery or terminal defeat; production Rain City nav bake/path is explicitly tested while mission-host fixtures do not perform redundant bakes |
+| Secrets | **AUTOMATED GREEN** | Four unique rewards are functional, checkpointed, and idempotent; terminal secret removes one finale reinforcement without mutating shared source data |
+| Performance | **NATIVE AUTOMATED GREEN** | M4 1280×720 Compatibility: alley 18.43/18.54 ms p95/p99, Slice 18.54/18.62, seawall 18.49/18.60, terminal 18.34/18.42, pier 18.30/23.36; 195–406 draw calls and approximately 83 MB static memory |
+| Human-only | **OPEN** | Physical iPad Safari, full target-Mac route, Chrome/Safari completion, awkward-motion/convoy contact feel, encounter balance, art, mix, humor, and photosensitivity |
 
 ### Rain City Run `0.7.0-alpha.1-rc1` public RC ledger
 
@@ -127,6 +142,8 @@ This section is the first place a new Codex or external-auditor run should read.
 | 6. Alpha, beta, release | **PUBLIC ALPHA PROGRAM ACTIVE** | Reproducible CI/export/package/deploy gates and public Alpha.3–Alpha.10 evidence; Vancouver public beta remains explicitly unfinished | Human/device/browser matrices, content completion, signing/notarization, legal review, store readiness |
 
 ### Immediate next gate
+
+**2026-07-16 Rain City stabilization candidate:** publish `0.7.0-alpha.1-rc2` only after the full Web/macOS export matrix, independent diff review, exact artifact identity, public browser startup, and website PCK byte verification pass. Preserve the `BETA` label because automated physics and route evidence cannot establish human feel or physical-iPad comfort.
 
 **2026-07-16 Rain City Run public RC:** `0.7.0-alpha.1-rc1` is live with exact source, package, deployment, runtime identity, and downloaded PCK byte identity verified. The immediate gate is now human-only: target-Mac Classic route, Story/Mayhem spot checks, physical iPad Safari twin-stick/audio/thermal route, Chrome/Safari completion, and review of pacing, fairness, route clarity, touch, art, mix, humor, and photosensitivity. Fix evidence-backed findings against the RC; after approval, remove the badge/warning and restamp final `0.7.0-alpha.1`. Do not unlock Mount Hood, Moon, or Ventura.
 

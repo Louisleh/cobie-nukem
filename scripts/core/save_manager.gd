@@ -19,7 +19,7 @@ const SAVE_VERSION := 5
 const SAVE_DIRECTORY := "user://saves"
 
 func save_slot(slot: StringName, payload: Dictionary) -> Error:
-	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(SAVE_DIRECTORY))
+	DirAccess.make_dir_recursive_absolute(_save_directory_absolute())
 	var path := _slot_path(slot)
 	var temp_path := _temp_path(path)
 	var backup_path := _backup_path(path)
@@ -156,7 +156,15 @@ func _is_campaign_payload(payload: Dictionary) -> bool:
 
 func _slot_path(slot: StringName) -> String:
 	var safe_slot := String(slot).validate_filename()
-	return "%s/%s.json" % [SAVE_DIRECTORY, safe_slot]
+	return "%s/%s.json" % [_save_directory(), safe_slot]
+
+func _save_directory() -> String:
+	var isolated_test_root := OS.get_environment("COBIE_TEST_SAVE_ROOT").strip_edges()
+	return isolated_test_root if not isolated_test_root.is_empty() else SAVE_DIRECTORY
+
+func _save_directory_absolute() -> String:
+	var directory := _save_directory()
+	return ProjectSettings.globalize_path(directory) if directory.begins_with("user://") or directory.begins_with("res://") else directory
 
 func _temp_path(path: String) -> String:
 	return "%s.tmp" % path

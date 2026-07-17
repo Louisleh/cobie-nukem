@@ -51,8 +51,8 @@ When a change crosses an ownership boundary, keep it small and explain its contr
 Before handing off a coherent change, run what the environment supports:
 
 ```bash
-godot --headless --path . --editor --quit
-godot --headless --path . --script res://tests/run_tests.gd
+bash tools/run_godot_safe.sh --timeout 600 -- --headless --path . --editor --quit
+bash tools/run_godot_safe.sh --timeout 300 -- --headless --path . --script res://tests/run_tests.gd
 ```
 
 For export-affecting changes, also build Web and macOS using the commands in `docs/BUILD_AND_RELEASE.md`. Report commands, results, and anything not run. Do not claim a manual playthrough or physical-device result that did not happen.

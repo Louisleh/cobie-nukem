@@ -17,6 +17,12 @@ const EXPECTED_HEALTH := {
 
 var failures: Array[String] = []
 
+class DamageTarget extends CharacterBody3D:
+	var damage_received := 0.0
+	func apply_damage(amount: float, _source: Node = null, _hit_position := Vector3.ZERO) -> float:
+		damage_received += amount
+		return amount
+
 func _initialize() -> void:
 	call_deferred("_run")
 
@@ -70,8 +76,9 @@ func _run() -> void:
 		if health_fill != null:
 			_expect((health_fill.mesh as QuadMesh).size.x < full_width, "Health bar shrinks immediately: %s" % scene_path)
 		enemy.free()
-	_test_hound_shield()
-	_test_walker_phases()
+	await _test_hound_shield()
+	await _test_charge_obstruction()
+	await _test_walker_phases()
 	await _test_death_animation()
 	if failures.is_empty():
 		print("PASS: enemy contracts, damage hooks, shield, and boss phases")
@@ -147,6 +154,40 @@ func _test_hound_shield() -> void:
 	_expect(broken_signals.size() == 2, "Shield emits broken exactly one time after reset cycle")
 
 	hound.free()
+
+func _test_charge_obstruction() -> void:
+	var hound := preload("res://scenes/enemies/compliance_hound.tscn").instantiate() as ComplianceHound
+	var target := DamageTarget.new()
+	var target_shape := CollisionShape3D.new()
+	var target_capsule := CapsuleShape3D.new()
+	target_capsule.height = 1.8
+	target_capsule.radius = 0.4
+	target_shape.shape = target_capsule
+	target.add_child(target_shape)
+	root.add_child(hound)
+	root.add_child(target)
+	hound.global_position = Vector3(0.0, 0.1, 0.0)
+	target.global_position = Vector3(0.0, 0.1, -2.0)
+	hound.set_target(target)
+	var wall := StaticBody3D.new()
+	wall.collision_layer = 1
+	var wall_shape := CollisionShape3D.new()
+	var wall_box := BoxShape3D.new()
+	wall_box.size = Vector3(3.0, 3.0, 0.35)
+	wall_shape.shape = wall_box
+	wall.add_child(wall_shape)
+	wall.position = Vector3(0.0, 1.0, -1.0)
+	root.add_child(wall)
+	await physics_frame
+	await physics_frame
+	hound._perform_attack()
+	_expect(is_zero_approx(target.damage_received), "Hound charge cannot damage through solid cover")
+	wall.queue_free()
+	await physics_frame
+	hound._perform_attack()
+	_expect(target.damage_received > 0.0, "Hound charge damages a target on a clear path")
+	hound.free()
+	target.free()
 
 func _test_walker_phases() -> void:
 	var walker := preload("res://scenes/enemies/animal_control_walker.tscn").instantiate() as AnimalControlWalker

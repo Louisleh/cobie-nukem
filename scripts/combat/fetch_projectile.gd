@@ -25,6 +25,7 @@ var _damaged_on_bounce: Dictionary = {}
 
 func launch(origin: Vector3, launch_direction: Vector3, owner_node: Node3D) -> void:
 	global_position = origin
+	reset_physics_interpolation()
 	direction = launch_direction.normalized()
 	instigator = owner_node
 	velocity = direction * speed

@@ -36,7 +36,7 @@ static func restore(payload: Dictionary, mission_runtime: MissionRuntime, route_
 	return {"secrets": secrets, "current_zone": route_runtime.current_zone}
 
 
-static func build_payload(scene_path: String, metadata: LevelMetadata, checkpoint_id: StringName, content_revision: int, position: Vector3, difficulty_id: StringName, runtime_snapshot: Dictionary, route_snapshot: Dictionary, secrets: Dictionary, active_loadout: Dictionary) -> Dictionary:
+static func build_payload(scene_path: String, metadata: LevelMetadata, checkpoint_id: StringName, content_revision: int, position: Vector3, difficulty_id: StringName, runtime_snapshot: Dictionary, route_snapshot: Dictionary, secrets: Dictionary, active_loadout: Dictionary, player_state: Dictionary = {}) -> Dictionary:
 	return {
 		"scene_path": scene_path,
 		"level_id": String(metadata.level_id),
@@ -50,7 +50,22 @@ static func build_payload(scene_path: String, metadata: LevelMetadata, checkpoin
 		"secrets": secrets.duplicate(true),
 		"unlocked_weapons": active_loadout.get("unlocked_weapons", []),
 		"active_mission_upgrades": active_loadout,
+		"player_state": player_state.duplicate(true),
 	}
+
+
+static func restore_player_state(player: CobiePlayer, checkpoint: Dictionary) -> void:
+	if player == null or player.health_armor == null:
+		return
+	var state: Dictionary = checkpoint.get("player_state", {})
+	if state.is_empty():
+		return
+	var health_armor := player.health_armor
+	health_armor.is_dead = false
+	health_armor.health = clampf(float(state.get("health", health_armor.health)), 0.0, health_armor.max_health)
+	health_armor.armor = clampf(float(state.get("armor", health_armor.armor)), 0.0, health_armor.max_armor)
+	health_armor.health_changed.emit(health_armor.health, health_armor.max_health)
+	health_armor.armor_changed.emit(health_armor.armor, health_armor.max_armor)
 
 
 static func _restore_route_checkpoint(checkpoint_id: StringName, route_runtime: MissionRouteRuntime, route_definition: MissionRouteDefinition) -> void:

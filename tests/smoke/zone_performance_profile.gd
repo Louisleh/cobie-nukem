@@ -4,7 +4,7 @@ const PipelinePrewarmer := preload("res://scripts/core/runtime_pipeline_prewarme
 const WARMUP_FRAMES := 24
 const SAMPLE_FRAMES := 120
 const MAX_RENDERED_P95_MSEC := 33.0
-const MAX_RENDERED_P99_MSEC := 100.0
+const MAX_RENDERED_P99_MSEC := 33.3
 
 var failures: Array[String] = []
 
@@ -18,6 +18,7 @@ func _run() -> void:
 	await _warm_runtime_pipelines()
 	await _profile_menu()
 	await _profile_mission()
+	await _profile_rain_city()
 	AudioServer.set_bus_mute(0, false)
 	if failures.is_empty():
 		print("ZONE PERFORMANCE PROFILE: PASS")
@@ -43,6 +44,9 @@ func _warm_runtime_pipelines() -> void:
 		"res://scenes/enemies/compliance_hound.tscn",
 		"res://scenes/enemies/squirrel_trooper.tscn",
 		"res://scenes/enemies/animal_control_walker.tscn",
+		"res://scenes/enemies/umbrella_shield_enforcer.tscn",
+		"res://scenes/enemies/compliance_gull.tscn",
+		"res://scenes/set_pieces/citation_convoy.tscn",
 	]))
 	await prewarmer.completed
 	prewarmer.queue_free()
@@ -100,6 +104,56 @@ func _stage_level(level: EpisodeOneLevel, position_value: Vector3, zone_id: Stri
 	if "--profile-invulnerable" in OS.get_cmdline_user_args():
 		player.health_armor.invulnerable_remaining = 999.0
 	level._enter_zone(zone_id, label, player)
+	if "--profile-static" in OS.get_cmdline_user_args():
+		for enemy in level.get_tree().get_nodes_in_group(&"enemies"):
+			enemy.process_mode = Node.PROCESS_MODE_DISABLED
+
+
+func _profile_rain_city() -> void:
+	var load_started := Time.get_ticks_usec()
+	var packed := load("res://scenes/levels/episode_1_vancouver_waterfront.tscn") as PackedScene
+	var load_ms := float(Time.get_ticks_usec() - load_started) / 1000.0
+	var instantiate_started := Time.get_ticks_usec()
+	var level := packed.instantiate() as EpisodeOneVancouverWaterfront
+	level.build_navigation = false
+	level.start_run_automatically = false
+	var instantiate_ms := float(Time.get_ticks_usec() - instantiate_started) / 1000.0
+	root.add_child(level)
+	print("ZONE LOAD: rain_city load=%.3fms instantiate=%.3fms" % [load_ms, instantiate_ms])
+	for _frame in 4:
+		await process_frame
+	var stages := [
+		["rain_city_alley", Vector3(0.0, 1.1, 8.0), &"downtown_alley"],
+		["rain_city_slice", Vector3(0.0, 1.1, -36.0), &"ruse_block"],
+		["rain_city_seawall", Vector3(0.0, 1.1, -73.0), &"waterfront_seawall"],
+		["rain_city_terminal", Vector3(0.0, 1.1, -111.0), &"terminal_service"],
+		["rain_city_pier", Vector3(0.0, 1.1, -145.0), &"harbour_pier"],
+	]
+	var previous_zone := &""
+	for stage in stages:
+		if previous_zone != &"":
+			level._spawn_registry.clear_zone(previous_zone)
+			level._mission_runtime.reset_zone(previous_zone)
+			level._mission_runtime.encounters.completed[previous_zone] = true
+			level._world_builder.set_route_gate_open(previous_zone, true)
+		_stage_rain_city(level, stage[1], stage[2])
+		await _measure(stage[0])
+		previous_zone = stage[2]
+	level.queue_free()
+	await process_frame
+	await process_frame
+
+
+func _stage_rain_city(level: EpisodeOneVancouverWaterfront, position_value: Vector3, zone_id: StringName) -> void:
+	var player := level.player as CobiePlayer
+	player.global_position = position_value
+	player.velocity = Vector3.ZERO
+	player.rotation = Vector3.ZERO
+	player.head.rotation = Vector3.ZERO
+	player.reset_physics_interpolation()
+	if "--profile-invulnerable" in OS.get_cmdline_user_args():
+		player.health_armor.invulnerable_remaining = 999.0
+	level._submit_route_position(position_value)
 	if "--profile-static" in OS.get_cmdline_user_args():
 		for enemy in level.get_tree().get_nodes_in_group(&"enemies"):
 			enemy.process_mode = Node.PROCESS_MODE_DISABLED

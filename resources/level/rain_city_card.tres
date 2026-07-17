@@ -9,6 +9,7 @@ episode = "EPISODE 1 // VANCOUVER WATERFRONT"
 description = "A citation convoy is loose between the downtown blocks and the harbour. The seawall remains under emergency leash protocol."
 difficulty = 3
 expected_minutes = "15–22 MIN"
+secrets = 4
 encounter = "CITATION CONVOY"
 unlock_policy = 1
 prerequisite_mission_id = "episode_1_level_1"

@@ -2,7 +2,7 @@
 
 This file distinguishes confirmed product limitations from unperformed validation. Update it for every release candidate; do not silently convert “not tested” into “passed.”
 
-## `0.7.0-alpha.1-rc1` Rain City human gates
+## `0.7.0-alpha.1-rc2` Rain City human gates
 
 - The Rain City RC is intended for open public development with an explicit `BETA` badge and warning. Automated gates do not convert the human/device checks below into passes; final publication identity and hashes are recorded only after deployment.
 
@@ -15,7 +15,8 @@ This file distinguishes confirmed product limitations from unperformed validatio
 - Salmon Creek now instantiates 16 data-authored breakable, explosive, loot, and secret interactions across five arenas. Damaging steam hazard zones were removed from Salmon Creek after iPad playtest feedback (their flat beige visual read as a random slab and dealt unexplained damage in the finale approach); the reusable HAZARD_ZONE kind remains available and is still used by Vancouver. Their collision, grounding, reset, bounded effects, and route safety are automated; visual density, discoverability, and whether each placement feels meaningfully useful require a human playthrough.
 - Walker weak-point phase floors, Golden Ball defeat, summon caps, recovery drops, and repeated reset behavior are automated. Boss telegraph fairness, perceived speed, spectacle, and the approximately 1,000-HP pacing target still require human play.
 - Rain City uses intentionally original low-poly authored geometry, project-original Blender/Material Maker sources, and independent gameplay collision/navigation. Its badge and launch notice identify the current RC as unfinished rather than falsely claiming final human approval.
-- Alpha.10 native 1080p Compatibility profiling passes: opening p95/p99 is 19.378/19.481 ms, lab 17.931/18.524 ms, tunnels 17.787/19.092 ms, and Walker 17.583/18.341 ms; observed static memory remained below 81 MB. A packaged-Web Fast 4G/2× CPU trace is green, but long-session Web memory and physical-device thermals remain human/hardware gates.
+- RC2 native Compatibility profiling covers both missions. Rain City at 1280×720 reports p95/p99 of 18.43/18.54 ms in the alley, 18.54/18.62 in Rain City Slice, 18.49/18.60 at the seawall, 18.34/18.42 in the terminal, and 18.30/23.36 at the pier, with 195–406 draw calls and approximately 83 MB static memory. A packaged-Web trace still cannot establish long-session physical-iPad thermals, simultaneous-finger comfort, or human encounter feel.
+- Convoy movement/reset, enemy navigation recovery, projectiles, pickup grounding, and encounter gating have deterministic coverage, but human observation is still required for contact motion, perceived acceleration, environmental snagging, and whether combat movement looks natural at ordinary play speed.
 
 ## Distribution and legal
 

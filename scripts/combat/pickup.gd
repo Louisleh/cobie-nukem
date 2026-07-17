@@ -11,6 +11,8 @@ signal collected(pickup: CombatPickup, collector: Node, message: String)
 var _anchor := Vector3.ZERO
 var _time := 0.0
 var _available := true
+var _visual_nodes: Array[Node3D] = []
+var _visual_anchors: Dictionary = {}
 
 func _ready() -> void:
 	_anchor = position
@@ -18,13 +20,22 @@ func _ready() -> void:
 	# authored spawn was accidentally placed inside the floor.
 	_anchor.y = maxf(_anchor.y, 0.72)
 	position = _anchor
+	for child in get_children():
+		if child is Node3D and not child is CollisionShape3D:
+			var visual := child as Node3D
+			_visual_nodes.append(visual)
+			_visual_anchors[visual] = visual.position
 	monitoring = true
 	body_entered.connect(_on_body_entered)
 
 func _process(delta: float) -> void:
 	_time += delta
-	rotate_y(spin_speed * delta)
-	position = _anchor + Vector3.UP * sin(_time * bob_speed) * bob_height
+	var bob_offset := Vector3.UP * sin(_time * bob_speed) * bob_height
+	for visual in _visual_nodes:
+		if not is_instance_valid(visual):
+			continue
+		visual.rotate_y(spin_speed * delta)
+		visual.position = (_visual_anchors.get(visual, Vector3.ZERO) as Vector3) + bob_offset
 
 func _physics_process(_delta: float) -> void:
 	if not _available:

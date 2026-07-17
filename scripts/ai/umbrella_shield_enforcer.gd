@@ -64,6 +64,13 @@ func apply_difficulty(profile: DifficultyProfile) -> void:
 	_refresh_guard_state()
 
 
+func apply_damage(amount: float, source: Node = null, hit_position := Vector3.ZERO) -> float:
+	var multiplier := 1.0
+	if directional_shield != null:
+		multiplier = directional_shield.damage_multiplier(self, hit_position, amount)
+	return super.apply_damage(amount * multiplier, source, hit_position)
+
+
 func _on_state_changed(_previous: State, next: State) -> void:
 	if is_dead:
 		_cancel_guard_timer()

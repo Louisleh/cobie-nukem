@@ -8,28 +8,24 @@ For each release candidate, retain the commit, Godot version, command, exit code
 
 ## Automated suites
 
-Run from the repository root with Godot 4.7 stable:
+Run from the repository root with Godot 4.7 stable. All automated invocations use the serialized runner so a timeout, interrupted Codex task, or blocked output pipe cannot leave a competing Godot process behind:
 
 ```bash
-/opt/homebrew/bin/godot --headless --path . --editor --quit
-/opt/homebrew/bin/godot --headless --path . --script res://tests/run_tests.gd
-/opt/homebrew/bin/godot --headless --path . --script res://tests/unit/input_system_test.gd
-/opt/homebrew/bin/godot --headless --path . --script res://tests/unit/combat_test_runner.gd
-/opt/homebrew/bin/godot --headless --path . --script res://tests/unit/enemy_contract_tests.gd
-/opt/homebrew/bin/godot --headless --path . --script res://tests/unit/navigation_contract_test.gd
-/opt/homebrew/bin/godot --headless --path . --script res://tests/unit/save_schema_test.gd
-/opt/homebrew/bin/godot --headless --path . --script res://tests/unit/alpha8_resource_contract_test.gd
-/opt/homebrew/bin/godot --headless --path . --script res://tests/unit/mission_audio_director_test.gd
-/opt/homebrew/bin/godot --headless --path . --script res://tests/unit/moving_set_piece_encounter_coordinator_test.gd
-/opt/homebrew/bin/godot --headless --path . --script res://tests/integration/integration_test_runner.gd
-/opt/homebrew/bin/godot --headless --path . --script res://tests/integration/vancouver_mission_host_test.gd
-/opt/homebrew/bin/godot --headless --path . --script res://tests/integration/adversarial_state_test.gd
-/opt/homebrew/bin/godot --headless --path . --script res://tests/smoke/smoke_test_runner.gd
-/opt/homebrew/bin/godot --headless --path . --script res://tests/smoke/performance_smoke.gd
+GODOT_BIN=/opt/homebrew/bin/godot bash tools/run_godot_safe.sh --timeout 120 -- --headless --editor --path . --quit
+GODOT_BIN=/opt/homebrew/bin/godot bash tools/run_godot_safe.sh --timeout 120 -- --headless --path . --script res://tests/run_tests.gd
+GODOT_BIN=/opt/homebrew/bin/godot bash tools/run_godot_safe.sh --timeout 120 -- --headless --path . --script res://tests/unit/input_system_test.gd
+GODOT_BIN=/opt/homebrew/bin/godot bash tools/run_godot_safe.sh --timeout 120 -- --headless --path . --script res://tests/unit/combat_test_runner.gd
+GODOT_BIN=/opt/homebrew/bin/godot bash tools/run_godot_safe.sh --timeout 120 -- --headless --path . --script res://tests/unit/enemy_contract_tests.gd
+GODOT_BIN=/opt/homebrew/bin/godot bash tools/run_godot_safe.sh --timeout 120 -- --headless --path . --script res://tests/unit/navigation_contract_test.gd
+GODOT_BIN=/opt/homebrew/bin/godot bash tools/run_godot_safe.sh --timeout 120 -- --headless --path . --script res://tests/unit/save_schema_test.gd
+GODOT_BIN=/opt/homebrew/bin/godot bash tools/run_godot_safe.sh --timeout 240 -- --headless --path . --script res://tests/integration/vancouver_mission_host_test.gd
+GODOT_TEST_USE_REAL_HOME=1 GODOT_BIN=/opt/homebrew/bin/godot bash tools/run_godot_safe.sh --timeout 360 -- --path . --resolution 1280x720 --script res://tests/smoke/zone_performance_profile.gd -- --profile-static --profile-invulnerable
 bash tools/asset_ip_scan.sh
 ```
 
 `bash tools/release_validate.sh` composes these gates. Set `QA_EXPORTS=1` to require both Web and unsigned macOS artifacts.
+
+The runner isolates test `HOME` and `COBIE_TEST_SAVE_ROOT` by default. Rendered profiling may set `GODOT_TEST_USE_REAL_HOME=1` so the engine can use the normal shader cache while `COBIE_TEST_SAVE_ROOT` still prevents test saves from touching player data. A lock-contention exit of 75 and timeout exit of 124 are infrastructure results, not game-test failures.
 
 ### Coverage map
 
@@ -53,7 +49,9 @@ bash tools/asset_ip_scan.sh
 | Grace-timer lifecycle, restart pressure, pause suppression, stuck touch input, reload interruption, double level lifecycle, enemy drops | `tests/integration/adversarial_state_test.gd` |
 | Rain City route graph, production content, interactions, Gull/shield enemies, four-phase convoy soak, Continue rehydration, and departure gating | `tests/integration/vancouver_route_foundation_test.gd`, `tests/integration/vancouver_content_contract_test.gd`, `tests/integration/vancouver_interaction_catalog_test.gd`, `tests/integration/vancouver_mission_host_test.gd`, `tests/integration/rain_city_route_production_test.gd`, `tests/integration/rain_city_convoy_boss_test.gd` |
 | Every scene loads/instantiates; boot/diagnostics survive entry | `tests/smoke/smoke_test_runner.gd` |
-| Catastrophic main-loop stalls | `tests/smoke/performance_smoke.gd` |
+| Catastrophic main-loop stalls across Salmon Creek and Rain City | `tests/smoke/performance_smoke.gd` |
+| Rendered per-zone p95/p99, draw calls, objects, nodes, memory, and gameplay populations across both missions | `tests/smoke/zone_performance_profile.gd` |
+| Godot process serialization, timeout cleanup, stale-lock recovery, and isolated test state | `tools/tests/run_godot_safe_test.sh` |
 | Asset manifest coverage and obvious protected-source indicators | `tools/asset_ip_scan.sh` |
 
 The smoke runner reports menu/level absence as `PENDING` during development. The release validator treats either absence as a hard failure.
