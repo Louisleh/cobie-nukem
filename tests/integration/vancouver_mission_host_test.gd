@@ -65,6 +65,7 @@ func _run() -> void:
 	await process_frame
 	await _test_opening_safety_window()
 	await _test_harbour_checkpoint_rehydration()
+	await _test_stale_route_snapshot_fallback()
 	if failures.is_empty():
 		print("VANCOUVER MISSION HOST TEST: PASS")
 		quit(0)
@@ -100,6 +101,34 @@ func _test_harbour_checkpoint_rehydration() -> void:
 	_expect(mission.current_zone == &"harbour_pier", "harbour Continue restores controller zone truth")
 	_expect(mission._set_piece_runtime != null and bool(mission._set_piece_runtime.current_state().get("has_actor", false)), "harbour Continue rehydrates the citation convoy")
 	_expect(not mission._world_builder.departure_switch.enabled, "restored departure remains locked until convoy objective completes")
+	mission.queue_free()
+	await process_frame
+
+
+func _test_stale_route_snapshot_fallback() -> void:
+	var mission := MissionScene.instantiate() as EpisodeOneVancouverWaterfront
+	mission.spawn_player = false
+	mission.start_run_automatically = false
+	mission.setup_presentation = false
+	mission._restored_checkpoint = {
+		"checkpoint_id": "checkpoint_terminal_service",
+		"objective_snapshot": {"progress": {}, "completed": []},
+		"encounter_snapshot": {"completed": [], "active": {}},
+		"route_snapshot": {
+			"route_id": "obsolete_vancouver_beta_route",
+			"current_zone": "obsolete_terminal",
+			"current_index": 3,
+			"visited_zones": ["obsolete_terminal"],
+			"checkpoint_id": "checkpoint_terminal_service",
+			"is_completed": false,
+		},
+		"secrets": {},
+	}
+	root.add_child(mission)
+	await process_frame
+	_expect(mission.current_zone == &"terminal_service", "stale route snapshot falls back to the authoritative checkpoint zone")
+	_expect(mission._route_runtime.current_checkpoint_id == &"checkpoint_terminal_service", "fallback keeps the authoritative checkpoint id")
+	_expect(mission._route_runtime.visited_zones == [&"downtown_alley", &"ruse_block", &"waterfront_seawall", &"terminal_service"], "fallback reconstructs authored route order")
 	mission.queue_free()
 	await process_frame
 

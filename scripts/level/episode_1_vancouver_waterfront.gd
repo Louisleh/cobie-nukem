@@ -276,9 +276,8 @@ func _restore_runtime_state() -> void:
 	for raw_id: Variant in _restored_checkpoint.get("secrets", {}):
 		secrets[StringName(raw_id)] = String(_restored_checkpoint.secrets[raw_id])
 	var route_snapshot: Dictionary = _restored_checkpoint.get("route_snapshot", {})
-	if not route_snapshot.is_empty():
-		_route_runtime.restore(route_snapshot)
-	else:
+	var route_restored := not route_snapshot.is_empty() and _route_runtime.restore(route_snapshot)
+	if not route_restored:
 		_restore_route_from_checkpoint(StringName(_restored_checkpoint.get("checkpoint_id", "")))
 	current_zone = _route_runtime.current_zone
 

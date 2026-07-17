@@ -36,12 +36,16 @@ func _ready() -> void:
 	play_button.focus_neighbor_bottom = play_button.get_path_to(%BackButton)
 	%BackButton.focus_neighbor_top = %BackButton.get_path_to(play_button)
 	var first_enabled := _first_selectable_index()
-	if not _cards.is_empty():
+	if first_enabled >= 0:
 		_select(first_enabled)
-		if not _cards[first_enabled].disabled:
-			_cards[first_enabled].grab_focus()
-		else:
-			%BackButton.grab_focus()
+		_cards[first_enabled].grab_focus()
+	elif not _cards.is_empty():
+		_selected = -1
+		play_button.disabled = true
+		play_button.focus_mode = Control.FOCUS_NONE
+		play_button.text = "NO MISSIONS AVAILABLE"
+		status_label.text = "CAMPAIGN ROUTES LOCKED"
+		%BackButton.grab_focus()
 
 func _prepare_campaign_progress() -> void:
 	var save_manager := get_node_or_null("/root/SaveManager")
@@ -117,7 +121,7 @@ func _build_difficulty_selector() -> void:
 		button.focus_neighbor_bottom = button.get_path_to(play_button)
 		if not _cards.is_empty():
 			var first_selectable := _first_selectable_index()
-			if not _cards[first_selectable].disabled:
+			if first_selectable >= 0:
 				button.focus_neighbor_top = button.get_path_to(_cards[first_selectable])
 	if not _difficulty_buttons.is_empty():
 		for card in _cards:
@@ -211,7 +215,7 @@ func _first_selectable_index() -> int:
 	for index in _cards.size():
 		if not _cards[index].disabled:
 			return index
-	return 0
+	return -1
 
 
 func _development_unlock_override() -> bool:
