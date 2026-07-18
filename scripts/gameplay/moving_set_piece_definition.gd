@@ -8,8 +8,14 @@ enum ResetPolicy {
 	PAUSE,
 }
 
+enum MotionMode {
+	PATH,
+	STATIONARY,
+}
+
 @export var id: StringName = &"moving_set_piece"
 @export var schema_version := 1
+@export var motion_mode: MotionMode = MotionMode.PATH
 @export_file(".tscn") var actor_scene_path := ""
 @export var path_points: Array[Vector3] = []
 @export_range(0.05, 120.0, 0.05) var speed := 3.0
@@ -31,6 +37,8 @@ func validate() -> PackedStringArray:
 
 func _validate_schema_v1() -> PackedStringArray:
 	var errors := PackedStringArray()
+	if motion_mode != MotionMode.PATH:
+		errors.append("moving_set_piece_definition %s schema_version=1 only supports PATH motion" % id)
 	if id == &"":
 		errors.append("moving_set_piece_definition has empty id")
 	if actor_scene_path.is_empty():
@@ -95,13 +103,15 @@ func _validate_schema_v2() -> PackedStringArray:
 			var packed := load(actor_scene_path)
 			if packed == null or not packed is PackedScene:
 				errors.append("moving_set_piece_definition %s actor_scene_path is not a PackedScene: %s" % [id, actor_scene_path])
-	if path_points.size() < 2:
-		errors.append("moving_set_piece_definition %s must have at least two path points" % id)
+	if motion_mode == MotionMode.PATH and path_points.size() < 2:
+		errors.append("moving_set_piece_definition %s PATH motion must have at least two path points" % id)
+	elif motion_mode == MotionMode.STATIONARY and path_points.size() > 1:
+		errors.append("moving_set_piece_definition %s STATIONARY motion accepts at most one spawn point" % id)
 	for point_index in range(path_points.size()):
 		var point: Vector3 = path_points[point_index]
 		if not point.is_finite():
 			errors.append("moving_set_piece_definition %s path_points[%d] is not finite" % [id, point_index])
-	if not is_finite(speed) or speed <= 0.0:
+	if motion_mode == MotionMode.PATH and (not is_finite(speed) or speed <= 0.0):
 		errors.append("moving_set_piece_definition %s speed must be positive and finite" % id)
 	if completion_event == &"":
 		errors.append("moving_set_piece_definition %s missing completion_event" % id)

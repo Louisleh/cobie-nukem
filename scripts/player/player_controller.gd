@@ -238,6 +238,19 @@ func _check_out_of_bounds() -> bool:
 	return true
 func apply_damage(amount: float, source: Node = null, _hit_position := Vector3.ZERO) -> float:
 	return health_armor.apply_damage(amount, source)
+
+
+func apply_environment_impulse(impulse: Vector3, horizontal_cap := 14.0, vertical_cap := 9.0) -> Vector3:
+	if is_dead or _external_transport_active:
+		return Vector3.ZERO
+	var previous := velocity
+	var safe_horizontal_cap := clampf(horizontal_cap, 0.0, TimedHazardDefinition.MAX_HORIZONTAL_IMPULSE)
+	var safe_vertical_cap := clampf(vertical_cap, 0.0, TimedHazardDefinition.MAX_VERTICAL_IMPULSE)
+	var requested_horizontal := Vector2(velocity.x + impulse.x, velocity.z + impulse.z).limit_length(safe_horizontal_cap)
+	velocity.x = requested_horizontal.x
+	velocity.z = requested_horizontal.y
+	velocity.y = clampf(velocity.y + impulse.y, -safe_vertical_cap, safe_vertical_cap)
+	return velocity - previous
 func set_touch_move(value: Vector2) -> void:
 	_touch_move = value.limit_length(1.0)
 func set_touch_look(value: Vector2) -> void:

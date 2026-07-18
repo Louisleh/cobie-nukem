@@ -12,6 +12,7 @@ extends Resource
 @export var audio_profile: MissionAudioProfile
 @export var zone_presentations: Array[ZonePresentationProfile] = []
 @export var moving_set_pieces: Array[MovingSetPieceDefinition] = []
+@export var timed_hazards: Array[TimedHazardDefinition] = []
 
 
 func validate() -> PackedStringArray:
@@ -118,6 +119,18 @@ func validate() -> PackedStringArray:
 				errors.append("destructible module id %s used by multiple moving set pieces" % module_id)
 			else:
 				module_owners[module_key] = set_piece.id
+
+	var hazard_ids: Dictionary = {}
+	for hazard_index in range(timed_hazards.size()):
+		var hazard := timed_hazards[hazard_index]
+		if hazard == null:
+			errors.append("timed hazard at index %d is null" % hazard_index)
+			continue
+		if hazard_ids.has(hazard.id):
+			errors.append("duplicate timed hazard id: %s" % hazard.id)
+		else:
+			hazard_ids[hazard.id] = true
+		errors.append_array(hazard.validate())
 
 	if audio_profile != null:
 		errors.append_array(audio_profile.validate())

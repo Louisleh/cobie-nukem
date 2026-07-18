@@ -8,6 +8,7 @@ extends Resource
 @export var title := "COBIE NUKEM"
 @export var cards: Array[LevelCardData] = []
 @export var missions: Array[LevelMetadata] = []
+@export var mission_packs: Array[MissionPackDefinition] = []
 @export var completion_upgrade: StringName = &""
 
 
@@ -22,6 +23,13 @@ func metadata_for(level_id: StringName) -> LevelMetadata:
 	for mission in missions:
 		if mission != null and mission.level_id == level_id:
 			return mission
+	return null
+
+
+func pack_for(pack_id: StringName) -> MissionPackDefinition:
+	for pack in mission_packs:
+		if pack != null and pack.pack_id == pack_id:
+			return pack
 	return null
 
 
@@ -66,6 +74,18 @@ func validate() -> PackedStringArray:
 			metadata_ids[mission.level_id] = mission
 		if not ResourceLoader.exists(mission.replay_scene, "PackedScene"):
 			errors.append("episode mission %s replay scene is missing: %s" % [mission.level_id, mission.replay_scene])
+	var pack_ids: Dictionary = {}
+	for pack in mission_packs:
+		if pack == null:
+			errors.append("episode definition %s has null mission pack" % id)
+			continue
+		if pack_ids.has(pack.pack_id):
+			errors.append("episode definition %s has duplicate mission pack %s" % [id, pack.pack_id])
+		else:
+			pack_ids[pack.pack_id] = true
+		errors.append_array(pack.validate())
+		if pack.prerequisite_pack_id != &"" and not pack_ids.has(pack.prerequisite_pack_id):
+			errors.append("episode mission pack %s has unknown or later prerequisite %s" % [pack.pack_id, pack.prerequisite_pack_id])
 	for card in cards:
 		if card == null or card.level_id == &"":
 			continue

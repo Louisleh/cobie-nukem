@@ -1,0 +1,24 @@
+[gd_resource type="Resource" script_class="EnemyDefinition" load_steps=3 format=3]
+[ext_resource type="Script" path="res://scripts/ai/enemy_definition.gd" id="1"]
+[ext_resource type="Resource" path="res://resources/enemies/reaction_standard.tres" id="2"]
+[resource]
+script = ExtResource("1")
+id = &"lunar_kennel_sentinel"
+display_name = "LUNAR KENNEL SENTINEL"
+archetype = 2
+warning_text = "MAG-BOOTS LOCKED // FETCH DENIED."
+max_health = 145.0
+move_speed = 4.1
+acceleration = 17.0
+detection_range = 30.0
+attack_range = 13.0
+attack_damage = 13.0
+attack_cooldown = 1.35
+telegraph_seconds = 0.48
+preferred_distance = 9.0
+threat_weight = 1.15
+threat_value = 3
+navigation_radius = 0.55
+weak_point_multiplier = 1.6
+reaction_profile = ExtResource("2")
+score_value = 350

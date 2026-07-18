@@ -28,6 +28,7 @@ var _path_completed := false
 var _completion_emitted := false
 var _completion_event_id: StringName = &""
 var _schema_version := 1
+var _motion_mode := MovingSetPieceDefinition.MotionMode.PATH
 var _path_points: Array[Vector3] = []
 var _stop_fractions: Array[float] = []
 var _path := MovingSetPiecePath.new()
@@ -52,6 +53,7 @@ func current_state() -> Dictionary:
 		"waiting_for_stop": _waiting_for_stop,
 		"path_completed": _path_completed,
 		"completion_emitted": _completion_emitted,
+		"motion_mode": _motion_mode,
 		"next_stop_index": _next_stop_index,
 		"encounter_gates": _encounter_completed.duplicate(),
 		"module_gates": _module_destroyed.duplicate(),
@@ -90,6 +92,7 @@ func configure(definition: Object, actor_parent: Node = null) -> StringName:
 
 	_definition = definition.duplicate(true)
 	_schema_version = int(_definition.get("schema_version"))
+	_motion_mode = int(_definition.get("motion_mode"))
 	_actor_scene = scene
 	_actor_parent = parent
 	_path_points = _definition.path_points.duplicate()
@@ -114,7 +117,7 @@ func start() -> bool:
 	_running = true
 	_reset_progress()
 	_clear_actor()
-	return _spawn_actor(true)
+	return _spawn_actor(_uses_path_motion())
 
 func reset() -> bool:
 	if _definition == null:
@@ -140,13 +143,15 @@ func reset() -> bool:
 		reset_completed.emit(_generation)
 		return true
 
-	if not _spawn_actor(_definition.reset_policy != 3):
+	if not _spawn_actor(_uses_path_motion() and _definition.reset_policy != 3):
 		return false
 
 	reset_completed.emit(_generation)
 	return true
 
 func resume_from_stop() -> bool:
+	if not _uses_path_motion():
+		return false
 	if not _running or not _waiting_for_stop or _moving:
 		return false
 	_waiting_for_stop = false
@@ -216,7 +221,7 @@ func restore_completed_state() -> bool:
 		return false
 	_generation += 1
 	_clear_actor()
-	_distance_along_path = _path.total_length
+	_distance_along_path = _path.total_length if _uses_path_motion() else 0.0
 	_next_stop_index = _stop_fractions.size()
 	_active_wave_index = _stop_fractions.size() - 1
 	_running = false
@@ -230,7 +235,8 @@ func restore_completed_state() -> bool:
 	if instance == null:
 		return false
 	_actor = instance
-	_actor.position = _path.position_at(_distance_along_path)
+	_actor.position = _completed_actor_position()
+	_configure_actor_modules()
 	_actor_parent.add_child(_actor)
 	_sync_actor_phase()
 	_actor.reset_physics_interpolation()
@@ -255,6 +261,7 @@ func clear() -> void:
 	_distance_along_path = 0.0
 	_next_stop_index = 0
 	_schema_version = 1
+	_motion_mode = MovingSetPieceDefinition.MotionMode.PATH
 	_path_points.clear()
 	_stop_fractions.clear()
 	_path.clear()
@@ -273,6 +280,8 @@ func _exit_tree() -> void:
 
 func _physics_process(delta: float) -> void:
 	if not _running or not _moving or _definition == null:
+		return
+	if not _uses_path_motion():
 		return
 	if _actor == null or not is_instance_valid(_actor):
 		return
@@ -389,7 +398,7 @@ func _clear_actor() -> void:
 func _spawn_actor(moving: bool) -> bool:
 	if _actor_scene == null:
 		return false
-	if _path_points.is_empty():
+	if _uses_path_motion() and _path_points.is_empty():
 		return false
 	if _actor_parent == null:
 		return false
@@ -399,17 +408,21 @@ func _spawn_actor(moving: bool) -> bool:
 			(instance as Node).queue_free()
 		return false
 	_actor = instance as Node3D
-	_actor.position = _path_points[0]
+	_actor.position = _spawn_position()
+	_configure_actor_modules()
 	_actor_parent.add_child(_actor)
 	_sync_actor_phase()
 	_actor.reset_physics_interpolation()
 	_running = true
-	_moving = moving
-	_waiting_for_stop = not moving
+	_moving = moving and _uses_path_motion()
+	_waiting_for_stop = not _moving and _uses_path_motion()
 	set_physics_process(_moving)
 	started.emit(_actor, _generation)
-	_apply_position()
-	_process_stops_at_distance()
+	if _uses_path_motion():
+		_apply_position()
+		_process_stops_at_distance()
+	else:
+		_advance_stationary_phase()
 	return true
 
 func _process_stops_at_distance() -> void:
@@ -449,7 +462,11 @@ func _try_finalize_active_phase() -> void:
 		_sync_actor_phase()
 		phase_changed.emit(_phase_state.active_index, _phase_state.active_id(), _generation)
 		if _waiting_for_stop:
-			resume_from_stop()
+			if _uses_path_motion():
+				resume_from_stop()
+			else:
+				_waiting_for_stop = false
+				_advance_stationary_phase()
 
 func _emit_phase_state() -> void:
 	if _schema_version != 2:
@@ -470,7 +487,7 @@ func _start_loop_cycle() -> void:
 		return
 	_generation += 1
 	_reset_progress()
-	if not _spawn_actor(true):
+	if not _spawn_actor(_uses_path_motion()):
 		_running = false
 		set_physics_process(false)
 
@@ -496,3 +513,30 @@ func _configure_definitions() -> bool:
 	_encounter_requirements = _phase_state.encounter_requirements.duplicate()
 	_module_requirements = _phase_state.module_requirements.duplicate()
 	return true
+
+
+func _uses_path_motion() -> bool:
+	return _motion_mode == MovingSetPieceDefinition.MotionMode.PATH
+
+
+func _spawn_position() -> Vector3:
+	return _path_points[0] if not _path_points.is_empty() else Vector3.ZERO
+
+
+func _completed_actor_position() -> Vector3:
+	return _path.position_at(_distance_along_path) if _uses_path_motion() else _spawn_position()
+
+
+func _configure_actor_modules() -> void:
+	if not is_instance_valid(_actor) or not _actor.has_method("configure_phase_modules"):
+		return
+	_actor.call("configure_phase_modules", _module_requirements)
+
+
+func _advance_stationary_phase() -> void:
+	if _uses_path_motion() or not _running or _definition == null:
+		return
+	if _next_stop_index >= _stop_fractions.size():
+		_handle_path_completed()
+		return
+	_handle_stop_reached(_next_stop_index, _stop_fractions[_next_stop_index])
