@@ -4,7 +4,7 @@ const CAMPAIGN_SLOT := &"campaign_progress"
 const SALMON_CARD: LevelCardData = preload("res://resources/level/salmon_creek_card.tres")
 const VANCOUVER_CARD: LevelCardData = preload("res://resources/level/rain_city_card.tres")
 const MOUNT_HOOD_CARD: LevelCardData = preload("res://resources/level/mountain_card.tres")
-const LATER_TEASER_CARDS: Array[LevelCardData] = [
+const LATER_PUBLIC_BETA_CARDS: Array[LevelCardData] = [
 	preload("res://resources/level/moon_card.tres"),
 	preload("res://resources/level/ventura_card.tres"),
 ]
@@ -32,7 +32,7 @@ func _initialize() -> void:
 	_test_salmon_availability()
 	_test_vancouver_public_beta()
 	_test_mount_hood_public_beta()
-	_test_later_teasers_remain_locked()
+	_test_later_missions_are_public_betas()
 
 	_save_manager_delete(CAMPAIGN_SLOT)
 	campaign_runtime.queue_free()
@@ -83,13 +83,14 @@ func _test_vancouver_public_beta() -> void:
 	_expect(VANCOUVER_CARD.is_available(campaign_runtime), "Vancouver remains available after Salmon completion")
 
 
-func _test_later_teasers_remain_locked() -> void:
-	for card: LevelCardData in LATER_TEASER_CARDS:
-		_expect(card != null, "Teaser-level card resource loads")
+func _test_later_missions_are_public_betas() -> void:
+	for card: LevelCardData in LATER_PUBLIC_BETA_CARDS:
+		_expect(card != null, "Later public-beta card resource loads")
 		if card == null:
 			continue
-		_expect(card.unlock_policy == LevelCardData.UnlockPolicy.LOCKED_TEASER, "Later card uses locked teaser policy: %s" % card.level_id)
-		_expect(not card.is_available(campaign_runtime), "Later card remains unavailable by policy: %s" % card.level_id)
+		_expect(card.unlock_policy == LevelCardData.UnlockPolicy.ALWAYS, "Later card uses always-available public-beta policy: %s" % card.level_id)
+		_expect(card.is_available(campaign_runtime), "Later public-beta card remains available with an empty campaign: %s" % card.level_id)
+		_expect(card.is_preview_release(campaign_runtime), "Later mission retains an honest preview badge: %s" % card.level_id)
 
 
 func _test_mount_hood_public_beta() -> void:
