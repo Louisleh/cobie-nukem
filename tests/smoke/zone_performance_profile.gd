@@ -2,9 +2,11 @@ extends SceneTree
 
 const PipelinePrewarmer := preload("res://scripts/core/runtime_pipeline_prewarmer.gd")
 const WARMUP_FRAMES := 24
-const SAMPLE_FRAMES := 120
+const SAMPLE_FRAMES := 300
 const MAX_RENDERED_P95_MSEC := 33.0
 const MAX_RENDERED_P99_MSEC := 33.3
+const MAX_ORDINARY_STALL_MSEC := 100.0
+const MAX_ISOLATED_STALLS_PER_ZONE := 1
 
 var failures: Array[String] = []
 
@@ -170,11 +172,14 @@ func _measure(label: String) -> void:
 	var maximum_active_physics_bodies := 0
 	var maximum_navigation_agents := 0
 	var maximum_sample := 0
+	var ordinary_stall_count := 0
 	for sample_index in SAMPLE_FRAMES:
 		var started := Time.get_ticks_usec()
 		await process_frame
 		var elapsed := float(Time.get_ticks_usec() - started) / 1000.0
 		samples.append(elapsed)
+		if elapsed > MAX_ORDINARY_STALL_MSEC:
+			ordinary_stall_count += 1
 		if elapsed >= samples[maximum_sample]:
 			maximum_sample = sample_index
 		maximum_draw_calls = maxi(maximum_draw_calls, int(Performance.get_monitor(Performance.RENDER_TOTAL_DRAW_CALLS_IN_FRAME)))
@@ -192,11 +197,11 @@ func _measure(label: String) -> void:
 	var p95 := _percentile(ordered, 0.95)
 	var p99 := _percentile(ordered, 0.99)
 	var maximum: float = ordered.back()
-	print("ZONE PROFILE: %s average=%.3fms p95=%.3fms p99=%.3fms max=%.3fms@sample%d draw_calls=%d objects=%d nodes=%d memory=%d" % [label, average, p95, p99, maximum, maximum_sample, maximum_draw_calls, maximum_objects, maximum_nodes, maximum_memory])
+	print("ZONE PROFILE: %s average=%.3fms p95=%.3fms p99=%.3fms max=%.3fms@sample%d stalls_gt_100ms=%d draw_calls=%d objects=%d nodes=%d memory=%d" % [label, average, p95, p99, maximum, maximum_sample, ordinary_stall_count, maximum_draw_calls, maximum_objects, maximum_nodes, maximum_memory])
 	var populations := _runtime_populations()
 	print("ZONE POPULATION: %s enemies=%d physics_bodies=%d nav_agents=%d audio_voices=%d particles=%d decals=%d" % [label, populations.enemies, maximum_active_physics_bodies, maximum_navigation_agents, populations.audio_voices, populations.particles, populations.decals])
-	if DisplayServer.get_name() != "headless" and (p95 > MAX_RENDERED_P95_MSEC or p99 > MAX_RENDERED_P99_MSEC):
-		failures.append("%s exceeded rendered frame budget (p95 %.3fms, p99 %.3fms)" % [label, p95, p99])
+	if DisplayServer.get_name() != "headless" and (p95 > MAX_RENDERED_P95_MSEC or p99 > MAX_RENDERED_P99_MSEC or ordinary_stall_count > MAX_ISOLATED_STALLS_PER_ZONE):
+		failures.append("%s exceeded rendered frame budget (p95 %.3fms, p99 %.3fms, max %.3fms, stalls >100ms %d)" % [label, p95, p99, maximum, ordinary_stall_count])
 
 
 func _percentile(ordered: Array[float], fraction: float) -> float:

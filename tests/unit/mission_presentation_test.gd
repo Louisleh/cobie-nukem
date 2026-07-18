@@ -258,6 +258,17 @@ func _test_teardown_without_leaks() -> void:
 	var actors := Node.new(); actors.name = "Actors"; level.add_child(actors)
 	await process_frame
 	var presentation := _make_presentation(level, actors)
+	var player := PLAYER_SCENE.instantiate() as CobiePlayer
+	root.add_child(player)
+	presentation.set_player(player)
+	await process_frame
+	var rain := presentation._player_weather
+	_expect(rain != null and is_instance_valid(rain), "presentation owns player rain while configured")
+	presentation._exit_tree()
+	await process_frame
+	_expect(presentation._player_weather == null, "presentation clears player rain ownership during teardown")
+	_expect(not player.has_meta(&"mission_presentation_rain"), "presentation clears player rain metadata during teardown")
+	player.free()
 	var director := presentation.get_audio_director()
 	var bridge := presentation.get_combat_audio_bridge()
 	var mobile := presentation.get_mobile_controls()

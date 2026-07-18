@@ -24,10 +24,14 @@ search_runtime() {
 
 manifest_has() {
   if command -v rg >/dev/null 2>&1; then
-    rg -F -q "\`$1\`" docs/ASSET_MANIFEST.md
+    rg -F -q "\`$1\`" docs/ASSET_MANIFEST.md && return 0
   else
-    grep -Fq "\`$1\`" docs/ASSET_MANIFEST.md
+    grep -Fq "\`$1\`" docs/ASSET_MANIFEST.md && return 0
   fi
+  while IFS= read -r pattern; do
+    [[ "$1" == $pattern ]] && return 0
+  done < <(grep -oE '`glob:[^`]+`' docs/ASSET_MANIFEST.md | sed 's/^`glob://; s/`$//')
+  return 1
 }
 
 if search_runtime 'duke[ _-]?nukem|hail to the king|come get some|damn, i.m good'; then

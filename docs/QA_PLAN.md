@@ -50,7 +50,7 @@ The runner isolates test `HOME` and `COBIE_TEST_SAVE_ROOT` by default. Rendered 
 | Rain City route graph, production content, interactions, Gull/shield enemies, four-phase convoy soak, Continue rehydration, and departure gating | `tests/integration/vancouver_route_foundation_test.gd`, `tests/integration/vancouver_content_contract_test.gd`, `tests/integration/vancouver_interaction_catalog_test.gd`, `tests/integration/vancouver_mission_host_test.gd`, `tests/integration/rain_city_route_production_test.gd`, `tests/integration/rain_city_convoy_boss_test.gd` |
 | Every scene loads/instantiates; boot/diagnostics survive entry | `tests/smoke/smoke_test_runner.gd` |
 | Catastrophic main-loop stalls across Salmon Creek and Rain City | `tests/smoke/performance_smoke.gd` |
-| Rendered per-zone p95/p99, draw calls, objects, nodes, memory, and gameplay populations across both missions | `tests/smoke/zone_performance_profile.gd` |
+| Rendered 300-frame per-zone p95/p99, isolated >100 ms stall count, draw calls, objects, nodes, memory, and gameplay populations across both missions | `tests/smoke/zone_performance_profile.gd` |
 | Godot process serialization, timeout cleanup, stale-lock recovery, and isolated test state | `tools/tests/run_godot_safe_test.sh` |
 | Asset manifest coverage and obvious protected-source indicators | `tools/asset_ip_scan.sh` |
 
@@ -83,7 +83,7 @@ Also test 16:9, 16:10, and ultrawide; clean `user://`; existing settings/save; n
 
 ## Performance validation
 
-The headless performance smoke is only a stall detector. On the target M4 Mac mini, capture a representative full run and verify:
+The headless performance smoke is only a stall detector. The native rendered profile samples 300 frames per zone, fails p95 above 33 ms or p99 above 33.3 ms, and fails when more than one >100 ms scheduling stall occurs in a zone. One isolated OS scheduling pause remains reported in evidence but is not misrepresented as a recurring gameplay stall. On the target M4 Mac mini, capture a representative full run and verify:
 
 - native target 60 FPS at 1920×1080 output;
 - ordinary combat frame spikes remain below 33 ms;

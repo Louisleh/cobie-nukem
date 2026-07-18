@@ -1,0 +1,48 @@
+schema_version: 1
+mission_id: mount_hood_whiteout
+card_title: MOUNT HOOD WHITEOUT
+set_piece_phrase: OFF-LEASH SUMMIT
+status: locked_visual_foundry
+public_playable: false
+target_duration_minutes: [18, 25]
+target_secret_count: 4
+environment_identity: snowbound_pacific_northwest_alpine_pursuit
+palette:
+  exterior: [cold_blue_white, deep_fir_green, exposed_rock_charcoal]
+  route: [trail_orange, safety_amber]
+  refuge: [warm_window_amber, lodge_timber_brown]
+dominant_landmark:
+  id: persistent_mount_hood
+  contract: fixed_world_bearing_presentation_only
+  visibility: every_exterior_zone_and_intentionally_framed_interior_exits
+material_families:
+  - fresh_powder
+  - packed_snow
+  - icy_slush
+  - exposed_rock
+  - plowed_asphalt
+  - lodge_timber
+  - lodge_stone
+  - lift_steel
+  - frosted_glass
+  - warm_windows
+zones:
+  - id: forest_pullout
+    landmarks: [persistent_mount_hood, snowed_in_lodge, fictional_highway_sign]
+  - id: plowed_mountain_road
+    landmarks: [snowbanks, maintenance_sheds, lift_machinery]
+  - id: lodge
+    landmarks: [warm_great_room, snowed_roofline, mountain_window]
+  - id: service_tunnels
+    landmarks: [boiler_room, lift_service_map, warm_exit_frame]
+  - id: summit_assault
+    landmarks: [chairlift, summit_relay, persistent_mount_hood]
+pilot_acceptance:
+  required_elements: [mountain, snowbanks, firs, snowman, warm_lodge, fictional_signage, readable_future_route]
+  aspects: [1280x720, 1680x1050, 1024x768, 3440x1440]
+  constraints: [no_collision, no_navigation, no_campaign_unlock, original_geometry, manifested_provenance]
+future_boss: original_snowplow_weather_control_mech
+legal:
+  copied_maps_or_floorplans: prohibited
+  copied_logos_or_photography: prohibited
+  real_business_branding: prohibited_without_permission

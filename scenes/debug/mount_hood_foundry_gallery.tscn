@@ -1,0 +1,51 @@
+[gd_scene load_steps=8 format=3]
+
+[ext_resource type="PackedScene" path="res://assets/models/environment/mount_hood_foundry.glb" id="1_foundry"]
+[ext_resource type="Script" path="res://scripts/level/mount_hood_material_applier.gd" id="2_materials"]
+
+[sub_resource type="ProceduralSkyMaterial" id="SkyMaterial"]
+sky_top_color = Color(0.055, 0.11, 0.18, 1)
+sky_horizon_color = Color(0.51, 0.67, 0.76, 1)
+
+[sub_resource type="Sky" id="Sky"]
+sky_material = SubResource("SkyMaterial")
+
+[sub_resource type="Environment" id="Environment"]
+background_mode = 2
+sky = SubResource("Sky")
+ambient_light_source = 3
+ambient_light_color = Color(0.58, 0.69, 0.77, 1)
+ambient_light_energy = 0.75
+fog_enabled = true
+fog_light_color = Color(0.66, 0.76, 0.82, 1)
+fog_density = 0.006
+
+[sub_resource type="StandardMaterial3D" id="GroundMaterial"]
+albedo_color = Color(0.66, 0.79, 0.85, 1)
+roughness = 0.8
+
+[sub_resource type="PlaneMesh" id="GroundMesh"]
+material = SubResource("GroundMaterial")
+size = Vector2(80, 100)
+
+[node name="MountHoodFoundryGallery" type="Node3D"]
+script = ExtResource("2_materials")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment")
+
+[node name="Sun" type="DirectionalLight3D" parent="."]
+rotation_degrees = Vector3(-48, -22, 0)
+light_color = Color(0.87, 0.93, 1, 1)
+light_energy = 1.1
+shadow_enabled = true
+
+[node name="Ground" type="MeshInstance3D" parent="."]
+mesh = SubResource("GroundMesh")
+
+[node name="Foundry" parent="." instance=ExtResource("1_foundry")]
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(0.98, -0.04, 0.19, 0, 0.98, 0.20, -0.20, -0.19, 0.96, 0, 5.5, 23)
+current = true
+fov = 66.0

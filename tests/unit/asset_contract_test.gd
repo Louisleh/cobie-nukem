@@ -2,6 +2,9 @@ extends SceneTree
 
 const BALL_RETURN_SCENE := preload("res://scenes/interactables/ball_return_secret.tscn")
 const OPENING_FOUNDRY_SCENE := preload("res://assets/models/environment/salmon_creek_opening_foundry.glb")
+const MOUNT_HOOD_FOUNDRY_SCENE := preload("res://assets/models/environment/mount_hood_foundry.glb")
+const MOUNT_HOOD_CARD := preload("res://resources/level/mountain_card.tres")
+const RAIN_CITY_PRESENTATION_SCENE := preload("res://scenes/levels/vancouver/rain_city_presentation.tscn")
 const SALMON_ENVIRONMENT_KIT := preload("res://scripts/level/salmon_creek_environment_kit.gd")
 const WEAPON_VIEWMODELS: Dictionary = {
 	&"pawstol": preload("res://assets/models/weapons/pawstol_viewmodel.glb"),
@@ -29,6 +32,8 @@ var failures: Array[String] = []
 func _initialize() -> void:
 	await _test_ball_return_production_asset()
 	await _test_opening_foundry_asset()
+	await _test_mount_hood_foundry_asset()
+	await _test_rain_city_runtime_materials()
 	await _test_salmon_sign_faces()
 	await _test_weapon_viewmodels()
 	await _test_production_pipeline_pilot()
@@ -102,6 +107,38 @@ func _test_opening_foundry_asset() -> void:
 		var extras := child.get_meta(&"extras", {}) as Dictionary
 		source_parts += int(extras.get("source_part_count", 0))
 	_expect(source_parts == 188, "opening foundry retains its complete source-part vocabulary in import metadata")
+	instance.queue_free()
+	await process_frame
+
+
+func _test_mount_hood_foundry_asset() -> void:
+	var instance := MOUNT_HOOD_FOUNDRY_SCENE.instantiate()
+	get_root().add_child(instance)
+	await process_frame
+	var meshes := instance.find_children("*", "MeshInstance3D", true, false)
+	_expect(meshes.size() == 11, "Mount Hood pilot consolidates its authored parts into eleven material batches")
+	_expect(instance.find_children("*", "CollisionObject3D", true, false).is_empty(), "Mount Hood pilot remains presentation-only")
+	_expect(MOUNT_HOOD_CARD.unlock_policy == LevelCardData.UnlockPolicy.LOCKED_TEASER, "Mount Hood mission card remains a locked teaser")
+	_expect(MOUNT_HOOD_CARD.scene_path.is_empty(), "Mount Hood foundry does not create a public gameplay route")
+	instance.queue_free()
+	await process_frame
+
+
+func _test_rain_city_runtime_materials() -> void:
+	var instance := RAIN_CITY_PRESENTATION_SCENE.instantiate()
+	get_root().add_child(instance)
+	await process_frame
+	var textured_surfaces := 0
+	for candidate in instance.find_children("*", "MeshInstance3D", true, false):
+		var mesh_instance := candidate as MeshInstance3D
+		if mesh_instance.mesh == null:
+			continue
+		for surface_index in range(mesh_instance.mesh.get_surface_count()):
+			var override := mesh_instance.get_surface_override_material(surface_index) as StandardMaterial3D
+			if override != null and override.albedo_texture != null and override.normal_texture != null:
+				textured_surfaces += 1
+	_expect(textured_surfaces >= 7, "Rain City presentation applies manifested albedo/normal material families at runtime")
+	_expect(instance.find_children("*", "CollisionObject3D", true, false).is_empty(), "Rain City production presentation remains independent from gameplay collision")
 	instance.queue_free()
 	await process_frame
 
