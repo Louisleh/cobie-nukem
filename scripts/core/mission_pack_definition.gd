@@ -78,7 +78,7 @@ func _safe_cache_file(value: String) -> bool:
 	if not (value.ends_with(".pck") or value.ends_with(".zip")):
 		return false
 	for character in value:
-		if character.is_valid_identifier() or character in ["-", "."]:
+		if character.to_lower() in "abcdefghijklmnopqrstuvwxyz0123456789_-.":
 			continue
 		return false
 	return true

@@ -70,8 +70,9 @@ func _build_route() -> void:
 		_wall_pair(zone, floor_color.darkened(0.35))
 		if index < _profile.zones.size() - 1:
 			var next_center: Vector3 = _profile.zones[index + 1].center
-			var z_mid := (center.z - size.z * 0.5 + next_center.z + _profile.zones[index + 1].size.z * 0.5) * 0.5
-			var connector := _box("RouteConnector_%d" % index, Vector3(0, -0.49, z_mid), Vector3(9.0, 0.98, maxf(6.0, abs(center.z - next_center.z) - (size.z + _profile.zones[index + 1].size.z) * 0.5 + 2.0)), floor_color, true)
+			var next_size: Vector3 = _profile.zones[index + 1].size
+			var z_mid: float = (center.z - size.z * 0.5 + next_center.z + next_size.z * 0.5) * 0.5
+			var connector := _box("RouteConnector_%d" % index, Vector3(0, -0.49, z_mid), Vector3(9.0, 0.98, maxf(6.0, abs(center.z - next_center.z) - (size.z + next_size.z) * 0.5 + 2.0)), floor_color, true)
 			connector.collision_layer = (1 << 19) | 1; connector.add_to_group(&"biome_navigation_source")
 			var gate_z := center.z - size.z * 0.5 + 1.0
 			var gate := _box("EncounterGate_%s" % zone.id, Vector3(0, 1.45, gate_z), Vector3(8.8, 2.9, 0.45), accent.darkened(0.3), true)
@@ -97,8 +98,33 @@ func _build_landmarks() -> void:
 		elif kind == "sphere":
 			var mesh := MeshInstance3D.new(); mesh.name = String(landmark.get("id", "Landmark")); mesh.position = at
 			var sphere := SphereMesh.new(); sphere.radius = size.x; sphere.height = size.y; mesh.mesh = sphere; mesh.material_override = _material(color, bool(landmark.get("emissive", false))); presentation.add_child(mesh)
+		elif kind == "dish":
+			_dish(String(landmark.get("id", "SatelliteDish")), at, size, color)
+		elif kind == "palm":
+			_palm(String(landmark.get("id", "Palm")), at, maxf(size.y, 4.0), color)
+		elif kind == "cylinder":
+			_cylinder_landmark(String(landmark.get("id", "Cylinder")), at, size, color, bool(landmark.get("emissive", false)))
 		else:
 			_box(String(landmark.get("id", "Landmark")), at, size, color, bool(landmark.get("collision", false)), bool(landmark.get("emissive", false)))
+
+
+func _dish(name_value: String, at: Vector3, size: Vector3, color: Color) -> void:
+	var root := Node3D.new(); root.name = name_value; root.position = at; presentation.add_child(root)
+	var mast := MeshInstance3D.new(); var mast_mesh := CylinderMesh.new(); mast_mesh.top_radius = 0.12; mast_mesh.bottom_radius = 0.18; mast_mesh.height = maxf(size.y, 2.0); mast.mesh = mast_mesh; mast.position.y = size.y * 0.5; mast.material_override = _material(color.darkened(0.35)); root.add_child(mast)
+	var bowl := MeshInstance3D.new(); var bowl_mesh := SphereMesh.new(); bowl_mesh.radius = maxf(size.x, 1.2); bowl_mesh.height = maxf(size.x * 0.42, 0.5); bowl.mesh = bowl_mesh; bowl.position.y = maxf(size.y, 2.0); bowl.rotation_degrees.x = -28.0; bowl.scale.z = 0.28; bowl.material_override = _material(color); root.add_child(bowl)
+	var feed := MeshInstance3D.new(); var feed_mesh := SphereMesh.new(); feed_mesh.radius = 0.16; feed_mesh.height = 0.3; feed.mesh = feed_mesh; feed.position = Vector3(0, size.y + 0.35, -size.x * 0.7); feed.material_override = _material(Color("25efff"), true); root.add_child(feed)
+
+
+func _palm(name_value: String, at: Vector3, height: float, leaf_color: Color) -> void:
+	var root := Node3D.new(); root.name = name_value; root.position = at; presentation.add_child(root)
+	var trunk := MeshInstance3D.new(); var trunk_mesh := CylinderMesh.new(); trunk_mesh.top_radius = 0.15; trunk_mesh.bottom_radius = 0.28; trunk_mesh.height = height; trunk.mesh = trunk_mesh; trunk.position.y = height * 0.5; trunk.rotation_degrees.z = -4.0; trunk.material_override = _material(Color("7a5836")); root.add_child(trunk)
+	for index in range(6):
+		var leaf := MeshInstance3D.new(); var leaf_mesh := PrismMesh.new(); leaf_mesh.size = Vector3(0.45, 0.12, 2.8); leaf.mesh = leaf_mesh; leaf.position.y = height; leaf.rotation_degrees = Vector3(-12.0, index * 60.0, 0.0); leaf.material_override = _material(leaf_color); root.add_child(leaf)
+
+
+func _cylinder_landmark(name_value: String, at: Vector3, size: Vector3, color: Color, emissive: bool) -> void:
+	var mesh := MeshInstance3D.new(); mesh.name = name_value; mesh.position = at
+	var cylinder := CylinderMesh.new(); cylinder.top_radius = maxf(size.x, 0.1); cylinder.bottom_radius = maxf(size.z, size.x); cylinder.height = maxf(size.y, 0.2); mesh.mesh = cylinder; mesh.material_override = _material(color, emissive); presentation.add_child(mesh)
 
 
 func _build_interactables() -> void:
@@ -168,11 +194,30 @@ func _box(name_value: String, at: Vector3, size: Vector3, color: Color, collisio
 	(geometry if collision else presentation).add_child(body); return body
 
 
-func _material(color: Color, emissive := false) -> StandardMaterial3D:
+func _material(color: Color, emissive := false) -> Material:
 	var key := color.to_html(true) + str(emissive)
 	if _materials.has(key): return _materials[key]
-	var material := StandardMaterial3D.new(); material.albedo_color = color; material.roughness = 0.76
-	if emissive: material.emission_enabled = true; material.emission = color; material.emission_energy_multiplier = 2.3
+	var material := ShaderMaterial.new()
+	var shader := Shader.new()
+	shader.code = """shader_type spatial;
+uniform vec4 base_color : source_color;
+uniform float emission_strength = 0.0;
+uniform float grain_scale = 2.4;
+varying vec3 local_position;
+void vertex() { local_position = VERTEX; }
+void fragment() {
+	float broad = sin(local_position.x * grain_scale) * cos(local_position.z * grain_scale * 0.83);
+	float fine = sin((local_position.x + local_position.y + local_position.z) * grain_scale * 5.7);
+	float grain = broad * 0.055 + fine * 0.018;
+	ALBEDO = clamp(base_color.rgb * (1.0 + grain), vec3(0.0), vec3(1.0));
+	ROUGHNESS = clamp(0.72 + fine * 0.025, 0.35, 0.95);
+	METALLIC = emission_strength > 0.0 ? 0.15 : 0.04;
+	EMISSION = base_color.rgb * emission_strength;
+}"""
+	material.shader = shader
+	material.set_shader_parameter("base_color", color)
+	material.set_shader_parameter("emission_strength", 2.3 if emissive else 0.0)
+	material.set_shader_parameter("grain_scale", float(_profile.environment.get("material_grain_scale", 2.4)))
 	_materials[key] = material; return material
 
 

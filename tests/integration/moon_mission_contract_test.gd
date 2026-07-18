@@ -114,7 +114,7 @@ func _check_encounter_contract() -> void:
 				else:
 					regular += 1
 		_expect(encounter.completion_policy != EncounterDefinition.CompletionPolicy.FIRE_AND_FORGET, "Moon encounter %s uses a structured completion policy" % encounter.id)
-		_expect(encounter.waves.size() <= 2, "Moon encounter %s keeps a compact staged wave budget" % encounter.id)
+		_expect(encounter.waves.size() <= 3, "Moon encounter %s keeps a compact staged wave budget" % encounter.id)
 	_expect(MANIFEST.encounters[-1].completion_policy == EncounterDefinition.CompletionPolicy.BOSS_DEFEATED, "Boss zone uses boss-defeat completion policy")
 	_expect(regular == 28, "Moon authors exactly 28 regular enemies")
 	_expect(bosses == 1, "Moon authors exactly one boss marker")

@@ -1,6 +1,7 @@
-[gd_resource type="Resource" script_class="BiomeMissionProfile" load_steps=2 format=3]
+[gd_resource type="Resource" script_class="BiomeMissionProfile" load_steps=3 format=3]
 
 [ext_resource type="Script" path="res://scripts/gameplay/biome_mission_profile.gd" id="1"]
+[ext_resource type="Resource" path="res://resources/player/lunar_movement.tres" id="2"]
 
 [resource]
 script = ExtResource("1")
@@ -15,6 +16,7 @@ boss_enemy_id = &"lunar_leashmaster"
 final_activation_target = &"silence_satellite_array"
 permanent_upgrade_ids = Array[StringName]([&"municipal_recall_override"])
 campaign_unlock_ids = []
+movement_environment = ExtResource("2")
 zones = [
 	{"id": &"lunar_landing_pad", "title": "LUNAR LANDING PAD", "center": Vector3(0.0, 1.0, 0.0), "size": Vector3(24.0, 6.0, 40.0), "checkpoint_id": &"checkpoint_landing_pad", "checkpoint_position": Vector3(0.0, 0.9, 0.0)},
 	{"id": &"habitat_lab", "title": "HABITAT LAB", "center": Vector3(0.0, 1.0, -40.0), "size": Vector3(24.0, 6.0, 40.0), "checkpoint_id": &"checkpoint_habitat_airlock", "checkpoint_position": Vector3(0.0, 0.9, -40.0)},
@@ -48,6 +50,13 @@ environment = {
 	"boss_phase_labels": ["HALO BARRIER FORMING", "DECK DEPRESSURE", "ARRAY POWER DROP", "LEASHMASTER DESCENT", "DESTROYED"]
 }
 landmarks = [
+	{"kind": "sphere", "id": &"earth_landmark", "position": Vector3(18.0, 12.0, -18.0), "size": Vector3(3.2, 6.4, 3.2), "color": "2a7ee8", "emissive": true},
+	{"kind": "box", "id": &"habitat_warm_windows", "position": Vector3(-8.5, 2.6, -47.0), "size": Vector3(0.3, 3.2, 10.0), "color": "ffb85c", "emissive": true},
+	{"kind": "box", "id": &"habitat_pressure_hull", "position": Vector3(7.8, 2.2, -42.0), "size": Vector3(5.0, 4.4, 14.0), "color": "465b70", "collision": false},
+	{"kind": "cylinder", "id": &"crater_beacon", "position": Vector3(-7.0, 2.8, -82.0), "size": Vector3(0.5, 5.6, 0.7), "color": "20e8f0", "emissive": true},
+	{"kind": "dish", "id": &"array_dish_alpha", "position": Vector3(-6.5, 0.0, -122.0), "size": Vector3(2.4, 4.2, 2.4), "color": "a7b7c5"},
+	{"kind": "dish", "id": &"array_dish_beta", "position": Vector3(6.5, 0.0, -130.0), "size": Vector3(2.0, 3.4, 2.0), "color": "71899d"},
+	{"kind": "cylinder", "id": &"leashmaster_core_spire", "position": Vector3(0.0, 4.0, -176.0), "size": Vector3(1.0, 8.0, 1.3), "color": "1ff0ff", "emissive": true},
 	{"kind": "sign", "id": &"earth_view_sign", "text": "EARTH: HOME, SAFE, OUT OF REACH", "position": Vector3(-0.5, 3.8, -18.0), "route_anchor": Vector3(-0.5, 1.0, -12.0), "color": "29bcff"},
 	{"kind": "sign", "id": &"compliance_sign_one", "text": "COMPLIANCE CHECKPOINT", "position": Vector3(8.0, 2.9, -41.0), "route_anchor": Vector3(8.0, 1.1, -35.0), "color": "2ff0ff"},
 	{"kind": "sign", "id": &"crater_rim_sign", "text": "NO FLY ZONE // MOON SURFACE", "position": Vector3(-8.0, 3.0, -81.0), "route_anchor": Vector3(-8.0, 1.1, -74.0), "color": "4dd8ff"},

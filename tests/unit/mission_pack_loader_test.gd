@@ -27,6 +27,9 @@ func _run() -> void:
 
 
 func _test_definition_validation() -> void:
+	var default_name := MissionPackDefinition.new()
+	default_name.pack_id = &"moon_pack"
+	_expect(default_name.validate().is_empty(), "default versioned cache filename validates")
 	var invalid := MissionPackDefinition.new()
 	invalid.pack_id = &""
 	invalid.cache_file = "../escape.pck"

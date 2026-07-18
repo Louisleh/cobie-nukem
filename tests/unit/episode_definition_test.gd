@@ -11,6 +11,12 @@ func _init() -> void:
 	_assert(Campaign.ordered_level_ids() == [&"episode_1_level_1", &"episode_1_vancouver_waterfront", &"mount_hood_whiteout", &"dark_side_fetch", &"ventura_pier_pressure"], "campaign order should be stable")
 	_assert(Campaign.metadata_for(&"mount_hood_whiteout") != null, "Mount Hood metadata should be discoverable")
 	_assert(Campaign.metadata_for(&"dark_side_fetch") == null, "Moon remains a teaser until its metadata is authored")
+	var invalid := Campaign.duplicate(true) as EpisodeDefinition
+	var mount := invalid.metadata_for(&"mount_hood_whiteout")
+	mount.next_mission_id = &"missing_mission"
+	mount.next_mission_scene = "res://scenes/menus/main_menu.tscn"
+	mount.next_mission_title = "MISSING"
+	_assert(_contains(invalid.validate(), "continues to unknown mission"), "unknown campaign continuation is rejected")
 	print("EPISODE DEFINITION TEST: PASS")
 	quit(0)
 
@@ -20,3 +26,9 @@ func _assert(condition: bool, message: String) -> void:
 		return
 	push_error(message)
 	quit(1)
+
+
+func _contains(errors: PackedStringArray, fragment: String) -> bool:
+	for error in errors:
+		if fragment in error: return true
+	return false

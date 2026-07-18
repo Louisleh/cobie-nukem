@@ -97,7 +97,7 @@ func validate() -> PackedStringArray:
 	for mission_id in metadata_ids.keys():
 		if not card_ids.has(mission_id):
 			errors.append("episode mission %s has no level card" % mission_id)
-		continue
+			continue
 		var mission := metadata_ids[mission_id] as LevelMetadata
 		if mission.has_next_mission():
 			if not card_ids.has(mission.next_mission_id):

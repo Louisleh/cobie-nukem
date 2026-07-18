@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="MovementEnvironmentProfile" load_steps=2 format=3]
+[ext_resource type="Script" path="res://scripts/player/movement_environment_profile.gd" id="1"]
+[resource]
+script = ExtResource("1")
+id = &"lunar_low_gravity"
+gravity_multiplier = 0.34
+jump_multiplier = 1.42
+air_control_multiplier = 1.18
+terminal_fall_speed = 18.0
+projectile_gravity_multiplier = 0.72
