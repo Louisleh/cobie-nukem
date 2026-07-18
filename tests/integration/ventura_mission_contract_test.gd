@@ -20,6 +20,7 @@ func _initialize() -> void:
 	await _check_scene_boot()
 	if failures.is_empty():
 		print("VENTURA MISSION CONTRACT TEST: PASS")
+		quit(0)
 	else:
 		for failure in failures:
 			push_error(failure)
