@@ -105,6 +105,9 @@ run_godot_test res://tests/integration/vancouver_mission_host_test.gd
 run_godot_test res://tests/integration/rain_city_route_production_test.gd
 run_godot_test res://tests/integration/rain_city_convoy_boss_test.gd
 run_godot_test res://tests/integration/mount_hood_beta_test.gd
+run_godot_test res://tests/integration/moon_mission_contract_test.gd
+run_godot_test res://tests/integration/ventura_mission_contract_test.gd
+run_godot_test res://tests/integration/five_mission_gauntlet_test.gd
 run_godot_test res://tests/integration/adversarial_state_test.gd
 run_godot_test res://tests/integration/vertical_slice_soak_test.gd
 run_godot_test res://tests/smoke/smoke_test_runner.gd
