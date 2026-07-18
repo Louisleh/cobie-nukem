@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="EncounterDefinition" load_steps=2 format=3]
+[ext_resource type="Script" path="res://scripts/gameplay/encounter_definition.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = &"moon_landing_pad_encounter"
+zone_id = &"lunar_landing_pad"
+display_name = "PAD OUTER LOOP"
+schema_version = 2
+waves = Array[Dictionary]([{
+"spawns": [
+	{"scene":"res://scenes/enemies/lunar_kennel_sentinel.tscn","position":Vector3(-6.0,0.0,-10.0)},
+	{"scene":"res://scenes/enemies/lunar_kennel_sentinel.tscn","position":Vector3(5.0,0.0,-8.0)},
+	{"scene":"res://scenes/enemies/vacuum_compliance_orb.tscn","position":Vector3(0.0,0.0,-16.0)},
+	{"scene":"res://scenes/enemies/compliance_hound.tscn","position":Vector3(-3.0,0.0,-4.0)},
+	{"scene":"res://scenes/enemies/lunar_kennel_sentinel.tscn","position":Vector3(6.0,0.0,2.0)}
+]}])
+enemy_budget = 5
+maximum_simultaneous_attackers = 3
+music_intensity = 0.24
+reward_policy = &"authored"

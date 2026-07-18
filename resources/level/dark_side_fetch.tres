@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="LevelMetadata" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/level/level_metadata.gd" id="1"]
+[ext_resource type="Resource" path="res://resources/loadouts/moon_loadout.tres" id="2"]
+
+[resource]
+script = ExtResource("1")
+level_id = &"dark_side_fetch"
+title = "DARK SIDE OF FETCH"
+subtitle = "Lunar Habitat Corridor"
+target_minutes_min = 20
+target_minutes_max = 30
+total_secrets = 5
+opening_objective = "REACH THE LUNAR LANDING PAD"
+replay_scene = "res://scenes/levels/dark_side_fetch.tscn"
+next_mission_id = &"ventura_pier_pressure"
+next_mission_scene = ""
+next_mission_title = "PIER PRESSURE"
+mission_loadout = ExtResource("2")
+zones = Array[Dictionary]([{"id": &"lunar_landing_pad", "title": "LUNAR LANDING PAD", "target_minutes": 4.0}, {"id": &"habitat_lab", "title": "HABITAT LAB", "target_minutes": 5.0}, {"id": &"crater_trench", "title": "CRATER TRENCH", "target_minutes": 5.0}, {"id": &"satellite_array", "title": "SATELLITE ARRAY", "target_minutes": 5.0}, {"id": &"leashmaster_crater", "title": "LEASHMASTER CRATER", "target_minutes": 11.0}])

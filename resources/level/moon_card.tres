@@ -1,13 +1,20 @@
-[gd_resource type="Resource" script_class="LevelCardData" load_steps=3 format=3]
+[gd_resource type="Resource" script_class="LevelCardData" load_steps=4 format=3]
 [ext_resource type="Script" path="res://scripts/ui/level_card_data.gd" id="1"]
 [ext_resource type="Texture2D" path="res://assets/level_previews/moon.png" id="2"]
+[ext_resource type="Resource" path="res://resources/level/moon_warmup.tres" id="3"]
 [resource]
 script = ExtResource("1")
 level_id = &"dark_side_fetch"
 title = "DARK SIDE OF FETCH"
 episode = "EPISODE 4 // THE MOON"
-description = "One small step for dog. One enormous violation of leash policy."
+description = "CHARCOAL REGOLITH. CYAN SAFETY LINES. A SILENT LAB CALLS FROM BEHIND THE CRATER WALL."
 difficulty = 5
-expected_minutes = "CLASSIFIED"
-encounter = "LOCKED"
+expected_minutes = "20–30 MIN"
+secrets = 5
+encounter = "LUNAR LEASHMASTER"
 preview = ExtResource("2")
+unlock_policy = 0
+prerequisite_mission_id = &""
+warmup_profile = ExtResource("3")
+release_badge = "BETA"
+launch_notice = "START BETA // MOON SURFACE MISSION IS PUBLIC."

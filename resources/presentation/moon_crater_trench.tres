@@ -1,0 +1,24 @@
+[gd_resource type="Resource" script_class="ZonePresentationProfile" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/gameplay/zone_presentation_profile.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = &"moon_crater_trench_presentation"
+zone_id = &"crater_trench"
+palette_id = &"moon_crater_palette"
+environment_identity_id = &"moon_crater_identity"
+texture_set_id = &"moon_surface_textures"
+material_family_ids = [&"lunar_regolith", &"crater_rim", &"frozen_crystal_glaze"]
+surface_response_ids = [&"charcoal_regolith", &"crater_ice", &"cold_glass"]
+dominant_landmark_id = &"crater_rim_crest"
+background_landmark_id = &"earth_hemisphere"
+lighting_budget = 5
+decal_budget = 24
+particle_budget = 62
+weather = &"fog"
+fog_color = Color(0.15, 0.24, 0.34, 1.0)
+fog_density = 0.14
+fog_enabled = true
+landmark_ids = [&"crater_rim_crest", &"crater_warning_silence", &"compliance_sign_one", &"cyber_safety_line"]
+ambience_cue_id = &"salmon_ambience_tunnel"

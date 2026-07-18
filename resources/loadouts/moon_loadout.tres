@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="MissionLoadoutProfile" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/gameplay/mission_loadout_profile.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+mission_id = &"dark_side_fetch"
+selected_weapon = &"pawstol"
+unlocked_weapons = Array[StringName]([&"pawstol", &"barkshot", &"fetch_launcher"])
+weapon_ammo = {
+&"pawstol": {"magazine": 15, "reserve": 0},
+&"barkshot": {"magazine": 6, "reserve": 12},
+&"fetch_launcher": {"magazine": 3, "reserve": 6}
+}
+mission_upgrades = Array[StringName]([&"municipal_recall_override"])

@@ -1,0 +1,90 @@
+schema_version: 1
+work_id: moon-production
+baseline_revision: 423004e
+mission_id: dark_side_fetch
+card_title: DARK SIDE OF FETCH
+status: public_beta
+public_playable: true
+target_duration_minutes: [20, 30]
+target_secret_count: 5
+continues_to: ventura_pier_pressure
+environment_identity: lunar_arsenic_void
+palette:
+  exterior:
+    - charcoal_regolith
+    - charcoal_shadow
+    - ice_cyan
+  habitat:
+    - habitat_panel_offwhite
+    - warm_habitat_glow
+    - pressure_steel
+  orbital:
+    - satellite_black
+    - comm_satellite_glass
+dominant_landmark:
+  id: earth_hemisphere
+  visibility: constant_at_zone_starts
+  contract: fixed_mission_bearing
+material_families:
+  - lunar_regolith
+  - impact_basalt
+  - frozen_crystal_glaze
+  - lunar_regolith
+  - habitat_panels
+  - airlock_steel
+  - compliance_signage
+  - lunar_satellite_scaffold
+  - cryo_glass
+zones:
+  - id: lunar_landing_pad
+    landmarks:
+      - safe_hatch
+      - airlock_door
+      - compliance_signage
+      - edge_safety_line
+  - id: habitat_lab
+    landmarks:
+      - warm_habitat_window
+      - habitat_airlock
+      - earth_hemisphere
+      - original_compliance_sign
+  - id: crater_trench
+    landmarks:
+      - crater_rim_sign
+      - frost_crest
+      - warning_cyan_line
+      - emergency_hardline
+  - id: satellite_array
+    landmarks:
+      - satellite_dish_grid
+      - earth_hemisphere
+      - satellite_warning_beacon
+      - safety_cyan_line
+  - id: leashmaster_crater
+    landmarks:
+      - leashmaster_array
+      - safe_canyon_view
+      - compliance_terminal
+pilot_acceptance:
+  required_elements:
+    - charcoal regolith
+    - cyan safety lines
+    - habitat panels
+    - airlocks
+    - satellite dishes
+    - earth landmark
+    - crater rim
+    - warm habitat windows
+    - original compliance signs
+  aspect_targets:
+    - 16_10
+    - 16_9
+    - 4_3
+  constraints:
+    - no_flat_blockout_for_public
+    - presentation_stays_replaceable
+    - authored_collision_navigation_stable
+    - original_provenance_recorded
+visual_goals:
+  first_principles: Keep each zone readable at arm's-length and under contrast pressure, with cyan safety lines and warm-habitat accents framing the route.
+  atmosphere: Cold high contrast lunar world with sharp, readable danger geometry and controlled motion cues.

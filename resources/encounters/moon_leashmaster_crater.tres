@@ -1,0 +1,32 @@
+[gd_resource type="Resource" script_class="EncounterDefinition" load_steps=2 format=3]
+[ext_resource type="Script" path="res://scripts/gameplay/encounter_definition.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = &"moon_leashmaster_crater_encounter"
+zone_id = &"leashmaster_crater"
+display_name = "LEASHMASTER CORE"
+schema_version = 2
+completion_policy = 1
+waves = Array[Dictionary]([{
+"spawns": [
+	{"scene":"res://scenes/enemies/lunar_kennel_sentinel.tscn","position":Vector3(-7.0,0.0,-176.0)},
+	{"scene":"res://scenes/enemies/vacuum_compliance_orb.tscn","position":Vector3(2.0,0.0,-168.0)}
+],
+"delay_seconds":0.0},{
+"delay_seconds":1.4,
+"spawns": [
+	{"scene":"res://scenes/enemies/squirrel_trooper.tscn","position":Vector3(8.0,0.0,-160.0)},
+	{"scene":"res://scenes/enemies/compliance_hound.tscn","position":Vector3(-4.0,0.0,-152.0)}
+]
+},{
+"delay_seconds":2.0,
+"spawns": [
+	{"scene":"res://scenes/enemies/lunar_leashmaster.tscn","position":Vector3(1.0,0.0,-146.0),"completion_marker":"boss"},
+	{"scene":"res://scenes/enemies/compliance_gull.tscn","position":Vector3(6.0,0.0,-165.0)}
+]
+}])
+enemy_budget = 6
+maximum_simultaneous_attackers = 4
+music_intensity = 0.94
+reward_policy = &"authored"

@@ -1,0 +1,24 @@
+[gd_resource type="Resource" script_class="ZonePresentationProfile" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/gameplay/zone_presentation_profile.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = &"moon_satellite_array_presentation"
+zone_id = &"satellite_array"
+palette_id = &"moon_orbital_palette"
+environment_identity_id = &"moon_satellite_array_identity"
+texture_set_id = &"moon_surface_textures"
+material_family_ids = [&"lunar_regolith", &"satellite_scaffold", &"compliance_signage", &"cybercable"]
+surface_response_ids = [&"charcoal_regolith", &"metal_scaffold", &"cold_glass", &"electro_concrete"]
+dominant_landmark_id = &"satellite_dish_grid"
+background_landmark_id = &"earth_hemisphere"
+lighting_budget = 6
+decal_budget = 22
+particle_budget = 64
+weather = &"clear"
+fog_color = Color(0.19, 0.28, 0.40, 1.0)
+fog_density = 0.10
+fog_enabled = true
+landmark_ids = [&"satellite_dish_grid", &"earth_hemisphere", &"cyber_safety_line", &"satellite_warning_sign"]
+ambience_cue_id = &"vancouver_ambience_terminal"

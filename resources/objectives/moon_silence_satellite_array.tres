@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="ObjectiveDefinition" load_steps=2 format=3]
+[ext_resource type="Script" path="res://scripts/gameplay/objective_definition.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = &"moon_silence_satellite_array"
+title = "SILENCE THE SATELLITE ARRAY"
+kind = 2
+target_id = &"silence_satellite_array"
+prerequisite_ids = Array[StringName]([&"moon_stabilize_crater_relay"])

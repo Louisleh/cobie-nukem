@@ -1,0 +1,27 @@
+[gd_resource type="Resource" script_class="EncounterDefinition" load_steps=2 format=3]
+[ext_resource type="Script" path="res://scripts/gameplay/encounter_definition.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = &"moon_satellite_array_encounter"
+zone_id = &"satellite_array"
+display_name = "SATELLITE NET"
+schema_version = 2
+waves = Array[Dictionary]([{
+"spawns": [
+	{"scene":"res://scenes/enemies/vacuum_compliance_orb.tscn","position":Vector3(-7.0,0.0,-132.0)},
+	{"scene":"res://scenes/enemies/lunar_kennel_sentinel.tscn","position":Vector3(3.0,0.0,-122.0)},
+	{"scene":"res://scenes/enemies/compliance_hound.tscn","position":Vector3(6.0,0.0,-112.0)},
+	{"scene":"res://scenes/enemies/squirrel_trooper.tscn","position":Vector3(-4.0,0.0,-106.0)}
+],
+"delay_seconds":0.0},{
+"delay_seconds":1.3,
+"spawns": [
+	{"scene":"res://scenes/enemies/leash_enforcement_drone.tscn","position":Vector3(1.0,0.0,-102.0)},
+	{"scene":"res://scenes/enemies/compliance_gull.tscn","position":Vector3(7.0,0.0,-118.0)}
+]
+}])
+enemy_budget = 6
+maximum_simultaneous_attackers = 4
+music_intensity = 0.72
+reward_policy = &"authored"

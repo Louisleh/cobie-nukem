@@ -1,0 +1,57 @@
+[gd_resource type="Resource" script_class="BiomeMissionProfile" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/gameplay/biome_mission_profile.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+mission_id = &"dark_side_fetch"
+content_revision = 1
+intro_message = "MISSION START // DARK SIDE OF FETCH"
+victory_line = "MOON OUTPOST SECURED. GOLDEN BALL RELEASED."
+boss_display_name = "LUNAR LEASHMASTER"
+starting_zone_id = &"lunar_landing_pad"
+boss_zone_id = &"leashmaster_crater"
+boss_enemy_id = &"lunar_leashmaster"
+final_activation_target = &"silence_satellite_array"
+permanent_upgrade_ids = Array[StringName]([&"municipal_recall_override"])
+campaign_unlock_ids = []
+zones = [
+	{"id": &"lunar_landing_pad", "title": "LUNAR LANDING PAD", "center": Vector3(0.0, 1.0, 0.0), "size": Vector3(24.0, 6.0, 40.0), "checkpoint_id": &"checkpoint_landing_pad", "checkpoint_position": Vector3(0.0, 0.9, 0.0)},
+	{"id": &"habitat_lab", "title": "HABITAT LAB", "center": Vector3(0.0, 1.0, -40.0), "size": Vector3(24.0, 6.0, 40.0), "checkpoint_id": &"checkpoint_habitat_airlock", "checkpoint_position": Vector3(0.0, 0.9, -40.0)},
+	{"id": &"crater_trench", "title": "CRATER TRENCH", "center": Vector3(0.0, 1.0, -80.0), "size": Vector3(24.0, 6.0, 40.0), "checkpoint_id": &"checkpoint_crater_trench", "checkpoint_position": Vector3(0.0, 0.9, -80.0)},
+	{"id": &"satellite_array", "title": "SATELLITE ARRAY", "center": Vector3(0.0, 1.0, -120.0), "size": Vector3(24.0, 6.0, 40.0), "checkpoint_id": &"checkpoint_satellite_array", "checkpoint_position": Vector3(0.0, 0.9, -120.0)},
+	{"id": &"leashmaster_crater", "title": "LEASHMASTER CRATER", "center": Vector3(0.0, 1.0, -160.0), "size": Vector3(24.0, 6.0, 40.0), "checkpoint_id": &"checkpoint_leashmaster_crater", "checkpoint_position": Vector3(0.0, 0.9, -160.0)}
+]
+objective_switches = [
+	{"id": &"restore_habitat_airlock", "prompt": "RESTORE AIRLOCK", "position": Vector3(-2.0, 0.7, -44.0)},
+	{"id": &"stabilize_crater_relay", "prompt": "STABILIZE RELAY", "position": Vector3(3.0, 0.7, -86.0)},
+	{"id": &"silence_satellite_array", "prompt": "SILENCE ARRAY", "position": Vector3(-4.0, 0.7, -126.0)}
+]
+secrets = [
+	{"id": &"secret_oxygen_canister", "title": "OXYGEN CANISTER", "position": Vector3(5.0, 0.7, -12.0)},
+	{"id": &"secret_pressure_log", "title": "PRESSURE LOG", "position": Vector3(-6.0, 0.7, -44.0)},
+	{"id": &"secret_regolith_kit", "title": "REGOLITH KIT", "position": Vector3(4.0, 0.7, -76.0)},
+	{"id": &"secret_satellite_map", "title": "SATELLITE MAP", "position": Vector3(3.0, 0.7, -124.0)},
+	{"id": &"secret_orbit_passkey", "title": "ORBIT PASSKEY", "position": Vector3(-5.0, 0.7, -158.0)}
+]
+environment = {
+	"sky_top": "1a1f2d",
+	"sky_horizon": "2a3246",
+	"fog_color": "253b4f",
+	"ambient_energy": 0.72,
+	"fog_density": 0.018,
+	"light_yaw": -26.0,
+	"light_color": "e8fbff",
+	"light_energy": 1.12,
+	"floor_color": "282b35",
+	"accent_color": "1ff0ff",
+	"boss_phase_labels": ["HALO BARRIER FORMING", "DECK DEPRESSURE", "ARRAY POWER DROP", "LEASHMASTER DESCENT", "DESTROYED"]
+}
+landmarks = [
+	{"kind": "sign", "id": &"earth_view_sign", "text": "EARTH: HOME, SAFE, OUT OF REACH", "position": Vector3(-0.5, 3.8, -18.0), "route_anchor": Vector3(-0.5, 1.0, -12.0), "color": "29bcff"},
+	{"kind": "sign", "id": &"compliance_sign_one", "text": "COMPLIANCE CHECKPOINT", "position": Vector3(8.0, 2.9, -41.0), "route_anchor": Vector3(8.0, 1.1, -35.0), "color": "2ff0ff"},
+	{"kind": "sign", "id": &"crater_rim_sign", "text": "NO FLY ZONE // MOON SURFACE", "position": Vector3(-8.0, 3.0, -81.0), "route_anchor": Vector3(-8.0, 1.1, -74.0), "color": "4dd8ff"},
+	{"kind": "sign", "id": &"satellite_warning_sign", "text": "KEEP CYAN BAND ACTIVE", "position": Vector3(0.0, 4.0, -121.0), "route_anchor": Vector3(0.0, 1.4, -114.0), "color": "2be6ff"},
+	{"kind": "sign", "id": &"boss_zone_sign", "text": "LEASHMASTER INTERFERENCE", "position": Vector3(-0.5, 3.3, -149.0), "route_anchor": Vector3(-0.5, 1.1, -142.0), "color": "19c3de"}
+]
+lethal_volumes = []

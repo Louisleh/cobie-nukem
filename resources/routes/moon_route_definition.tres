@@ -1,0 +1,74 @@
+[gd_resource type="Resource" script_class="MissionRouteDefinition" load_steps=8 format=3]
+[ext_resource type="Script" path="res://scripts/gameplay/mission_route_definition.gd" id="1"]
+[ext_resource type="Script" path="res://scripts/gameplay/mission_route_zone.gd" id="2"]
+
+[sub_resource type="Resource" id="LandingPad"]
+script = ExtResource("2")
+zone_id = &"lunar_landing_pad"
+zone_title = "LUNAR LANDING PAD"
+bounds = AABB(-12.0, -1.0, -20.0, 24.0, 8.0, 40.0)
+spawn_volumes = Array[AABB]([AABB(-10.0, -0.5, -16.0, 20.0, 2.0, 12.0), AABB(-10.0, -0.5, -4.0, 20.0, 2.0, 10.0)])
+patrol_paths = [[Vector3(-7.0, 0.0, -12.0), Vector3(0.0, 0.0, -4.0), Vector3(5.0, 0.0, -16.0)], [Vector3(-10.0, 0.0, 8.0), Vector3(9.0, 0.0, -6.0)]]
+prop_set_id = &"moon_landing_pad_props"
+surface_ids = [&"lunar_regolith", &"regolith_dust", &"impact_glass"]
+checkpoint_ids = [&"checkpoint_landing_pad"]
+secret_ids = [&"secret_oxygen_canister"]
+outgoing_edge_ids = [&"habitat_lab"]
+
+[sub_resource type="Resource" id="HabitatLab"]
+script = ExtResource("2")
+zone_id = &"habitat_lab"
+zone_title = "HABITAT LAB"
+bounds = AABB(-12.0, -1.0, -60.0, 24.0, 8.0, 40.0)
+spawn_volumes = Array[AABB]([AABB(-11.0, -0.5, -56.0, 18.0, 2.0, 14.0), AABB(-11.0, -0.5, -44.0, 18.0, 2.0, 14.0)])
+patrol_paths = [[Vector3(-7.0, 0.0, -54.0), Vector3(1.0, 0.0, -44.0), Vector3(6.0, 0.0, -24.0)], [Vector3(-9.0, 0.0, -28.0), Vector3(8.0, 0.0, -44.0)]]
+prop_set_id = &"moon_habitat_props"
+surface_ids = [&"lunar_concrete", &"airlock_steel", &"pressure_silicate"]
+checkpoint_ids = [&"checkpoint_habitat_airlock"]
+secret_ids = [&"secret_pressure_log"]
+outgoing_edge_ids = [&"crater_trench"]
+
+[sub_resource type="Resource" id="CraterTrench"]
+script = ExtResource("2")
+zone_id = &"crater_trench"
+zone_title = "CRATER TRENCH"
+bounds = AABB(-12.0, -1.0, -100.0, 24.0, 8.0, 40.0)
+spawn_volumes = Array[AABB]([AABB(-11.0, -0.5, -96.0, 18.0, 2.0, 14.0), AABB(-12.0, -0.5, -80.0, 20.0, 2.0, 14.0)])
+patrol_paths = [[Vector3(-8.0, 0.0, -94.0), Vector3(0.0, 0.0, -76.0), Vector3(5.0, 0.0, -62.0)], [Vector3(-9.0, 0.0, -66.0), Vector3(8.0, 0.0, -82.0)]]
+prop_set_id = &"moon_crater_props"
+surface_ids = [&"lunar_regolith", &"frozen_ice", &"crater_rim"]
+checkpoint_ids = [&"checkpoint_crater_trench"]
+secret_ids = [&"secret_regolith_kit"]
+outgoing_edge_ids = [&"satellite_array"]
+
+[sub_resource type="Resource" id="SatelliteArray"]
+script = ExtResource("2")
+zone_id = &"satellite_array"
+zone_title = "SATELLITE ARRAY"
+bounds = AABB(-12.0, -1.0, -140.0, 24.0, 8.0, 40.0)
+spawn_volumes = Array[AABB]([AABB(-10.0, -0.5, -136.0, 18.0, 2.0, 14.0), AABB(-10.0, -0.5, -120.0, 18.0, 2.0, 12.0)])
+patrol_paths = [[Vector3(-7.0, 0.0, -132.0), Vector3(2.0, 0.0, -112.0), Vector3(9.0, 0.0, -102.0)], [Vector3(-10.0, 0.0, -106.0), Vector3(6.0, 0.0, -124.0)]]
+prop_set_id = &"moon_satellite_array_props"
+surface_ids = [&"metal_scaffold", &"lunar_regolith", &"cold_fiber"]
+checkpoint_ids = [&"checkpoint_satellite_array"]
+secret_ids = [&"secret_satellite_map"]
+outgoing_edge_ids = [&"leashmaster_crater"]
+
+[sub_resource type="Resource" id="LeashmasterCrater"]
+script = ExtResource("2")
+zone_id = &"leashmaster_crater"
+zone_title = "LEASHMASTER CRATER"
+bounds = AABB(-12.0, -1.0, -180.0, 24.0, 8.0, 40.0)
+spawn_volumes = Array[AABB]([AABB(-9.0, -0.5, -176.0, 18.0, 2.0, 12.0), AABB(-9.0, -0.5, -160.0, 18.0, 2.0, 14.0)])
+patrol_paths = [[Vector3(-8.0, 0.0, -172.0), Vector3(0.0, 0.0, -154.0), Vector3(9.0, 0.0, -142.0)], [Vector3(-10.0, 0.0, -146.0), Vector3(8.0, 0.0, -168.0)]]
+prop_set_id = &"moon_boss_crater_props"
+surface_ids = [&"impact_basalt", &"frozen_regolith", &"ice_crack"]
+checkpoint_ids = [&"checkpoint_leashmaster_crater"]
+secret_ids = [&"secret_orbit_passkey"]
+outgoing_edge_ids = []
+
+[resource]
+script = ExtResource("1")
+route_id = &"moon_dark_side_route"
+entry_zone_id = &"lunar_landing_pad"
+zones = [SubResource("LandingPad"), SubResource("HabitatLab"), SubResource("CraterTrench"), SubResource("SatelliteArray"), SubResource("LeashmasterCrater")]
