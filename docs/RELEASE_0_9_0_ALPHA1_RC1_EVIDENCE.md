@@ -34,11 +34,13 @@ The staged Web export is 86 MiB and remains below the 90 MB target and 100 MB ha
 
 ## Publication ledger
 
-- Source PR/integration: pending.
-- GitHub prerelease: pending.
-- Website PR/deployment: pending.
-- Downloaded public PCK identity: pending.
-- Rollback: `0.8.0-alpha.1-rc1` remains the byte-verified public baseline until deployment completes.
+- Source [PR #59](https://github.com/Louisleh/cobie-nukem/pull/59), integrated on `main` at `3854023` after green `validate-package` CI.
+- GitHub prerelease: [`v0.9.0-alpha.1-rc1`](https://github.com/Louisleh/cobie-nukem/releases/tag/v0.9.0-alpha.1-rc1), carrying the exact two archives, build identity, and checksum ledger.
+- Website [PR #128](https://github.com/Louisleh/louislehmann-site/pull/128), deployed from `main` at `7392826` after all six PR checks, all three post-merge CI jobs, and Vercel Production succeeded.
+- Ordinary and cache-busted public URLs render `v0.9.0-alpha.1-rc1 • 257d112 • 2026-07-18-five-mission-public-beta-rc1`, expose all five cards, preserve Levels 2–5 `BETA`, and launch only through the explicit Start action.
+- Downloaded public PCK: 50,340,256 bytes, byte-identical SHA-256 `56c1c49d3c0ffff180ba79eaba754055b4970a2e7f8718abc20f2fbf2d9b5d5d`.
+- Chrome DevTools production trace reports 209 ms landing-page LCP, `0.00` CLS, and no game-origin error/issue messages. The single pre-input Web Audio warning is the expected browser autoplay gate and clears through the existing first-gesture audio unlock path.
+- Rollback: `0.8.0-alpha.1-rc1` remains available as the prior byte-verified release.
 
 ## Human-only gates
 
