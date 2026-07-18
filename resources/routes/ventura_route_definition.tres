@@ -1,0 +1,75 @@
+[gd_resource type="Resource" script_class="MissionRouteDefinition" load_steps=7 format=3]
+
+[ext_resource type="Script" path="res://scripts/gameplay/mission_route_definition.gd" id="1"]
+[ext_resource type="Script" path="res://scripts/gameplay/mission_route_zone.gd" id="2"]
+
+[sub_resource type="Resource" id="DowntownServiceLane"]
+script = ExtResource("2")
+zone_id = &"downtown_service_lane"
+zone_title = "DOWNTOWN SERVICE LANE"
+bounds = AABB(-10.0, -0.5, -9.0, 20.0, 8.0, 34.0)
+spawn_volumes = Array[AABB]([AABB(-8.0, -0.5, -6.0, 16.0, 4.0, 10.0), AABB(-8.0, -0.5, 11.0, 16.0, 4.0, 10.0)])
+patrol_paths = [[Vector3(-6.0, 0.0, -4.0), Vector3(0.0, 0.0, 4.0), Vector3(6.0, 0.0, 12.0)], [Vector3(-7.0, 0.0, 18.0), Vector3(7.0, 0.0, 20.0)]]
+prop_set_id = &"ventura_service_props"
+surface_ids = [&"sun_bleached_asphalt", &"wet_sand", &"concrete_walkway"]
+checkpoint_ids = [&"checkpoint_service_lane_entry"]
+secret_ids = [&"secret_service_banner"]
+outgoing_edge_ids = [&"surfers_point"]
+
+[sub_resource type="Resource" id="SurfersPoint"]
+script = ExtResource("2")
+zone_id = &"surfers_point"
+zone_title = "SURFERS POINT"
+bounds = AABB(-12.0, -0.5, -42.0, 24.0, 8.0, 32.0)
+spawn_volumes = Array[AABB]([AABB(-10.0, -0.5, -36.0, 20.0, 4.0, 10.0), AABB(-10.0, -0.5, -25.0, 20.0, 4.0, 10.0)])
+patrol_paths = [[Vector3(-7.0, 0.0, -34.0), Vector3(0.0, 0.0, -26.0), Vector3(6.0, 0.0, -18.0)], [Vector3(-6.0, 0.0, -14.0), Vector3(6.0, 0.0, -11.0)]]
+prop_set_id = &"ventura_surfers_props"
+surface_ids = [&"palm_stone", &"wet_sand", &"salt_wood"]
+checkpoint_ids = [&"checkpoint_surfers_point"]
+secret_ids = [&"secret_surfboard_receipt"]
+outgoing_edge_ids = [&"marina_service_docks"]
+
+[sub_resource type="Resource" id="MarinaServiceDocks"]
+script = ExtResource("2")
+zone_id = &"marina_service_docks"
+zone_title = "MARINA SERVICE DOCKS"
+bounds = AABB(-13.0, -0.5, -76.0, 26.0, 8.0, 32.0)
+spawn_volumes = Array[AABB]([AABB(-11.0, -0.5, -71.0, 22.0, 4.0, 10.0), AABB(-11.0, -0.5, -63.0, 22.0, 4.0, 10.0)])
+patrol_paths = [[Vector3(-7.0, 0.0, -70.0), Vector3(0.0, 0.0, -64.0), Vector3(7.0, 0.0, -60.0)], [Vector3(-8.0, 0.0, -56.0), Vector3(8.0, 0.0, -50.0)]]
+prop_set_id = &"ventura_marina_props"
+surface_ids = [&"harbour_steel", &"timber_plank", &"brine_sand"]
+checkpoint_ids = [&"checkpoint_marina_service_docks"]
+secret_ids = [&"secret_mast_watch"]
+outgoing_edge_ids = [&"ventura_pier"]
+
+[sub_resource type="Resource" id="VenturaPier"]
+script = ExtResource("2")
+zone_id = &"ventura_pier"
+zone_title = "VENTURA PIER"
+bounds = AABB(-12.0, -0.5, -111.0, 24.0, 8.0, 34.0)
+spawn_volumes = Array[AABB]([AABB(-10.0, -0.5, -105.0, 20.0, 4.0, 10.0), AABB(-10.0, -0.5, -96.0, 20.0, 4.0, 10.0)])
+patrol_paths = [[Vector3(-6.0, 0.0, -104.0), Vector3(0.0, 0.0, -96.0), Vector3(6.0, 0.0, -89.0)], [Vector3(-7.0, 0.0, -85.0), Vector3(7.0, 0.0, -81.0)]]
+prop_set_id = &"ventura_pier_props"
+surface_ids = [&"timber_pier", &"salt_metal", &"concrete_platform"]
+checkpoint_ids = [&"checkpoint_ventura_pier"]
+secret_ids = [&"secret_foam_drill"]
+outgoing_edge_ids = [&"offshore_platform"]
+
+[sub_resource type="Resource" id="OffshorePlatform"]
+script = ExtResource("2")
+zone_id = &"offshore_platform"
+zone_title = "OFFSHORE PLATFORM"
+bounds = AABB(-14.0, -0.5, -150.0, 28.0, 8.0, 36.0)
+spawn_volumes = Array[AABB]([AABB(-12.0, -0.5, -145.0, 24.0, 4.0, 10.0), AABB(-12.0, -0.5, -132.0, 24.0, 4.0, 10.0)])
+patrol_paths = [[Vector3(-8.0, 0.0, -143.0), Vector3(-2.0, 0.0, -136.0), Vector3(6.0, 0.0, -132.0)], [Vector3(-6.0, 0.0, -126.0), Vector3(6.0, 0.0, -120.0)]]
+prop_set_id = &"ventura_offshore_props"
+surface_ids = [&"offshore_steel", &"concrete_platform", &"salt_wind"]
+checkpoint_ids = [&"checkpoint_offshore_platform"]
+secret_ids = [&"secret_offshore_hush"]
+outgoing_edge_ids = []
+
+[resource]
+script = ExtResource("1")
+route_id = &"ventura_pier_pressure_route"
+entry_zone_id = &"downtown_service_lane"
+zones = [SubResource("DowntownServiceLane"), SubResource("SurfersPoint"), SubResource("MarinaServiceDocks"), SubResource("VenturaPier"), SubResource("OffshorePlatform")]

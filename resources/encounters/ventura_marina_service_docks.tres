@@ -1,0 +1,26 @@
+[gd_resource type="Resource" script_class="EncounterDefinition" load_steps=2 format=3]
+[ext_resource type="Script" path="res://scripts/gameplay/encounter_definition.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = &"ventura_marina_service_docks"
+zone_id = &"marina_service_docks"
+display_name = "MARINA SERVICE DOGFIGHT"
+schema_version = 2
+spawns = []
+waves = Array[Dictionary]([{
+"spawns": [
+	{"scene":"res://scenes/enemies/compliance_hound.tscn","position":Vector3(-7.0,0.0,-54.0)},
+	{"scene":"res://scenes/enemies/beach_patrol_enforcer.tscn","position":Vector3(6.0,0.0,-60.0)},
+	{"scene":"res://scenes/enemies/citation_pelican.tscn","position":Vector3(1.0,2.5,-68.0)}
+]}, {
+"delay_seconds": 1.05,
+"spawns": [
+	{"scene":"res://scenes/enemies/umbrella_shield_enforcer.tscn","position":Vector3(-4.0,0.0,-71.0)},
+	{"scene":"res://scenes/enemies/squirrel_trooper.tscn","position":Vector3(6.0,0.0,-48.0)},
+	{"scene":"res://scenes/enemies/compliance_gull.tscn","position":Vector3(2.0,3.0,-52.0)}
+]}])
+enemy_budget = 8
+maximum_simultaneous_attackers = 4
+music_intensity = 0.54
+reward_policy = &"authored"

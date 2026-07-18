@@ -1,0 +1,25 @@
+mission_id: ventura_pier_pressure
+manifest: resources/content/ventura_manifest.tres
+card: resources/level/ventura_card.tres
+audio_profile: resources/audio/ventura_mission_audio.tres
+loadout: resources/loadouts/ventura_loadout.tres
+encounters:
+  - resources/encounters/ventura_downtown_service_lane.tres
+  - resources/encounters/ventura_surfers_point.tres
+  - resources/encounters/ventura_marina_service_docks.tres
+  - resources/encounters/ventura_ventura_pier.tres
+  - resources/encounters/ventura_offshore_platform.tres
+objectives:
+  - resources/objectives/ventura_reach_service_lane.tres
+  - resources/objectives/ventura_service_permit_booth.tres
+  - resources/objectives/ventura_reach_surfers_point.tres
+  - resources/objectives/ventura_marina_grid_controls.tres
+  - resources/objectives/ventura_defeat_ventura_tidebreaker.tres
+  - resources/objectives/ventura_complete_ventura_pier_pressure.tres
+presentations:
+  - resources/presentation/ventura_downtown_service_lane.tres
+  - resources/presentation/ventura_surfers_point.tres
+  - resources/presentation/ventura_marina_service_docks.tres
+  - resources/presentation/ventura_ventura_pier.tres
+  - resources/presentation/ventura_offshore_platform.tres
+notes: "Mission-authored resources are original-facing and do not copy real-world maps, logos, or protected characters."

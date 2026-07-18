@@ -1,0 +1,24 @@
+[gd_resource type="Resource" script_class="ZonePresentationProfile" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/gameplay/zone_presentation_profile.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = &"ventura_marina_service_docks_presentation"
+zone_id = &"marina_service_docks"
+palette_id = &"ventura_coast_palette"
+environment_identity_id = &"ventura_marina_arcs"
+texture_set_id = &"ventura_built_form"
+material_family_ids = [&"harbour_steel", &"timber_pier", &"wet_sand"]
+surface_response_ids = [&"metal", &"wood", &"sand"]
+dominant_landmark_id = &"ventura_marina_mast"
+background_landmark_id = &"ventura_harbour_basin"
+lighting_budget = 5
+decal_budget = 18
+particle_budget = 56
+weather = &"fog"
+fog_color = Color(0.78, 0.84, 0.92, 1.0)
+fog_density = 0.08
+fog_enabled = true
+landmark_ids = [&"ventura_marina_mast", &"ventura_service_dock_grid"]
+ambience_cue_id = &"vancouver_ambience_terminal"

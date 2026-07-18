@@ -1,0 +1,46 @@
+schema_version: 1
+mission_id: ventura_pier_pressure
+card_title: PIER PRESSURE
+set_piece_phrase: OCEAN COMPLIANCE LOCKDOWN
+status: public_beta_candidate
+public_playable: true
+target_duration_minutes: [18, 24]
+target_secret_count: 5
+environment_identity: pacific_california_coastal_pier_bay
+palette:
+  exterior: [sun_bleached_asphalt, warm_sandy_salt, tropical_steel]
+  route: [surfer_teal, municipal_amber, sunset_haze]
+  refuge: [timber_warmth, weathered_metal]
+dominant_landmark:
+  id: ventura_offshore_horizon
+  contract: fixed_world_bearing_presentation_only
+  visibility: every_exterior_zone_and_distinct_route_turn
+material_families:
+  - sun_bleached_asphalt
+  - warm_concrete
+  - wet_sand
+  - dry_sand
+  - timber_pier
+  - salt_steel
+  - harbor_mast
+  - weathered_metal
+zones:
+  - id: downtown_service_lane
+    landmarks: [ventura_promenade_sign, ventura_service_barricade]
+  - id: surfers_point
+    landmarks: [ventura_palm_cluster, ventura_wavecrest]
+  - id: marina_service_docks
+    landmarks: [ventura_marina_mast, ventura_service_dock_grid]
+  - id: ventura_pier
+    landmarks: [ventura_timber_pier_head, ventura_pier_lighthouse]
+  - id: offshore_platform
+    landmarks: [ventura_offshore_horizon, ventura_haze_sentinel]
+pilot_acceptance:
+  required_elements: [sun_bleached_asphalt, palms, concrete_promenade, timber_pier, dry_wet_sand_contrast, visible_ocean_bearing, original_signage]
+  aspects: [1280x720, 1680x1050, 1024x768, 3440x1440]
+  constraints: [presentation_separate_from_collision, original_geometry, manifested_provenance, tablet_readability]
+future_boss: original_beachfront_municipal_tidebreaker
+legal:
+  copied_maps_or_floorplans: prohibited
+  copied_logos_or_photography: prohibited
+  real_business_branding: prohibited_without_permission
