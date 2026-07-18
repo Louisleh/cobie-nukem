@@ -11,12 +11,19 @@ var _feedback_overlay: PlaytestReport
 # While the death or victory screen owns the UI, the pause menu must not open
 # on top of it — neither from the pause action nor from browser focus loss.
 var _suppressed := false
+var _restarting := false
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	visible = false
 	%ResumeButton.pressed.connect(resume)
 	%RestartButton.pressed.connect(func() -> void:
+		if _restarting:
+			return
+		_restarting = true
+		%RestartButton.disabled = true
+		if not MobileControls.touchscreen_expected():
+			PointerCaptureController.request_from_launch_gesture()
 		_set_paused(false)
 		restart_requested.emit()
 	)
@@ -66,6 +73,8 @@ func _gameplay_active() -> bool:
 	return game_state.phase == game_state.Phase.PLAYING
 
 func open() -> void:
+	_restarting = false
+	%RestartButton.disabled = false
 	get_tree().call_group(&"mobile_controls", &"release_all")
 	visible = true
 	_set_paused(true)

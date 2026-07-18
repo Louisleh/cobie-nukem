@@ -6,6 +6,7 @@ const Campaign: EpisodeDefinition = preload("res://resources/campaign/episode_on
 const FALLBACK_REPLAY_SCENE := "res://scenes/levels/episode_1_level_1.tscn"
 var _summary: Dictionary = {}
 var _mission_metadata: LevelMetadata
+var _routing := false
 
 func _ready() -> void:
 	visible = false
@@ -59,20 +60,20 @@ func _on_replay() -> void:
 	if _mission_metadata != null:
 		replay_scene = _mission_metadata.replay_scene if not _mission_metadata.replay_scene.strip_edges().is_empty() else replay_scene
 		level_id = _mission_metadata.level_id if _mission_metadata.level_id != &"" else level_id
-	var game_state := get_node_or_null("/root/GameState")
-	if game_state:
-		game_state.begin_run(level_id)
-		game_state.continue_requested = false
-	_route(replay_scene)
+	if _route_gameplay(replay_scene):
+		var game_state := get_node_or_null("/root/GameState")
+		if game_state:
+			game_state.begin_run(level_id)
+			game_state.continue_requested = false
 
 func _on_continue() -> void:
 	if _mission_metadata == null or _mission_metadata.next_mission_scene.is_empty() or _mission_metadata.next_mission_id == &"":
 		return
-	var game_state := get_node_or_null("/root/GameState")
-	if game_state:
-		game_state.begin_run(_mission_metadata.next_mission_id)
-		game_state.continue_requested = false
-	_route(_mission_metadata.next_mission_scene)
+	if _route_gameplay(_mission_metadata.next_mission_scene):
+		var game_state := get_node_or_null("/root/GameState")
+		if game_state:
+			game_state.begin_run(_mission_metadata.next_mission_id)
+			game_state.continue_requested = false
 
 func _open_feedback() -> void:
 	var report := FeedbackScene.instantiate() as PlaytestReport
@@ -92,6 +93,21 @@ func _rank(seconds: int, secrets: int, accuracy: float) -> String:
 		return "VERY GOOD DOG"
 	return "GOOD DOG"
 
-func _route(path: String) -> void:
+func _route_gameplay(path: String) -> bool:
+	if not MobileControls.touchscreen_expected():
+		PointerCaptureController.request_from_launch_gesture()
+	var accepted := _route(path)
+	if not accepted:
+		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+	return accepted
+
+func _route(path: String) -> bool:
+	if _routing:
+		return false
 	var router := get_node_or_null("/root/SceneRouter")
-	if router: router.go_to(path)
+	if router == null or router.go_to(path) != OK:
+		return false
+	_routing = true
+	for button in [%MainMenuButton, %ReplayButton, %FeedbackButton, %ContinueButton]:
+		button.disabled = true
+	return true
