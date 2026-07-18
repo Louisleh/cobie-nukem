@@ -4,10 +4,16 @@ One brief per mission's bounded visual-production target. A brief is the **front
 art pipeline**: it locks silhouette, palette, readability, materials, enemy roster, sprite
 scale, IP, and platform budget *before* any Blender / Material Maker / capture work begins.
 
-**Read these first:** `docs/ART_BIBLE.md` (global direction, mission identity rows, the
+**Read these first:** `EPISODE_VISUAL_ORCHESTRATION.md` (the L1→L5 cohesion contract,
+persistent-kit lock, per-level asset checklist/to-do list, and the ImageGen prompt kit),
+`docs/ART_BIBLE.md` (global direction, mission identity rows, the
 `Sprite3D.pixel_size = intended_world_height / opaque_frame_height` contract, prohibited
-placeholder treatments) and the `cobie-visual-foundry` skill
+placeholder treatments), and the `cobie-visual-foundry` skill
 (`.agents/skills/cobie-visual-foundry/SKILL.md` + `references/art-brief-contract.md`).
+
+`EPISODE_VISUAL_ORCHESTRATION.md` is the orchestrator/checklist that ties the per-mission
+briefs below into one cohesive visual direction and hands ChatGPT/ImageGen + Blender + Codex
+a concrete, ordered to-do list.
 
 | Brief | Mission | Status |
 | --- | --- | --- |
