@@ -23,7 +23,7 @@
 | Rain City Run | **PUBLIC `BETA`** | Five zones, 26-enemy pressure contract, saves, Towmaster resets, touch, manifested materials, signs, weather teardown, and selector/startup gates are green | `BETA` removal still requires physical iPad, target-Mac, Safari/Chrome routes, pacing, boss fairness, art, mix, humor, and photosensitivity approval. |
 | Mount Hood Whiteout | **PUBLIC `BETA` CANDIDATE** | Five-zone route, six objectives, five checkpoints, four secrets, 24 regular enemies plus 1,000-HP Snowcat, navigation bake, 300 route simulations, 100 chairlift resets, signs, traction, and Golden Ball gating are green | Packaging/public verification remains open. Human/device/art/balance/audio approval remains explicitly open after an RC ships. |
 | Moon / Ventura | **LOCKED TEASERS** | Card/brief contracts only | No playable production work in this phase. |
-| Packaging | **RC1 NOT YET RELEASED** | Focused parser/UI/Rain/Mount gates pass; full `QA_EXPORTS=1`, packaged browser, hashes, prerelease, and site deployment are pending | Keep public RC5 as rollback until exact RC1 source/package/site identity is verified. |
+| Packaging | **RC1 PACKAGE GREEN — PUBLICATION PENDING** | Full `QA_EXPORTS=1`, Web/Universal macOS exports, verified archives, and packaged 1024×768 title/menu/selector/Mount launch pass with a clean browser console | Prerelease, site deployment, and downloaded-public-PCK identity remain pending. Keep public RC5 as rollback until those exact checks pass. |
 
 ### Current 10/20/40/30 cycle
 
