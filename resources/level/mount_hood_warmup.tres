@@ -1,40 +1,8 @@
-[gd_resource type="Resource" script_class="LevelMetadata" load_steps=3 format=3]
+[gd_resource type="Resource" script_class="MissionWarmupProfile" load_steps=2 format=3]
 
-[ext_resource type="Script" path="res://scripts/level/level_metadata.gd" id="1"]
-[ext_resource type="Resource" path="res://resources/loadouts/mount_hood_loadout.tres" id="2"]
+[ext_resource type="Script" path="res://scripts/ui/mission_warmup_profile.gd" id="1"]
 
 [resource]
 script = ExtResource("1")
-level_id = &"mount_hood_whiteout"
-title = "MOUNT HOOD WHITEOUT"
-subtitle = "Whiteout Snow Mission"
-target_minutes_min = 18
-target_minutes_max = 25
-total_secrets = 4
-opening_objective = "REACH THE SNOWBOUND LODGE"
-replay_scene = "res://scenes/levels/mount_hood_whiteout.tscn"
-next_mission_id = &""
-next_mission_scene = ""
-next_mission_title = ""
-mission_loadout = ExtResource("2")
-zones = Array[Dictionary]([{
-	"id": &"forest_pullout",
-	"title": "FOREST PULLOUT",
-	"target_minutes": 4.0
-}, {
-	"id": &"mountain_road",
-	"title": "MOUNTAIN ROAD",
-	"target_minutes": 5.0
-}, {
-	"id": &"snowbound_lodge",
-	"title": "SNOWBOUND LODGE",
-	"target_minutes": 4.5
-}, {
-	"id": &"service_tunnels",
-	"title": "SERVICE TUNNELS",
-	"target_minutes": 3.5
-}, {
-	"id": &"summit",
-	"title": "SUMMIT",
-	"target_minutes": 6.0
-}])
+id = &"mount_hood_warmup"
+critical_paths = PackedStringArray("res://scenes/player/cobie_player.tscn", "res://scenes/enemies/ski_patrol_ranger.tscn", "res://scenes/enemies/avalanche_recon_drone.tscn", "res://scenes/enemies/municipal_snowcat.tscn", "res://assets/materials/mount_hood/packed_snow.tres", "res://assets/materials/mount_hood/lodge_timber.tres")

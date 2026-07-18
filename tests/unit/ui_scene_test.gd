@@ -91,10 +91,10 @@ func _check_level_select_contract() -> void:
 				beta_cards += 1
 				if data.launch_notice.strip_edges().is_empty():
 					failures.append("Beta level card needs a visible work-in-progress notice")
-		if always_available != 2 or campaign_routes != 0 or locked_teasers != 3:
-			failures.append("Level select must expose Salmon Creek and public Rain City plus three locked teasers")
-		if beta_cards != 1:
-			failures.append("Exactly one public route must carry the BETA badge")
+		if always_available != 3 or campaign_routes != 0 or locked_teasers != 2:
+			failures.append("Level select must expose Salmon Creek, Rain City, and Mount Hood plus two locked teasers")
+		if beta_cards != 2:
+			failures.append("Rain City and Mount Hood must carry honest public BETA badges")
 	var scroll := instance.get_node_or_null("SafeArea/Main/CourseScroll") as ScrollContainer
 	if scroll == null or scroll.horizontal_scroll_mode == ScrollContainer.SCROLL_MODE_DISABLED:
 		failures.append("Level cards must remain reachable in narrow viewports")
@@ -108,6 +108,7 @@ func _check_level_select_activation_contract() -> void:
 	# Keep the test dynamically typed so loading this scene does not force its
 	# global class ahead of the project's autoload names in a fresh headless HOME.
 	var instance := packed.instantiate()
+	instance.set("threaded_warmup_enabled", false)
 	root.add_child(instance)
 	await process_frame
 	var sounds := instance.get_node_or_null("ProceduralAudio")
@@ -119,7 +120,9 @@ func _check_level_select_activation_contract() -> void:
 	else:
 		var first_card := row.get_child(0) as Button
 		var rain_city_card := row.get_child(1) as Button
-		var locked_card := row.get_child(2) as Button
+		# Mount Hood is the third, always-playable BETA card. The first locked
+		# teaser is now the Moon card at index 3.
+		var locked_card := row.get_child(3) as Button
 		var title := instance.get_node_or_null("SafeArea/Main/MissionPanel/MissionMargin/Mission/Info/LevelTitle") as Label
 		var play := instance.get_node_or_null("SafeArea/Main/Footer/PlayButton") as Button
 		var selects_only := false
@@ -137,11 +140,11 @@ func _check_level_select_activation_contract() -> void:
 		if int(instance.get("_selected")) != 0 or (title != null and title.text != initial_title) or (play != null and play.text != initial_action):
 			failures.append("Hover and focus must not commit a different mission selection")
 		locked_card.emit_signal("pressed")
-		if int(instance.get("_selected")) != 2 or (play != null and (play.text != "LOCKED" or not play.disabled)):
+		if int(instance.get("_selected")) != 3 or (play != null and (play.text != "LOCKED" or not play.disabled)):
 			failures.append("Activating a locked teaser must commit its details and a disabled LOCKED action")
 		rain_city_card.emit_signal("pressed")
-		if int(instance.get("_selected")) != 1 or (play != null and (play.text != "START BETA" or play.disabled)):
-			failures.append("Rain City must be an immediately launchable public BETA selection")
+		if not bool(instance.get("_warmup_ready")) or (play != null and (play.text != "START BETA" or play.disabled)):
+			failures.append("Rain City warmup paths must validate before enabling START BETA")
 		locked_card.emit_signal("mouse_entered")
 		if int(instance.get("_selected")) != 1 or (play != null and play.text != "START BETA"):
 			failures.append("Crossing a locked card on the way to Start must preserve the committed Rain City selection")
@@ -149,10 +152,18 @@ func _check_level_select_activation_contract() -> void:
 		if int(instance.get("_selected")) != 0 or bool(instance.get("_launching")):
 			failures.append("Mission-card click must update selection without entering launch state")
 		var status := instance.get_node_or_null("SafeArea/Main/Footer/StatusLabel") as Label
-		if status == null or "PRESS START" not in status.text:
-			failures.append("Selected mission must clearly instruct the player to press Start")
+		if status == null or ("PREPARING" not in status.text and "PRESS START" not in status.text):
+			failures.append("Selected mission must clearly show preparation or instruct the player to press Start")
+	# Threaded ResourceLoader jobs retain zero-reference cleanup records until the
+	# main loop has consumed their completion queue. Release them deliberately so
+	# this short-lived headless test cannot report false ObjectDB leaks at exit.
+	var warmed: Array = instance.get("_warmup_resources")
+	warmed.clear()
+	instance.set("_warmup_paths", PackedStringArray())
+	instance.set_process(false)
 	instance.free()
-	await process_frame
+	for frame in 12:
+		await process_frame
 
 func _check_difficulty_selector_contract() -> void:
 	var packed := load("res://scenes/menus/level_select.tscn") as PackedScene
@@ -165,6 +176,7 @@ func _check_difficulty_selector_contract() -> void:
 	if save_manager != null:
 		save_manager.save_slot(&"qa_difficulty_guard", {"marker": true})
 	var instance := packed.instantiate()
+	instance.set("threaded_warmup_enabled", false)
 	root.add_child(instance)
 	await process_frame
 	var sounds := instance.get_node_or_null("ProceduralAudio")
@@ -221,6 +233,7 @@ func _check_responsive_title_contract() -> void:
 	var instance := packed.instantiate()
 	instance.minimum_warmup_seconds = 0.0
 	instance.play_intro_audio = false
+	instance.runtime_warmup_enabled = false
 	var art := instance.get_node_or_null("ArtColumn") as Control
 	var cover := instance.get_node_or_null("ArtColumn/Cover") as TextureRect
 	var brand := instance.get_node_or_null("BrandPanel") as Control

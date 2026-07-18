@@ -7,6 +7,7 @@ const VALID_WEATHER := [
 	&"fog",
 	&"rain",
 	&"storm",
+	&"snow",
 	&"night"
 ]
 

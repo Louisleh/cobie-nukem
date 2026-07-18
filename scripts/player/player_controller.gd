@@ -28,6 +28,11 @@ signal surface_footstep(surface: StringName, running: bool)
 @export var head_bob_speed := 10.5
 @export var out_of_bounds_y := -8.0
 @export var touch_aim_profile: TouchAimProfile = preload("res://resources/player/touch_aim_balanced.tres")
+@export var surface_movement_profiles: Array[SurfaceMovementProfile] = [
+	preload("res://resources/player/surface_packed_snow.tres"),
+	preload("res://resources/player/surface_powder.tres"),
+	preload("res://resources/player/surface_ice_slush.tres"),
+]
 @export_category("Interaction")
 @export var interaction_range := 3.0
 @export var interaction_mask := 1
@@ -62,7 +67,8 @@ var _last_step_position := Vector3.ZERO
 var _coyote_remaining := 0.0
 var _touch_look_scale := 1.35
 var _queued_weapon_index := -1
-
+var _surface_movement_mode := "full"
+var _external_transport_active := false
 func _ready() -> void:
 	# Level zones key progression off this stable identity. Keeping it in code
 	# prevents a scene metadata omission from silently disabling every later wave.
@@ -86,6 +92,7 @@ func _ready() -> void:
 		_touch_turn_boost = bool(settings.call("get_value", &"gameplay", &"touch_turn_boost", true))
 		_touch_aim.turn_boost = _touch_turn_boost
 		_touch_aim_friction = TouchAimProfile.friction_strength(String(settings.call("get_value", &"gameplay", &"touch_aim_friction", "standard")))
+		_surface_movement_mode = String(settings.call("get_value", &"gameplay", &"surface_movement", "full"))
 		if settings.has_signal("setting_changed"): settings.setting_changed.connect(_on_setting_changed)
 	health_armor.died.connect(_on_died)
 	health_armor.damaged.connect(_on_damaged)
@@ -112,8 +119,6 @@ func _ready() -> void:
 			)
 	if not weapons.is_empty():
 		select_weapon(0)
-
-
 func _input(event: InputEvent) -> void:
 	if is_dead or get_tree().paused:
 		return
@@ -153,7 +158,6 @@ func _input(event: InputEvent) -> void:
 	elif event.is_action_pressed("weapon_previous"):
 		select_weapon(current_weapon_index - 1)
 		get_viewport().set_input_as_handled()
-
 func _unhandled_input(event: InputEvent) -> void:
 	if is_dead:
 		if event.is_action_pressed("fire_primary") or event.is_action_pressed("jump") or event.is_action_pressed("use"):
@@ -169,7 +173,6 @@ func _unhandled_input(event: InputEvent) -> void:
 		_current_weapon_fire(true)
 	elif event.is_action_pressed("use"):
 		_try_interact()
-
 func _physics_process(delta: float) -> void:
 	_process_weapon_selection_queue()
 	if _check_out_of_bounds():
@@ -177,6 +180,14 @@ func _physics_process(delta: float) -> void:
 	if is_dead:
 		velocity = velocity.move_toward(Vector3.ZERO, ground_deceleration * delta)
 		move_and_slide()
+		return
+	# Moving set pieces own translation while mounted. Aim stays responsive, but
+	# player locomotion and gravity cannot fight the authoritative platform pose.
+	if _external_transport_active:
+		velocity = Vector3.ZERO
+		_apply_keyboard_look(delta)
+		_apply_touch_stick_look(delta)
+		_update_interaction_prompt()
 		return
 	_zoomies_remaining = maxf(0.0, _zoomies_remaining - delta)
 	if is_on_floor():
@@ -198,11 +209,15 @@ func _physics_process(delta: float) -> void:
 	if run_mode == "toggle" and Input.is_action_just_pressed("run"):
 		_run_toggled = not _run_toggled
 	var running := _run_toggled if run_mode == "toggle" else Input.is_action_pressed("run")
-	var target_speed := run_speed if running else walk_speed
+	var movement_profile := _surface_profile(_ground_surface()) if is_on_floor() else null
+	var speed_scale := movement_profile.scaled_multiplier(movement_profile.speed_multiplier, _surface_movement_mode) if movement_profile != null else 1.0
+	var acceleration_scale := movement_profile.scaled_multiplier(movement_profile.acceleration_multiplier, _surface_movement_mode) if movement_profile != null else 1.0
+	var deceleration_scale := movement_profile.scaled_multiplier(movement_profile.deceleration_multiplier, _surface_movement_mode) if movement_profile != null else 1.0
+	var target_speed := (run_speed if running else walk_speed) * speed_scale
 	if _zoomies_remaining > 0.0:
 		target_speed *= 1.35
 	var target_velocity := wish_direction * target_speed
-	var acceleration := air_acceleration if not is_on_floor() else (ground_acceleration if input.length_squared() > 0.0 else ground_deceleration)
+	var acceleration := air_acceleration if not is_on_floor() else (ground_acceleration * acceleration_scale if input.length_squared() > 0.0 else ground_deceleration * deceleration_scale)
 	velocity.x = move_toward(velocity.x, target_velocity.x, acceleration * delta)
 	velocity.z = move_toward(velocity.z, target_velocity.z, acceleration * delta)
 	_apply_keyboard_look(delta)
@@ -221,7 +236,6 @@ func _check_out_of_bounds() -> bool:
 	health_armor.invulnerable_remaining = 0.0
 	health_armor.apply_damage(health_armor.max_health + health_armor.max_armor + 1000.0, self)
 	return true
-
 func apply_damage(amount: float, source: Node = null, _hit_position := Vector3.ZERO) -> float:
 	return health_armor.apply_damage(amount, source)
 func set_touch_move(value: Vector2) -> void:
@@ -234,6 +248,18 @@ func clear_touch_input() -> void:
 	_touch_move = Vector2.ZERO
 	_touch_look = Vector2.ZERO
 	_touch_aim.reset()
+
+
+func begin_external_transport() -> void:
+	_external_transport_active = true
+	velocity = Vector3.ZERO
+	_touch_move = Vector2.ZERO
+
+
+func end_external_transport() -> void:
+	_external_transport_active = false
+	velocity = Vector3.ZERO
+	reset_physics_interpolation()
 func _apply_touch_stick_look(delta: float) -> void:
 	if is_dead or touch_aim_profile == null: return
 	var friction := auto_aim.touch_friction_scale(camera, _touch_aim_friction) if auto_aim != null else 1.0
@@ -252,6 +278,7 @@ func _on_setting_changed(section: StringName, key: StringName, value: Variant) -
 		&"touch_turn_boost":
 			_touch_turn_boost = bool(value); _touch_aim.turn_boost = _touch_turn_boost
 		&"touch_aim_friction": _touch_aim_friction = TouchAimProfile.friction_strength(String(value))
+		&"surface_movement": _surface_movement_mode = String(value)
 func apply_touch_look(relative: Vector2) -> void:
 	# Compatibility shim. Gameplay touch controls use set_touch_look() so aiming
 	# advances in physics ticks instead of depending on drag-event frequency.
@@ -265,6 +292,7 @@ func add_armor(amount: float) -> float:
 func restore_full() -> void:
 	health_armor.restore_full()
 func respawn(at_position: Vector3, protection_seconds := 1.5) -> void:
+	_external_transport_active = false
 	global_position = at_position
 	reset_physics_interpolation()
 	velocity = Vector3.ZERO
@@ -361,8 +389,6 @@ func unlock_weapon(display_name: String) -> bool:
 			select_weapon(index)
 			return true
 	return false
-
-
 func apply_mission_loadout(profile: MissionLoadoutProfile, restored_payload: Dictionary = {}) -> bool: return MissionLoadoutApplicator.apply(self, profile, restored_payload)
 func mission_loadout_snapshot(mission_id: StringName, mission_upgrades: Array[StringName] = []) -> Dictionary: return MissionLoadoutApplicator.snapshot(self, mission_id, mission_upgrades)
 func _current_weapon_fire(secondary: bool) -> void:
@@ -388,7 +414,6 @@ func _update_footsteps(running: bool) -> void:
 		_step_distance = fmod(_step_distance, stride)
 		footstep.emit(running)
 		surface_footstep.emit(_ground_surface(), running)
-
 func _ground_surface() -> StringName:
 	var query := PhysicsRayQueryParameters3D.create(global_position + Vector3.UP * 0.2, global_position + Vector3.DOWN * 1.5, 1)
 	query.exclude = [get_rid()]
@@ -396,87 +421,51 @@ func _ground_surface() -> StringName:
 	var node := hit.get("collider") as Node
 	while node != null:
 		if node.has_meta(&"surface_type"): return StringName(node.get_meta(&"surface_type"))
+		if node.has_meta(&"surface_id"): return StringName(node.get_meta(&"surface_id"))
 		node = node.get_parent()
 	return &"concrete"
+func _surface_profile(surface_id: StringName) -> SurfaceMovementProfile:
+	for profile in surface_movement_profiles:
+		if profile != null and profile.applies_to(surface_id):
+			return profile
+	return null
 
 static func should_play_footsteps(grounded: bool, horizontal_speed: float, dead: bool, paused: bool) -> bool:
 	return grounded and horizontal_speed >= 0.8 and not dead and not paused
-
 func _apply_keyboard_look(delta: float) -> void:
 	var yaw := Input.get_axis("look_left", "look_right")
 	var pitch := Input.get_axis("look_up", "look_down")
 	rotate_y(-yaw * 2.2 * delta)
 	head.rotation.x = clampf(head.rotation.x - pitch * 1.65 * delta, deg_to_rad(-max_look_degrees), deg_to_rad(max_look_degrees))
-
 func _update_head_bob(delta: float, input_amount: float) -> void:
 	if is_on_floor() and input_amount > 0.05 and head_bob_amount > 0.0:
 		_head_bob_time += delta * head_bob_speed * (velocity.length() / walk_speed)
 		head.position.y = _head_base_position.y + sin(_head_bob_time) * head_bob_amount
 	else:
 		head.position.y = move_toward(head.position.y, _head_base_position.y, delta * 0.3)
-
-func _interaction_hit() -> Dictionary:
-	var from := camera.global_position
-	var query := PhysicsRayQueryParameters3D.create(from, from - camera.global_basis.z * interaction_range, interaction_mask)
-	query.exclude = [get_rid()]
-	return get_world_3d().direct_space_state.intersect_ray(query)
-
-func _nearby_interactable() -> Node:
-	var best: Node
-	var best_score := INF
-	var registry := get_node_or_null("/root/WorldRegistry")
-	var candidates: Array[Node] = registry.interactables_view() if registry != null else []
-	for node in candidates:
-		if not node is Node3D or not node.has_method("interact"):
-			continue
-		var offset := (node as Node3D).global_position - camera.global_position
-		var distance := offset.length()
-		if distance > interaction_range + 0.8:
-			continue
-		var facing := (-camera.global_basis.z).dot(offset.normalized())
-		if facing < 0.45:
-			continue
-		var score := distance - facing
-		if score < best_score:
-			best = node
-			best_score = score
-	return best
-
 func _update_interaction_prompt() -> void:
-	var hit := _interaction_hit()
-	var target := hit.get("collider") as Node
-	if target == null or not target.has_method("get_interaction_label"):
-		target = _nearby_interactable()
+	var target := PlayerInteractionResolver.resolve(self, camera, interaction_range, interaction_mask, &"get_interaction_label")
 	if target != null and target.has_method("get_interaction_label"):
 		interaction_available.emit(target.get_interaction_label())
 	else:
 		interaction_available.emit("")
-
 func _try_interact() -> void:
-	var hit := _interaction_hit()
-	var target := hit.get("collider") as Node
-	if target == null or not target.has_method("interact"):
-		target = _nearby_interactable()
+	var target := PlayerInteractionResolver.resolve(self, camera, interaction_range, interaction_mask, &"interact")
 	if target != null and target.has_method("interact"):
 		target.interact(self)
 		interacted.emit(target)
-
 func _on_damaged(_amount: float, _health_damage: float, _armor_damage: float, _source: Node) -> void:
 	feedback.kick(0.35, 0.22, 0.46, 0.12)
-
 func _on_weapon_ammo_changed(current: int, maximum: int, weapon: WeaponBase) -> void:
 	if weapons.is_empty() or weapon != weapons[current_weapon_index]:
 		return
 	weapon_changed.emit(weapon.definition.display_name, current, maximum)
-
 func _on_weapon_ammo_state_changed(loaded: int, capacity: int, reserve: int, infinite: bool, weapon: WeaponBase) -> void:
 	if weapons.is_empty() or weapon != weapons[current_weapon_index]:
 		return
 	weapon_ammo_state_changed.emit(weapon.definition.display_name, loaded, capacity, reserve, infinite)
-
 func _on_shot_resolved(kind: StringName, position_value: Vector3) -> void:
 	shot_resolved.emit(kind, position_value)
-
 func _on_died(source: Node) -> void:
 	is_dead = true
 	collision_shape.disabled = true

@@ -18,6 +18,7 @@ enum UnlockPolicy {
 @export var secrets := 0
 @export var encounter := "UNKNOWN THREAT"
 @export_file("*.tscn") var scene_path := ""
+@export var warmup_profile: MissionWarmupProfile
 @export var release_badge := ""
 @export_multiline var launch_notice := ""
 @export var preview: Texture2D
@@ -53,3 +54,9 @@ func status_badge(campaign_progress: CampaignProgressRuntime = null, development
 		return "LOCKED"
 	var configured := release_badge.strip_edges().to_upper()
 	return configured if not configured.is_empty() else "ACTIVE"
+
+
+func warmup_paths() -> PackedStringArray:
+	if warmup_profile != null:
+		return warmup_profile.effective_paths(scene_path)
+	return PackedStringArray([scene_path]) if not scene_path.is_empty() else PackedStringArray()

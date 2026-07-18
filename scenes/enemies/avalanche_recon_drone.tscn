@@ -1,0 +1,61 @@
+[gd_scene load_steps=11 format=3]
+
+[ext_resource type="Script" path="res://scripts/ai/compliance_gull.gd" id="1"]
+[ext_resource type="Resource" path="res://resources/enemies/avalanche_recon_drone.tres" id="2"]
+[sub_resource type="CapsuleShape3D" id="Collision"]
+radius = 0.38
+height = 0.85
+[sub_resource type="StandardMaterial3D" id="BodyMat"]
+albedo_color = Color(0.08, 0.34, 0.36, 1)
+metallic = 0.65
+[sub_resource type="StandardMaterial3D" id="ThreatMat"]
+shading_mode = 0
+albedo_color = Color(1, 0.22, 0.04, 1)
+emission_enabled = true
+emission = Color(1, 0.06, 0.01, 1)
+emission_energy_multiplier = 3.0
+[sub_resource type="SphereMesh" id="Body"]
+material = SubResource("BodyMat")
+radius = 0.44
+height = 0.72
+[sub_resource type="BoxMesh" id="Rotor"]
+material = SubResource("BodyMat")
+size = Vector3(1.35, 0.08, 0.22)
+[sub_resource type="SphereMesh" id="Eye"]
+material = SubResource("ThreatMat")
+radius = 0.11
+height = 0.2
+[sub_resource type="CylinderMesh" id="Cone"]
+material = SubResource("ThreatMat")
+top_radius = 0.15
+bottom_radius = 1.8
+height = 4.8
+
+[node name="AvalancheReconDrone" type="CharacterBody3D"]
+collision_layer = 4
+collision_mask = 3
+script = ExtResource("1")
+definition = ExtResource("2")
+target_height = 0.5
+uses_gravity = false
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("Collision")
+[node name="Visual" type="Node3D" parent="."]
+[node name="Body" type="MeshInstance3D" parent="Visual"]
+mesh = SubResource("Body")
+[node name="Rotor" type="MeshInstance3D" parent="Visual"]
+position = Vector3(0, 0.38, 0)
+mesh = SubResource("Rotor")
+[node name="Eye" type="MeshInstance3D" parent="Visual"]
+position = Vector3(0, 0, -0.4)
+mesh = SubResource("Eye")
+[node name="Searchlight" type="MeshInstance3D" parent="Visual"]
+visible = false
+position = Vector3(0, -2.3, -0.3)
+mesh = SubResource("Cone")
+[node name="Telegraph" type="MeshInstance3D" parent="."]
+visible = false
+position = Vector3(0, -2.8, 0)
+mesh = SubResource("Cone")
+[node name="AutoAimTarget" type="Marker3D" parent="."]
+position = Vector3(0, 0.1, 0)

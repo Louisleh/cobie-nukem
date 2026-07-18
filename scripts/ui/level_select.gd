@@ -4,6 +4,7 @@ extends Control
 @export var levels: Array[LevelCardData] = []
 @export_file("*.tscn") var menu_scene_path := "res://scenes/menus/main_menu.tscn"
 @export var campaign_unlock_override := false
+@export var threaded_warmup_enabled := true
 
 @onready var card_row: HBoxContainer = %CardRow
 @onready var preview: TextureRect = %Preview
@@ -25,6 +26,12 @@ var _campaign_progress: CampaignProgressRuntime
 var _difficulty_group := ButtonGroup.new()
 var _mission_group := ButtonGroup.new()
 var _launching := false
+var _warmup_generation := 0
+var _active_warmup_generation := 0
+var _warmup_paths := PackedStringArray()
+var _warmup_resources: Array[Resource] = []
+var _warmup_ready := false
+var _warmup_failed := false
 
 func _ready() -> void:
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
@@ -48,6 +55,44 @@ func _ready() -> void:
 		play_button.text = "NO MISSIONS AVAILABLE"
 		status_label.text = "CAMPAIGN ROUTES LOCKED"
 		%BackButton.grab_focus()
+
+
+func _process(_delta: float) -> void:
+	if _launching or _warmup_ready or _warmup_failed or _warmup_paths.is_empty():
+		return
+	var loaded := 0
+	var generation := _active_warmup_generation
+	for path in _warmup_paths:
+		if generation != _active_warmup_generation:
+			return
+		var progress: Array = []
+		var status := ResourceLoader.load_threaded_get_status(path, progress)
+		if status == ResourceLoader.THREAD_LOAD_FAILED or status == ResourceLoader.THREAD_LOAD_INVALID_RESOURCE:
+			_warmup_failed = true
+			play_button.disabled = true
+			play_button.focus_mode = Control.FOCUS_NONE
+			play_button.text = "LOAD FAILED"
+			status_label.text = "MISSION ASSETS OFFLINE // SELECT AGAIN TO RETRY"
+			sounds.play(ProceduralAudio.Cue.ERROR)
+			return
+		if status == ResourceLoader.THREAD_LOAD_LOADED:
+			loaded += 1
+		else:
+			var fraction := float(progress[0]) if not progress.is_empty() else 0.0
+			status_label.text = "PREPARING %s // %d%%" % [levels[_selected].title.to_upper(), roundi((float(loaded) + fraction) / float(_warmup_paths.size()) * 100.0)]
+	if loaded != _warmup_paths.size():
+		return
+	_warmup_resources.clear()
+	for path in _warmup_paths:
+		if generation != _active_warmup_generation:
+			return
+		var resource := ResourceLoader.load_threaded_get(path)
+		if resource == null:
+			_warmup_failed = true
+			return
+		_warmup_resources.append(resource)
+	_warmup_ready = true
+	_refresh_selected_action()
 
 func _prepare_campaign_progress() -> void:
 	var save_manager := get_node_or_null("/root/SaveManager")
@@ -172,15 +217,67 @@ func _select(index: int) -> void:
 	difficulty_label.text = "DIFFICULTY  %d / 5 PAWS" % clampi(data.difficulty, 1, 5)
 	details_label.text = "%s  •  %d SECRETS  •  %s" % [data.expected_minutes, data.secrets, data.encounter]
 	preview.texture = data.preview
-	play_button.disabled = not available
-	play_button.focus_mode = Control.FOCUS_NONE if play_button.disabled else Control.FOCUS_ALL
-	play_button.text = ("START %s" % data.status_badge(_campaign_progress, _development_unlock_override())) if data.is_preview_release(_campaign_progress, _development_unlock_override()) else ("START MISSION" if available else "LOCKED")
 	if not available:
 		status_label.text = "COMING SOON // FUTURE MISSION"
 	elif data.is_preview_release(_campaign_progress, _development_unlock_override()):
 		status_label.text = data.launch_notice if not data.launch_notice.strip_edges().is_empty() else "%s // PUBLIC WORK IN PROGRESS" % data.status_badge(_campaign_progress, _development_unlock_override())
 	else:
 		status_label.text = "SELECTED // PRESS START"
+	_begin_warmup(data)
+
+
+func _begin_warmup(data: LevelCardData) -> void:
+	_warmup_generation += 1
+	_active_warmup_generation = _warmup_generation
+	_warmup_resources.clear()
+	_warmup_paths = data.warmup_paths() if data != null else PackedStringArray()
+	_warmup_ready = _warmup_paths.is_empty()
+	_warmup_failed = false
+	if not data.is_available(_campaign_progress, _development_unlock_override()):
+		_refresh_selected_action()
+		return
+	# Deterministic headless UI tests validate the same paths synchronously and
+	# disable the worker queue so Godot 4.7 does not leave ResourceLoader cleanup
+	# records alive while the short test process exits. Runtime builds keep this on.
+	if not threaded_warmup_enabled:
+		for path in _warmup_paths:
+			if not ResourceLoader.exists(path):
+				_warmup_failed = true
+				break
+		_warmup_ready = not _warmup_failed
+		_refresh_selected_action()
+		return
+	play_button.disabled = true
+	play_button.focus_mode = Control.FOCUS_NONE
+	play_button.text = "PREPARING…"
+	status_label.text = "PREPARING %s // 0%%" % data.title.to_upper()
+	for path in _warmup_paths:
+		var error := ResourceLoader.load_threaded_request(path, "", true)
+		if error != OK:
+			_warmup_failed = true
+			play_button.text = "LOAD FAILED"
+			status_label.text = "MISSION ASSETS OFFLINE // %s" % path.get_file()
+			break
+	if _warmup_paths.is_empty():
+		_refresh_selected_action()
+
+
+func _refresh_selected_action() -> void:
+	if _selected < 0 or _selected >= levels.size():
+		return
+	var data := levels[_selected]
+	var available := data.is_available(_campaign_progress, _development_unlock_override())
+	play_button.disabled = not available or not _warmup_ready or _warmup_failed or _launching
+	play_button.focus_mode = Control.FOCUS_NONE if play_button.disabled else Control.FOCUS_ALL
+	if not available:
+		play_button.text = "LOCKED"
+	elif _warmup_failed:
+		play_button.text = "LOAD FAILED"
+	elif not _warmup_ready:
+		play_button.text = "PREPARING…"
+	else:
+		play_button.text = ("START %s" % data.status_badge(_campaign_progress, _development_unlock_override())) if data.is_preview_release(_campaign_progress, _development_unlock_override()) else "START MISSION"
+		status_label.text = data.launch_notice if data.is_preview_release(_campaign_progress, _development_unlock_override()) and not data.launch_notice.strip_edges().is_empty() else "READY // PRESS START"
 
 
 func _on_card_pressed(index: int) -> void:
@@ -196,6 +293,10 @@ func _activate(index: int) -> void:
 	if _launching or index < 0 or index >= levels.size():
 		return
 	var data := levels[index]
+	if not _warmup_ready or _warmup_failed:
+		status_label.text = "MISSION STILL PREPARING"
+		sounds.play(ProceduralAudio.Cue.ERROR)
+		return
 	if not data.is_available(_campaign_progress, _development_unlock_override()) or data.scene_path.is_empty():
 		status_label.text = "LOCKED // ANIMAL CONTROL SEALED THIS COURSE"
 		sounds.play(ProceduralAudio.Cue.ERROR)
@@ -225,7 +326,7 @@ func _activate(index: int) -> void:
 
 func _set_launch_controls_disabled(disabled: bool) -> void:
 	var selected_available := _selected >= 0 and _selected < levels.size() and levels[_selected].is_available(_campaign_progress, _development_unlock_override())
-	play_button.disabled = disabled or not selected_available
+	play_button.disabled = disabled or not selected_available or not _warmup_ready
 	play_button.focus_mode = Control.FOCUS_NONE if play_button.disabled else Control.FOCUS_ALL
 	for index in _cards.size():
 		_cards[index].disabled = disabled

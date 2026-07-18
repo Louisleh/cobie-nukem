@@ -42,7 +42,6 @@ var _boss_zone_id: StringName = &""
 var _initial_zone_id: StringName = &""
 var _boss_display_name := ""
 
-
 func configure(level: Node, content_manifest: ContentManifest, actors: Node, encounter_runner: EncounterRunner = null, mission_runtime: MissionRuntime = null, player: Node3D = null, game_state: Node = null, initial_zone_id: StringName = &"", boss_zone_id: StringName = &"", zone_ambience: Dictionary = {}, boss_display_name: String = "") -> bool:
 	if level == null:
 		return false
@@ -88,7 +87,6 @@ func configure(level: Node, content_manifest: ContentManifest, actors: Node, enc
 	_request_audio_state(&"exploration")
 	return true
 
-
 func set_player(player: Node3D) -> void:
 	if _player == player:
 		return
@@ -103,15 +101,13 @@ func set_player(player: Node3D) -> void:
 	if _combat_audio != null: _combat_audio.bind_player(_player)
 	if _mobile_controls != null: _mobile_controls.bind_player(_player)
 	if _player is CobiePlayer:
-		_add_player_rain()
+		_add_player_weather()
 	if _player.has_signal("died"):
 		_player.died.connect(on_player_died)
-
 
 func bind_warning_enemy(enemy: Node) -> void:
 	if _enemy_cues != null:
 		_enemy_cues.bind_enemy(enemy)
-
 
 func bind_warning_enemies() -> void:
 	if _actors == null:
@@ -119,12 +115,10 @@ func bind_warning_enemies() -> void:
 	for actor in _actors.get_children():
 		bind_warning_enemy(actor)
 
-
 func on_zone_entered(zone_id: StringName, _title: String) -> void:
 	_last_zone = zone_id
 	_apply_zone_state(zone_id)
 	_request_audio_state(&"exploration")
-
 
 func on_objective_changed(text: String) -> void:
 	if _hud == null:
@@ -133,38 +127,31 @@ func on_objective_changed(text: String) -> void:
 	_hud.show_notification("OBJECTIVE: " + text)
 	_hud.show_objective_caption(text, 2.0)
 
-
 func on_secret_found(_id: StringName, title: String, found: int, total: int) -> void:
 	if _hud != null:
 		_hud.show_secret("SECRET: %s (%d/%d)" % [title, found, total])
 	if _combat_audio != null:
 		_combat_audio.play_cobie_bark()
 
-
 func on_narrative_message(text: String, duration: float) -> void:
 	if _hud != null:
 		_hud.show_notification(text)
 		_hud.show_caption(text, GameHUD.CaptionCategory.NARRATIVE, duration)
 
-
 func on_checkpoint_caption(message: String) -> void:
 	if _hud != null:
 		_hud.show_checkpoint_caption(message)
-
 
 func on_boss_phase_caption(message: String, duration: float) -> void:
 	if _hud != null:
 		_hud.show_boss_phase_caption(message, duration)
 
-
 func on_boss_state_changed(state: StringName, fraction: float) -> void:
 	if _hud != null:
 		_hud.set_boss_state(_boss_display_name, state, fraction)
 
-
 func play_spatial_cue(cue_id: StringName, world_position: Vector3) -> bool:
 	return _enemy_cues != null and _enemy_cues.play_at(cue_id, world_position)
-
 
 func on_player_died(_source: Node) -> void:
 	if _mobile_controls != null:
@@ -173,7 +160,6 @@ func on_player_died(_source: Node) -> void:
 		_pause_menu.close_for_death()
 	if _death_screen != null:
 		_death_screen.show_death()
-
 
 func on_level_completed(summary: Dictionary) -> void:
 	if _hud != null:
@@ -186,7 +172,6 @@ func on_level_completed(summary: Dictionary) -> void:
 	if _combat_audio != null:
 		_combat_audio.play_cobie_bark()
 	_request_audio_state(&"victory")
-
 
 func on_actor_spawned(enemy: Node, definition: EncounterDefinition) -> void:
 	bind_warning_enemy(enemy)
@@ -201,7 +186,6 @@ func on_actor_spawned(enemy: Node, definition: EncounterDefinition) -> void:
 	if zone_id == _last_zone and _current_audio_state in [&"exploration", &"tension"]:
 		_request_audio_state(&"combat")
 
-
 func on_actor_defeated(_enemy: Node, definition: EncounterDefinition) -> void:
 	if definition == null:
 		return
@@ -214,7 +198,6 @@ func on_actor_defeated(_enemy: Node, definition: EncounterDefinition) -> void:
 	if zone_id == _last_zone and current_count <= 0:
 		_request_audio_state(&"tension")
 
-
 func on_encounter_started(definition: EncounterDefinition) -> void:
 	if definition == null:
 		return
@@ -222,7 +205,6 @@ func on_encounter_started(definition: EncounterDefinition) -> void:
 		_request_audio_state(&"boss")
 	else:
 		_request_audio_state(&"tension")
-
 
 func on_encounter_completed(definition: EncounterDefinition) -> void:
 	if definition == null:
@@ -233,7 +215,6 @@ func on_encounter_completed(definition: EncounterDefinition) -> void:
 	if zone_id == _last_zone:
 		_apply_zone_state(zone_id)
 
-
 func on_encounter_failed(definition: EncounterDefinition, _reason: String) -> void:
 	if definition == null:
 		return
@@ -243,11 +224,9 @@ func on_encounter_failed(definition: EncounterDefinition, _reason: String) -> vo
 	if zone_id == _last_zone:
 		_apply_zone_state(zone_id)
 
-
 func bind_restart_requests(callback: Callable) -> void:
 	if not restart_requested.is_connected(callback):
 		restart_requested.connect(callback)
-
 
 func reset_for_checkpoint() -> void:
 	if _combat_audio != null:
@@ -266,22 +245,17 @@ func reset_for_checkpoint() -> void:
 	if _last_zone != &"":
 		_apply_zone_state(_last_zone)
 
-
 func is_pause_suppressed() -> bool:
 	return _pause_menu != null and _pause_menu._suppressed
-
 
 func bound_enemy_count() -> int:
 	return 0 if _enemy_cues == null else _enemy_cues.bound_enemy_count()
 
-
 func is_enemy_bound(enemy: Node) -> bool:
 	return _enemy_cues != null and _enemy_cues.is_enemy_bound(enemy)
 
-
 func get_hud() -> GameHUD:
 	return _hud
-
 
 func get_pause_menu() -> PauseMenu:
 	return _pause_menu
@@ -302,7 +276,10 @@ func get_audio_director() -> MissionAudioDirector:
 	return _mission_audio_director
 
 func add_player_rain() -> void:
-	_add_player_rain()
+	# Backward-compatible entry point for older Rain City hosts. New missions
+	# select their weather from ZonePresentationProfile.
+	_add_player_weather()
+	_configure_player_weather(&"rain")
 
 func _create_presentation_nodes() -> void:
 	_hud = HUDScene.instantiate() as GameHUD
@@ -331,10 +308,8 @@ func _create_presentation_nodes() -> void:
 	add_child(_enemy_cues)
 	_enemy_cues.configure(_hud, MissionAudioLibrary)
 
-
 func _on_pause_restart() -> void:
 	restart_requested.emit()
-
 
 func _connect_level(level: Node) -> void:
 	if _level_connected:
@@ -353,7 +328,6 @@ func _connect_level(level: Node) -> void:
 		level.boss_state_changed.connect(on_boss_state_changed)
 	_level_connected = true
 
-
 func _connect_runtime(runtime: MissionRuntime) -> void:
 	if runtime == null or _runtime_connected:
 		return
@@ -363,13 +337,11 @@ func _connect_runtime(runtime: MissionRuntime) -> void:
 	runtime.encounter_failed.connect(on_encounter_failed)
 	_runtime_connected = true
 
-
 func _connect_encounter_runner(runner: EncounterRunner) -> void:
 	if runner == null or _encounter_runner_connected:
 		return
 	runner.encounter_started.connect(on_encounter_started)
 	_encounter_runner_connected = true
-
 
 func _connect_game_state(state_node: Node) -> void:
 	if state_node == null or _game_state_connected:
@@ -377,7 +349,6 @@ func _connect_game_state(state_node: Node) -> void:
 	if state_node.has_signal("run_ended"):
 		state_node.run_ended.connect(on_level_completed)
 		_game_state_connected = true
-
 
 func _configure_audio(content_manifest: ContentManifest) -> void:
 	if content_manifest == null:
@@ -390,13 +361,11 @@ func _configure_audio(content_manifest: ContentManifest) -> void:
 	if not configured:
 		push_warning("MissionPresentation could not configure audio director")
 
-
 func _request_audio_state(state: StringName) -> void:
 	if state == _current_audio_state:
 		return
 	if _mission_audio_director != null and _mission_audio_director.request_state(state):
 		_current_audio_state = state
-
 
 func _apply_zone_state(zone_id: StringName) -> void:
 	_apply_zone_render_profile(_zone_profiles.get(zone_id) as ZonePresentationProfile)
@@ -407,7 +376,6 @@ func _apply_zone_state(zone_id: StringName) -> void:
 	_last_ambience = cue_id
 	if _mission_audio_director != null and cue_id != previous_ambience:
 		_mission_audio_director.set_zone_ambience(cue_id)
-
 
 func _apply_zone_render_profile(profile: ZonePresentationProfile) -> void:
 	if profile == null or _level == null:
@@ -421,48 +389,55 @@ func _apply_zone_render_profile(profile: ZonePresentationProfile) -> void:
 		var quality := get_node_or_null("/root/QualityManager")
 		var quality_cap: int = 420 if quality == null or quality.current == null else quality.current.particle_budget
 		_player_weather.amount = mini(profile.particle_budget, quality_cap)
-		_player_weather.emitting = profile.weather in [&"rain", &"storm"]
+		_configure_player_weather(profile.weather)
 
-
-func _add_player_rain() -> void:
-	if _player == null or _player.has_meta(&"mission_presentation_rain"):
+func _add_player_weather() -> void:
+	if _player == null or _player.has_meta(&"mission_presentation_weather"):
 		return
 	var quality := get_node_or_null("/root/QualityManager")
-	var rain_amount := 420 if quality == null or quality.current == null else mini(420, quality.current.particle_budget)
-	var rain := GPUParticles3D.new()
-	rain.name = "StormRain"
-	rain.position.y = 8.0
-	rain.amount = rain_amount
-	rain.lifetime = 1.25
-	rain.visibility_aabb = AABB(Vector3(-16, -12, -16), Vector3(32, 24, 32))
+	var weather_amount := 420 if quality == null or quality.current == null else mini(420, quality.current.particle_budget)
+	var weather := GPUParticles3D.new()
+	weather.name = "MissionWeather"
+	weather.position.y = 8.0
+	weather.amount = weather_amount
+	weather.lifetime = 1.25
+	weather.visibility_aabb = AABB(Vector3(-16, -12, -16), Vector3(32, 24, 32))
+	weather.emitting = false
+	_player.add_child(weather)
+	_player.set_meta(&"mission_presentation_weather", true)
+	_player_weather = weather
+
+func _configure_player_weather(weather_id: StringName) -> void:
+	if _player_weather == null or not is_instance_valid(_player_weather):
+		return
+	var snowing := weather_id == &"snow"
+	var raining := weather_id in [&"rain", &"storm"]
+	_player_weather.emitting = snowing or raining
+	if not _player_weather.emitting:
+		return
 	var process := ParticleProcessMaterial.new()
 	process.emission_shape = ParticleProcessMaterial.EMISSION_SHAPE_BOX
 	process.emission_box_extents = Vector3(14, 1, 14)
-	process.direction = Vector3(0.12, -1, 0.05)
-	process.spread = 4.0
-	process.initial_velocity_min = 15.0
-	process.initial_velocity_max = 20.0
-	rain.process_material = process
-	var drop := QuadMesh.new()
-	drop.size = Vector2(0.018, 0.48)
-	var drop_material := StandardMaterial3D.new()
-	drop_material.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
-	drop_material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
-	drop_material.billboard_mode = BaseMaterial3D.BILLBOARD_ENABLED
-	drop_material.albedo_color = Color(0.58, 0.76, 0.86, 0.5)
-	drop.material = drop_material
-	rain.draw_pass_1 = drop
-	_player.add_child(rain)
-	_player.set_meta(&"mission_presentation_rain", true)
-	_player_weather = rain
-
+	process.direction = Vector3(0.12, -1, 0.05) if raining else Vector3(0.18, -1, 0.08)
+	process.spread = 4.0 if raining else 20.0
+	process.initial_velocity_min = 15.0 if raining else 2.5
+	process.initial_velocity_max = 20.0 if raining else 4.5
+	_player_weather.process_material = process
+	var flake := QuadMesh.new()
+	flake.size = Vector2(0.018, 0.48) if raining else Vector2(0.075, 0.075)
+	var material := StandardMaterial3D.new()
+	material.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	material.billboard_mode = BaseMaterial3D.BILLBOARD_ENABLED
+	material.albedo_color = Color(0.58, 0.76, 0.86, 0.5) if raining else Color(0.92, 0.97, 1.0, 0.78)
+	flake.material = material
+	_player_weather.draw_pass_1 = flake
 
 func _bind_existing_enemies() -> void:
 	if _actors == null:
 		return
 	for actor in _actors.get_children():
 		bind_warning_enemy(actor)
-
 
 func _resolve_boss_display_name(level: Node, configured_name: String, boss_zone_id: StringName) -> String:
 	var requested: String = configured_name.strip_edges()
@@ -482,10 +457,9 @@ func _resolve_boss_display_name(level: Node, configured_name: String, boss_zone_
 		return "BOSS"
 	return &""
 
-
 func _exit_tree() -> void:
 	if _player != null and is_instance_valid(_player):
-		_player.remove_meta(&"mission_presentation_rain")
+		_player.remove_meta(&"mission_presentation_weather")
 	if _player_weather != null and is_instance_valid(_player_weather):
 		_player_weather.emitting = false
 		_player_weather.queue_free()

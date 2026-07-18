@@ -3,8 +3,8 @@ extends SceneTree
 const CAMPAIGN_SLOT := &"campaign_progress"
 const SALMON_CARD: LevelCardData = preload("res://resources/level/salmon_creek_card.tres")
 const VANCOUVER_CARD: LevelCardData = preload("res://resources/level/rain_city_card.tres")
+const MOUNT_HOOD_CARD: LevelCardData = preload("res://resources/level/mountain_card.tres")
 const LATER_TEASER_CARDS: Array[LevelCardData] = [
-	preload("res://resources/level/mountain_card.tres"),
 	preload("res://resources/level/moon_card.tres"),
 	preload("res://resources/level/ventura_card.tres"),
 ]
@@ -31,6 +31,7 @@ func _initialize() -> void:
 	campaign_runtime.reset_progress()
 	_test_salmon_availability()
 	_test_vancouver_public_beta()
+	_test_mount_hood_public_beta()
 	_test_later_teasers_remain_locked()
 
 	_save_manager_delete(CAMPAIGN_SLOT)
@@ -89,6 +90,16 @@ func _test_later_teasers_remain_locked() -> void:
 			continue
 		_expect(card.unlock_policy == LevelCardData.UnlockPolicy.LOCKED_TEASER, "Later card uses locked teaser policy: %s" % card.level_id)
 		_expect(not card.is_available(campaign_runtime), "Later card remains unavailable by policy: %s" % card.level_id)
+
+
+func _test_mount_hood_public_beta() -> void:
+	_expect(MOUNT_HOOD_CARD != null, "Mount Hood card resource loads")
+	if MOUNT_HOOD_CARD == null:
+		return
+	_expect(MOUNT_HOOD_CARD.level_id == &"mount_hood_whiteout", "Mount Hood keeps its stable mission id")
+	_expect(MOUNT_HOOD_CARD.unlock_policy == LevelCardData.UnlockPolicy.ALWAYS, "Mount Hood public BETA is always available")
+	_expect(MOUNT_HOOD_CARD.is_available(campaign_runtime), "Mount Hood public BETA does not depend on campaign state")
+	_expect(MOUNT_HOOD_CARD.release_badge == "BETA" and not MOUNT_HOOD_CARD.launch_notice.is_empty(), "Mount Hood carries its honest BETA warning")
 
 
 func _save_manager_delete(slot: StringName) -> void:

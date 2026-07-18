@@ -217,6 +217,13 @@ text = "RUN MODE"
 [node name="RunModeChoice" type="OptionButton" parent="Panel/VBox/Scroll/Grid"]
 unique_name_in_owner = true
 layout_mode = 2
+[node name="SurfaceMovementLabel" type="Label" parent="Panel/VBox/Scroll/Grid"]
+layout_mode = 2
+text = "SURFACE MOVEMENT"
+[node name="SurfaceMovementChoice" type="OptionButton" parent="Panel/VBox/Scroll/Grid"]
+unique_name_in_owner = true
+layout_mode = 2
+tooltip_text = "Full snow and ice response, reduced variation, or uniform movement"
 [node name="SubtitlesLabel" type="Label" parent="Panel/VBox/Scroll/Grid"]
 layout_mode = 2
 text = "SUBTITLES"

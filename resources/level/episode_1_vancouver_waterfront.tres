@@ -13,9 +13,9 @@ target_minutes_max = 22
 total_secrets = 4
 opening_objective = "REACH THE WATERFRONT SEAWALL"
 replay_scene = "res://scenes/levels/episode_1_vancouver_waterfront.tscn"
-next_mission_id = &""
-next_mission_scene = ""
-next_mission_title = ""
+next_mission_id = &"mount_hood_whiteout"
+next_mission_scene = "res://scenes/levels/mount_hood_whiteout.tscn"
+next_mission_title = "TO MOUNT HOOD"
 mission_loadout = ExtResource("2")
 zones = Array[Dictionary]([{
 "id": &"downtown_alley",

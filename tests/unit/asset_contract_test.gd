@@ -118,8 +118,8 @@ func _test_mount_hood_foundry_asset() -> void:
 	var meshes := instance.find_children("*", "MeshInstance3D", true, false)
 	_expect(meshes.size() == 11, "Mount Hood pilot consolidates its authored parts into eleven material batches")
 	_expect(instance.find_children("*", "CollisionObject3D", true, false).is_empty(), "Mount Hood pilot remains presentation-only")
-	_expect(MOUNT_HOOD_CARD.unlock_policy == LevelCardData.UnlockPolicy.LOCKED_TEASER, "Mount Hood mission card remains a locked teaser")
-	_expect(MOUNT_HOOD_CARD.scene_path.is_empty(), "Mount Hood foundry does not create a public gameplay route")
+	_expect(MOUNT_HOOD_CARD.unlock_policy == LevelCardData.UnlockPolicy.ALWAYS, "Mount Hood mission card is an always-available public beta")
+	_expect(not MOUNT_HOOD_CARD.scene_path.is_empty() and MOUNT_HOOD_CARD.release_badge == "BETA", "Mount Hood owns a public beta route and honest badge")
 	instance.queue_free()
 	await process_frame
 

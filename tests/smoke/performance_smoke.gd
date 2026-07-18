@@ -10,6 +10,7 @@ const MAX_OBJECT_DRIFT := 8
 const SCENE_PATHS := [
 	"res://scenes/levels/episode_1_level_1.tscn",
 	"res://scenes/levels/episode_1_vancouver_waterfront.tscn",
+	"res://scenes/levels/mount_hood_whiteout.tscn",
 ]
 
 var failures: Array[String] = []
@@ -31,6 +32,9 @@ func _measure_scene(scene_path: String) -> void:
 	if instance is EpisodeOneVancouverWaterfront:
 		(instance as EpisodeOneVancouverWaterfront).build_navigation = false
 		(instance as EpisodeOneVancouverWaterfront).start_run_automatically = false
+	if instance is MountHoodWhiteout:
+		(instance as MountHoodWhiteout).build_navigation = false
+		(instance as MountHoodWhiteout).spawn_player = false
 	root.add_child(instance)
 	for _index in WARMUP_FRAMES:
 		await process_frame

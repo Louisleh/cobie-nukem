@@ -1,0 +1,28 @@
+[gd_resource type="Resource" script_class="EnemyDefinition" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/ai/enemy_definition.gd" id="1"]
+[ext_resource type="Resource" path="res://resources/enemies/reaction_heavy.tres" id="2"]
+
+[resource]
+script = ExtResource("1")
+id = &"ski_patrol_ranger"
+display_name = "SKI-PATROL RANGER"
+archetype = 2
+warning_text = "PATROL FLARE // MOVE OR INTERRUPT"
+max_health = 68.0
+move_speed = 4.8
+acceleration = 24.0
+detection_range = 30.0
+attack_range = 13.0
+attack_damage = 12.0
+attack_cooldown = 2.0
+telegraph_seconds = 0.72
+threat_weight = 1.1
+threat_value = 3
+navigation_radius = 0.45
+weak_point_multiplier = 1.35
+reaction_profile = ExtResource("2")
+allowed_encounter_tags = Array[StringName]([&"ranged", &"mount_hood", &"snow"])
+score_value = 300
+preferred_distance = 9.0
+retreat_distance = 4.0
