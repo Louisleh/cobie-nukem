@@ -31,12 +31,12 @@ Packaging now excludes byte-identical macOS cloud-conflict copies such as `index
 
 ## Publication ledger
 
-- Source PR/integration: pending.
-- GitHub prerelease: pending.
-- Website PR/deployment: pending.
-- Ordinary and cache-busted public URL identity: pending.
-- Downloaded public PCK byte comparison: pending.
-- Rollback: `0.7.0-alpha.1-rc5` until every publication check above passes.
+- Source [PR #57](https://github.com/Louisleh/cobie-nukem/pull/57), integrated on `main` at `a03ef8f`.
+- GitHub prerelease: [`v0.8.0-alpha.1-rc1`](https://github.com/Louisleh/cobie-nukem/releases/tag/v0.8.0-alpha.1-rc1).
+- Website [PR #127](https://github.com/Louisleh/louislehmann-site/pull/127), deployed from `main` at `76c1cad` after green site, application, review, and Vercel checks.
+- Ordinary and cache-busted public URLs load RC1 at <https://www.louislehmann.fyi/games/cobie-nukem/> and <https://www.louislehmann.fyi/games/cobie-nukem/play/?verify=alpha8&touch=1&v=0.8.0-alpha.1-rc1>. The live browser reports Godot 4.7 Compatibility boot completion with no warning or error log.
+- Downloaded public PCK: 50,162,024 bytes, byte-identical SHA-256 `40da43cbf6fa484feaf68397d4b58d3add786e3ebb0087ce3ea1b70a2c78ef51`.
+- Rollback artifact: `0.7.0-alpha.1-rc5` remains available; RC1 is now the public baseline.
 
 ## Human-only gates
 
