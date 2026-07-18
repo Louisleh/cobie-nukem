@@ -68,6 +68,8 @@ var _coyote_remaining := 0.0
 var _touch_look_scale := 1.35
 var _queued_weapon_index := -1
 var _surface_movement_mode := "full"
+var _movement_environment: MovementEnvironmentProfile
+var _movement_environment_mode := "full"
 var _external_transport_active := false
 func _ready() -> void:
 	# Level zones key progression off this stable identity. Keeping it in code
@@ -93,6 +95,7 @@ func _ready() -> void:
 		_touch_aim.turn_boost = _touch_turn_boost
 		_touch_aim_friction = TouchAimProfile.friction_strength(String(settings.call("get_value", &"gameplay", &"touch_aim_friction", "standard")))
 		_surface_movement_mode = String(settings.call("get_value", &"gameplay", &"surface_movement", "full"))
+		_movement_environment_mode = String(settings.call("get_value", &"gameplay", &"movement_environment", "full"))
 		if settings.has_signal("setting_changed"): settings.setting_changed.connect(_on_setting_changed)
 	health_armor.died.connect(_on_died)
 	health_armor.damaged.connect(_on_damaged)
@@ -195,9 +198,13 @@ func _physics_process(delta: float) -> void:
 	else:
 		_coyote_remaining = maxf(0.0, _coyote_remaining - delta)
 	if not is_on_floor():
-		velocity += get_gravity() * gravity_scale * delta
+		var environment_gravity := _movement_environment.multiplier(_movement_environment.gravity_multiplier, _movement_environment_mode) if _movement_environment != null else 1.0
+		velocity += get_gravity() * gravity_scale * environment_gravity * delta
+		if _movement_environment != null:
+			velocity.y = maxf(velocity.y, -_movement_environment.terminal_fall_speed)
 	if Input.is_action_just_pressed("jump") and _coyote_remaining > 0.0:
-		velocity.y = jump_velocity
+		var jump_scale := _movement_environment.multiplier(_movement_environment.jump_multiplier, _movement_environment_mode) if _movement_environment != null else 1.0
+		velocity.y = jump_velocity * jump_scale
 		_coyote_remaining = 0.0
 	var input := Input.get_vector("strafe_left", "strafe_right", "move_forward", "move_backward")
 	if _touch_move.length_squared() > input.length_squared(): input = _touch_move
@@ -217,7 +224,8 @@ func _physics_process(delta: float) -> void:
 	if _zoomies_remaining > 0.0:
 		target_speed *= 1.35
 	var target_velocity := wish_direction * target_speed
-	var acceleration := air_acceleration if not is_on_floor() else (ground_acceleration * acceleration_scale if input.length_squared() > 0.0 else ground_deceleration * deceleration_scale)
+	var air_scale := _movement_environment.multiplier(_movement_environment.air_control_multiplier, _movement_environment_mode) if _movement_environment != null else 1.0
+	var acceleration := air_acceleration * air_scale if not is_on_floor() else (ground_acceleration * acceleration_scale if input.length_squared() > 0.0 else ground_deceleration * deceleration_scale)
 	velocity.x = move_toward(velocity.x, target_velocity.x, acceleration * delta)
 	velocity.z = move_toward(velocity.z, target_velocity.z, acceleration * delta)
 	_apply_keyboard_look(delta)
@@ -263,6 +271,10 @@ func clear_touch_input() -> void:
 	_touch_aim.reset()
 
 
+func configure_movement_environment(profile: MovementEnvironmentProfile) -> void:
+	_movement_environment = profile
+
+
 func begin_external_transport() -> void:
 	_external_transport_active = true
 	velocity = Vector3.ZERO
@@ -292,6 +304,7 @@ func _on_setting_changed(section: StringName, key: StringName, value: Variant) -
 			_touch_turn_boost = bool(value); _touch_aim.turn_boost = _touch_turn_boost
 		&"touch_aim_friction": _touch_aim_friction = TouchAimProfile.friction_strength(String(value))
 		&"surface_movement": _surface_movement_mode = String(value)
+		&"movement_environment": _movement_environment_mode = String(value)
 func apply_touch_look(relative: Vector2) -> void:
 	# Compatibility shim. Gameplay touch controls use set_touch_look() so aiming
 	# advances in physics ticks instead of depending on drag-event frequency.

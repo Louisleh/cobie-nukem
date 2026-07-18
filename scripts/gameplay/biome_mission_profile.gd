@@ -16,6 +16,7 @@ extends Resource
 @export var final_activation_target: StringName = &"final_switch"
 @export var permanent_upgrade_ids: Array[StringName] = []
 @export var campaign_unlock_ids: Array[StringName] = []
+@export var movement_environment: MovementEnvironmentProfile
 @export var zones: Array[Dictionary] = []
 @export var objective_switches: Array[Dictionary] = []
 @export var secrets: Array[Dictionary] = []
@@ -69,6 +70,7 @@ func validate() -> PackedStringArray:
 		if size is not Vector3 or not size.is_finite() or size.x <= 0.0 or size.z <= 0.0: errors.append("biome mission %s zone %s has invalid size" % [mission_id, zone_id])
 	if not zone_ids.has(starting_zone_id): errors.append("biome mission %s starting zone is unknown" % mission_id)
 	if not zone_ids.has(boss_zone_id): errors.append("biome mission %s boss zone is unknown" % mission_id)
+	if movement_environment != null: errors.append_array(movement_environment.validate())
 	for entry in objective_switches:
 		if StringName(entry.get("id", &"")) == &"": errors.append("biome mission %s has objective switch without id" % mission_id)
 		if entry.get("position") is not Vector3: errors.append("biome mission %s has objective switch without position" % mission_id)

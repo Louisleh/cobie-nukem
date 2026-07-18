@@ -97,6 +97,7 @@ func _spawn_player() -> void:
 	player = _spawn_scene(PLAYER_SCENE, checkpoint_position) as Node3D
 	if not player is CobiePlayer: return
 	var cobie := player as CobiePlayer; cobie.health_armor.grant_invulnerability(opening_protection_seconds)
+	cobie.configure_movement_environment(biome_profile.movement_environment)
 	if metadata.mission_loadout != null: cobie.apply_mission_loadout(metadata.mission_loadout, _restored_checkpoint)
 	RainCityCheckpointState.restore_player_state(cobie, _restored_checkpoint)
 	for weapon in cobie.weapons:
