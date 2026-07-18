@@ -1,9 +1,13 @@
 # `0.9.0-alpha.1-rc1` release evidence
 
-Date: 2026-07-18  
-Engine/export templates: Godot `4.7.stable.official.5b4e0cb0f`  
-Runtime feature revision: `df84813`  
-Source stamp revision: `0f6bacc5a14e2af3a13f76ec65c72c7ed89785bd`  
+Date: 2026-07-18
+
+Engine/export templates: Godot `4.7.stable.official.5b4e0cb0f`
+
+Runtime feature revision: `df84813`
+
+Source stamp revision: `0f6bacc5a14e2af3a13f76ec65c72c7ed89785bd`
+
 Build ID: `2026-07-18-five-mission-public-beta-rc1`
 
 ## Automated evidence

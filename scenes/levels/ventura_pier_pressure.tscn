@@ -10,4 +10,3 @@ script = ExtResource("1")
 metadata = ExtResource("2")
 content_manifest = ExtResource("3")
 biome_profile = ExtResource("4")
-
