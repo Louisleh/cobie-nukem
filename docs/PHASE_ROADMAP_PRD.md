@@ -1,6 +1,6 @@
 # Cobie Nukem — Multi-Phase Production PRD
 
-**Status:** Active production source of truth; five-mission integration candidate in validation
+**Status:** Active production source of truth; five-mission release candidate packaged and awaiting publication
 
 **Created:** 2026-07-11
 
@@ -8,7 +8,7 @@
 
 **Current public baseline:** `0.8.0-alpha.1-rc1` (`7e6684e` gameplay/runtime revision; source integration `a03ef8f`; website deployment `76c1cad`; PCK SHA-256 `40da43cbf6fa484feaf68397d4b58d3add786e3ebb0087ce3ea1b70a2c78ef51`)
 
-**Current production gate:** The three-mission RC remains public while the five-mission candidate completes export, package, browser, merge, and byte-identity gates. Levels 2–5 remain explicit `BETA` missions pending human/device/art/balance approval.
+**Current production gate:** The five-mission candidate has passed its full validation, export, package, and packaged-browser gates. Source integration, prerelease publication, website deployment, and downloaded public-PCK byte identity remain before it becomes the public baseline. Levels 2–5 remain explicit `BETA` missions pending human/device/art/balance approval.
 
 **Last released alpha:** `0.8.0-alpha.1-rc1` (`7e6684e`) — live at <https://www.louislehmann.fyi/games/cobie-nukem/>; Rain City and Mount Hood retain honest `BETA` badges because human full-route and physical-device validation are open
 
@@ -24,7 +24,7 @@
 | Mount Hood Whiteout | **PUBLIC `BETA`** | Five zones, six objectives, five checkpoints, four secrets, 24 regular enemies, Snowcat, traction, chairlift, Continue restore, and Golden Ball gates green | Human/device/art/balance/audio approval remains explicitly open. |
 | Dark Side of Fetch | **CANDIDATE PUBLIC `BETA`** | Five-zone lunar route, six objectives, five checkpoints/secrets, 28 enemies, movement environment, 1,000-HP modular boss, restore/finale contracts, and route simulation green | Final hero animation/audio/material pass plus target-Mac, browser, physical-iPad, pacing, combat-readability, mix, humor, and photosensitivity approval open. |
 | Pier Pressure | **CANDIDATE PUBLIC `BETA`** | Five-zone coastal route, six objectives, five checkpoints/secrets, 28 enemies, 1,000-HP Tidebreaker, restore/finale contracts, and route simulation green | Final hero animation/audio/material pass plus target-Mac, browser, physical-iPad, pacing, combat-readability, mix, humor, and photosensitivity approval open. |
-| Packaging | **IN VALIDATION** | Prior RC remains byte-verified rollback. Five-mission parser/import and focused contract suites are green; full export/package/public-hash evidence is not recorded until it actually passes | Do not describe the candidate as deployed before exact source/runtime/site/PCK identity is verified. |
+| Packaging | **PACKAGED — PUBLICATION PENDING** | Full parser/import, test, Web/macOS export, package, desktop Web, and 1024×768 touch gates are green. Prior RC remains the byte-verified rollback until deployment. | Do not describe the candidate as deployed before exact source/runtime/site/PCK identity is verified. |
 
 ### Implemented five-mission integration checkpoint
 

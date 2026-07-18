@@ -1,4 +1,43 @@
-# Release Notes — 0.8.0-alpha.1-rc1 Mount Hood Public Beta
+# Release Notes — 0.9.0-alpha.1-rc1 Five-Mission Public Beta
+
+Built on 2026-07-18 with Godot `4.7.stable.official.5b4e0cb0f`. Runtime feature revision: `df84813`; build ID: `2026-07-18-five-mission-public-beta-rc1`.
+
+## Player-visible changes
+
+- The full five-mission Episode 1 route is now publicly testable. Salmon Creek remains the stable opening benchmark; Rain City, Mount Hood, **Dark Side of Fetch**, and **Pier Pressure** are clearly labelled public-development `BETA` missions.
+- Dark Side of Fetch adds five lunar zones, low-gravity movement, five checkpoints and secrets, 28 regular enemy placements, six objectives, and a four-phase 1,000-HP Lunar Compliance Harvester finale.
+- Pier Pressure adds five Ventura-coast zones, five checkpoints and secrets, 28 regular enemy placements, six objectives, and a four-phase 1,000-HP Municipal Tidebreaker finale.
+- Replay and Continue now follow the active mission. Every finale gates its Golden Tennis Ball behind confirmed boss defeat, summon cleanup, and a persistent defeat state.
+- Salmon Creek checkpoints now use save schema v5 and preserve loadout, ammunition, health, and armor while remapping obsolete legacy coordinates to authored anchors.
+- Startup, Start-only mission launch, pointer capture, retry, focus recovery, proactive reload, twin-stick cancellation, and scene teardown remain transactional across all five missions.
+
+## Engineering and validation
+
+- One data-driven campaign graph and shared mission-pack, biome, movement-environment, set-piece, checkpoint, encounter, and boss-module contracts host all five missions without mission-specific runtime forks.
+- Complete release validation passes 78 scenes, 180 Resources, five content manifests, parser/import, unit, integration, route, content, architecture, provenance/IP, smoke, Web export, and unsigned Universal macOS export gates.
+- The deterministic five-mission gauntlet passes 1,200 route simulations and 1,000 checkpoint restores. Focused soaks cover 100 shared routes/checkpoints/touch cancellations/effects, 500 weapon transitions, and repeated Walker, Towmaster, Snowcat, Harvester, and Tidebreaker resets.
+- Latest headless p95/p99 mission timing is Salmon Creek `22.1/24.2 ms`, Rain City `23.3/24.6 ms`, Mount Hood `22.0/23.5 ms`, Moon `21.0/23.3 ms`, and Ventura `21.8/22.7 ms`, with zero temporary-object/node drift in the new missions. These are CPU/stall signals, not rendered-GPU or physical-device claims.
+- The exact packaged Web build passes desktop and 1024×768 touch flows: normalized boot identity, five-card selection, non-committing hover, explicit `START BETA`, Moon/Ventura launch, twin-stick HUD, death, retry, and menu return.
+
+## Honest RC boundary
+
+- Levels 2–5 remain `BETA`. Physical iPad Safari, full target-Mac and Safari/Chrome routes, final hero/environment animation and audio, pacing, boss fairness, art cohesion, touch comfort, humor, motion comfort, and photosensitivity remain human-only gates.
+- Moon and Ventura are complete functional public-beta routes, not falsely claimed final world-class art or balance.
+- The macOS ZIP remains unsigned and unnotarized. The working title requires clearance before commercial distribution.
+
+## Artifacts
+
+| Artifact | Bytes | SHA-256 |
+| --- | ---: | --- |
+| `cobie-nukem-0.9.0-alpha.1-rc1-itch.zip` | 55,159,424 | `95024131a5a216f8dbf6820a8d957c859d18581d167529228831e772b0539b36` |
+| `cobie-nukem-0.9.0-alpha.1-rc1-macos-unsigned.zip` | 96,454,146 | `5d5e312182c1a9569c35db12e924e0322b05ff9a5a7bb1ea6f731b2d8e2b1b6b` |
+| Packaged Web PCK | 50,340,272 | `4cd3e8e71f4c8aa4b89c3fc52f47dcbe0de5f0bc2239f296d1d9ed64554c2192` |
+
+Publication integration, website deployment, and downloaded public-PCK identity are recorded in `docs/RELEASE_0_9_0_ALPHA1_RC1_EVIDENCE.md` only after those gates actually complete.
+
+---
+
+# Prior Release Notes — 0.8.0-alpha.1-rc1 Mount Hood Public Beta
 
 Built on 2026-07-18 with Godot `4.7.stable.official.5b4e0cb0f`. Runtime feature revision: `7e6684e`.
 
