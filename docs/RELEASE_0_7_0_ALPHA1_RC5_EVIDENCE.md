@@ -22,10 +22,19 @@
 - Foreground native Compatibility profile at 1280×720 samples 300 frames per zone. Rain City p95/p99: alley 17.447/23.337 ms; Slice 20.978/21.625; seawall 17.532/21.546; terminal 17.368/17.689; pier 17.485/20.358. Draw calls range from 200 to 403 and static memory remains near 83.6 MB.
 - Zero recurring >100 ms stalls were observed. One isolated 1,054.530 ms macOS scheduling pause occurred in the pier sample and is retained honestly in the evidence.
 - Mount Hood visual evidence exists at 16:9, 16:10, 4:3, and ultrawide. This proves the asset-foundation identity, not final art or gameplay.
+- Full `QA_EXPORTS=1` validation passes on the stamped candidate, including Web and unsigned Universal macOS exports.
+- Packaged browser checks pass at 1280×720 and simulated 1024×768 touch. Mission hover remains non-committing, Rain City is selectable as `BETA`, Mount Hood stays locked, and the touch HUD/portrait remain within the viewport.
+- Chrome DevTools on the packaged build at 1024×768 touch, Fast 4G, and 2× CPU reports LCP 1.104 s, CLS 0.00, six successful cache-keyed requests, and no console warning/error. Physical-iPad conclusions remain open.
 
 ## Packaging and publication
 
-Pending the final `QA_EXPORTS=1` run. Artifact sizes, SHA-256 hashes, source integration commit, prerelease URL, website deployment commit, and downloaded public PCK verification will be recorded after exact-artifact publication.
+| Artifact | Bytes | SHA-256 |
+| --- | ---: | --- |
+| `cobie-nukem-0.7.0-alpha.1-rc5-itch.zip` | 45,804,160 | `10f51be8bd878cb519a41a3bce02f64f97fbc8b3eabceaf58369bb8c38ba2db0` |
+| `cobie-nukem-0.7.0-alpha.1-rc5-macos-unsigned.zip` | 90,950,568 | `5006c14750c12209f8088db9e6718f7081650f5cbe755cdc5f594f701f13bc95` |
+| `index-0.7.0-alpha.1-rc5.pck` | 38,229,008 | `a53c5ccc3b11222d55000d36dc547c508ca6a0683f13184ce3e5634b668b1bfa` |
+
+The packaged Web directory is 74 MB, below the 90 MB target and 100 MB hard ceiling. Source integration commit, prerelease URL, website deployment commit, and downloaded public PCK verification will be recorded after exact-artifact publication.
 
 ## Human-only gates still open
 

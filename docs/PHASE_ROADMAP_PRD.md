@@ -8,7 +8,7 @@
 
 **Current public baseline:** `0.7.0-alpha.1-rc4` (`e1afd5a` gameplay/runtime revision; source integration `951f07e`; website deployment `3a0c5af`; PCK SHA-256 `1260693005804915d30f6163036e4ab943063a0ccfbb75380aaee0729ed8bbe8`)
 
-**Unreleased development baseline:** `codex/rain-city-mount-hood-foundry` — Rain City runtime material-family conversion, environment-profile enforcement, bounded weather teardown, and a locked Mount Hood visual-foundry pilot are in validation. Public source/package/site remain aligned on RC4 until the release gate passes.
+**Unreleased candidate:** `0.7.0-alpha.1-rc5` on `codex/rain-city-mount-hood-foundry` — Rain City runtime material-family conversion, environment-profile enforcement, bounded weather teardown, and a locked Mount Hood visual-foundry pilot pass full native/Web export and packaged-browser gates. Public source/package/site remain aligned on RC4 until the exact RC5 artifact is merged and deployed.
 
 **Last released alpha:** `0.7.0-alpha.1-rc4` (`e1afd5a`) — live at <https://www.louislehmann.fyi/games/cobie-nukem/>; the `BETA` badge remains because human full-route and physical-device validation are open
 
@@ -23,7 +23,7 @@
 | Rain City Run | **PUBLIC `BETA`** | Five-zone route, 26-enemy pressure contract, saves, Towmaster resets, touch, browser startup, and RC4 packaging green; foundry candidate passes the full non-export matrix and rendered native profile | Ten manifested runtime material families, explicit five-zone identity/landmarks/surface contracts, and deterministic weather teardown are implemented. Final badge removal still requires physical iPad, target-Mac, browser routes, pacing, boss fairness, art, mix, humor, and photosensitivity approval. |
 | Mount Hood Whiteout | **LOCKED TEASER** | Card remains locked with no gameplay scene or save/unlock change; visual-foundry asset contracts and four-aspect pilot captures are green | Ten original material families plus a presentation-only mountain/lodge/snow/fir/snowman/lift source kit, art brief, provenance, and non-public gallery are complete as a production foundation. Gameplay production has not started. |
 | Moon / Ventura | **LOCKED TEASERS** | Card/brief contracts only | No playable production work in this phase. |
-| Packaging | **RC4 PUBLIC** | Exact public/source/package PCK identity recorded above | A later RC/BETA may ship after full export/byte-identity gates. Final `0.7.0-alpha.1` is blocked on human Level 2 gates. |
+| Packaging | **RC4 PUBLIC / RC5 CANDIDATE GREEN** | RC5 full `QA_EXPORTS=1`, versioned packages, 74 MB Web build, desktop/1024×768 packaged browser, and Fast-4G/2×-CPU Chrome trace are green | RC5 exact-artifact merge/deployment is pending. Final `0.7.0-alpha.1` is blocked on human Level 2 gates. |
 
 ### Foundry candidate automated evidence
 
