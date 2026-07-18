@@ -121,6 +121,14 @@ func _restore_runtime_state() -> void:
 	var restored := RainCityCheckpointState.restore(_restored_checkpoint, _mission_runtime, _route_runtime, content_manifest.route_definition)
 	if restored.is_empty(): return
 	secrets = restored.secrets; current_zone = restored.current_zone
+	_sync_route_gates()
+	# Active encounter snapshots carry deterministic progress markers, not live
+	# nodes. Rebuild the current unfinished encounter exactly once after restore.
+	if current_zone != &"" and not _mission_runtime.encounters.completed.has(current_zone):
+		_last_combat_zone = current_zone
+		_mission_runtime.reset_zone(current_zone)
+		if current_zone != biome_profile.boss_zone_id or _mission_runtime.objectives.completed.has(_boss_prerequisite_objective_id()):
+			_activate_zone_encounter(current_zone)
 
 
 func _poll_route_position() -> void:
@@ -216,8 +224,10 @@ func _on_encounter_completed(definition: EncounterDefinition) -> void:
 func _finish_boss_defeat() -> void:
 	if _completion_started or _world_builder == null: return
 	_world_builder.enable_golden_ball(); boss_state_changed.emit("DESTROYED", 0.0); narrative_message.emit("%s DESTROYED // GOLDEN BALL RELEASED" % biome_profile.boss_display_name, 3.2)
-func _on_encounter_failed(definition: EncounterDefinition, _reason: String) -> void:
+func _on_encounter_failed(definition: EncounterDefinition, reason: String) -> void:
 	_spawn_registry.finish_encounter(definition.zone_id); _spawn_registry.clear_zone(definition.zone_id)
+	_world_builder.set_route_gate_open(definition.zone_id, false)
+	narrative_message.emit("ENCOUNTER DEPLOYMENT FAILED // RETRY CHECKPOINT (%s)" % reason, 4.0)
 
 
 func _sync_route_gates() -> void:
@@ -245,6 +255,17 @@ func _record_secret(id: StringName) -> void:
 
 
 func _on_golden_ball_claimed(_actor: Node) -> void:
+	if _world_builder == null or _world_builder.golden_ball == null or not _world_builder.golden_ball.enabled:
+		narrative_message.emit("GOLDEN BALL CONTAINMENT ACTIVE // BOSS STILL ONLINE", 2.0)
+		return
+	var boss_objective := &""
+	for definition in content_manifest.objectives:
+		if definition.kind == ObjectiveDefinition.Kind.DEFEAT and definition.target_id == biome_profile.boss_enemy_id:
+			boss_objective = definition.id
+			break
+	if boss_objective == &"" or not _mission_runtime.objectives.completed.has(boss_objective):
+		narrative_message.emit("GOLDEN BALL CONTAINMENT ACTIVE // BOSS STILL ONLINE", 2.0)
+		return
 	_mission_runtime.record_objective(ObjectiveDefinition.Kind.COMPLETE_LEVEL, &"golden_tennis_ball")
 
 

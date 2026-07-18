@@ -128,6 +128,12 @@ func _check_runtime_boot() -> void:
 	mission.spawn_player = false
 	mission.setup_presentation = false
 	mission.build_navigation = false
+	mission._restored_checkpoint = {
+		"objective_snapshot": {},
+		"encounter_snapshot": {"completed": [], "active": {"lunar_landing_pad": {"wave": 0, "remaining": 1}}},
+		"route_snapshot": {"route_id": "moon_dark_side_route", "current_zone": "lunar_landing_pad", "current_index": 0, "visited_zones": ["lunar_landing_pad"], "checkpoint_id": "checkpoint_landing_pad"},
+		"secrets": {},
+	}
 	root.add_child(mission)
 	for _idx in 6:
 		await process_frame
@@ -138,6 +144,12 @@ func _check_runtime_boot() -> void:
 	_expect(mission._world_builder.golden_ball != null, "Mission world builder spawns finale Golden Ball")
 	if mission._world_builder != null:
 		_expect(not mission._world_builder.golden_ball.enabled, "Golden Ball starts locked during Moon boss gating")
+		mission._on_golden_ball_claimed(null)
+		_expect(not mission._completion_started, "A premature Golden Ball claim cannot bypass the Moon boss")
+	_expect(mission._mission_runtime.encounters.active.has(&"lunar_landing_pad"), "Moon Continue reactivates its unfinished checkpoint encounter")
+	if mission._mission_runtime.encounters.active.has(&"lunar_landing_pad"):
+		var restored_state: Dictionary = mission._mission_runtime.encounters.active[&"lunar_landing_pad"]
+		_expect(not (restored_state.get("actors", []) as Array).is_empty(), "Moon Continue rebuilds live actors")
 	var route := MANIFEST.route_definition
 	if mission._route_runtime != null and route != null:
 		for zone_id in EXPECTED_ZONES:

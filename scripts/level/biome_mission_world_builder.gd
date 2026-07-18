@@ -72,7 +72,7 @@ func _build_route() -> void:
 			var next_center: Vector3 = _profile.zones[index + 1].center
 			var next_size: Vector3 = _profile.zones[index + 1].size
 			var z_mid: float = (center.z - size.z * 0.5 + next_center.z + next_size.z * 0.5) * 0.5
-			var connector := _box("RouteConnector_%d" % index, Vector3(0, -0.49, z_mid), Vector3(9.0, 0.98, maxf(6.0, abs(center.z - next_center.z) - (size.z + next_size.z) * 0.5 + 2.0)), floor_color, true)
+			var connector := _box("RouteConnector_%d" % index, Vector3(0, -0.52, z_mid), Vector3(9.0, 0.98, maxf(6.0, abs(center.z - next_center.z) - (size.z + next_size.z) * 0.5 + 2.0)), floor_color, true)
 			connector.collision_layer = (1 << 19) | 1; connector.add_to_group(&"biome_navigation_source")
 			var gate_z := center.z - size.z * 0.5 + 1.0
 			var gate := _box("EncounterGate_%s" % zone.id, Vector3(0, 1.45, gate_z), Vector3(8.8, 2.9, 0.45), accent.darkened(0.3), true)

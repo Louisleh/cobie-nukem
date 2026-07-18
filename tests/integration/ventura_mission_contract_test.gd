@@ -130,6 +130,12 @@ func _check_scene_boot() -> void:
 	mission_node.spawn_player = false
 	mission_node.setup_presentation = false
 	mission_node.build_navigation = true
+	mission_node._restored_checkpoint = {
+		"objective_snapshot": {},
+		"encounter_snapshot": {"completed": [], "active": {"downtown_service_lane": {"wave": 0, "remaining": 1}}},
+		"route_snapshot": {"route_id": "ventura_pier_pressure_route", "current_zone": "downtown_service_lane", "current_index": 0, "visited_zones": ["downtown_service_lane"], "checkpoint_id": "checkpoint_service_lane_entry"},
+		"secrets": {},
+	}
 	root.add_child(mission_node)
 	for frame in 120:
 		await process_frame
@@ -144,6 +150,12 @@ func _check_scene_boot() -> void:
 		_expect(controller2.content_manifest == MANIFEST, "Controller points at Ventura manifest")
 		_expect(controller2.biome_profile == PROFILE, "Controller points at Ventura biome profile")
 		_expect(controller2.metadata.level_id == &"ventura_pier_pressure", "Controller metadata uses Ventura level id")
+		_expect(controller2._mission_runtime.encounters.active.has(&"downtown_service_lane"), "Ventura Continue reactivates its unfinished checkpoint encounter")
+		if controller2._mission_runtime.encounters.active.has(&"downtown_service_lane"):
+			var restored_state: Dictionary = controller2._mission_runtime.encounters.active[&"downtown_service_lane"]
+			_expect(not (restored_state.get("actors", []) as Array).is_empty(), "Ventura Continue rebuilds live actors")
+		controller2._on_golden_ball_claimed(null)
+		_expect(not controller2._completion_started, "A premature Golden Ball claim cannot bypass Tidebreaker")
 		var cue_ids: Array[StringName] = MISSION_AUDIO_LIBRARY.cue_ids()
 		_expect(cue_ids.has(MANIFEST.audio_profile.exploration_ambience_cue_id), "Exploration cue resolves in mission audio library")
 	mission_node.queue_free()
