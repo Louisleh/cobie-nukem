@@ -1,0 +1,30 @@
+[gd_resource type="Resource" script_class="EncounterDefinition" load_steps=2 format=3]
+[ext_resource type="Script" path="res://scripts/gameplay/encounter_definition.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = &"mount_hood_summit"
+zone_id = &"summit"
+display_name = "SUMMIT REPAIR BAY"
+schema_version = 2
+completion_policy = 1
+waves = Array[Dictionary]([{
+"spawns": [
+	{"scene":"res://scenes/enemies/avalanche_recon_drone.tscn","position":Vector3(-16.0,3.0,-422.0)},
+	{"scene":"res://scenes/enemies/squirrel_trooper.tscn","position":Vector3(6.0,0.0,-410.0)}
+]}, {
+"delay_seconds": 1.4,
+"spawns": [
+	{"scene":"res://scenes/enemies/umbrella_shield_enforcer.tscn","position":Vector3(-8.0,0.0,-392.0)},
+	{"scene":"res://scenes/enemies/compliance_hound.tscn","position":Vector3(10.0,0.0,-386.0)}
+]}, {
+"delay_seconds": 2.0,
+"spawns": [
+	{"scene":"res://scenes/enemies/compliance_gull.tscn","position":Vector3(24.0,0.0,-380.0)},
+	{"scene":"res://scenes/enemies/municipal_snowcat.tscn","position":Vector3(16.0,0.0,-370.0),"completion_marker":"boss"}
+]}
+])
+enemy_budget = 7
+maximum_simultaneous_attackers = 3
+music_intensity = 0.85
+reward_policy = &"authored"

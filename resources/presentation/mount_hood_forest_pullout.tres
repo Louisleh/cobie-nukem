@@ -1,0 +1,24 @@
+[gd_resource type="Resource" script_class="ZonePresentationProfile" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/gameplay/zone_presentation_profile.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = &"mount_hood_forest_pullout_presentation"
+zone_id = &"forest_pullout"
+palette_id = &"mount_hood_forest_palette"
+environment_identity_id = &"snowbound_pacific_northwest_alpine_pursuit"
+texture_set_id = &"mount_hood_production"
+material_family_ids = [&"mount_hood_fresh_powder", &"mount_hood_icy_slush", &"mount_hood_exposed_rock"]
+surface_response_ids = [&"snow", &"rock", &"pine_litter"]
+dominant_landmark_id = &"persistent_mount_hood"
+background_landmark_id = &"fictional_highway_sign"
+lighting_budget = 5
+decal_budget = 16
+particle_budget = 56
+weather = &"storm"
+fog_color = Color(0.86, 0.90, 0.96, 1.0)
+fog_density = 0.13
+fog_enabled = true
+landmark_ids = [&"persistent_mount_hood", &"fictional_highway_sign", &"snowbank_crest"]
+ambience_cue_id = &"vancouver_ambience_dock"

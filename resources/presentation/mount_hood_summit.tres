@@ -1,0 +1,24 @@
+[gd_resource type="Resource" script_class="ZonePresentationProfile" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/gameplay/zone_presentation_profile.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = &"mount_hood_summit_presentation"
+zone_id = &"summit"
+palette_id = &"mount_hood_summit_palette"
+environment_identity_id = &"snowbound_pacific_northwest_alpine_pursuit"
+texture_set_id = &"mount_hood_production"
+material_family_ids = [&"mount_hood_fresh_powder", &"mount_hood_lift_steel", &"mount_hood_frosted_glass", &"mount_hood_icy_slush"]
+surface_response_ids = [&"snow", &"lift_steel", &"frosted_glass", &"ice"]
+dominant_landmark_id = &"summit_relay"
+background_landmark_id = &"chairlift"
+lighting_budget = 7
+decal_budget = 24
+particle_budget = 72
+weather = &"storm"
+fog_color = Color(0.64, 0.70, 0.78, 1.0)
+fog_density = 0.19
+fog_enabled = true
+landmark_ids = [&"summit_relay", &"chairlift", &"mountain_pin"]
+ambience_cue_id = &"salmon_ambience_arena"
