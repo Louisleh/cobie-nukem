@@ -16,6 +16,11 @@ signal level_completed(summary: Dictionary)
 const SalmonCreekWorldBuilderScene = preload("res://scripts/level/salmon_creek_world_builder.gd")
 const SalmonCreekPacing = preload("res://resources/encounters/salmon_walker_pacing.tres")
 const MissionInteractionRuntimeScript = preload("res://scripts/gameplay/mission_interaction_runtime.gd")
+const CONTENT_REVISION := 1
+const CHECKPOINT_POSITIONS: Dictionary = {
+	&"start": Vector3(0, 1.1, 10),
+	&"lab_entry": Vector3(0, 1.5, -87),
+}
 const ROUTE_PROGRESS := [
 	[-22.0, &"equipment_shed", "EQUIPMENT SHED"],
 	[-47.0, &"maintenance_tunnels", "MAINTENANCE TUNNELS"],
@@ -145,10 +150,18 @@ func _apply_requested_checkpoint() -> void:
 		return
 	var save_manager := get_node_or_null("/root/SaveManager")
 	var saved := CheckpointPayload.sanitize(save_manager.load_slot(&"checkpoint")) if save_manager != null else {}
+	if String(saved.get("level_id", "")) != String(metadata.level_id):
+		game_state.continue_requested = false
+		return
 	_restored_checkpoint = saved
 	var position_values: Array = saved.get("position", [])
-	if position_values.size() == 3:
+	var checkpoint_id := StringName(saved.get("checkpoint_id", "start"))
+	if int(saved.get("content_revision", 0)) == CONTENT_REVISION and position_values.size() == 3:
 		checkpoint_position = Vector3(float(position_values[0]), float(position_values[1]), float(position_values[2]))
+	elif CHECKPOINT_POSITIONS.has(checkpoint_id):
+		# Old Salmon Creek checkpoints predate content revisions. Remap them to
+		# authored anchors instead of trusting obsolete world coordinates.
+		checkpoint_position = CHECKPOINT_POSITIONS[checkpoint_id]
 	game_state.continue_requested = false
 
 func _restore_mission_snapshot() -> void:
@@ -249,9 +262,10 @@ func _spawn_wave(zone_id: StringName) -> void:
 	else:
 		_spawn_registry.mark_zone_spawned(zone_id)
 	if zone_id == &"walker_arena" and not _boss_runtime.has_active_walker():
-		# Development fallback: a missing boss scene must not trap QA in the level.
-		_golden_ball.enable_as_reward()
-		narrative_message.emit("BOSS ASSET MISSING — GOLDEN BALL QA FALLBACK ENABLED.", 4.0)
+		# Never convert a failed critical boss spawn into progression. Keep the
+		# reward sealed and expose a recoverable, named failure to the player/log.
+		_golden_ball.reset_reward()
+		narrative_message.emit("WALKER DEPLOYMENT FAILED — RESTARTING CHECKPOINT REQUIRED.", 4.0)
 	if zone_id == &"forbidden_field":
 		_opening_grace_timer.start()
 
@@ -319,16 +333,30 @@ func _save_checkpoint_payload(id: StringName, position_value: Vector3) -> void:
 	if save_manager == null:
 		return
 	var difficulty_state := get_node_or_null("/root/GameState")
-	save_manager.save_slot(&"checkpoint", {
-		"scene_path": "res://scenes/levels/episode_1_level_1.tscn",
-		"level_id": String(metadata.level_id),
-		"checkpoint_id": String(id),
-		"position": [position_value.x, position_value.y, position_value.z],
-		"difficulty_id": String(difficulty_state.difficulty_id) if difficulty_state != null else CheckpointPayload.DEFAULT_DIFFICULTY,
-		"objective_snapshot": _mission_runtime.snapshot().objective_snapshot,
-		"encounter_snapshot": _mission_runtime.snapshot().encounter_snapshot,
-		"secrets": secrets.duplicate(true),
-	})
+	var runtime_snapshot := _mission_runtime.snapshot()
+	var active_loadout: Dictionary = player.mission_loadout_snapshot(metadata.level_id) if player is CobiePlayer else {}
+	var player_state := {}
+	if player is CobiePlayer and (player as CobiePlayer).health_armor != null:
+		player_state = {
+			"health": (player as CobiePlayer).health_armor.health,
+			"armor": (player as CobiePlayer).health_armor.armor,
+		}
+	var payload := RainCityCheckpointState.build_payload(
+		"res://scenes/levels/episode_1_level_1.tscn",
+		metadata,
+		id,
+		CONTENT_REVISION,
+		position_value,
+		difficulty_state.difficulty_id if difficulty_state != null else StringName(CheckpointPayload.DEFAULT_DIFFICULTY),
+		runtime_snapshot,
+		{},
+		secrets,
+		active_loadout,
+		player_state,
+	)
+	var save_error: Error = save_manager.save_slot(&"checkpoint", payload)
+	if save_error != OK:
+		push_error("Salmon Creek checkpoint save failed: %s" % error_string(save_error))
 
 func restart_from_checkpoint() -> void:
 	if _interaction_runtime != null:
@@ -362,6 +390,9 @@ func _reset_active_encounter_for_checkpoint() -> void:
 
 func _on_golden_ball_claimed(_actor: Node) -> void:
 	if completion_started: return
+	if _golden_ball == null or not _golden_ball.enabled or not _objective_tracker.completed.has(&"defeat_walker"):
+		narrative_message.emit("GOLDEN BALL CONTAINMENT ACTIVE — WALKER STILL ONLINE.", 2.0)
+		return
 	# A finished run must not offer a stale mid-level Continue from the menu.
 	completion_started = true
 	_objective_tracker.record(ObjectiveDefinition.Kind.COLLECT_ITEM, &"golden_tennis_ball")
@@ -390,6 +421,11 @@ func get_level_summary() -> Dictionary:
 func _spawn_player() -> void:
 	player = _spawn_scene("res://scenes/player/cobie_player.tscn", checkpoint_position) as Node3D
 	if player:
+		if player is CobiePlayer:
+			var cobie := player as CobiePlayer
+			if metadata.mission_loadout != null:
+				cobie.apply_mission_loadout(metadata.mission_loadout, _restored_checkpoint)
+			RainCityCheckpointState.restore_player_state(cobie, _restored_checkpoint)
 		if _mission_presentation != null:
 			_mission_presentation.set_player(player)
 		for weapon in player.weapons:

@@ -1,0 +1,24 @@
+[gd_resource type="Resource" script_class="ZonePresentationProfile" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/gameplay/zone_presentation_profile.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = &"moon_habitat_lab_presentation"
+zone_id = &"habitat_lab"
+palette_id = &"lunar_lab_palette"
+environment_identity_id = &"moon_habitat_identity"
+texture_set_id = &"moon_surface_textures"
+material_family_ids = [&"lunar_panel_composite", &"airlock_steel", &"compliance_signage"]
+surface_response_ids = [&"airlock_steel", &"lunar_concrete", &"safety_window_glass"]
+dominant_landmark_id = &"warm_habitat_window"
+background_landmark_id = &"habitat_airlock"
+lighting_budget = 6
+decal_budget = 22
+particle_budget = 66
+weather = &"fog"
+fog_color = Color(0.19, 0.24, 0.36, 1.0)
+fog_density = 0.15
+fog_enabled = true
+landmark_ids = [&"warm_habitat_window", &"airlock_door", &"compliance_signage"]
+ambience_cue_id = &"salmon_ambience_tunnel"

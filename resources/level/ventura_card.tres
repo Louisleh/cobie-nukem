@@ -1,15 +1,23 @@
-[gd_resource type="Resource" script_class="LevelCardData" load_steps=3 format=3]
+[gd_resource type="Resource" script_class="LevelCardData" load_steps=4 format=3]
 
 [ext_resource type="Script" path="res://scripts/ui/level_card_data.gd" id="1"]
 [ext_resource type="Texture2D" path="res://assets/level_previews/ventura_pier.png" id="2"]
+[ext_resource type="Resource" path="res://resources/level/ventura_warmup.tres" id="3"]
 
 [resource]
 script = ExtResource("1")
 level_id = &"ventura_pier_pressure"
 title = "PIER PRESSURE"
 episode = "EPISODE 5 // VENTURA"
-description = "Surfers Point is under offshore enforcement. Take back the pier before sunset gets cited."
+description = "Surfers Point is under offshore enforcement. Open the permit lane, clear the docks, and take back the pier before sunset turns the route hostile."
 difficulty = 4
-expected_minutes = "CLASSIFIED"
+expected_minutes = "18–24 MIN"
+secrets = 5
 encounter = "OFFSHORE PLATFORM"
+unlock_policy = 0
+prerequisite_mission_id = &""
+scene_path = "res://scenes/levels/ventura_pier_pressure.tscn"
+warmup_profile = ExtResource("3")
+release_badge = "BETA"
+launch_notice = "START BETA // PUBLIC DEVELOPMENT MISSION — EXPECT ROUGH EDGES"
 preview = ExtResource("2")

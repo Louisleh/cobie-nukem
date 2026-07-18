@@ -1,0 +1,24 @@
+[gd_resource type="Resource" script_class="EnemyDefinition" load_steps=3 format=3]
+[ext_resource type="Script" path="res://scripts/ai/enemy_definition.gd" id="1"]
+[ext_resource type="Resource" path="res://resources/enemies/reaction_light.tres" id="2"]
+[resource]
+script = ExtResource("1")
+id = &"vacuum_compliance_orb"
+display_name = "VACUUM COMPLIANCE ORB"
+archetype = 3
+warning_text = "VACUUM MARK ACQUIRED."
+max_health = 72.0
+move_speed = 5.8
+acceleration = 18.0
+detection_range = 34.0
+attack_range = 15.0
+attack_damage = 10.0
+attack_cooldown = 2.1
+telegraph_seconds = 0.82
+preferred_distance = 10.0
+threat_weight = 1.0
+threat_value = 2
+navigation_radius = 0.4
+weak_point_multiplier = 1.8
+reaction_profile = ExtResource("2")
+score_value = 260

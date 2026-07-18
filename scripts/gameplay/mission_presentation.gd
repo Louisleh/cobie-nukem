@@ -158,6 +158,9 @@ func on_player_died(_source: Node) -> void:
 		_mobile_controls.release_all()
 	if _pause_menu != null:
 		_pause_menu.close_for_death()
+	var game_state := get_node_or_null("/root/GameState")
+	if game_state != null:
+		game_state.mark_game_over()
 	if _death_screen != null:
 		_death_screen.show_death()
 

@@ -6,6 +6,7 @@ enum Cue { MOVE, ACCEPT, BACK, ERROR, PICKUP, SECRET, PAWSTOL, BARKSHOT, FETCH, 
 @export var bus := &"SFX"
 var _player: AudioStreamPlayer
 static var _shared_cache: Dictionary = {}
+static var _menu_music_cache: AudioStreamWAV
 var _voices: Array[AudioStreamPlayer] = []
 
 func _ready() -> void:
@@ -62,9 +63,11 @@ func prewarm_runtime() -> void:
 		prewarm(cue)
 
 func create_menu_music() -> AudioStreamWAV:
+	if _menu_music_cache != null:
+		return _menu_music_cache
 	var notes := [110.0, 110.0, 146.83, 164.81, 110.0, 196.0, 174.61, 146.83]
 	var duration := 8.0
-	return _synthesize(duration, func(time: float) -> float:
+	_menu_music_cache = _synthesize(duration, func(time: float) -> float:
 		var step := mini(int(time / 0.25), notes.size() * 4 - 1)
 		var frequency: float = notes[step % notes.size()] * (2.0 if step % 8 == 7 else 1.0)
 		var pulse := 0.16 if fmod(time * frequency, 1.0) < 0.5 else -0.16
@@ -73,6 +76,7 @@ func create_menu_music() -> AudioStreamWAV:
 		var beat := exp(-fmod(time, 0.5) * 18.0) * sin(TAU * 54.0 * time) * 0.16
 		return pulse + bass + beat
 	, true)
+	return _menu_music_cache
 
 func _build_cue(cue: Cue) -> AudioStreamWAV:
 	match cue:

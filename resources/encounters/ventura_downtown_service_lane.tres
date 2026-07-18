@@ -1,0 +1,26 @@
+[gd_resource type="Resource" script_class="EncounterDefinition" load_steps=2 format=3]
+[ext_resource type="Script" path="res://scripts/gameplay/encounter_definition.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = &"ventura_downtown_service_lane"
+zone_id = &"downtown_service_lane"
+display_name = "SERVICE LANE PATROL"
+schema_version = 2
+spawns = []
+waves = Array[Dictionary]([{
+"spawns": [
+	{"scene":"res://scenes/enemies/beach_patrol_enforcer.tscn","position":Vector3(-6.0,0.0,0.0)},
+	{"scene":"res://scenes/enemies/citation_pelican.tscn","position":Vector3(6.0,2.5,-2.0)},
+	{"scene":"res://scenes/enemies/compliance_hound.tscn","position":Vector3(0.0,0.0,3.0)},
+	{"scene":"res://scenes/enemies/compliance_gull.tscn","position":Vector3(-3.0,2.5,1.0)}
+]}, {
+	"delay_seconds": 1.4,
+	"spawns": [
+	{"scene":"res://scenes/enemies/squirrel_trooper.tscn","position":Vector3(2.0,0.0,14.0)},
+	{"scene":"res://scenes/enemies/umbrella_shield_enforcer.tscn","position":Vector3(7.0,0.0,18.0)}
+]}])
+enemy_budget = 8
+maximum_simultaneous_attackers = 4
+music_intensity = 0.38
+reward_policy = &"authored"

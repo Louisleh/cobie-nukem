@@ -205,15 +205,15 @@ func _build_story_objects() -> void:
 	opening_sign.read.connect(_on_sign_read)
 	opening_sign.secret_requested.connect(_on_secret_discovered)
 	interactables.add_child(opening_sign)
-	_sign("MUTANT-FREE ZONE\n(Inspection Pending)", Vector3(5, 1.5, -27), 180, "ShedPolicySign")
+	_sign("MUTANT-FREE ZONE\n(Inspection Pending)", Vector3(5, 1.5, -27), 0, "ShedPolicySign")
 	# Mount the tunnel policy board flat against the west wall, facing inward.
 	# Its former across-corridor orientation buried half the four-metre board in
 	# the boundary and created a large invisible collision obstruction.
 	_sign("LEASH LENGTH SUBJECT TO\nALGORITHMIC REVIEW", Vector3(-4.78, 2.05, -58), 90, "TunnelPolicySign")
-	_sign("GOOD DOG STATUS:\nREVOKED", Vector3(6, 1.5, -91), 180, "LabStatusSign")
-	_sign("EMPLOYEE OF THE MONTH:\nVACUUM CLEANER", Vector3(-7, 1.5, -108), 180, "LabEmployeeSign")
-	_sign("JOY EVENT DETECTED.\nINCIDENT CREATED.", Vector3(7, 1.5, -116), 180, "LabIncidentSign")
-	_sign("FETCH THIS!", Vector3(0, 2.0, -164), 180, "ArenaFinaleSign")
+	_sign("GOOD DOG STATUS:\nREVOKED", Vector3(6, 1.5, -91), 0, "LabStatusSign")
+	_sign("EMPLOYEE OF THE MONTH:\nVACUUM CLEANER", Vector3(-7, 1.5, -108), 0, "LabEmployeeSign")
+	_sign("JOY EVENT DETECTED.\nINCIDENT CREATED.", Vector3(7, 1.5, -116), 0, "LabIncidentSign")
+	_sign("FETCH THIS!", Vector3(0, 2.0, -164), 0, "ArenaFinaleSign")
 
 	var shed_gate := DoorScene.instantiate() as LevelDoor
 	shed_gate.name = "ShedGate"
@@ -311,6 +311,7 @@ func _add_zone(id: StringName, title: String, position_value: Vector3, size: Vec
 func _sign(text: String, position_value: Vector3, rotation_y: float, node_name := "NarrativeSign") -> void:
 	var sign := SignScene.instantiate() as NarrativeSign
 	sign.name = node_name
+	sign.sign_id = StringName(node_name.to_snake_case())
 	sign.sign_text = text
 	sign.position = position_value
 	sign.rotation_degrees.y = rotation_y

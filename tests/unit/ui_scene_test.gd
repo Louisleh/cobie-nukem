@@ -65,7 +65,7 @@ func _check_level_select_contract() -> void:
 	var instance := packed.instantiate()
 	var levels: Array = instance.get("levels")
 	if levels.size() != 5:
-		failures.append("Level select needs two playable and three future cards")
+		failures.append("Level select needs the complete five-mission campaign")
 	else:
 		var always_available := 0
 		var campaign_routes := 0
@@ -91,10 +91,10 @@ func _check_level_select_contract() -> void:
 				beta_cards += 1
 				if data.launch_notice.strip_edges().is_empty():
 					failures.append("Beta level card needs a visible work-in-progress notice")
-		if always_available != 3 or campaign_routes != 0 or locked_teasers != 2:
-			failures.append("Level select must expose Salmon Creek, Rain City, and Mount Hood plus two locked teasers")
-		if beta_cards != 2:
-			failures.append("Rain City and Mount Hood must carry honest public BETA badges")
+		if always_available != 5 or campaign_routes != 0 or locked_teasers != 0:
+			failures.append("All five public-development missions must be independently selectable")
+		if beta_cards != 4:
+			failures.append("Rain City, Mount Hood, Moon, and Ventura must carry honest public BETA badges")
 	var scroll := instance.get_node_or_null("SafeArea/Main/CourseScroll") as ScrollContainer
 	if scroll == null or scroll.horizontal_scroll_mode == ScrollContainer.SCROLL_MODE_DISABLED:
 		failures.append("Level cards must remain reachable in narrow viewports")
@@ -120,9 +120,7 @@ func _check_level_select_activation_contract() -> void:
 	else:
 		var first_card := row.get_child(0) as Button
 		var rain_city_card := row.get_child(1) as Button
-		# Mount Hood is the third, always-playable BETA card. The first locked
-		# teaser is now the Moon card at index 3.
-		var locked_card := row.get_child(3) as Button
+		var moon_card := row.get_child(3) as Button
 		var title := instance.get_node_or_null("SafeArea/Main/MissionPanel/MissionMargin/Mission/Info/LevelTitle") as Label
 		var play := instance.get_node_or_null("SafeArea/Main/Footer/PlayButton") as Button
 		var selects_only := false
@@ -135,17 +133,17 @@ func _check_level_select_activation_contract() -> void:
 			failures.append("Mission-card press must select only; explicit Start owns scene launch")
 		var initial_title := title.text if title != null else ""
 		var initial_action := play.text if play != null else ""
-		locked_card.emit_signal("mouse_entered")
-		locked_card.emit_signal("focus_entered")
+		moon_card.emit_signal("mouse_entered")
+		moon_card.emit_signal("focus_entered")
 		if int(instance.get("_selected")) != 0 or (title != null and title.text != initial_title) or (play != null and play.text != initial_action):
 			failures.append("Hover and focus must not commit a different mission selection")
-		locked_card.emit_signal("pressed")
-		if int(instance.get("_selected")) != 3 or (play != null and (play.text != "LOCKED" or not play.disabled)):
-			failures.append("Activating a locked teaser must commit its details and a disabled LOCKED action")
+		moon_card.emit_signal("pressed")
+		if int(instance.get("_selected")) != 3 or (play != null and (play.text != "START BETA" or play.disabled)):
+			failures.append("Activating Moon must commit its details and an enabled explicit START BETA action")
 		rain_city_card.emit_signal("pressed")
 		if not bool(instance.get("_warmup_ready")) or (play != null and (play.text != "START BETA" or play.disabled)):
 			failures.append("Rain City warmup paths must validate before enabling START BETA")
-		locked_card.emit_signal("mouse_entered")
+		moon_card.emit_signal("mouse_entered")
 		if int(instance.get("_selected")) != 1 or (play != null and play.text != "START BETA"):
 			failures.append("Crossing a locked card on the way to Start must preserve the committed Rain City selection")
 		first_card.emit_signal("pressed")

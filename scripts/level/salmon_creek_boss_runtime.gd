@@ -16,6 +16,7 @@ var _objectives: ObjectiveTracker
 var _spawn_pickup: Callable
 var _cannon_attacks := 0
 var _reward_timer: Timer
+var _last_health_fraction := -1.0
 
 
 func configure(pacing: SalmonCreekPacingProfile, golden_ball: GoldenBallFinale, objectives: ObjectiveTracker, spawn_pickup: Callable) -> bool:
@@ -36,10 +37,13 @@ func bind_walker(value: Node) -> bool:
 	if walker is EnemyAgent and walker.definition != null:
 		walker.definition.preferred_distance = walker.definition.attack_range
 		walker.definition.retreat_distance = _pacing.pressure_distance.x
-		boss_state_changed.emit(_pacing.phase_id(0), walker.health_fraction())
+		_last_health_fraction = walker.health_fraction()
+		boss_state_changed.emit(_pacing.phase_id(0), _last_health_fraction)
 		narrative_message.emit(_pacing.phase_cue(0), 2.5)
 	if walker.has_signal("boss_phase_changed"):
 		walker.boss_phase_changed.connect(_on_phase_changed)
+	if walker.has_signal("damaged"):
+		walker.damaged.connect(_on_walker_damaged)
 	if walker.has_signal("attack_fired"):
 		walker.attack_fired.connect(_on_attack_fired)
 	if walker.has_signal("walker_defeated"):
@@ -58,6 +62,7 @@ func reset(clear_summons := true) -> void:
 	walker = null
 	phase_rewards.clear()
 	_cannon_attacks = 0
+	_last_health_fraction = -1.0
 	for pickup in phase_pickups:
 		if is_instance_valid(pickup):
 			pickup.queue_free()
@@ -69,7 +74,8 @@ func reset(clear_summons := true) -> void:
 func _on_phase_changed(_previous: int, phase: int) -> void:
 	if not is_instance_valid(walker):
 		return
-	boss_state_changed.emit(_pacing.phase_id(phase), walker.health_fraction())
+	_last_health_fraction = walker.health_fraction()
+	boss_state_changed.emit(_pacing.phase_id(phase), _last_health_fraction)
 	var cue := _pacing.phase_cue(phase)
 	if not cue.is_empty():
 		phase_caption.emit(cue, 3.0)
@@ -83,7 +89,23 @@ func _on_phase_changed(_previous: int, phase: int) -> void:
 	var pickup: Node = _spawn_pickup.call(String(recovery.scene), recovery.position)
 	if pickup != null:
 		phase_pickups.append(pickup)
-	narrative_message.emit("ARENA RECOVERY DROP DEPLOYED", 2.0)
+		narrative_message.emit("ARENA RECOVERY DROP DEPLOYED", 2.0)
+
+
+func _on_walker_damaged(_amount: float, _source: Node, _hit_position: Vector3) -> void:
+	_emit_damage_health.call_deferred()
+
+
+func _emit_damage_health() -> void:
+	if not is_instance_valid(walker):
+		return
+	# Phase captions are sparse authored beats; health is continuous combat
+	# information and must track every accepted hit down to zero.
+	var fraction: float = float(walker.health_fraction())
+	if is_equal_approx(fraction, _last_health_fraction):
+		return
+	_last_health_fraction = fraction
+	boss_state_changed.emit(_pacing.phase_id(int(walker.get("boss_phase"))), fraction)
 
 
 func _on_attack_fired(_kind: StringName) -> void:
@@ -96,6 +118,7 @@ func _on_attack_fired(_kind: StringName) -> void:
 
 
 func _on_walker_defeated() -> void:
+	_last_health_fraction = 0.0
 	boss_state_changed.emit(&"defeated", 0.0)
 	_objectives.record(ObjectiveDefinition.Kind.DEFEAT, &"animal_control_walker")
 	_clear_boss_summons()

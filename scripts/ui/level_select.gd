@@ -2,6 +2,7 @@ class_name LevelSelectController
 extends Control
 
 @export var levels: Array[LevelCardData] = []
+@export var episode_definition: EpisodeDefinition
 @export_file("*.tscn") var menu_scene_path := "res://scenes/menus/main_menu.tscn"
 @export var campaign_unlock_override := false
 @export var threaded_warmup_enabled := true
@@ -32,9 +33,12 @@ var _warmup_paths := PackedStringArray()
 var _warmup_resources: Array[Resource] = []
 var _warmup_ready := false
 var _warmup_failed := false
+var _warmup_locked := false
 
 func _ready() -> void:
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+	if episode_definition != null:
+		levels = episode_definition.cards.duplicate()
 	%BuildLabel.text = BuildInfo.label()
 	GameState._set_phase(GameState.Phase.MENU)
 	_prepare_campaign_progress()
@@ -69,6 +73,7 @@ func _process(_delta: float) -> void:
 		var status := ResourceLoader.load_threaded_get_status(path, progress)
 		if status == ResourceLoader.THREAD_LOAD_FAILED or status == ResourceLoader.THREAD_LOAD_INVALID_RESOURCE:
 			_warmup_failed = true
+			_set_warmup_controls_locked(false)
 			play_button.disabled = true
 			play_button.focus_mode = Control.FOCUS_NONE
 			play_button.text = "LOAD FAILED"
@@ -89,6 +94,7 @@ func _process(_delta: float) -> void:
 		var resource := ResourceLoader.load_threaded_get(path)
 		if resource == null:
 			_warmup_failed = true
+			_set_warmup_controls_locked(false)
 			return
 		_warmup_resources.append(resource)
 	_warmup_ready = true
@@ -175,6 +181,9 @@ func _build_difficulty_selector() -> void:
 	_update_difficulty_blurb()
 
 func _on_difficulty_pressed(profile: DifficultyProfile) -> void:
+	if _launching or _warmup_locked:
+		_sync_difficulty_buttons()
+		return
 	if GameState.select_difficulty(profile.id):
 		sounds.play(ProceduralAudio.Cue.ACCEPT, -6.0)
 	else:
@@ -233,6 +242,7 @@ func _begin_warmup(data: LevelCardData) -> void:
 	_warmup_paths = data.warmup_paths() if data != null else PackedStringArray()
 	_warmup_ready = _warmup_paths.is_empty()
 	_warmup_failed = false
+	_set_warmup_controls_locked(not _warmup_ready and data.is_available(_campaign_progress, _development_unlock_override()))
 	if not data.is_available(_campaign_progress, _development_unlock_override()):
 		_refresh_selected_action()
 		return
@@ -245,6 +255,7 @@ func _begin_warmup(data: LevelCardData) -> void:
 				_warmup_failed = true
 				break
 		_warmup_ready = not _warmup_failed
+		_set_warmup_controls_locked(false)
 		_refresh_selected_action()
 		return
 	play_button.disabled = true
@@ -259,6 +270,7 @@ func _begin_warmup(data: LevelCardData) -> void:
 			status_label.text = "MISSION ASSETS OFFLINE // %s" % path.get_file()
 			break
 	if _warmup_paths.is_empty():
+		_set_warmup_controls_locked(false)
 		_refresh_selected_action()
 
 
@@ -278,6 +290,7 @@ func _refresh_selected_action() -> void:
 	else:
 		play_button.text = ("START %s" % data.status_badge(_campaign_progress, _development_unlock_override())) if data.is_preview_release(_campaign_progress, _development_unlock_override()) else "START MISSION"
 		status_label.text = data.launch_notice if data.is_preview_release(_campaign_progress, _development_unlock_override()) and not data.launch_notice.strip_edges().is_empty() else "READY // PRESS START"
+	_set_warmup_controls_locked(false)
 
 
 func _on_card_pressed(index: int) -> void:
@@ -304,9 +317,6 @@ func _activate(index: int) -> void:
 	_launching = true
 	_set_launch_controls_disabled(true)
 	status_label.text = "LOADING %s..." % data.title.to_upper()
-	SaveManager.delete_slot(&"checkpoint")
-	GameState.continue_requested = false
-	GameState.begin_run(data.level_id)
 	# Browser pointer lock must be requested synchronously from a trusted click or
 	# key activation. Player._ready() runs after that gesture has expired, which
 	# made a pause/resume round trip appear to "fix" mouse aiming. Capture here,
@@ -322,6 +332,10 @@ func _activate(index: int) -> void:
 		status_label.text = "MISSION ROUTE OFFLINE"
 		sounds.play(ProceduralAudio.Cue.ERROR)
 		_select(index)
+		return
+	SaveManager.delete_slot(&"checkpoint")
+	GameState.continue_requested = false
+	GameState.begin_run(data.level_id)
 
 
 func _set_launch_controls_disabled(disabled: bool) -> void:
@@ -330,8 +344,21 @@ func _set_launch_controls_disabled(disabled: bool) -> void:
 	play_button.focus_mode = Control.FOCUS_NONE if play_button.disabled else Control.FOCUS_ALL
 	for index in _cards.size():
 		_cards[index].disabled = disabled
+	for button in _difficulty_buttons:
+		button.disabled = disabled
+	%BackButton.disabled = disabled
+
+func _set_warmup_controls_locked(value: bool) -> void:
+	_warmup_locked = value
+	for card in _cards:
+		card.disabled = value
+	for button in _difficulty_buttons:
+		button.disabled = value
+	%BackButton.disabled = value
 
 func _back() -> void:
+	if _launching or _warmup_locked:
+		return
 	SceneRouter.go_to(menu_scene_path)
 
 func _first_available_index() -> int:

@@ -89,6 +89,22 @@ func _check_runtime_world() -> void:
 	_expect(mission._world_builder != null and mission._world_builder.golden_ball != null, "Mount Hood builds its authored world and gated Golden Ball")
 	_expect(mission._world_builder.navigation_region.navigation_mesh.get_polygon_count() > 0, "Mount Hood bakes reachable production navigation")
 	_expect(not mission._world_builder.golden_ball.enabled, "Golden Ball starts unavailable")
+	var pantry := mission._world_builder.interactables.get_node_or_null("LevelSwitch")
+	for child in mission._world_builder.interactables.get_children():
+		if child is LevelSwitch and (child as LevelSwitch).switch_id == &"secret_treat_pantry": pantry = child
+	_expect(pantry != null and (pantry as Node3D).position.x < -11.0, "Treat-pantry secret remains outside solid lodge collision")
+	mission._restored_checkpoint = {
+		"objective_snapshot": {},
+		"encounter_snapshot": {"completed": [], "active": {"forest_pullout": {"wave": 0, "remaining": 1}}},
+		"route_snapshot": {"route_id": "mount_hood_whiteout_route", "current_zone": "forest_pullout", "current_index": 0, "visited_zones": ["forest_pullout"], "checkpoint_id": "checkpoint_forest_start"},
+		"secrets": {},
+	}
+	mission._restore_runtime_state()
+	await process_frame
+	_expect(mission._mission_runtime.encounters.active.has(&"forest_pullout"), "Continue reactivates the unfinished checkpoint encounter")
+	if mission._mission_runtime.encounters.active.has(&"forest_pullout"):
+		var restored_state: Dictionary = mission._mission_runtime.encounters.active[&"forest_pullout"]
+		_expect(not (restored_state.get("actors", []) as Array).is_empty(), "Continue rebuilds live actors rather than preserving an empty active marker")
 	var snowcat := load("res://scenes/enemies/municipal_snowcat.tscn") as PackedScene
 	var snowcat_instance := snowcat.instantiate() as MunicipalSnowcat
 	_expect(snowcat_instance != null and snowcat_instance.definition.max_health == 1000.0, "Snowcat owns the readable 1,000 HP boss baseline")
@@ -109,6 +125,9 @@ func _check_runtime_world() -> void:
 		for frame in 30: await physics_frame
 		_expect(lift.position.distance_to(lift_start) > 0.1, "Chairlift advances while riding")
 		_expect(rider.global_position.distance_to(rider_start) > 0.1, "Chairlift carries its interacting rider")
+		lift.position = lift.end_position
+		lift._physics_process(0.1)
+		_expect(rider.global_position.y < 3.0, "Chairlift releases riders onto the authored ground-level summit route")
 		lift.reset_lift()
 		for cycle in 100:
 			lift.set_enabled(true); lift.interact(null); lift._physics_process(0.1); lift.reset_lift()

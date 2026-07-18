@@ -63,6 +63,8 @@ Core families are wet turf, painted concrete, laboratory panels, rusted municipa
 | Salmon Creek | Wet turf, field paint, damp timber, utility concrete, laboratory panels, tunnel masonry, Walker-arena metal |
 | Rain City | Wet asphalt, rain-darkened brick, glass panels, seawall concrete, harbour steel, painted municipal metal, terminal flooring, warm Slice tile/awning, wet wood, route decals |
 | Mount Hood | Fresh powder, packed/plowed snow, icy slush, exposed rock, plowed asphalt, lodge timber, lodge stone, lift steel, frosted glass, warm windows |
+| Moon | Charcoal regolith, pale crater dust, exposed lunar rock, habitat panels, pressure glass, rover tracks, antenna metal, cyan life-support systems, amber safety markings |
+| Ventura | Sun-bleached asphalt, warm stucco, dry and wet sand, promenade concrete, marina steel, pier timber, surf foam, painted lifeguard metal, sunset glass |
 
 Every family keeps an editable source graph plus deterministic Web-safe albedo, normal, and packed ORM output. Base textures tile; signs, jokes, road markings, puddles, footprints, and unique grime remain separate overlays. Production validation rejects a zone whose identity or manifested families are missing.
 

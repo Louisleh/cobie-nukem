@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="ObjectiveDefinition" load_steps=2 format=3]
+[ext_resource type="Script" path="res://scripts/gameplay/objective_definition.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = &"moon_defeat_leashmaster"
+title = "DEFEAT THE LUNAR LEASHMASTER"
+kind = 3
+target_id = &"lunar_leashmaster"
+prerequisite_ids = Array[StringName]([&"moon_silence_satellite_array"])

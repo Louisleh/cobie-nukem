@@ -2,7 +2,16 @@
 
 This file distinguishes confirmed product limitations from unperformed validation. Update it for every release candidate; do not silently convert “not tested” into “passed.”
 
-## `0.8.0-alpha.1-rc1` candidate gates
+## Five-mission candidate gates
+
+- **Dark Side of Fetch** and **Pier Pressure** are complete automated-route public betas, not human-approved final missions. Each has five zones, five checkpoints, five secrets, six objectives, 28 regular enemy placements, difficulty pressure caps, a typed 1,000-HP modular boss, post-defeat Golden Ball gating, checkpoint restore, and campaign continuation. Their modular environment kits and inherited enemy rigs are production foundations; bespoke hero animation, imported mission-specific audio, final materials, human encounter tuning, and physical-iPad review remain open.
+- Levels 2–5 intentionally display `BETA`. No automated route simulation, headless boss cycle, screenshot, or packaged-browser smoke test authorizes removing those labels.
+- The five-mission campaign graph, startup transaction guard, save-v5 checkpoints, mission loadouts, pointer recovery, and replay/continue routes have automated coverage. Full human title-to-Level-5 continuity on target Mac and iPad remains required.
+- Moon and Ventura currently ship in the main public bundle. The reusable mission-pack loader is a validated future packaging boundary, not a claim that optional content is downloaded on demand.
+- Moon vacuum/decompression hazards and Ventura tide/surf hazards are bounded typed gameplay components. Their timing, spectacle, readability, and comfort require human review.
+- The Lunar Ordinance Walker and Municipal Tidebreaker use the shared modular boss framework with mission-specific phase data and presentation. Bespoke final hero art and motion remain open.
+
+## Archived `0.8.0-alpha.1-rc1` candidate gates
 
 - Mount Hood Whiteout is an always-available public-development `BETA`, not a human-approved final mission. Its five-zone route, objectives, encounters, navigation, traction profiles, chairlift resets, Snowcat gating, saves/resources, and package eligibility have automated coverage. Physical iPad touch/thermal/audio, target-Mac pacing, final environmental art, enemy animation quality, boss fairness, mix, humor, and photosensitivity remain human gates.
 - Rain City remains labelled `BETA`. This cycle does not remove the badge because target-Mac, Safari/Chrome full routes, physical-iPad completion, route pacing, Towmaster feel, final art/mix, humor, and photosensitivity approval remain open.

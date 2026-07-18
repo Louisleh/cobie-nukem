@@ -1,0 +1,8 @@
+[gd_resource type="Resource" script_class="MissionWarmupProfile" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/mission_warmup_profile.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = &"moon_warmup"
+critical_paths = PackedStringArray("res://scenes/player/cobie_player.tscn", "res://scenes/enemies/lunar_kennel_sentinel.tscn", "res://scenes/enemies/vacuum_compliance_orb.tscn", "res://scenes/enemies/lunar_leashmaster.tscn")

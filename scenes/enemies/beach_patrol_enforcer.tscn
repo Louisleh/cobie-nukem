@@ -1,0 +1,5 @@
+[gd_scene load_steps=3 format=3]
+[ext_resource type="PackedScene" path="res://scenes/enemies/umbrella_shield_enforcer.tscn" id="1"]
+[ext_resource type="Resource" path="res://resources/enemies/beach_patrol_enforcer.tres" id="2"]
+[node name="BeachPatrolEnforcer" instance=ExtResource("1")]
+definition = ExtResource("2")

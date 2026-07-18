@@ -12,6 +12,7 @@ extends Control
 @onready var sounds: ProceduralAudio = %ProceduralAudio
 @onready var music: AudioStreamPlayer = %Music
 var _layout_frames_remaining := 2
+var _routing := false
 
 func _ready() -> void:
 	modulate.a = 0.0
@@ -57,8 +58,8 @@ func _wire_button(button: Button, callback: Callable) -> void:
 	button.mouse_entered.connect(button.grab_focus)
 
 func _new_game() -> void:
-	GameState.continue_requested = false
-	_route(level_select_scene_path)
+	if _route(level_select_scene_path):
+		GameState.continue_requested = false
 
 func _continue_game() -> void:
 	var checkpoint := CheckpointPayload.sanitize(SaveManager.load_slot(&"checkpoint"))
@@ -69,17 +70,31 @@ func _continue_game() -> void:
 		status_label.text = "CHECKPOINT UNREADABLE // START A NEW RUN"
 		sounds.play(ProceduralAudio.Cue.ERROR)
 		return
-	GameState.select_difficulty(StringName(String(checkpoint.difficulty_id)))
-	GameState.continue_requested = true
-	GameState.begin_run(StringName(String(checkpoint.level_id)))
-	_route(String(checkpoint.scene_path))
+	if not MobileControls.touchscreen_expected():
+		PointerCaptureController.request_from_launch_gesture()
+	if _route(String(checkpoint.scene_path)):
+		GameState.select_difficulty(StringName(String(checkpoint.difficulty_id)))
+		GameState.continue_requested = true
+		GameState.begin_run(StringName(String(checkpoint.level_id)))
+	else:
+		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 
-func _route(path: String) -> void:
+func _route(path: String) -> bool:
+	if _routing:
+		return false
 	var result := SceneRouter.go_to(path)
 	if result != OK:
 		status_label.visible = true
 		status_label.text = "ROUTE OFFLINE // %s" % path.get_file()
 		sounds.play(ProceduralAudio.Cue.ERROR)
+		return false
+	_routing = true
+	_set_buttons_disabled(true)
+	return true
+
+func _set_buttons_disabled(value: bool) -> void:
+	for button in [%NewGameButton, continue_button, %InputSetupButton, %OptionsButton, %CreditsButton, %QuitButton]:
+		button.disabled = value
 
 func _quit() -> void:
 	if OS.has_feature("web"):

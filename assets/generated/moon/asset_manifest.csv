@@ -1,0 +1,7 @@
+asset_type,asset_id,source_path,description,provenance_source,license
+mission_contract,moon_manifest,resources/content/moon_manifest.tres,Mission manifest for five-zone Moon BETA,In-repo authored metadata,project-original
+presentation_profile,moon_landing_pad_presentation,resources/presentation/moon_landing_pad.tres,Landing pad visual identity profile,In-repo authored content contract,project-original
+presentation_profile,moon_habitat_lab_presentation,resources/presentation/moon_habitat_lab.tres,Habitat lab visual identity profile,In-repo authored content contract,project-original
+presentation_profile,moon_crater_trench_presentation,resources/presentation/moon_crater_trench.tres,Crater trench visual identity profile,In-repo authored content contract,project-original
+presentation_profile,moon_satellite_array_presentation,resources/presentation/moon_satellite_array.tres,Satellite array visual identity profile,In-repo authored content contract,project-original
+presentation_profile,moon_leashmaster_crater_presentation,resources/presentation/moon_leashmaster_crater.tres,Leashmaster crater and finale visual identity profile,In-repo authored content contract,project-original

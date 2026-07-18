@@ -1,0 +1,163 @@
+[gd_resource type="Resource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/gameplay/biome_mission_profile.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+mission_id = &"ventura_pier_pressure"
+content_revision = 1
+intro_message = "EPISODE 5, VENTURA PIER PRESSURE\nSTART BETA"
+victory_line = "MISSION COMPLETE // PLATFORM SECURITY RESTORED."
+boss_display_name = "MUNICIPAL TIDEBREAKER"
+starting_zone_id = &"downtown_service_lane"
+boss_zone_id = &"offshore_platform"
+boss_enemy_id = &"ventura_tidebreaker"
+final_activation_target = &"marina_grid_controls"
+campaign_unlock_ids = []
+permanent_upgrade_ids = [&"new_game_plus"]
+zones = Array[Dictionary]([{
+	"id": &"downtown_service_lane",
+	"title": "DOWNTOWN SERVICE LANE",
+	"center": Vector3(0.0, 0.0, 8.0),
+	"size": Vector3(20.0, 6.0, 34.0),
+	"checkpoint_id": &"checkpoint_service_lane_entry",
+	"checkpoint_position": Vector3(0.0, 1.15, 10.0),
+	"reward_position": Vector3(0.0, 1.45, 22.0),
+	"surface": &"promenade_concrete"
+}, {
+	"id": &"surfers_point",
+	"title": "SURFERS POINT",
+	"center": Vector3(0.0, 0.0, -26.0),
+	"size": Vector3(24.0, 6.0, 32.0),
+	"checkpoint_id": &"checkpoint_surfers_point",
+	"checkpoint_position": Vector3(0.0, 1.15, -24.0),
+	"reward_position": Vector3(0.0, 1.45, -15.0),
+	"surface": &"wet_sand"
+}, {
+	"id": &"marina_service_docks",
+	"title": "MARINA SERVICE DOCKS",
+	"center": Vector3(0.0, 0.0, -60.0),
+	"size": Vector3(26.0, 6.0, 32.0),
+	"checkpoint_id": &"checkpoint_marina_service_docks",
+	"checkpoint_position": Vector3(0.0, 1.15, -58.0),
+	"reward_position": Vector3(0.0, 1.45, -48.0),
+	"surface": &"marina_steel"
+}, {
+	"id": &"ventura_pier",
+	"title": "VENTURA PIER",
+	"center": Vector3(0.0, 0.0, -94.0),
+	"size": Vector3(24.0, 6.0, 34.0),
+	"checkpoint_id": &"checkpoint_ventura_pier",
+	"checkpoint_position": Vector3(0.0, 1.15, -93.0),
+	"reward_position": Vector3(0.0, 1.45, -88.0),
+	"surface": &"timber_pier"
+}, {
+	"id": &"offshore_platform",
+	"title": "OFFSHORE PLATFORM",
+	"center": Vector3(0.0, 0.0, -132.0),
+	"size": Vector3(28.0, 6.0, 36.0),
+	"checkpoint_id": &"checkpoint_offshore_platform",
+	"checkpoint_position": Vector3(0.0, 1.15, -130.0),
+	"reward_position": Vector3(0.0, 1.45, -144.0),
+	"surface": &"offshore_metal"
+}])
+objective_switches = [{
+	"id": &"service_permit_booth",
+	"prompt": "REQUEST SERVICE PERMIT",
+	"position": Vector3(0.0, 1.2, -3.0)
+}, {
+	"id": &"marina_grid_controls",
+	"prompt": "OPEN MARINA GRID",
+	"position": Vector3(0.0, 1.2, -87.0)
+}]
+secrets = [{
+	"id": &"secret_service_banner",
+	"title": "SHELLY COVE SIGN CACHE",
+	"position": Vector3(-4.0, 1.2, -7.0)
+}, {
+	"id": &"secret_surfboard_receipt",
+	"title": "VINTAGE BOARDING RECEIPT",
+	"position": Vector3(3.5, 1.1, -28.0)
+}, {
+	"id": &"secret_mast_watch",
+	"title": "OLD MAST CALIBRATION SHEET",
+	"position": Vector3(-3.5, 2.0, -66.0)
+}, {
+	"id": &"secret_foam_drill",
+	"title": "DRY-FOAM TUBE BAG",
+	"position": Vector3(2.0, 1.3, -102.0)
+}, {
+	"id": &"secret_offshore_hush",
+	"title": "SALT-WEATHER RADIO LOG",
+	"position": Vector3(0.0, 1.7, -136.0)
+}]
+environment = {
+	"sky_top": "f7dd99",
+	"sky_horizon": "f0bf63",
+	"fog_color": "9ec5d4",
+	"ambient_energy": 0.77,
+	"fog_density": 0.05,
+	"light_yaw": -20.0,
+	"light_color": "ffcc70",
+	"light_energy": 1.2,
+	"floor_color": "d6ac69",
+	"accent_color": "f48b28"
+}
+landmarks = [{
+	"kind": "sign",
+	"id": &"ventura_service_sign",
+	"text": "OFFICIAL COMPLIANCE SERVICE ROUTE",
+	"position": Vector3(0.0, 4.0, -2.0),
+	"route_anchor": Vector3(0.0, 1.0, 6.0),
+	"color": "f6d6a1"
+}, {
+	"kind": "box",
+	"id": &"ventura_service_barrier",
+	"position": Vector3(-0.0, 0.75, -5.0),
+	"size": Vector3(18.0, 2.0, 2.0),
+	"color": "dfb77a",
+	"collision": false
+}, {
+	"kind": "sign",
+	"id": &"ventura_palm_grove",
+	"text": "NO DOGS BEYOND MARKER THREE",
+	"position": Vector3(2.5, 2.9, -24.5),
+	"route_anchor": Vector3(7.5, 1.0, -20.0),
+	"color": "f4d8a8"
+}, {
+	"kind": "sphere",
+	"id": &"ventura_sunset_ball",
+	"position": Vector3(-7.0, 4.5, -38.0),
+	"size": Vector3(1.0, 1.8, 1.0),
+	"color": "f8c15a",
+	"emissive": true
+}, {
+	"kind": "sign",
+	"id": &"ventura_marina_mast",
+	"text": "MARINA SERVICE MAINTENANCE",
+	"position": Vector3(-6.0, 3.6, -63.0),
+	"route_anchor": Vector3(-9.0, 1.0, -59.0),
+	"color": "f3d7ab"
+}, {
+	"kind": "box",
+	"id": &"ventura_pier_timber",
+	"position": Vector3(0.0, 1.0, -89.0),
+	"size": Vector3(20.0, 3.0, 2.8),
+	"color": "c58e54",
+	"collision": false
+}, {
+	"kind": "sign",
+	"id": &"ventura_offshore_hull",
+	"text": "PLATFORM REINFORCEMENT PLATE",
+	"position": Vector3(1.5, 2.8, -122.0),
+	"route_anchor": Vector3(5.0, 1.1, -118.0),
+	"color": "e9c58f"
+}, {
+	"kind": "sphere",
+	"id": &"ventura_horizon_sentinel",
+	"position": Vector3(-10.0, 6.2, -150.0),
+	"size": Vector3(2.0, 2.0, 2.0),
+	"color": "e7b05f",
+	"emissive": true
+}]
+lethal_volumes = []

@@ -87,6 +87,7 @@ func _test_finale_completion_and_checkpoint_clear() -> void:
 	})
 	var completions := [0]
 	level.level_completed.connect(func(_summary: Dictionary) -> void: completions[0] += 1)
+	_authorize_finale(level)
 	level._on_golden_ball_claimed(null)
 	level._on_golden_ball_claimed(null)
 	_expect(level.completion_started, "finale claim starts completion")
@@ -320,11 +321,19 @@ func _test_level_lifecycle_twice_in_one_process() -> void:
 		for milestone in EpisodeOneLevel.ROUTE_PROGRESS:
 			level._enter_zone(StringName(milestone[1]), String(milestone[2]), null)
 		_expect(level.spawned_zones.has(&"walker_arena"), "lifecycle %d arms the boss encounter" % lifecycle)
+		_authorize_finale(level)
 		level._on_golden_ball_claimed(null)
 		await create_timer(1.4).timeout
 		_expect(game_state.phase == game_state.Phase.VICTORY, "lifecycle %d reaches victory" % lifecycle)
 		level.free()
 		await process_frame
+
+
+func _authorize_finale(level: EpisodeOneLevel) -> void:
+	# This helper bypasses the route only to isolate finale idempotence; production
+	# progression still reaches the same completed objective through the boss.
+	level._objective_tracker.completed[&"defeat_walker"] = true
+	level._golden_ball.enable_as_reward()
 
 
 func _test_enemy_drop_contract() -> void:

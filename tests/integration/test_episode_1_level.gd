@@ -101,6 +101,15 @@ func _initialize() -> void:
 	check(player.is_in_group(&"player"), "Player identity group missing; zone progression cannot trigger")
 	check(player.is_in_group(&"damageable_player"), "Player damageable identity group missing")
 	level.player = player
+	if save_manager != null:
+		player.health_armor.health = 42.0
+		player.health_armor.armor = 17.0
+		level._save_checkpoint_payload(&"lab_entry", Vector3(0, 1.5, -87))
+		var v5_checkpoint := CheckpointPayload.sanitize(save_manager.load_slot(&"checkpoint"))
+		check(v5_checkpoint.get("content_revision", 0) == EpisodeOneLevel.CONTENT_REVISION, "Salmon checkpoint records its content revision")
+		check(not v5_checkpoint.get("active_mission_upgrades", {}).is_empty(), "Salmon checkpoint persists mission loadout and weapon ammo")
+		check(is_equal_approx(float(v5_checkpoint.get("player_state", {}).get("health", 0.0)), 42.0), "Salmon checkpoint persists player health")
+		check(is_equal_approx(float(v5_checkpoint.get("player_state", {}).get("armor", 0.0)), 17.0), "Salmon checkpoint persists player armor")
 	player.health_armor.health = 1.0
 	level.restart_from_checkpoint()
 	var runtime_loot_interaction := _find_interaction_by_kind(level, WorldInteractionDefinition.Kind.LOOT_CONTAINER)
@@ -213,6 +222,7 @@ func _initialize() -> void:
 		await process_frame
 		check(not game_state.continue_requested, "Continue request flag is consumed during checkpoint restore")
 		check(game_state.run_stats.get("checkpoint_id", "") == "lab_entry", "Continue restore applies sanitized checkpoint identity to run stats")
+		check(continue_level.checkpoint_position.is_equal_approx(EpisodeOneLevel.CHECKPOINT_POSITIONS[&"lab_entry"]), "Legacy Salmon checkpoint remaps obsolete coordinates to its authored anchor")
 		continue_level.queue_free()
 		save_manager.delete_slot(&"checkpoint")
 	else:

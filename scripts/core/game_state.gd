@@ -141,6 +141,12 @@ func finish_run(extra_summary: Dictionary = {}) -> Dictionary:
 	run_ended.emit(summary)
 	return summary
 
+func mark_game_over() -> void:
+	# Death is a first-class phase: frame metrics and pause/focus consumers must
+	# not treat the death overlay as live gameplay.
+	get_tree().paused = false
+	_set_phase(Phase.GAME_OVER)
+
 func request_diagnostics() -> void:
 	_set_phase(Phase.DIAGNOSTICS)
 	diagnostics_requested.emit()

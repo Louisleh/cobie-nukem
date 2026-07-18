@@ -1,0 +1,24 @@
+[gd_resource type="Resource" script_class="ZonePresentationProfile" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/gameplay/zone_presentation_profile.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = &"moon_landing_pad_presentation"
+zone_id = &"lunar_landing_pad"
+palette_id = &"lunar_void_1"
+environment_identity_id = &"moon_charcoal_regolith_identity"
+texture_set_id = &"moon_surface_textures"
+material_family_ids = [&"moon_regolith", &"regolith_dust", &"lunar_ice_glaze"]
+surface_response_ids = [&"charcoal_regolith", &"lunar_dust", &"cold_glass"]
+dominant_landmark_id = &"earth_hemisphere"
+background_landmark_id = &"safety_beacon"
+lighting_budget = 4
+decal_budget = 18
+particle_budget = 58
+weather = &"clear"
+fog_color = Color(0.14, 0.22, 0.32, 1.0)
+fog_density = 0.08
+fog_enabled = true
+landmark_ids = [&"earth_hemisphere", &"safe_hatch", &"cyber_safety_line"]
+ambience_cue_id = &"vancouver_ambience_dock"

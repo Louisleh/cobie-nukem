@@ -1,0 +1,36 @@
+[gd_resource type="Resource" script_class="ContentManifest" load_steps=29 format=3]
+
+[ext_resource type="Script" path="res://scripts/gameplay/content_manifest.gd" id="1"]
+[ext_resource type="Resource" path="res://resources/difficulty/story.tres" id="2"]
+[ext_resource type="Resource" path="res://resources/difficulty/classic.tres" id="3"]
+[ext_resource type="Resource" path="res://resources/difficulty/mayhem.tres" id="4"]
+[ext_resource type="Resource" path="res://resources/objectives/ventura_reach_service_lane.tres" id="5"]
+[ext_resource type="Resource" path="res://resources/objectives/ventura_service_permit_booth.tres" id="6"]
+[ext_resource type="Resource" path="res://resources/objectives/ventura_reach_surfers_point.tres" id="7"]
+[ext_resource type="Resource" path="res://resources/objectives/ventura_marina_grid_controls.tres" id="8"]
+[ext_resource type="Resource" path="res://resources/objectives/ventura_defeat_ventura_tidebreaker.tres" id="9"]
+[ext_resource type="Resource" path="res://resources/objectives/ventura_complete_ventura_pier_pressure.tres" id="10"]
+[ext_resource type="Resource" path="res://resources/encounters/ventura_downtown_service_lane.tres" id="11"]
+[ext_resource type="Resource" path="res://resources/encounters/ventura_surfers_point.tres" id="12"]
+[ext_resource type="Resource" path="res://resources/encounters/ventura_marina_service_docks.tres" id="13"]
+[ext_resource type="Resource" path="res://resources/encounters/ventura_ventura_pier.tres" id="14"]
+[ext_resource type="Resource" path="res://resources/encounters/ventura_offshore_platform.tres" id="15"]
+[ext_resource type="Resource" path="res://resources/routes/ventura_route_definition.tres" id="16"]
+[ext_resource type="Resource" path="res://resources/audio/ventura_mission_audio.tres" id="17"]
+[ext_resource type="Resource" path="res://resources/presentation/ventura_downtown_service_lane.tres" id="18"]
+[ext_resource type="Resource" path="res://resources/presentation/ventura_surfers_point.tres" id="19"]
+[ext_resource type="Resource" path="res://resources/presentation/ventura_marina_service_docks.tres" id="20"]
+[ext_resource type="Resource" path="res://resources/presentation/ventura_ventura_pier.tres" id="21"]
+[ext_resource type="Resource" path="res://resources/presentation/ventura_offshore_platform.tres" id="22"]
+
+[resource]
+script = ExtResource("1")
+content_version = 1
+level_id = &"ventura_pier_pressure"
+level_scene = "res://scenes/levels/ventura_pier_pressure.tscn"
+difficulty_profiles = Array[DifficultyProfile]([ExtResource("2"), ExtResource("3"), ExtResource("4")])
+objectives = Array[ObjectiveDefinition]([ExtResource("5"), ExtResource("6"), ExtResource("7"), ExtResource("8"), ExtResource("9"), ExtResource("10")])
+encounters = Array[EncounterDefinition]([ExtResource("11"), ExtResource("12"), ExtResource("13"), ExtResource("14"), ExtResource("15")])
+route_definition = ExtResource("16")
+audio_profile = ExtResource("17")
+zone_presentations = Array[ZonePresentationProfile]([ExtResource("18"), ExtResource("19"), ExtResource("20"), ExtResource("21"), ExtResource("22")])

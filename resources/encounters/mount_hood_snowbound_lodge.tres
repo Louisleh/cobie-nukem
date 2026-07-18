@@ -20,6 +20,6 @@ waves = Array[Dictionary]([{
 ]}
 ])
 enemy_budget = 5
-maximum_simultaneous_attackers = 3
+maximum_simultaneous_attackers = 4
 music_intensity = 0.55
 reward_policy = &"authored"

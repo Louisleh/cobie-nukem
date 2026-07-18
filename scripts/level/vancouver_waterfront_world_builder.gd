@@ -79,7 +79,7 @@ func build(owner: Node3D) -> bool:
 
 func _build_environment() -> void:
 	var world_environment := WorldEnvironment.new()
-	world_environment.name = "RainCityEnvironment"
+	world_environment.name = "WorldEnvironment"
 	var sky_material := ProceduralSkyMaterial.new()
 	sky_material.sky_top_color = Color("18283a")
 	sky_material.sky_horizon_color = Color("6e8795")
@@ -117,7 +117,7 @@ func _build_route() -> void:
 	_floor("HarbourPier", Vector3(0.0, -0.5, -153.0), Vector3(36.0, 1.0, 50.0), Color("39484e"), &"steel")
 	# Wide overlaps keep the baked navigation path continuous after agent-radius erosion.
 	for connector_z in [-19.0, -53.0, -95.0, -128.0]:
-		_floor("RouteConnector", Vector3(0.0, -0.48, connector_z), Vector3(10.0, 0.96, 8.0), Color("46545a"), &"concrete")
+		_floor("RouteConnector", Vector3(0.0, -0.51, connector_z), Vector3(10.0, 0.96, 8.0), Color("46545a"), &"concrete")
 	# Edge rails stop accidental route skips while leaving the authored forward path open.
 	for section in [
 		[11.0, -3.0, 34.0], [13.0, -36.0, 32.0], [17.0, -73.0, 42.0],

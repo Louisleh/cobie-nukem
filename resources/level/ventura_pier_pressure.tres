@@ -1,0 +1,40 @@
+[gd_resource type="Resource" script_class="LevelMetadata" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/level/level_metadata.gd" id="1"]
+[ext_resource type="Resource" path="res://resources/loadouts/ventura_loadout.tres" id="2"]
+
+[resource]
+script = ExtResource("1")
+level_id = &"ventura_pier_pressure"
+title = "VENTURA PIER PRESSURE"
+subtitle = "Sunset Enforcement"
+target_minutes_min = 18
+target_minutes_max = 24
+total_secrets = 5
+opening_objective = "OPEN SERVICE PERMIT BOOTH"
+replay_scene = "res://scenes/levels/ventura_pier_pressure.tscn"
+next_mission_id = &""
+next_mission_scene = ""
+next_mission_title = ""
+mission_loadout = ExtResource("2")
+zones = Array[Dictionary]([{
+"id": &"downtown_service_lane",
+"title": "DOWNTOWN SERVICE LANE",
+"target_minutes": 3.0
+}, {
+"id": &"surfers_point",
+"title": "SURFERS POINT",
+"target_minutes": 4.5
+}, {
+"id": &"marina_service_docks",
+"title": "MARINA SERVICE DOCKS",
+"target_minutes": 4.5
+}, {
+"id": &"ventura_pier",
+"title": "VENTURA PIER",
+"target_minutes": 5.0
+}, {
+"id": &"offshore_platform",
+"title": "OFFSHORE PLATFORM",
+"target_minutes": 7.0
+}])

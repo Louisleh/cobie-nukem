@@ -61,7 +61,7 @@ Open `http://localhost:8060`. The preset is single-threaded and does not require
 After both exports pass, stage the landing page and create verified distribution archives:
 
 ```bash
-SKIP_VALIDATION=1 VERSION=0.8.0-alpha.1-rc1 bash tools/package_release.sh
+SKIP_VALIDATION=1 VERSION=0.9.0-alpha.1-rc1 bash tools/package_release.sh
 python3 -m http.server 8060 --directory builds/pages
 ```
 
