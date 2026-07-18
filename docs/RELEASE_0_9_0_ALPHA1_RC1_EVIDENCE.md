@@ -4,9 +4,9 @@ Date: 2026-07-18
 
 Engine/export templates: Godot `4.7.stable.official.5b4e0cb0f`
 
-Runtime feature revision: `df84813`
+Runtime feature revision: `257d112`
 
-Source stamp revision: `0f6bacc5a14e2af3a13f76ec65c72c7ed89785bd`
+Source stamp revision: pending regenerated package commit
 
 Build ID: `2026-07-18-five-mission-public-beta-rc1`
 

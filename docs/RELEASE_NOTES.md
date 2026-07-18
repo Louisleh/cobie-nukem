@@ -1,6 +1,6 @@
 # Release Notes — 0.9.0-alpha.1-rc1 Five-Mission Public Beta
 
-Built on 2026-07-18 with Godot `4.7.stable.official.5b4e0cb0f`. Runtime feature revision: `df84813`; build ID: `2026-07-18-five-mission-public-beta-rc1`.
+Built on 2026-07-18 with Godot `4.7.stable.official.5b4e0cb0f`. Runtime feature revision: `257d112`; build ID: `2026-07-18-five-mission-public-beta-rc1`.
 
 ## Player-visible changes
 
