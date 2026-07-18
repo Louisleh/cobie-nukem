@@ -36,7 +36,6 @@ signal surface_footstep(surface: StringName, running: bool)
 @export_category("Interaction")
 @export var interaction_range := 3.0
 @export var interaction_mask := 1
-
 @onready var head: Node3D = $Head
 @onready var camera: Camera3D = $Head/Camera
 @onready var collision_shape: CollisionShape3D = $CollisionShape3D
@@ -44,7 +43,6 @@ signal surface_footstep(surface: StringName, running: bool)
 @onready var auto_aim: AutoAimComponent = $AutoAim
 @onready var feedback: TactileFeedback = $TactileFeedback
 @onready var weapon_mount: Node3D = $Head/Camera/WeaponMount
-
 var weapons: Array[WeaponBase] = []
 var current_weapon_index := 0
 var _weapon_selection_initialized := false
@@ -237,17 +235,12 @@ func _physics_process(delta: float) -> void:
 func _check_out_of_bounds() -> bool:
 	if is_dead or global_position.y >= out_of_bounds_y:
 		return false
-	# Route through the normal damage/death signals so the existing death screen,
-	# quip, input release, and checkpoint retry behavior all remain consistent.
-	# The kill plane is not combat damage: respawn protection must not leave the
-	# player falling through the void until the invulnerability window expires.
+	# Route through normal death/retry, bypassing spawn protection for the kill plane.
 	health_armor.invulnerable_remaining = 0.0
 	health_armor.apply_damage(health_armor.max_health + health_armor.max_armor + 1000.0, self)
 	return true
 func apply_damage(amount: float, source: Node = null, _hit_position := Vector3.ZERO) -> float:
 	return health_armor.apply_damage(amount, source)
-
-
 func apply_environment_impulse(impulse: Vector3, horizontal_cap := 14.0, vertical_cap := 9.0) -> Vector3:
 	if is_dead or _external_transport_active:
 		return Vector3.ZERO
@@ -269,18 +262,12 @@ func clear_touch_input() -> void:
 	_touch_move = Vector2.ZERO
 	_touch_look = Vector2.ZERO
 	_touch_aim.reset()
-
-
 func configure_movement_environment(profile: MovementEnvironmentProfile) -> void:
 	_movement_environment = profile
-
-
 func begin_external_transport() -> void:
 	_external_transport_active = true
 	velocity = Vector3.ZERO
 	_touch_move = Vector2.ZERO
-
-
 func end_external_transport() -> void:
 	_external_transport_active = false
 	velocity = Vector3.ZERO
@@ -455,7 +442,6 @@ func _surface_profile(surface_id: StringName) -> SurfaceMovementProfile:
 		if profile != null and profile.applies_to(surface_id):
 			return profile
 	return null
-
 static func should_play_footsteps(grounded: bool, horizontal_speed: float, dead: bool, paused: bool) -> bool:
 	return grounded and horizontal_speed >= 0.8 and not dead and not paused
 func _apply_keyboard_look(delta: float) -> void:
