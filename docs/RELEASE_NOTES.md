@@ -23,7 +23,7 @@ Built on 2026-07-18 with Godot `4.7.stable.official.5b4e0cb0f`. Runtime feature 
 - Rain City keeps its `BETA` badge until its recorded target-Mac, Safari/Chrome, and physical-iPad human gates pass.
 - The macOS ZIP remains unsigned and unnotarized. The working title still requires clearance before commercial distribution.
 
-Artifact hashes, source integration, prerelease, website deployment, and public PCK byte identity are recorded in `docs/RELEASE_0_8_0_ALPHA1_RC1_EVIDENCE.md` after publication.
+Published through source [PR #57](https://github.com/Louisleh/cobie-nukem/pull/57) at integration `a03ef8f`, [GitHub prerelease `v0.8.0-alpha.1-rc1`](https://github.com/Louisleh/cobie-nukem/releases/tag/v0.8.0-alpha.1-rc1), and website [PR #127](https://github.com/Louisleh/louislehmann-site/pull/127) at deployment `76c1cad`. The downloaded 50,162,024-byte public PCK matches SHA-256 `40da43cbf6fa484feaf68397d4b58d3add786e3ebb0087ce3ea1b70a2c78ef51` exactly.
 
 ---
 
