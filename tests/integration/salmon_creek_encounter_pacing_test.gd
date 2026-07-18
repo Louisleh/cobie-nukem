@@ -155,6 +155,8 @@ func _test_walker_pressure_phases_summons_and_recovery() -> void:
 	for error in profile_errors:
 		_expect(false, "Walker profile validates in runtime: %s" % error)
 	var initial_distance := walker.global_position.distance_to(target.global_position)
+	var health_events: Array[float] = []
+	level.boss_state_changed.connect(func(_state: StringName, fraction: float) -> void: health_events.append(fraction))
 	var minimum_distance := initial_distance
 	for frame in 360:
 		await physics_frame
@@ -171,9 +173,15 @@ func _test_walker_pressure_phases_summons_and_recovery() -> void:
 	var narrative: Array[String] = []
 	var phase_ids: Array[StringName] = []
 	level.narrative_message.connect(func(text: String, _duration: float) -> void: narrative.append(text))
-	level.boss_state_changed.connect(func(id: StringName, _fraction: float) -> void: phase_ids.append(id))
+	level.boss_state_changed.connect(func(id: StringName, _fraction: float) -> void:
+		if phase_ids.is_empty() or phase_ids[-1] != id: phase_ids.append(id)
+	)
 	var pickups_before := _count_pickups(level)
-	walker.apply_damage(450.0)
+	walker.apply_damage(50.0)
+	await process_frame
+	_expect(not health_events.is_empty() and is_equal_approx(health_events[-1], walker.health_fraction()), "Walker HUD updates on ordinary damage, not only phase thresholds")
+	phase_ids.clear()
+	walker.apply_damage(400.0)
 	_expect(phase_ids == [&"exposed_core"], "First threshold communicates the exposed-core phase")
 	_expect(_count_pickups(level) == pickups_before + 1, "Exposed core deploys one authored health recovery")
 	walker.apply_damage(300.0)
@@ -249,7 +257,7 @@ func _test_walker_phase_ordering_guardrail() -> void:
 		_expect(false, "Walker ordering guardrail profile validates: %s" % error)
 	var phase_events: Array[StringName] = []
 	level.boss_state_changed.connect(func(id: StringName, _fraction: float) -> void:
-		phase_events.append(id)
+		if phase_events.is_empty() or phase_events[-1] != id: phase_events.append(id)
 	)
 	walker.apply_damage(walker.health * 0.9)
 	_expect(phase_events.size() == 1, "A single oversized hit advances at most one phase")

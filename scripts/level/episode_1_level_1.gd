@@ -249,9 +249,10 @@ func _spawn_wave(zone_id: StringName) -> void:
 	else:
 		_spawn_registry.mark_zone_spawned(zone_id)
 	if zone_id == &"walker_arena" and not _boss_runtime.has_active_walker():
-		# Development fallback: a missing boss scene must not trap QA in the level.
-		_golden_ball.enable_as_reward()
-		narrative_message.emit("BOSS ASSET MISSING — GOLDEN BALL QA FALLBACK ENABLED.", 4.0)
+		# Never convert a failed critical boss spawn into progression. Keep the
+		# reward sealed and expose a recoverable, named failure to the player/log.
+		_golden_ball.reset_reward()
+		narrative_message.emit("WALKER DEPLOYMENT FAILED — RESTARTING CHECKPOINT REQUIRED.", 4.0)
 	if zone_id == &"forbidden_field":
 		_opening_grace_timer.start()
 
@@ -362,6 +363,9 @@ func _reset_active_encounter_for_checkpoint() -> void:
 
 func _on_golden_ball_claimed(_actor: Node) -> void:
 	if completion_started: return
+	if _golden_ball == null or not _golden_ball.enabled or not _objective_tracker.completed.has(&"defeat_walker"):
+		narrative_message.emit("GOLDEN BALL CONTAINMENT ACTIVE — WALKER STILL ONLINE.", 2.0)
+		return
 	# A finished run must not offer a stale mid-level Continue from the menu.
 	completion_started = true
 	_objective_tracker.record(ObjectiveDefinition.Kind.COLLECT_ITEM, &"golden_tennis_ball")
