@@ -1,6 +1,6 @@
 # Cobie Nukem — Multi-Phase Production PRD
 
-**Status:** Active production source of truth; `0.8.0-alpha.1-rc1` is public
+**Status:** Active production source of truth; five-mission integration candidate in validation
 
 **Created:** 2026-07-11
 
@@ -8,22 +8,37 @@
 
 **Current public baseline:** `0.8.0-alpha.1-rc1` (`7e6684e` gameplay/runtime revision; source integration `a03ef8f`; website deployment `76c1cad`; PCK SHA-256 `40da43cbf6fa484feaf68397d4b58d3add786e3ebb0087ce3ea1b70a2c78ef51`)
 
-**Current production gate:** Three-mission RC is public. Rain City and Mount Hood remain explicit `BETA` missions pending their recorded human/device/art/balance gates.
+**Current production gate:** The three-mission RC remains public while the five-mission candidate completes export, package, browser, merge, and byte-identity gates. Levels 2–5 remain explicit `BETA` missions pending human/device/art/balance approval.
 
 **Last released alpha:** `0.8.0-alpha.1-rc1` (`7e6684e`) — live at <https://www.louislehmann.fyi/games/cobie-nukem/>; Rain City and Mount Hood retain honest `BETA` badges because human full-route and physical-device validation are open
 
 **Engine:** Godot 4.7 stable, GDScript, Compatibility renderer
 **Purpose:** Turn the family-playtest vertical slice into a sustainable, original multi-level game without sacrificing responsiveness, humor, Web support, or unusual-controller accessibility.
 
-## 0. Current phase dashboard — `0.8.0-alpha.1-rc1`
+## 0. Current phase dashboard — five-mission world-class cycle
 
 | Mission / track | Public state | Automated state | Current work and honest gate |
 | --- | --- | --- | --- |
-| Salmon Creek | **PUBLIC** | RC5 route/boss/save/input/signage/connector/portrait/reload gates remain green; focused selector/startup regressions pass | Bounded regression benchmark. Human target-Mac/iPad routes, pacing, boss feel, art, mix, motion, humor, and photosensitivity remain open. |
-| Rain City Run | **PUBLIC `BETA`** | Five zones, 26-enemy pressure contract, saves, Towmaster resets, touch, manifested materials, signs, weather teardown, and selector/startup gates are green | `BETA` removal still requires physical iPad, target-Mac, Safari/Chrome routes, pacing, boss fairness, art, mix, humor, and photosensitivity approval. |
-| Mount Hood Whiteout | **PUBLIC `BETA`** | Five-zone route, six objectives, five checkpoints, four secrets, 24 regular enemies plus 1,000-HP Snowcat, navigation bake, 300 route simulations, 100 chairlift resets, signs, traction, and Golden Ball gating are green | Exact export and public-PCK identity are green. Human/device/art/balance/audio approval remains explicitly open. |
-| Moon / Ventura | **LOCKED TEASERS** | Card/brief contracts only | No playable production work in this phase. |
-| Packaging | **PUBLIC — BYTE-VERIFIED** | Full `QA_EXPORTS=1`, Web/Universal macOS exports, verified archives, packaged/live 1024×768 boot, selector/Mount launch, green site CI/Vercel, and exact downloaded public PCK hash | RC5 remains the rollback artifact; unsigned macOS and physical-device gates remain open. |
+| Salmon Creek | **PUBLIC** | Route/boss/save-v5/input/signage/connector/portrait/reload gates green; legacy checkpoints remap to authored anchors and retain loadout, ammo, health, and armor | Regression benchmark. Human target-Mac/iPad route, pacing, boss feel, art, mix, motion, humor, and photosensitivity remain open. |
+| Rain City Run | **PUBLIC `BETA`** | Five zones, 26-enemy pressure contract, saves, Towmaster resets, touch, manifested materials, signs, weather teardown, and selector/startup gates green | `BETA` removal requires physical iPad, target-Mac, Safari/Chrome routes, pacing, boss fairness, art, mix, humor, and photosensitivity approval. |
+| Mount Hood Whiteout | **PUBLIC `BETA`** | Five zones, six objectives, five checkpoints, four secrets, 24 regular enemies, Snowcat, traction, chairlift, Continue restore, and Golden Ball gates green | Human/device/art/balance/audio approval remains explicitly open. |
+| Dark Side of Fetch | **CANDIDATE PUBLIC `BETA`** | Five-zone lunar route, six objectives, five checkpoints/secrets, 28 enemies, movement environment, 1,000-HP modular boss, restore/finale contracts, and route simulation green | Final hero animation/audio/material pass plus target-Mac, browser, physical-iPad, pacing, combat-readability, mix, humor, and photosensitivity approval open. |
+| Pier Pressure | **CANDIDATE PUBLIC `BETA`** | Five-zone coastal route, six objectives, five checkpoints/secrets, 28 enemies, 1,000-HP Tidebreaker, restore/finale contracts, and route simulation green | Final hero animation/audio/material pass plus target-Mac, browser, physical-iPad, pacing, combat-readability, mix, humor, and photosensitivity approval open. |
+| Packaging | **IN VALIDATION** | Prior RC remains byte-verified rollback. Five-mission parser/import and focused contract suites are green; full export/package/public-hash evidence is not recorded until it actually passes | Do not describe the candidate as deployed before exact source/runtime/site/PCK identity is verified. |
+
+### Implemented five-mission integration checkpoint
+
+- Data-driven Episode 1 campaign definition owns all five cards and mission ordering; Replay and Continue are mission-aware.
+- Shared mission-pack, biome-host, movement-environment, timed-hazard, stationary/moving set-piece, and phased-module contracts replace mission-specific forks.
+- Startup entry is transactional: repeated activation cannot overlap transitions, gameplay entry owns pointer capture, and retry/restart paths are idempotent.
+- Salmon Creek’s Walker HUD streams ordinary damage to zero, fallback reward spawning is removed, summons must clear before the Golden Ball is enabled, and v5 checkpoints persist the full player/loadout state.
+- Rain City and Mount Hood retain their existing authored missions while checkpoint route gates, connector depth, environment ownership, pantry reachability, chairlift arrival, and four-attacker Mayhem pressure are hardened.
+- Moon and Ventura are complete public-beta mission contracts with original identity, five authored zones, five checkpoints, five secrets, six objectives, 28 regular placements, typed bosses, post-defeat rewards, and checkpoint-safe resets.
+- The deterministic five-mission gauntlet covers 1,200 route simulations and 1,000 checkpoint restores in addition to focused mission boot, save, input, boss, and campaign tests.
+
+### Honest completion boundary
+
+This cycle delivers functional, testable five-mission public development—not a false declaration that every mission is already visually or subjectively world-class. Human taste, full physical-device play, final hero assets, mission-specific imported audio, combat pacing, fairness, humor, motion comfort, and photosensitivity remain named gates. Findings become the next evidence-backed production tranche rather than being hidden behind an “automated complete” claim.
 
 ### Current 10/20/40/30 cycle
 
