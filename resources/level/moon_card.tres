@@ -15,6 +15,7 @@ encounter = "LUNAR LEASHMASTER"
 preview = ExtResource("2")
 unlock_policy = 0
 prerequisite_mission_id = &""
+scene_path = "res://scenes/levels/dark_side_fetch.tscn"
 warmup_profile = ExtResource("3")
 release_badge = "BETA"
 launch_notice = "START BETA // MOON SURFACE MISSION IS PUBLIC."
