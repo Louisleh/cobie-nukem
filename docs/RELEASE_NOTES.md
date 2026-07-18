@@ -29,9 +29,9 @@ Built on 2026-07-18 with Godot `4.7.stable.official.5b4e0cb0f`. Runtime feature 
 
 | Artifact | Bytes | SHA-256 |
 | --- | ---: | --- |
-| `cobie-nukem-0.9.0-alpha.1-rc1-itch.zip` | 55,159,424 | `95024131a5a216f8dbf6820a8d957c859d18581d167529228831e772b0539b36` |
-| `cobie-nukem-0.9.0-alpha.1-rc1-macos-unsigned.zip` | 96,454,146 | `5d5e312182c1a9569c35db12e924e0322b05ff9a5a7bb1ea6f731b2d8e2b1b6b` |
-| Packaged Web PCK | 50,340,272 | `4cd3e8e71f4c8aa4b89c3fc52f47dcbe0de5f0bc2239f296d1d9ed64554c2192` |
+| `cobie-nukem-0.9.0-alpha.1-rc1-itch.zip` | 55,159,408 | `2a5a43d06b4c115fb25b163061613edbc6bcc3b9494f58c9df11f14c519d0ed0` |
+| `cobie-nukem-0.9.0-alpha.1-rc1-macos-unsigned.zip` | 96,454,137 | `dcee949fc7e9987eb03db69bdeeb663674cb7f5fc6c501bf310bc5b3b624398a` |
+| Packaged Web PCK | 50,340,256 | `56c1c49d3c0ffff180ba79eaba754055b4970a2e7f8718abc20f2fbf2d9b5d5d` |
 
 Publication integration, website deployment, and downloaded public-PCK identity are recorded in `docs/RELEASE_0_9_0_ALPHA1_RC1_EVIDENCE.md` only after those gates actually complete.
 
