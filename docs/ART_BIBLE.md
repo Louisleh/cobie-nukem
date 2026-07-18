@@ -56,9 +56,21 @@ Use consistent texel density within a zone. Each production material records til
 
 Core families are wet turf, painted concrete, laboratory panels, rusted municipal metal, sports-field paint, tunnel masonry, rain-darkened wood, seawall concrete, harbour steel, and mud. Web/iPad materials must remain readable with fewer texture samples and without dynamic reflections.
 
+### Mission material-family contracts
+
+| Mission | Required production families |
+| --- | --- |
+| Salmon Creek | Wet turf, field paint, damp timber, utility concrete, laboratory panels, tunnel masonry, Walker-arena metal |
+| Rain City | Wet asphalt, rain-darkened brick, glass panels, seawall concrete, harbour steel, painted municipal metal, terminal flooring, warm Slice tile/awning, wet wood, route decals |
+| Mount Hood | Fresh powder, packed/plowed snow, icy slush, exposed rock, plowed asphalt, lodge timber, lodge stone, lift steel, frosted glass, warm windows |
+
+Every family keeps an editable source graph plus deterministic Web-safe albedo, normal, and packed ORM output. Base textures tile; signs, jokes, road markings, puddles, footprints, and unique grime remain separate overlays. Production validation rejects a zone whose identity or manifested families are missing.
+
 ## Lighting, fog, and landmarks
 
 Light establishes direction before mood. Each major zone has a dominant direction, at least two memorable landmarks, a restrained fog range, and a clear combat value structure. Prefer baked/static and authored emissive support; reserve dynamic lights and shadows for gameplay-relevant moments. Transparency is limited, especially on Web.
+
+Mount Hood uses a persistent original mountain silhouette as an outdoor directional landmark. It has no collision/navigation ownership, uses a simplified far-distance representation, remains recognizable through restrained atmospheric depth, and is framed through intentional windows/doors rather than rendered implausibly through solid interiors.
 
 ## Character and animation contract
 
@@ -98,4 +110,4 @@ All effects have reduced-flash and lower-density variants, bounded lifetime, poo
 
 ## Canonical review views
 
-The fixed review set is title, mission selection, Salmon Creek opening, sports-field encounter, shed, laboratory, tunnel, Walker arena, Vancouver waterfront, and 4:3 touch HUD. Capture before and candidate views at the same revision-controlled staging, seed, aspect, quality tier, and frame. Visual differences prompt review; only malformed captures, missing assets, safe-area failures, and measured budget violations fail mechanically.
+The fixed review set is title, mission selection, Salmon Creek opening, sports-field encounter, shed, laboratory, tunnel, Walker arena/defeat, Vancouver waterfront, Mount Hood foundry pilot, and 4:3 touch HUD. Capture before and candidate views at the same revision-controlled staging, seed, aspect, quality tier, and frame. Visual differences prompt review; only malformed captures, missing assets, safe-area failures, and measured budget violations fail mechanically.

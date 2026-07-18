@@ -115,6 +115,10 @@ func _test_world_builder_navigation_contract() -> void:
 	for body in post_bake_sources:
 		_expect(body != null and body.get_parent() != null, "Baked floor body remains in tree")
 		_expect(body.is_in_group(&"vancouver_navigation_source"), "Navigation source body keeps navigation group ownership")
+		var floor_mesh := body.get_child(0) as MeshInstance3D
+		var floor_material := floor_mesh.material_override as StandardMaterial3D if floor_mesh != null else null
+		_expect(floor_material != null and floor_material.albedo_texture != null, "Critical-route floor retains its manifested production albedo after navigation baking")
+		_expect(floor_material != null and not floor_material.normal_enabled and floor_material.orm_texture == null, "Full-screen route floors use the bounded Web-safe material tier")
 
 	if is_instance_valid(builder.navigation_region):
 		var navigation_map := builder.navigation_region.get_navigation_map()

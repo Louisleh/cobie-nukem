@@ -97,6 +97,11 @@ func _test_zone_presentation_profile() -> void:
 	profile.id = &"alpha8_zone_alpha"
 	profile.zone_id = &"zone_alpha"
 	profile.palette_id = &"sunset_palette"
+	profile.environment_identity_id = &"qa_identity"
+	profile.texture_set_id = &"qa_texture_set"
+	profile.material_family_ids = [&"qa_concrete"]
+	profile.surface_response_ids = [&"concrete"]
+	profile.dominant_landmark_id = &"beacon"
 	profile.ambience_cue_id = &"alpha8_zone_ambience"
 	profile.landmark_ids = [&"beacon", &"sentry_dock"]
 	_expect(profile.validate().is_empty(), "zone presentation profile validates")
@@ -105,6 +110,11 @@ func _test_zone_presentation_profile() -> void:
 	bad.id = &"alpha8_zone_alpha"
 	bad.zone_id = &"zone_alpha"
 	bad.palette_id = &"sunset_palette"
+	bad.environment_identity_id = &"qa_identity"
+	bad.texture_set_id = &"qa_texture_set"
+	bad.material_family_ids = [&"qa_concrete"]
+	bad.surface_response_ids = [&"concrete"]
+	bad.dominant_landmark_id = &"beacon"
 	bad.ambience_cue_id = &"alpha8_zone_ambience"
 	bad.fog_density = -0.1
 	var errors: PackedStringArray = bad.validate()
@@ -113,6 +123,17 @@ func _test_zone_presentation_profile() -> void:
 	bad.weather = &"warp"
 	errors = bad.validate()
 	_expect("zone_presentation_profile alpha8_zone_alpha has unsupported weather warp" in errors, "zone presentation rejects unsupported weather")
+
+	bad.environment_identity_id = &""
+	bad.texture_set_id = &""
+	bad.material_family_ids = []
+	bad.surface_response_ids = []
+	bad.dominant_landmark_id = &""
+	errors = bad.validate()
+	_expect("zone_presentation_profile alpha8_zone_alpha missing environment_identity_id" in errors, "zone presentation requires environment identity")
+	_expect("zone_presentation_profile alpha8_zone_alpha missing texture_set_id" in errors, "zone presentation requires texture set")
+	_expect("zone_presentation_profile alpha8_zone_alpha missing material_family_ids" in errors, "zone presentation requires material families")
+	_expect("zone_presentation_profile alpha8_zone_alpha missing surface_response_ids" in errors, "zone presentation requires surface responses")
 
 
 func _test_moving_set_piece_definition() -> void:

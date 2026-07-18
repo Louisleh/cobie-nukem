@@ -37,6 +37,7 @@ var _last_ambience: StringName = &""
 var _player_weather: GPUParticles3D
 var _zone_actor_counts: Dictionary = {}
 var _zone_ambience: Dictionary = {}
+var _zone_profiles: Dictionary = {}
 var _boss_zone_id: StringName = &""
 var _initial_zone_id: StringName = &""
 var _boss_display_name := ""
@@ -57,12 +58,14 @@ func configure(level: Node, content_manifest: ContentManifest, actors: Node, enc
 	_boss_zone_id = boss_zone_id
 	_boss_display_name = _resolve_boss_display_name(level, boss_display_name, boss_zone_id)
 	_zone_ambience.clear()
+	_zone_profiles.clear()
 	for raw_zone_id: Variant in zone_ambience:
 		_zone_ambience[StringName(raw_zone_id)] = StringName(zone_ambience[raw_zone_id])
 	if content_manifest != null:
 		for profile: ZonePresentationProfile in content_manifest.zone_presentations:
 			if profile != null:
 				_zone_ambience[profile.zone_id] = profile.ambience_cue_id
+				_zone_profiles[profile.zone_id] = profile
 
 	if _hud == null:
 		_create_presentation_nodes()
@@ -283,30 +286,23 @@ func get_hud() -> GameHUD:
 func get_pause_menu() -> PauseMenu:
 	return _pause_menu
 
-
 func get_death_screen() -> DeathScreen:
 	return _death_screen
-
 
 func get_victory_screen() -> VictoryScreen:
 	return _victory_screen
 
-
 func get_combat_audio_bridge() -> CombatAudioBridge:
 	return _combat_audio
-
 
 func get_mobile_controls() -> MobileControls:
 	return _mobile_controls
 
-
 func get_audio_director() -> MissionAudioDirector:
 	return _mission_audio_director
 
-
 func add_player_rain() -> void:
 	_add_player_rain()
-
 
 func _create_presentation_nodes() -> void:
 	_hud = HUDScene.instantiate() as GameHUD
@@ -403,6 +399,7 @@ func _request_audio_state(state: StringName) -> void:
 
 
 func _apply_zone_state(zone_id: StringName) -> void:
+	_apply_zone_render_profile(_zone_profiles.get(zone_id) as ZonePresentationProfile)
 	var cue_id: StringName = _zone_ambience.get(zone_id, &"")
 	if cue_id == &"":
 		return
@@ -410,6 +407,21 @@ func _apply_zone_state(zone_id: StringName) -> void:
 	_last_ambience = cue_id
 	if _mission_audio_director != null and cue_id != previous_ambience:
 		_mission_audio_director.set_zone_ambience(cue_id)
+
+
+func _apply_zone_render_profile(profile: ZonePresentationProfile) -> void:
+	if profile == null or _level == null:
+		return
+	var environment := _level.get_node_or_null("WorldEnvironment") as WorldEnvironment
+	if environment != null and environment.environment != null:
+		environment.environment.fog_enabled = profile.fog_enabled
+		environment.environment.fog_light_color = profile.fog_color
+		environment.environment.fog_density = profile.fog_density
+	if _player_weather != null and is_instance_valid(_player_weather):
+		var quality := get_node_or_null("/root/QualityManager")
+		var quality_cap: int = 420 if quality == null or quality.current == null else quality.current.particle_budget
+		_player_weather.amount = mini(profile.particle_budget, quality_cap)
+		_player_weather.emitting = profile.weather in [&"rain", &"storm"]
 
 
 func _add_player_rain() -> void:
@@ -472,6 +484,12 @@ func _resolve_boss_display_name(level: Node, configured_name: String, boss_zone_
 
 
 func _exit_tree() -> void:
+	if _player != null and is_instance_valid(_player):
+		_player.remove_meta(&"mission_presentation_rain")
+	if _player_weather != null and is_instance_valid(_player_weather):
+		_player_weather.emitting = false
+		_player_weather.queue_free()
+	_player_weather = null
 	if _combat_audio != null:
 		_combat_audio.reset_gameplay_audio()
 	if _mobile_controls != null:

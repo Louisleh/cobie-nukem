@@ -271,11 +271,11 @@ Includes:
 - Multiplayer.
 - Procedural campaign generation.
 - Full voice-acted cinematic story.
-- More than one polished level.
+- More than the two current production missions during the Rain City finalization gate; later missions remain locked asset/route foundations until individually approved.
 - Online accounts.
 - Cloud saves.
 - Mod SDK.
-- Mobile release.
+- Native iOS packaging and App Store release. Browser iPad/Safari and touch controls are first-class supported targets.
 - Console release.
 - Photorealistic art.
 - Direct use of Duke Nukem assets or dialogue.

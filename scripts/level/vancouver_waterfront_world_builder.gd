@@ -7,6 +7,12 @@ const CheckpointScene = preload("res://scenes/interactables/level_checkpoint.tsc
 const SwitchScene = preload("res://scenes/interactables/level_switch.tscn")
 const ZoneScene = preload("res://scenes/interactables/zone_trigger.tscn")
 const NAVIGATION_SOURCE_LAYER := 1 << 19
+const SURFACE_MATERIALS := {
+	&"asphalt": preload("res://assets/materials/rain_city/wet_asphalt.tres"),
+	&"concrete": preload("res://assets/materials/rain_city/seawall_concrete.tres"),
+	&"metal": preload("res://assets/materials/rain_city/terminal_floor.tres"),
+	&"steel": preload("res://assets/materials/rain_city/harbour_steel.tres"),
+}
 
 var on_zone_entered: Callable
 var on_checkpoint_activated: Callable
@@ -27,6 +33,7 @@ var departure_switch: LevelSwitch
 var _owner: Node3D
 var _navigation_sources: Array[StaticBody3D] = []
 var _materials: Dictionary = {}
+var _floor_materials: Dictionary = {}
 var _route_gates: Dictionary = {}
 var _built := false
 var _navigation_bake_started := false
@@ -360,10 +367,32 @@ func _finish_navigation_bake(succeeded: bool) -> void:
 
 func _floor(node_name: String, position: Vector3, size: Vector3, color: Color, surface_id: StringName) -> void:
 	var body := _prop_box(node_name, position, size, color, true)
+	var mesh_instance := body.get_child(0) as MeshInstance3D
+	var production_material := _route_floor_material(surface_id)
+	if mesh_instance != null and production_material != null:
+		mesh_instance.material_override = production_material
 	body.add_to_group(&"vancouver_navigation_source")
 	body.set_meta(&"surface_id", surface_id)
 	body.collision_layer = NAVIGATION_SOURCE_LAYER | 1
 	_navigation_sources.append(body)
+
+
+func _route_floor_material(surface_id: StringName) -> StandardMaterial3D:
+	if _floor_materials.has(surface_id):
+		return _floor_materials[surface_id] as StandardMaterial3D
+	var source := SURFACE_MATERIALS.get(surface_id) as StandardMaterial3D
+	if source == null:
+		return null
+	var lightweight := source.duplicate() as StandardMaterial3D
+	# Large route floors keep the distinctive albedo but avoid three extra texture
+	# samples over most of the screen. Full normal/ORM families remain on the
+	# authored presentation batches where they materially affect the silhouette.
+	lightweight.normal_enabled = false
+	lightweight.ao_enabled = false
+	lightweight.orm_texture = null
+	lightweight.metallic = 0.0
+	_floor_materials[surface_id] = lightweight
+	return lightweight
 
 
 func _prop_box(node_name: String, position: Vector3, size: Vector3, color: Color, collision := false, emissive := false) -> StaticBody3D:

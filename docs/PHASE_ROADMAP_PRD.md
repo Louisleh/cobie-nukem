@@ -8,14 +8,39 @@
 
 **Current public baseline:** `0.7.0-alpha.1-rc4` (`e1afd5a` gameplay/runtime revision; source integration `951f07e`; website deployment `3a0c5af`; PCK SHA-256 `1260693005804915d30f6163036e4ab943063a0ccfbb75380aaee0729ed8bbe8`)
 
-**Unreleased development baseline:** None. Source `main`, the GitHub prerelease package, and the deployed Web artifact are aligned on RC4. RC3 remains the immediate rollback release.
+**Unreleased development baseline:** `codex/rain-city-mount-hood-foundry` — Rain City runtime material-family conversion, environment-profile enforcement, bounded weather teardown, and a locked Mount Hood visual-foundry pilot are in validation. Public source/package/site remain aligned on RC4 until the release gate passes.
 
 **Last released alpha:** `0.7.0-alpha.1-rc4` (`e1afd5a`) — live at <https://www.louislehmann.fyi/games/cobie-nukem/>; the `BETA` badge remains because human full-route and physical-device validation are open
 
 **Engine:** Godot 4.7 stable, GDScript, Compatibility renderer
 **Purpose:** Turn the family-playtest vertical slice into a sustainable, original multi-level game without sacrificing responsiveness, humor, Web support, or unusual-controller accessibility.
 
-## 0. Current status dashboard
+## 0. Current phase dashboard — Rain City finalization / Mount Hood foundry
+
+| Mission / track | Public state | Automated state | Current work and honest gate |
+| --- | --- | --- | --- |
+| Salmon Creek | **PUBLIC** | RC4 route, boss, save, input, signage, connector, portrait, reload, and export gates green | Bounded regression target. Human target-Mac/iPad routes, pacing, boss feel, art, mix, motion, humor, and photosensitivity remain open. |
+| Rain City Run | **PUBLIC `BETA`** | Five-zone route, 26-enemy pressure contract, saves, Towmaster resets, touch, browser startup, and RC4 packaging green; foundry candidate passes the full non-export matrix and rendered native profile | Ten manifested runtime material families, explicit five-zone identity/landmarks/surface contracts, and deterministic weather teardown are implemented. Final badge removal still requires physical iPad, target-Mac, browser routes, pacing, boss fairness, art, mix, humor, and photosensitivity approval. |
+| Mount Hood Whiteout | **LOCKED TEASER** | Card remains locked with no gameplay scene or save/unlock change; visual-foundry asset contracts and four-aspect pilot captures are green | Ten original material families plus a presentation-only mountain/lodge/snow/fir/snowman/lift source kit, art brief, provenance, and non-public gallery are complete as a production foundation. Gameplay production has not started. |
+| Moon / Ventura | **LOCKED TEASERS** | Card/brief contracts only | No playable production work in this phase. |
+| Packaging | **RC4 PUBLIC** | Exact public/source/package PCK identity recorded above | A later RC/BETA may ship after full export/byte-identity gates. Final `0.7.0-alpha.1` is blocked on human Level 2 gates. |
+
+### Foundry candidate automated evidence
+
+- Fresh full non-export validation passes both mission routes, all unit/integration/content/architecture/asset-IP gates, 100-route/checkpoint/touch/effect soaks, 500 weapon transitions, 100 Towmaster cycles, 66 scenes, and 95 resources.
+- Foreground native Compatibility profiling at 1280×720 uses 300 rendered frames per zone. Rain City p95/p99 results are alley 17.447/23.337 ms, Slice 20.978/21.625 ms, seawall 17.532/21.546 ms, terminal 17.368/17.689 ms, and pier 17.485/20.358 ms, at 200–403 draw calls and approximately 83.6 MB static memory.
+- No zone has recurring >100 ms stalls. One isolated 1,054.530 ms macOS scheduling pause was recorded in the pier sample and is retained transparently; the other 2,699 measured gameplay frames remained within the statistical frame budgets.
+- Mount Hood pilot captures exist at 16:9, 16:10, 4:3, and ultrawide. They validate the mountain/lodge/fir/snowbank/snowman/lift identity, not gameplay or final art approval.
+
+### Phase allocation and exit policy
+
+- **15% truth/stabilization:** keep docs, GitHub issues, release identity, and Level 1 evidence synchronized.
+- **55% Rain City finalization:** manifested textures, zone identity, lighting/readability, lifecycle cleanup, captures, performance, and evidence-backed gameplay fixes.
+- **30% Mount Hood foundation:** original source assets, Web-safe materials, canonical pilot, stable five-zone art brief, and validation while locked.
+- Flat-color blockout cannot be called final critical-route art. Presentation never owns collision/navigation. Automated evidence never substitutes for human/device approval.
+- Broad foundation issues #2–11 are closed as implemented. Current narrowly scoped gates are [#52 Rain City human/art finalization](https://github.com/Louisleh/cobie-nukem/issues/52), [#53 physical iPad validation](https://github.com/Louisleh/cobie-nukem/issues/53), and [#54 future Mount Hood playable production](https://github.com/Louisleh/cobie-nukem/issues/54).
+
+## Archived release and production evidence
 
 ### Rain City Run `0.7.0-alpha.1-rc4` public selector/public-beta RC
 

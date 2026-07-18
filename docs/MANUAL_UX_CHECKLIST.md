@@ -55,7 +55,7 @@ Record build/commit: __________  Godot: __________  OS/device: __________  Teste
 - [ ] Entering the Compliance Lab always spawns the named Fetch Guard beside the Fetch Launcher route.
 - [ ] Walker phases are readable with flight-stick-friendly aim windows.
 - [ ] Enemy labels show calibrated live HP (30/40/80/220/1000), and the Walker actively closes to approximately seven metres.
-- [ ] Golden Tennis Ball becomes available only in the final phase and finishes the boss once.
+- [ ] Walker health reaches `0% / DESTROYED`, live summons clear, and the bounded defeat spectacle completes before the Golden Tennis Ball appears; the ball never acts as boss damage.
 - [ ] All six zones, gates, switches, keys, hazards, and final exit work from a clean run.
 - [ ] The full route spawns all 17 required actors: 12 initial-wave actors plus five delayed shed/tunnel/lab reinforcements, including the arena boss; peak authored active density remains three.
 - [ ] Sign read three times, cracked wall, and ball-return secrets each count once and reward the player.
@@ -66,7 +66,9 @@ Record build/commit: __________  Godot: __________  OS/device: __________  Teste
 Automated/package note (2026-07-16): the exact RC package rendered the title and mission selector at 1024×768, accepted the first activation tap without a focus-recovery detour, and emitted no game-origin Chrome error. The unchecked items below still require human route/device judgment.
 
 - [ ] The normal mission selector shows `BETA`, `START BETA`, and a visible work-in-progress warning before launch.
-- [ ] A fresh campaign locks Rain City; completing Salmon Creek unlocks `CONTINUE TO RAIN CITY`; development override does not leak into release behavior.
+- [ ] Rain City is immediately available as public `BETA` on a fresh campaign; Salmon Creek victory still offers `CONTINUE TO RAIN CITY`; Mount Hood, Moon, and Ventura remain locked teasers.
+- [ ] Clicking/tapping a card commits the selection without launching; hover/focus alone never changes the details or footer action, and only `START MISSION`/`START BETA` launches.
+- [ ] The explicit Start action transfers focus/capture into gameplay; one non-firing click restores released pointer capture without opening a menu detour.
 - [ ] `PLAY AGAIN` reloads the completed mission rather than always returning to Salmon Creek.
 - [ ] The opening grants enough time to establish mouse/touch control without a spawn death and announces `PUBLIC BETA PREVIEW`.
 - [ ] Downtown alley, Rain City Slice block, waterfront lanes, terminal service, and harbour pier form one continuous readable route.
@@ -78,6 +80,7 @@ Automated/package note (2026-07-16): the exact RC package rendered the title and
 - [ ] Compliance Gulls visibly mark, telegraph, dive, recover, and can be interrupted; no invisible buff or unavoidable attack occurs.
 - [ ] Terminal Service awards Municipal Recall Override; Fetch recall is 35% faster and first recalled contact doubles shield/module stagger without increasing primary damage; checkpoint and campaign persistence behave correctly.
 - [ ] Exactly 26 authored enemies appear over the mission while no more than 2/3/4 attack simultaneously on Story/Classic/Mayhem.
+- [ ] `R` proactively reloads every partially depleted magazine, updates HUD state immediately, and plays the complete weapon-specific reload sequence.
 - [ ] Harbour water/out-of-bounds falls kill and restore at the pier checkpoint rather than falling forever.
 - [ ] Completing the convoy unlocks the departure control and campaign result; no earlier interaction can consume the departure switch.
 - [ ] Route target: ______ minutes (15–22); human pacing, landmark, humor, art, and mix findings recorded separately.

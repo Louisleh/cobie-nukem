@@ -1,5 +1,11 @@
 # Decisions
 
+## D-015 — Environment identity and materials are validated production data
+
+Every production zone declares its mission identity, texture set, material families, surface responses, dominant landmark, and optional background landmark through `ZonePresentationProfile`. Flat-color Blender batches remain valid blockout/import carriers, but a critical-route zone is not final until manifested runtime material Resources replace the applicable surfaces. Presentation scripts may apply materials, fog, bounded weather, and quality settings; they never take collision, navigation, progression, or save ownership.
+
+Rain City uses ten original wet-city families generated from editable Material Maker graphs. Mount Hood begins as a locked, presentation-only foundry with ten snow/lodge/lift families and a persistent original mountain landmark. Its gallery/model/materials are excluded from public exports until a future playable-production decision explicitly changes that boundary.
+
 ## D-014 — High-resolution 2.5D is the production constraint
 
 Cobie remains a high-resolution retro 2.5D shooter: authored low-poly 3D environments carry collision, navigation, materials, lighting, and landmarks, while original directional billboard sprites carry character detail and readable animation. A pure pixel-art rewrite is rejected because it would not solve the actual consistency problems—sprite scale, baselines, animation vocabulary, collision agreement, and environmental authorship—and would discard the existing visual direction.
