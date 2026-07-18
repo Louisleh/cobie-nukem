@@ -74,7 +74,9 @@ func _build_route() -> void:
 	_floor("ServiceTunnels", Vector3(0, -0.5, -116), Vector3(22, 1, 36), &"stone")
 	_floor("Summit", Vector3(0, -0.5, -158), Vector3(38, 1, 50), &"packed_snow")
 	for connector_z in [-20.0, -58.0, -97.0, -136.0]:
-		_floor("RouteConnector", Vector3(0, -0.49, connector_z), Vector3(10, 0.98, 8), &"packed_snow")
+		# Connector top sits 3 cm below the zone slabs: enough overlap for nav,
+		# never an exactly coplanar visible face that can flicker in WebGL.
+		_floor("RouteConnector", Vector3(0, -0.52, connector_z), Vector3(10, 0.98, 8), &"packed_snow")
 	# Authored traction patches are large and readable; none overlap coplanarly.
 	_floor("PowderTutorial", Vector3(-6, 0.03, -8), Vector3(6, 0.12, 9), &"powder")
 	_floor("IcyRoadBend", Vector3(6, 0.03, -43), Vector3(7, 0.12, 10), &"ice")
@@ -128,10 +130,10 @@ func _build_story_objects() -> void:
 	chairlift_power_switch = _switch(&"chairlift_power", "RESTART CHAIRLIFT", Vector3(-6, 1.2, -123))
 	summit_relay_switch = _switch(&"summit_relay", "DISABLE WEATHER RELAY", Vector3(7, 1.2, -171))
 	_switch(&"secret_snowman_nose", "BOOP THE VERY COLD NOSE", Vector3(6, 1.25, 3.0))
-	_switch(&"secret_treat_pantry", "OPEN GOOD-DOG TREAT PANTRY", Vector3(-9.5, 1.2, -83.0))
+	_switch(&"secret_treat_pantry", "OPEN GOOD-DOG TREAT PANTRY", Vector3(-12.5, 1.2, -83.0))
 	_switch(&"secret_service_valves", "SET VALVES TO ZOOMIES", Vector3(8.0, 1.2, -111.0))
 	_switch(&"secret_good_dog_seat", "CLAIM GOOD-DOG CHAIR", Vector3(-8.0, 1.2, -128.0))
-	chairlift = MountHoodChairlift.new(); chairlift.name = "Chairlift"; chairlift.position = Vector3(-8, 1.2, -129); chairlift.end_position = Vector3(-8, 8.5, -153); chairlift.ride_started.connect(_on_lift_started); chairlift.ride_completed.connect(_on_lift_completed); interactables.add_child(chairlift)
+	chairlift = MountHoodChairlift.new(); chairlift.name = "Chairlift"; chairlift.position = Vector3(-8, 1.2, -129); chairlift.end_position = Vector3(-8, 1.2, -153); chairlift.ride_started.connect(_on_lift_started); chairlift.ride_completed.connect(_on_lift_completed); interactables.add_child(chairlift)
 	golden_ball = GoldenBallScene.instantiate() as GoldenBallFinale; golden_ball.position = Vector3(0, 1.2, -174); golden_ball.claimed.connect(_on_ball_claimed); interactables.add_child(golden_ball)
 
 

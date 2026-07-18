@@ -132,10 +132,16 @@ func _restore_runtime_state() -> void:
 	if restored.is_empty(): return
 	secrets = restored.secrets
 	current_zone = restored.current_zone
+	_sync_route_gates()
 	if _mission_runtime.objectives.completed.has(&"restart_chairlift") and _world_builder.chairlift != null:
 		_world_builder.chairlift.set_enabled(true)
-	if _mission_runtime.objectives.completed.has(&"disable_summit_relay"):
-		_activate_zone_encounter(&"summit")
+	# Encounter snapshots intentionally do not resurrect actors. Convert any
+	# restored in-progress marker back to a clean zone and activate it exactly once.
+	if current_zone != &"" and not _mission_runtime.encounters.completed.has(current_zone):
+		_last_combat_zone = current_zone
+		_mission_runtime.reset_zone(current_zone)
+		if current_zone != &"summit" or _mission_runtime.objectives.completed.has(&"disable_summit_relay"):
+			_activate_zone_encounter(current_zone)
 
 
 func _poll_route_position() -> void:
@@ -244,8 +250,10 @@ func _finish_summit_defeat() -> void:
 	_world_builder.enable_golden_ball()
 	boss_state_changed.emit("DESTROYED", 0.0)
 	narrative_message.emit("SNOWCAT DESTROYED // GOLDEN BALL RELEASED", 3.2)
-func _on_encounter_failed(definition: EncounterDefinition, _reason: String) -> void:
+func _on_encounter_failed(definition: EncounterDefinition, reason: String) -> void:
 	_spawn_registry.finish_encounter(definition.zone_id); _spawn_registry.clear_zone(definition.zone_id)
+	_world_builder.set_route_gate_open(definition.zone_id, false)
+	narrative_message.emit("ENCOUNTER DEPLOYMENT FAILED // RETRY CHECKPOINT (%s)" % reason, 4.0)
 
 
 func _sync_route_gates() -> void:
