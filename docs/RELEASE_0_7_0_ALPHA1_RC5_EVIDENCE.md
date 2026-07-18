@@ -1,6 +1,6 @@
 # Rain City Run `0.7.0-alpha.1-rc5` release evidence
 
-## Candidate identity
+## Release identity
 
 - Version: `0.7.0-alpha.1-rc5`
 - Gameplay/runtime feature revision: `38f8164`
@@ -34,7 +34,11 @@
 | `cobie-nukem-0.7.0-alpha.1-rc5-macos-unsigned.zip` | 90,950,568 | `5006c14750c12209f8088db9e6718f7081650f5cbe755cdc5f594f701f13bc95` |
 | `index-0.7.0-alpha.1-rc5.pck` | 38,229,008 | `a53c5ccc3b11222d55000d36dc547c508ca6a0683f13184ce3e5634b668b1bfa` |
 
-The packaged Web directory is 74 MB, below the 90 MB target and 100 MB hard ceiling. Source integration commit, prerelease URL, website deployment commit, and downloaded public PCK verification will be recorded after exact-artifact publication.
+The packaged Web directory is 74 MB, below the 90 MB target and 100 MB hard ceiling.
+
+Publication completed through source PR [#55](https://github.com/Louisleh/cobie-nukem/pull/55) at integration commit `23511c191fb3eb08344993bd73114ae6a7fbb1af`. The exact packages are attached to the GitHub prerelease [`v0.7.0-alpha.1-rc5`](https://github.com/Louisleh/cobie-nukem/releases/tag/v0.7.0-alpha.1-rc5).
+
+Website PR [#126](https://github.com/Louisleh/louislehmann-site/pull/126) deployed the cache-keyed Web artifact at commit `d51a92639d962fe79a35dcb9b5aeb654298a51af`. Vercel production deployment passed, and both the ordinary and uncached public URLs report version `0.7.0-alpha.1-rc5` with gameplay revision `38f8164`. The downloaded 38,229,008-byte public PCK is byte-identical to the local packaged artifact at SHA-256 `a53c5ccc3b11222d55000d36dc547c508ca6a0683f13184ce3e5634b668b1bfa`. The rollback release remains [`v0.7.0-alpha.1-rc4`](https://github.com/Louisleh/cobie-nukem/releases/tag/v0.7.0-alpha.1-rc4).
 
 ## Human-only gates still open
 

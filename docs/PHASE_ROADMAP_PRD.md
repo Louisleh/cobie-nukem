@@ -1,16 +1,16 @@
 # Cobie Nukem — Multi-Phase Production PRD
 
-**Status:** Active production source of truth; `0.7.0-alpha.1-rc4` Rain City is public as an honestly labelled RC while human route/device/feel gates remain open
+**Status:** Active production source of truth; `0.7.0-alpha.1-rc5` Rain City is public as an honestly labelled RC while human route/device/feel gates remain open
 
 **Created:** 2026-07-11
 
 **Last status review:** 2026-07-17
 
-**Current public baseline:** `0.7.0-alpha.1-rc4` (`e1afd5a` gameplay/runtime revision; source integration `951f07e`; website deployment `3a0c5af`; PCK SHA-256 `1260693005804915d30f6163036e4ab943063a0ccfbb75380aaee0729ed8bbe8`)
+**Current public baseline:** `0.7.0-alpha.1-rc5` (`38f8164` gameplay/runtime revision; source integration `23511c1`; website deployment `d51a926`; PCK SHA-256 `a53c5ccc3b11222d55000d36dc547c508ca6a0683f13184ce3e5634b668b1bfa`)
 
-**Unreleased candidate:** `0.7.0-alpha.1-rc5` on `codex/rain-city-mount-hood-foundry` — Rain City runtime material-family conversion, environment-profile enforcement, bounded weather teardown, and a locked Mount Hood visual-foundry pilot pass full native/Web export and packaged-browser gates. Public source/package/site remain aligned on RC4 until the exact RC5 artifact is merged and deployed.
+**Current production gate:** RC5 is merged, packaged, byte-verified, and public. Rain City's `BETA` removal remains blocked on the recorded human/device gates; Mount Hood has a locked visual-foundry foundation but no playable mission production yet.
 
-**Last released alpha:** `0.7.0-alpha.1-rc4` (`e1afd5a`) — live at <https://www.louislehmann.fyi/games/cobie-nukem/>; the `BETA` badge remains because human full-route and physical-device validation are open
+**Last released alpha:** `0.7.0-alpha.1-rc5` (`38f8164`) — live at <https://www.louislehmann.fyi/games/cobie-nukem/>; the `BETA` badge remains because human full-route and physical-device validation are open
 
 **Engine:** Godot 4.7 stable, GDScript, Compatibility renderer
 **Purpose:** Turn the family-playtest vertical slice into a sustainable, original multi-level game without sacrificing responsiveness, humor, Web support, or unusual-controller accessibility.
@@ -19,18 +19,19 @@
 
 | Mission / track | Public state | Automated state | Current work and honest gate |
 | --- | --- | --- | --- |
-| Salmon Creek | **PUBLIC** | RC4 route, boss, save, input, signage, connector, portrait, reload, and export gates green | Bounded regression target. Human target-Mac/iPad routes, pacing, boss feel, art, mix, motion, humor, and photosensitivity remain open. |
-| Rain City Run | **PUBLIC `BETA`** | Five-zone route, 26-enemy pressure contract, saves, Towmaster resets, touch, browser startup, and RC4 packaging green; foundry candidate passes the full non-export matrix and rendered native profile | Ten manifested runtime material families, explicit five-zone identity/landmarks/surface contracts, and deterministic weather teardown are implemented. Final badge removal still requires physical iPad, target-Mac, browser routes, pacing, boss fairness, art, mix, humor, and photosensitivity approval. |
+| Salmon Creek | **PUBLIC** | RC5 route, boss, save, input, signage, connector, portrait, reload, and export gates green | Bounded regression target. Human target-Mac/iPad routes, pacing, boss feel, art, mix, motion, humor, and photosensitivity remain open. |
+| Rain City Run | **PUBLIC `BETA`** | Five-zone route, 26-enemy pressure contract, saves, Towmaster resets, touch, browser startup, full export matrix, native profile, and exact public-artifact verification are green | Ten manifested runtime material families, explicit five-zone identity/landmarks/surface contracts, and deterministic weather teardown are public. Final badge removal still requires physical iPad, target-Mac, browser routes, pacing, boss fairness, art, mix, humor, and photosensitivity approval. |
 | Mount Hood Whiteout | **LOCKED TEASER** | Card remains locked with no gameplay scene or save/unlock change; visual-foundry asset contracts and four-aspect pilot captures are green | Ten original material families plus a presentation-only mountain/lodge/snow/fir/snowman/lift source kit, art brief, provenance, and non-public gallery are complete as a production foundation. Gameplay production has not started. |
 | Moon / Ventura | **LOCKED TEASERS** | Card/brief contracts only | No playable production work in this phase. |
-| Packaging | **RC4 PUBLIC / RC5 CANDIDATE GREEN** | RC5 full `QA_EXPORTS=1`, versioned packages, 74 MB Web build, desktop/1024×768 packaged browser, and Fast-4G/2×-CPU Chrome trace are green | RC5 exact-artifact merge/deployment is pending. Final `0.7.0-alpha.1` is blocked on human Level 2 gates. |
+| Packaging | **RC5 PUBLIC — BYTE VERIFIED** | Full `QA_EXPORTS=1`, versioned packages, 74 MB Web build, desktop/1024×768 packaged browser, Fast-4G/2×-CPU Chrome trace, live smoke, and downloaded-PCK identity are green | Source PR [#55](https://github.com/Louisleh/cobie-nukem/pull/55), prerelease [`v0.7.0-alpha.1-rc5`](https://github.com/Louisleh/cobie-nukem/releases/tag/v0.7.0-alpha.1-rc5), website PR [#126](https://github.com/Louisleh/louislehmann-site/pull/126), deployment `d51a926`, and public PCK match. Final `0.7.0-alpha.1` is blocked on human Level 2 gates. |
 
-### Foundry candidate automated evidence
+### RC5 foundry release evidence
 
 - Fresh full non-export validation passes both mission routes, all unit/integration/content/architecture/asset-IP gates, 100-route/checkpoint/touch/effect soaks, 500 weapon transitions, 100 Towmaster cycles, 66 scenes, and 95 resources.
 - Foreground native Compatibility profiling at 1280×720 uses 300 rendered frames per zone. Rain City p95/p99 results are alley 17.447/23.337 ms, Slice 20.978/21.625 ms, seawall 17.532/21.546 ms, terminal 17.368/17.689 ms, and pier 17.485/20.358 ms, at 200–403 draw calls and approximately 83.6 MB static memory.
 - No zone has recurring >100 ms stalls. One isolated 1,054.530 ms macOS scheduling pause was recorded in the pier sample and is retained transparently; the other 2,699 measured gameplay frames remained within the statistical frame budgets.
 - Mount Hood pilot captures exist at 16:9, 16:10, 4:3, and ultrawide. They validate the mountain/lodge/fir/snowbank/snowman/lift identity, not gameplay or final art approval.
+- The packaged and live Web builds render the RC5 identity without game-origin console errors. The 38,229,008-byte downloaded public PCK is byte-identical to the packaged artifact at SHA-256 `a53c5ccc3b11222d55000d36dc547c508ca6a0683f13184ce3e5634b668b1bfa`.
 
 ### Phase allocation and exit policy
 
