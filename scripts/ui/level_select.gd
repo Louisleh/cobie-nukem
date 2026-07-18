@@ -2,6 +2,7 @@ class_name LevelSelectController
 extends Control
 
 @export var levels: Array[LevelCardData] = []
+@export var episode_definition: EpisodeDefinition
 @export_file("*.tscn") var menu_scene_path := "res://scenes/menus/main_menu.tscn"
 @export var campaign_unlock_override := false
 @export var threaded_warmup_enabled := true
@@ -35,6 +36,8 @@ var _warmup_failed := false
 
 func _ready() -> void:
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+	if episode_definition != null:
+		levels = episode_definition.cards.duplicate()
 	%BuildLabel.text = BuildInfo.label()
 	GameState._set_phase(GameState.Phase.MENU)
 	_prepare_campaign_progress()

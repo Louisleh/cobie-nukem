@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="EpisodeDefinition" load_steps=12 format=3]
+
+[ext_resource type="Script" path="res://scripts/gameplay/episode_definition.gd" id="1"]
+[ext_resource type="Resource" path="res://resources/level/salmon_creek_card.tres" id="2"]
+[ext_resource type="Resource" path="res://resources/level/rain_city_card.tres" id="3"]
+[ext_resource type="Resource" path="res://resources/level/mountain_card.tres" id="4"]
+[ext_resource type="Resource" path="res://resources/level/moon_card.tres" id="5"]
+[ext_resource type="Resource" path="res://resources/level/ventura_card.tres" id="6"]
+[ext_resource type="Resource" path="res://resources/level/episode_1_level_1.tres" id="7"]
+[ext_resource type="Resource" path="res://resources/level/episode_1_vancouver_waterfront.tres" id="8"]
+[ext_resource type="Resource" path="res://resources/level/mount_hood_whiteout.tres" id="9"]
+
+[resource]
+script = ExtResource("1")
+id = &"cobie_campaign"
+title = "COBIE NUKEM // FIVE-MISSION CAMPAIGN"
+cards = Array[Resource]([ExtResource("2"), ExtResource("3"), ExtResource("4"), ExtResource("5"), ExtResource("6")])
+missions = Array[Resource]([ExtResource("7"), ExtResource("8"), ExtResource("9")])
+completion_upgrade = &"new_game_plus"

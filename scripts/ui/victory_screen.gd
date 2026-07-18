@@ -2,8 +2,7 @@ class_name VictoryScreen
 extends CanvasLayer
 
 const FeedbackScene := preload("res://scenes/ui/playtest_report.tscn")
-const EpisodeOneMetadata: LevelMetadata = preload("res://resources/level/episode_1_level_1.tres")
-const VancouverMetadata: LevelMetadata = preload("res://resources/level/episode_1_vancouver_waterfront.tres")
+const Campaign: EpisodeDefinition = preload("res://resources/campaign/episode_one.tres")
 const FALLBACK_REPLAY_SCENE := "res://scenes/levels/episode_1_level_1.tscn"
 var _summary: Dictionary = {}
 var _mission_metadata: LevelMetadata
@@ -39,13 +38,7 @@ func show_summary(summary: Dictionary) -> void:
 	%ReplayButton.grab_focus()
 
 func _metadata_for(level_id: String) -> LevelMetadata:
-	match level_id:
-		"episode_1_level_1":
-			return EpisodeOneMetadata
-		"episode_1_vancouver_waterfront":
-			return VancouverMetadata
-		_:
-			return null
+	return Campaign.metadata_for(StringName(level_id))
 
 func _update_victory_buttons() -> void:
 	if _mission_metadata == null:

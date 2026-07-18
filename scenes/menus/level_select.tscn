@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=3]
+[gd_scene load_steps=15 format=3]
 
 [ext_resource type="Script" path="res://scripts/ui/level_select.gd" id="1"]
 [ext_resource type="Theme" path="res://resources/ui/retro_theme.tres" id="2"]
@@ -10,6 +10,7 @@
 [ext_resource type="Script" path="res://scripts/ui/retro_overlay.gd" id="8"]
 [ext_resource type="Script" path="res://scripts/ui/level_card_data.gd" id="9"]
 [ext_resource type="Resource" path="res://resources/level/ventura_card.tres" id="10"]
+[ext_resource type="Resource" path="res://resources/campaign/episode_one.tres" id="11"]
 
 [sub_resource type="StyleBoxFlat" id="PanelStyle"]
 bg_color = Color(0.025, 0.045, 0.052, 0.96)
@@ -51,6 +52,7 @@ grow_vertical = 2
 theme = ExtResource("2")
 script = ExtResource("1")
 levels = Array[ExtResource("9")]([ExtResource("3"), ExtResource("4"), ExtResource("5"), ExtResource("6"), ExtResource("10")])
+episode_definition = ExtResource("11")
 
 [node name="Background" type="TextureRect" parent="."]
 layout_mode = 1
