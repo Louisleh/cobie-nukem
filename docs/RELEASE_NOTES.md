@@ -1,4 +1,33 @@
-# Release Notes — 0.7.0-alpha.1-rc3 Startup Stability
+# Release Notes — 0.8.0-alpha.1-rc1 Mount Hood Public Beta
+
+Built on 2026-07-18 with Godot `4.7.stable.official.5b4e0cb0f`. Runtime feature revision: `7e6684e`.
+
+## Player-visible changes
+
+- **Mount Hood Whiteout** is now an always-available third mission under an explicit public `BETA` label: five continuous snowbound zones, six objectives, five checkpoints, four secrets, 24 regular enemies, and a four-phase 1,000-HP Municipal Snowcat finale.
+- The mission introduces bounded Full/Reduced/Off snow traction, a reset-safe player-carrying chairlift, Ski-Patrol Rangers, Avalanche Recon Drones, original lodge/lift/mountain scenery, and a post-defeat Golden Ball that appears only after boss summons clear.
+- Mission selection now performs truthful asynchronous warmup. `PREPARING…` replaces misleading readiness text, repeated activation cannot overlap scene transitions, and only the explicit Start action launches a selected card.
+- Pointer/touch actions are released transactionally across scene handoffs. Web builds derive `RETURN TO SITE` from their actual deployment path; native builds retain Quit.
+- Rain City remains public `BETA` while its human/device/art gates remain open. Its production material families now cover every authored support batch rather than only route floors.
+
+## Engineering and validation
+
+- The shared mission-host assembly removes duplicated Rain City/Mount Hood runtime wiring; player interaction targeting moved into a reusable resolver so the player controller remains below the 500-line responsibility gate.
+- Mount Hood owns typed mission, route, encounter, presentation, loadout, warmup, traction, and boss Resources. Production navigation bakes successfully and all authored signs pass route-facing/wall-clearance validation.
+- An explicitly pinned `gpt-5.3-codex-spark` review found no Blocker or Critical issue. Its three Major findings—checkpoint-cleanup handling, true chairlift rider transport, and deployment-independent Return to Site—were fixed and retested.
+- The complete non-export matrix passes 70 scenes, 126 resources, three content manifests, 300 Mount Hood route simulations, 100 chairlift cycles, 100 vertical-slice routes/checkpoints/touch cancellations, 500 weapon transitions, 100 Towmaster cycles, architecture, provenance/IP, and three-mission performance smoke.
+
+## Honest RC boundary
+
+- Mount Hood is a public-development `BETA`, not a final art, animation, balance, audio, or physical-device claim. Target-Mac and physical-iPad route/thermal/audio/touch review remain open.
+- Rain City keeps its `BETA` badge until its recorded target-Mac, Safari/Chrome, and physical-iPad human gates pass.
+- The macOS ZIP remains unsigned and unnotarized. The working title still requires clearance before commercial distribution.
+
+Artifact hashes, source integration, prerelease, website deployment, and public PCK byte identity are recorded in `docs/RELEASE_0_8_0_ALPHA1_RC1_EVIDENCE.md` after publication.
+
+---
+
+# Prior Release Notes — 0.7.0-alpha.1-rc3 Startup Stability
 
 Built on 2026-07-17 with Godot `4.7.stable.official.5b4e0cb0f`. Runtime feature revision: `ba7c449`; stamped candidate: `4a65031`.
 

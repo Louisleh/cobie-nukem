@@ -1,0 +1,74 @@
+[gd_resource type="Resource" script_class="MissionRouteDefinition" load_steps=8 format=3]
+[ext_resource type="Script" path="res://scripts/gameplay/mission_route_definition.gd" id="1"]
+[ext_resource type="Script" path="res://scripts/gameplay/mission_route_zone.gd" id="2"]
+
+[sub_resource type="Resource" id="ForestPullout"]
+script = ExtResource("2")
+zone_id = &"forest_pullout"
+zone_title = "FOREST PULLOUT"
+bounds = AABB(-11.0, -1.0, -20.0, 22.0, 8.0, 34.0)
+spawn_volumes = Array[AABB]([AABB(-10.0, -0.5, -19.0, 20.0, 4.0, 15.0), AABB(-9.0, -0.5, -4.0, 18.0, 4.0, 16.0)])
+patrol_paths = [[Vector3(-7.0, 0.0, -16.0), Vector3(0.0, 0.0, -10.0), Vector3(6.0, 0.0, -4.0)], [Vector3(-5.0, 0.0, 2.0), Vector3(5.0, 0.0, -8.0)]]
+prop_set_id = &"mount_hood_forest_props"
+surface_ids = [&"snow", &"pine_litter", &"fresh_powder"]
+checkpoint_ids = [&"checkpoint_forest_start"]
+secret_ids = [&"secret_snowman_nose"]
+outgoing_edge_ids = [&"mountain_road"]
+
+[sub_resource type="Resource" id="MountainRoad"]
+script = ExtResource("2")
+zone_id = &"mountain_road"
+zone_title = "MOUNTAIN ROAD"
+bounds = AABB(-13.0, -1.0, -58.0, 26.0, 8.0, 38.0)
+spawn_volumes = Array[AABB]([AABB(-12.0, -0.5, -57.0, 24.0, 4.0, 18.0), AABB(-11.0, -0.5, -39.0, 22.0, 4.0, 18.0)])
+patrol_paths = [[Vector3(-8.0, 0.0, -54.0), Vector3(0.0, 0.0, -44.0), Vector3(8.0, 0.0, -34.0)], [Vector3(-7.0, 0.0, -30.0), Vector3(7.0, 0.0, -50.0)]]
+prop_set_id = &"mount_hood_road_props"
+surface_ids = [&"plowed_asphalt", &"fresh_powder", &"rock"]
+checkpoint_ids = [&"checkpoint_road_clear"]
+secret_ids = []
+outgoing_edge_ids = [&"snowbound_lodge"]
+
+[sub_resource type="Resource" id="SnowboundLodge"]
+script = ExtResource("2")
+zone_id = &"snowbound_lodge"
+zone_title = "SNOWBOUND LODGE"
+bounds = AABB(-15.0, -1.0, -97.0, 30.0, 9.0, 39.0)
+spawn_volumes = Array[AABB]([AABB(-14.0, -0.5, -96.0, 28.0, 5.0, 18.0), AABB(-13.0, -0.5, -78.0, 26.0, 5.0, 18.0)])
+patrol_paths = [[Vector3(-10.0, 0.0, -92.0), Vector3(0.0, 0.0, -82.0), Vector3(10.0, 0.0, -70.0)], [Vector3(-9.0, 0.0, -68.0), Vector3(9.0, 0.0, -88.0)]]
+prop_set_id = &"mount_hood_lodge_props"
+surface_ids = [&"lodge_timber", &"lodge_stone", &"snow"]
+checkpoint_ids = [&"checkpoint_lodge_power"]
+secret_ids = [&"secret_treat_pantry"]
+outgoing_edge_ids = [&"service_tunnels"]
+
+[sub_resource type="Resource" id="ServiceTunnels"]
+script = ExtResource("2")
+zone_id = &"service_tunnels"
+zone_title = "SERVICE TUNNELS"
+bounds = AABB(-11.0, -1.0, -136.0, 22.0, 9.0, 39.0)
+spawn_volumes = Array[AABB]([AABB(-10.0, -0.5, -135.0, 20.0, 5.0, 18.0), AABB(-10.0, -0.5, -117.0, 20.0, 5.0, 18.0)])
+patrol_paths = [[Vector3(-7.0, 0.0, -130.0), Vector3(0.0, 0.0, -120.0), Vector3(7.0, 0.0, -108.0)], [Vector3(-6.0, 0.0, -104.0), Vector3(6.0, 0.0, -126.0)]]
+prop_set_id = &"mount_hood_tunnel_props"
+surface_ids = [&"concrete", &"metal", &"rock"]
+checkpoint_ids = [&"checkpoint_lift_restored"]
+secret_ids = [&"secret_service_valves", &"secret_good_dog_seat"]
+outgoing_edge_ids = [&"summit"]
+
+[sub_resource type="Resource" id="Summit"]
+script = ExtResource("2")
+zone_id = &"summit"
+zone_title = "SUMMIT"
+bounds = AABB(-19.0, -1.0, -184.0, 38.0, 13.0, 48.0)
+spawn_volumes = Array[AABB]([AABB(-18.0, -0.5, -182.0, 36.0, 8.0, 20.0), AABB(-18.0, -0.5, -162.0, 36.0, 8.0, 24.0)])
+patrol_paths = [[Vector3(-13.0, 0.0, -176.0), Vector3(0.0, 0.0, -162.0), Vector3(13.0, 0.0, -148.0)], [Vector3(-12.0, 0.0, -144.0), Vector3(12.0, 0.0, -170.0)]]
+prop_set_id = &"mount_hood_summit_props"
+surface_ids = [&"lift_steel", &"icy_slush", &"frosted_glass"]
+checkpoint_ids = [&"checkpoint_summit_arrival"]
+secret_ids = []
+outgoing_edge_ids = []
+
+[resource]
+script = ExtResource("1")
+route_id = &"mount_hood_whiteout_route"
+entry_zone_id = &"forest_pullout"
+zones = [SubResource("ForestPullout"), SubResource("MountainRoad"), SubResource("SnowboundLodge"), SubResource("ServiceTunnels"), SubResource("Summit")]

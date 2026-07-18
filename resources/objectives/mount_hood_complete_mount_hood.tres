@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="ObjectiveDefinition" load_steps=2 format=3]
+[ext_resource type="Script" path="res://scripts/gameplay/objective_definition.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = &"complete_mount_hood"
+title = "COMPLETE MOUNT HOOD"
+kind = 5
+target_id = &"golden_tennis_ball"
+prerequisite_ids = Array[StringName]([&"defeat_snowcat"])

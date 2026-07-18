@@ -7,6 +7,7 @@ enum Readiness { WARMING, READY, FAILED, TRANSITIONING }
 @export_file("*.tscn") var menu_scene_path := "res://scenes/menus/main_menu.tscn"
 @export var minimum_warmup_seconds := 0.35
 @export var play_intro_audio := true
+@export var runtime_warmup_enabled := true
 
 var readiness := Readiness.WARMING
 var _accepting := false
@@ -60,6 +61,12 @@ func _start_warmup() -> void:
 	%LoadingBar.value = 0.0
 	%Prompt.modulate.a = 1.0
 	%Prompt.text = "PREPARING COBIE… 0%"
+	if not runtime_warmup_enabled:
+		if ResourceLoader.exists(menu_scene_path):
+			call_deferred("_set_ready")
+		else:
+			call_deferred("_set_failed")
+		return
 	var error := ResourceLoader.load_threaded_request(menu_scene_path, "PackedScene", true)
 	if error != OK:
 		_set_failed()

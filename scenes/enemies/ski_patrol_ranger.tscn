@@ -1,0 +1,57 @@
+[gd_scene load_steps=11 format=3]
+
+[ext_resource type="Script" path="res://scripts/ai/ski_patrol_ranger.gd" id="1"]
+[ext_resource type="Resource" path="res://resources/enemies/ski_patrol_ranger.tres" id="2"]
+[sub_resource type="CapsuleShape3D" id="Shape"]
+radius = 0.38
+height = 1.75
+[sub_resource type="StandardMaterial3D" id="Coat"]
+albedo_color = Color(0.055, 0.34, 0.34, 1)
+roughness = 0.78
+[sub_resource type="StandardMaterial3D" id="Threat"]
+shading_mode = 0
+albedo_color = Color(1, 0.24, 0.06, 1)
+emission_enabled = true
+emission = Color(1, 0.08, 0.01, 1)
+emission_energy_multiplier = 2.5
+[sub_resource type="CapsuleMesh" id="Body"]
+material = SubResource("Coat")
+radius = 0.34
+height = 1.25
+[sub_resource type="SphereMesh" id="Head"]
+material = SubResource("Coat")
+radius = 0.3
+height = 0.5
+[sub_resource type="BoxMesh" id="Pack"]
+material = SubResource("Threat")
+size = Vector3(0.62, 0.72, 0.24)
+[sub_resource type="SphereMesh" id="Flare"]
+material = SubResource("Threat")
+radius = 0.11
+height = 0.2
+
+[node name="SkiPatrolRanger" type="CharacterBody3D"]
+collision_layer = 4
+collision_mask = 3
+script = ExtResource("1")
+definition = ExtResource("2")
+target_height = 1.4
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+position = Vector3(0, 0.88, 0)
+shape = SubResource("Shape")
+[node name="Visual" type="Node3D" parent="."]
+[node name="Body" type="MeshInstance3D" parent="Visual"]
+position = Vector3(0, 0.82, 0)
+mesh = SubResource("Body")
+[node name="Head" type="MeshInstance3D" parent="Visual"]
+position = Vector3(0, 1.55, -0.05)
+mesh = SubResource("Head")
+[node name="MunicipalPack" type="MeshInstance3D" parent="Visual"]
+position = Vector3(0, 0.95, 0.28)
+mesh = SubResource("Pack")
+[node name="AutoAimTarget" type="Marker3D" parent="."]
+position = Vector3(0, 1.35, 0)
+[node name="Telegraph" type="MeshInstance3D" parent="."]
+visible = false
+position = Vector3(0, 1.85, -0.1)
+mesh = SubResource("Flare")

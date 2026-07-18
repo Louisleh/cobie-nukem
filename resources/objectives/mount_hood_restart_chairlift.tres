@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="ObjectiveDefinition" load_steps=2 format=3]
+[ext_resource type="Script" path="res://scripts/gameplay/objective_definition.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = &"restart_chairlift"
+title = "RESTART CHAIRLIFT"
+kind = 2
+target_id = &"chairlift_power"
+prerequisite_ids = Array[StringName]([&"restore_lodge_power"])

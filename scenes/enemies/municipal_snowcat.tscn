@@ -1,0 +1,86 @@
+[gd_scene load_steps=14 format=3]
+
+[ext_resource type="Script" path="res://scripts/ai/municipal_snowcat.gd" id="1"]
+[ext_resource type="Resource" path="res://resources/enemies/municipal_snowcat.tres" id="2"]
+[ext_resource type="Resource" path="res://resources/enemies/snowcat_combat_profile.tres" id="3"]
+[sub_resource type="BoxShape3D" id="Shape"]
+size = Vector3(4.2, 3.6, 5.4)
+[sub_resource type="StandardMaterial3D" id="Armor"]
+albedo_color = Color(0.055, 0.28, 0.3, 1)
+metallic = 0.78
+roughness = 0.35
+[sub_resource type="StandardMaterial3D" id="BladeMat"]
+albedo_color = Color(0.86, 0.44, 0.08, 1)
+metallic = 0.7
+[sub_resource type="StandardMaterial3D" id="CoreMat"]
+shading_mode = 0
+albedo_color = Color(0.1, 0.95, 1, 1)
+emission_enabled = true
+emission = Color(0.02, 0.7, 1, 1)
+emission_energy_multiplier = 4.0
+[sub_resource type="BoxMesh" id="Body"]
+material = SubResource("Armor")
+size = Vector3(3.5, 2.2, 4.4)
+[sub_resource type="BoxMesh" id="Blade"]
+material = SubResource("BladeMat")
+size = Vector3(5.0, 1.4, 0.4)
+[sub_resource type="CylinderMesh" id="Track"]
+material = SubResource("Armor")
+top_radius = 0.72
+bottom_radius = 0.72
+height = 4.2
+[sub_resource type="SphereMesh" id="Core"]
+material = SubResource("CoreMat")
+radius = 0.58
+height = 1.1
+[sub_resource type="CylinderMesh" id="Mast"]
+material = SubResource("BladeMat")
+top_radius = 0.15
+bottom_radius = 0.24
+height = 3.4
+
+[node name="MunicipalSnowcat" type="CharacterBody3D"]
+collision_layer = 4
+collision_mask = 3
+script = ExtResource("1")
+definition = ExtResource("2")
+combat_profile = ExtResource("3")
+target_height = 2.4
+death_linger_seconds = 2.8
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+position = Vector3(0, 1.8, 0)
+shape = SubResource("Shape")
+[node name="Visual" type="Node3D" parent="."]
+[node name="Body" type="MeshInstance3D" parent="Visual"]
+position = Vector3(0, 1.8, 0)
+mesh = SubResource("Body")
+[node name="PlowBlade" type="MeshInstance3D" parent="Visual"]
+position = Vector3(0, 1.0, -2.35)
+rotation_degrees = Vector3(12, 0, 0)
+mesh = SubResource("Blade")
+[node name="LeftTrack" type="MeshInstance3D" parent="Visual"]
+position = Vector3(-1.65, 0.85, 0)
+rotation_degrees = Vector3(90, 0, 0)
+mesh = SubResource("Track")
+[node name="RightTrack" type="MeshInstance3D" parent="Visual"]
+position = Vector3(1.65, 0.85, 0)
+rotation_degrees = Vector3(90, 0, 0)
+mesh = SubResource("Track")
+[node name="WeatherMast" type="MeshInstance3D" parent="Visual"]
+position = Vector3(0, 4.0, 0)
+mesh = SubResource("Mast")
+[node name="Core" type="MeshInstance3D" parent="Visual"]
+position = Vector3(0, 2.1, -2.15)
+mesh = SubResource("Core")
+[node name="PanelLeft" type="MeshInstance3D" parent="Visual"]
+position = Vector3(-0.8, 2.1, -2.2)
+mesh = SubResource("Blade")
+[node name="PanelRight" type="MeshInstance3D" parent="Visual"]
+position = Vector3(0.8, 2.1, -2.2)
+mesh = SubResource("Blade")
+[node name="AutoAimTarget" type="Marker3D" parent="."]
+position = Vector3(0, 2.4, -1.8)
+[node name="Telegraph" type="MeshInstance3D" parent="."]
+visible = false
+position = Vector3(0, 0.05, -3.2)
+mesh = SubResource("Core")

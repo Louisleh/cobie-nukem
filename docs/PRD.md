@@ -6,7 +6,7 @@
 **Primary platform:** macOS, especially Apple-silicon Mac mini  
 **Secondary platform:** Browser-playable Web export  
 **Engine:** Godot 4.7 stable, standard/GDScript build  
-**Product scope:** Salmon Creek is the definitive opening mission; Rain City Run is the second production mission and remains explicitly labeled public beta/RC until human gates pass, while later campaign missions remain locked teasers
+**Product scope:** Three-mission public alpha program: Salmon Creek is the stable opening benchmark; Rain City Run remains explicitly labelled `BETA` until human gates pass; Mount Hood Whiteout is an always-available public development `BETA`; Moon and Ventura remain locked identity briefs.
 **Core fantasy:** Play as Cobie, an aviator-sunglasses-and-leather-jacket labradoodle action hero, in an original 1990s-style retro FPS designed to feel unusually good on a low-cost flight stick.
 
 ---
@@ -21,11 +21,17 @@ The vertical slice opens at a stormy Pacific Northwest sports field beside a sig
 
 The primary control novelty is a **flight-stick mode** with exaggerated auto-aim and a 1990s-style control philosophy. Keyboard/mouse remains fully supported. A standard gamepad is a fallback.
 
-## 1.1 Alpha.9 public-beta checkpoint
+## 1.1 `0.8.0-alpha.1-rc1` three-mission checkpoint
+
+This cycle hardens truthful loading and transactional scene transitions, keeps Rain City openly playable under its honest `BETA` gate, and introduces Mount Hood Whiteout as a complete five-zone public-development mission. Mount Hood adds bounded Full/Reduced/Off snow traction, 24 regular enemies, Ski-Patrol Ranger and Avalanche Recon Drone families, a reset-safe chairlift, four secrets, five checkpoints, and a four-phase 1,000-HP Municipal Snowcat. Automated acceptance supports an RC; it does not claim physical-iPad comfort, final art, pacing, audio mix, boss fairness, or photosensitivity approval.
+
+The canonical status/evidence ledger is `docs/PHASE_ROADMAP_PRD.md`. The canonical art rules are `docs/ART_BIBLE.md`; no separate episode-orchestration bible may override them.
+
+## 1.2 Archived Alpha.9 public-beta checkpoint
 
 Alpha.9 preserves the Rain City Forge systems and exposes Vancouver through an unmistakable `BETA` mission card and work-in-progress warning so source and public development remain closely aligned. Browser pointer capture is scene-owned, requested from the trusted mission-launch gesture, recoverable with one non-firing click, and backed by a visible HUD prompt plus activation safety protection. Vancouver adds a ten-second opening protection window but remains a rough production preview without a claimed human end-to-end playthrough. The detailed completed/remaining ledger, evidence, and human gates live only in `docs/PHASE_ROADMAP_PRD.md`.
 
-## 1.2 Rain City Run RC stabilization checkpoint
+## 1.3 Rain City Run RC stabilization checkpoint
 
 The public Rain City RC is an always-available second mission so open development and family testing do not depend on campaign-save state. It preserves five authored gameplay/presentation zones, 26 enemies with difficulty-specific pressure caps, the Compliance Gull, Umbrella Shield Enforcer, four secrets, save schema v5, Municipal Recall Override, and the four-phase 1,000-HP Municipal Towmaster finale while adding deterministic route gates, collectible secret rewards, shield/attack/pressure fixes, bounded navigation recovery, truthful Rain City performance coverage, transactional completion saves, and serialized crash-safe Godot automation. Its `BETA` badge and opening warning remain until physical iPad, target-Mac, browser, pacing, art, mix, fairness, humor, and photosensitivity gates receive human approval. Automated completion evidence and release identity are maintained in `docs/PHASE_ROADMAP_PRD.md`.
 

@@ -2,7 +2,14 @@
 
 This file distinguishes confirmed product limitations from unperformed validation. Update it for every release candidate; do not silently convert “not tested” into “passed.”
 
-## `0.7.0-alpha.1-rc5` Rain City human gates
+## `0.8.0-alpha.1-rc1` candidate gates
+
+- Mount Hood Whiteout is an always-available public-development `BETA`, not a human-approved final mission. Its five-zone route, objectives, encounters, navigation, traction profiles, chairlift resets, Snowcat gating, saves/resources, and package eligibility have automated coverage. Physical iPad touch/thermal/audio, target-Mac pacing, final environmental art, enemy animation quality, boss fairness, mix, humor, and photosensitivity remain human gates.
+- Rain City remains labelled `BETA`. This cycle does not remove the badge because target-Mac, Safari/Chrome full routes, physical-iPad completion, route pacing, Towmaster feel, final art/mix, humor, and photosensitivity approval remain open.
+- Snow traction offers Full/Reduced/Off. Automated physics contracts do not substitute for human steering comfort, especially on twin sticks.
+- Mount Hood uses original mesh-primary production-preview enemies and modular environments. Directional hero atlases and fully authored mission-specific audio are quality follow-ups; no automated test claims those subjective gates passed.
+
+## Archived `0.7.0-alpha.1-rc5` Rain City human gates
 
 - RC5 converts Rain City's authored Blender batches to manifested albedo/normal/packed-ORM runtime families and adds a presentation-only Mount Hood pilot. The complete release matrix and public byte-identity gate pass; automated import/material/identity contracts still do not constitute human art approval.
 
@@ -13,7 +20,7 @@ This file distinguishes confirmed product limitations from unperformed validatio
 
 - Right-stick profiles are automated for response, frame-rate stability, cancellation, and settings wiring, but final friction/boost strength and thumb comfort require physical iPad Safari testing.
 - The Web bootstrap and title preload are browser-tested; slow real-world mobile networks still need a physical first-load timing pass.
-- Rain City Run now has campaign continuity, five authored zones, 26 enemies, Compliance Gulls, a production Umbrella Shield Enforcer, four secrets, save-v5/loadout/upgrade continuity, and a four-phase 1,000-HP Municipal Towmaster finale. It has not had the required human 15–22 minute end-to-end playthrough; art, pacing, balance, navigation clarity, touch comfort, mix, and boss feel remain explicitly open. Mount Hood, Moon, and Ventura remain illustrated locked teasers only.
+- Rain City Run has campaign continuity, five authored zones, 26 enemies, Compliance Gulls, a production Umbrella Shield Enforcer, four secrets, save-v5/loadout/upgrade continuity, and a four-phase 1,000-HP Municipal Towmaster finale. It has not had the required human 15–22 minute end-to-end playthrough; art, pacing, balance, navigation clarity, touch comfort, mix, and boss feel remain explicitly open.
 - Three regular archetypes plus Compliance Hound and Walker have original directional/reaction atlases and typed presentation profiles. The generated Walker source produced three distinct authored rows, so its alternate locomotion slot intentionally reuses the primary gait; this is manifested provenance, not a claim of eight unique animation families.
 - Imported primary-combat audio, Salmon Creek ambience, adaptive mission music states, and nonverbal Cobie bark events are contract-tested. Loudness, tonal character, repetition, spatial mix, emotional timing, and perceived weapon/enemy weight still require human listening.
 - Salmon Creek now contains 17 required actors across staged waves while limiting peak authored density to three. Encounter completion, reset, pressure distance, boss phases, summons, and recovery are automated; 12–20 minute route pacing, fairness by difficulty, and spectacle remain human gates.

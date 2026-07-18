@@ -50,7 +50,7 @@ func _physics_process(delta: float) -> void:
 		return
 	var receiver := _damage_receiver(collision.get_collider())
 	if receiver != null and receiver != instigator:
-		receiver.apply_damage(damage, instigator, collision.get_position())
+		receiver.apply_damage(damage, instigator if is_instance_valid(instigator) else null, collision.get_position())
 	if splash_radius > 0.0:
 		_apply_splash(collision.get_position())
 	_finish()
@@ -75,7 +75,7 @@ func _apply_splash(center: Vector3) -> void:
 	for hit in get_world_3d().direct_space_state.intersect_shape(query, 16):
 		var receiver := _damage_receiver(hit.get("collider"))
 		if receiver != null and receiver != instigator:
-			receiver.apply_damage(damage * 0.55, instigator, center)
+			receiver.apply_damage(damage * 0.55, instigator if is_instance_valid(instigator) else null, center)
 
 func _damage_receiver(value: Variant) -> Node:
 	var node := value as Node

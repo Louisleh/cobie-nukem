@@ -34,6 +34,17 @@ rm -rf "$PACKAGES_DIR" "$PAGES_DIR"
 mkdir -p "$PACKAGES_DIR" "$PAGES_DIR/play" "$PAGES_DIR/assets"
 
 cp -R builds/web/. "$PAGES_DIR/play/"
+# macOS cloud-storage conflict copies use names such as `index 2.wasm`. They are
+# byte-identical local debris, not Godot outputs, and must never inflate or ship
+# inside a public archive even if the sync provider recreates them after export.
+python3 - "$PAGES_DIR/play" <<'PY'
+from pathlib import Path
+import sys
+
+for path in Path(sys.argv[1]).rglob("*"):
+    if path.is_file() and " 2" in path.stem:
+        path.unlink()
+PY
 # GitHub Pages and browsers may retain Godot's large immutable-looking index
 # payloads between public alphas. Give every packaged release a distinct
 # executable basename so an updated HTML shell can never boot an older PCK
@@ -82,7 +93,7 @@ source = Path("builds/web")
 target = Path("builds/packages") / f"cobie-nukem-{version}-itch.zip"
 with zipfile.ZipFile(target, "w", compression=zipfile.ZIP_DEFLATED, compresslevel=9) as archive:
     for path in sorted(source.rglob("*")):
-        if path.is_file() and not path.name.endswith(".import"):
+        if path.is_file() and not path.name.endswith(".import") and " 2" not in path.stem:
             archive.write(path, path.relative_to(source).as_posix())
 PY
 

@@ -14,6 +14,7 @@ const NAVIGATION_BAKE_TIMEOUT_MSEC := 20_000
 
 const MANIFEST := preload("res://resources/content/vancouver_waterfront_manifest.tres") as ContentManifest
 const WORLD_BUILDER_SCRIPT = preload("res://scripts/level/vancouver_waterfront_world_builder.gd")
+const PRESENTATION_SCENE = preload("res://scenes/levels/vancouver/rain_city_presentation.tscn")
 
 var failures: Array[String] = []
 var navigation_bake_signal_received := false
@@ -27,6 +28,7 @@ func _initialize() -> void:
 
 func _run() -> void:
 	_test_vancouver_route_contracts()
+	_test_manifested_foundry_materials()
 	await _test_world_builder_navigation_contract()
 
 	if failures.is_empty():
@@ -74,6 +76,14 @@ func _test_vancouver_route_contracts() -> void:
 		max_pressure = maxi(max_pressure, int(encounter.maximum_simultaneous_attackers))
 	_expect(total_spawned == EXPECTED_ENEMY_TOTAL, "Vancouver route includes exactly 26 authored enemies")
 	_expect(max_pressure == EXPECTED_MAX_PRESSURE, "Vancouver encounter pressure cap is 4")
+
+
+func _test_manifested_foundry_materials() -> void:
+	var presentation := PRESENTATION_SCENE.instantiate() as RainCityMaterialApplier
+	_expect(presentation != null, "Rain City foundry presentation instantiates")
+	if presentation == null: return
+	_expect(presentation.validate_material_contract(presentation).is_empty(), "Every RC_ foundry material maps to a manifested runtime family")
+	presentation.free()
 
 
 func _test_world_builder_navigation_contract() -> void:

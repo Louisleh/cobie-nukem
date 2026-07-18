@@ -80,6 +80,12 @@ Enemy scale is gameplay data: the rendered silhouette must agree with collision 
 
 All directional frames share one fixed cell grid, one feet baseline, and consistent transparent padding. Measure the opaque subject height in source pixels and calculate Godot `Sprite3D.pixel_size` as `intended_world_height / opaque_frame_height`; do not eyeball scale independently for desktop and tablet. The manifest records both values and the calculated result. Tablet and distance captures must prove that minor enemies remain targetable and bosses preserve their intended dominance.
 
+### Persistent-kit and faction continuity
+
+Cobie, the healthy/critical portraits, Pawstol/Barkshot/Fetch Launcher viewmodels, HUD, twin-stick controls, core pickups, and Golden Tennis Ball form one persistent kit. They do not receive unrelated redesigns per mission. Thin biome overlays such as frost or rain residue are allowed only when silhouette, scale, state readability, and provenance remain intact.
+
+Compliance enemies share visual DNA without becoming clones: municipal teal structure, officious box/clamp shapes, warm threat telegraphs, cyan technological weak points, and one unmistakable role silhouette. Image generation produces concepts and turnarounds only. Blender owns deterministic final geometry, cameras, lighting, rigs, and directional renders. Character sheets use neutral lighting, transparent backgrounds, consistent padding, a fixed feet/hover baseline, and profile-driven atlas dimensions—never a globally hard-coded cell size.
+
 ## HUD, touch, and typography
 
 UI uses bold condensed display type for identity and a highly legible sans-serif for instructions, captions, numbers, and touch labels. Hierarchy comes from size, spacing, containers, icons, and contrast—not repeated outlines or oversized text.

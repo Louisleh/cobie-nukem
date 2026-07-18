@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="SurfaceMovementProfile" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/player/surface_movement_profile.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = &"ice_slush"
+surface_ids = Array[StringName]([&"ice", &"slush", &"icy_slush"])
+acceleration_multiplier = 0.7
+deceleration_multiplier = 0.45

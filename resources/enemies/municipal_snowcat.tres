@@ -1,0 +1,25 @@
+[gd_resource type="Resource" script_class="EnemyDefinition" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/ai/enemy_definition.gd" id="1"]
+[ext_resource type="Resource" path="res://resources/enemies/reaction_boss.tres" id="2"]
+
+[resource]
+script = ExtResource("1")
+id = &"municipal_snowcat"
+display_name = "MUNICIPAL SNOWCAT"
+archetype = 6
+warning_text = "WHITEOUT PERMIT ENFORCEMENT."
+max_health = 1000.0
+move_speed = 4.0
+acceleration = 18.0
+detection_range = 44.0
+attack_range = 8.0
+attack_damage = 18.0
+attack_cooldown = 1.85
+telegraph_seconds = 0.72
+threat_weight = 2.0
+threat_value = 12
+navigation_radius = 1.5
+weak_point_multiplier = 2.0
+reaction_profile = ExtResource("2")
+score_value = 2800

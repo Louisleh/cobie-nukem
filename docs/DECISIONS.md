@@ -1,10 +1,16 @@
 # Decisions
 
+## D-016 — Mount Hood enters public development as an explicit BETA
+
+Mount Hood Whiteout retains stable ID `mount_hood_whiteout` and becomes an always-available public-development route once its five zones, typed objectives/encounters, five checkpoints, four secrets, navigation, bounded traction, chairlift lifecycle, Snowcat gating, parser/content checks, and export matrix are green. Its card, launch action, and opening presentation all say `BETA`. This supersedes D-010 and D-015 only for Mount Hood's locked/public boundary; Moon and Ventura remain locked.
+
+Public access is not final approval. Physical iPad, target-Mac pacing, art cohesion, animation, audio mix, boss fairness, humor, motion comfort, and photosensitivity remain human gates. Collision/navigation stay independent from presentation, and the unused gallery GLB remains excluded even though its runtime material families now support the mission.
+
 ## D-015 — Environment identity and materials are validated production data
 
 Every production zone declares its mission identity, texture set, material families, surface responses, dominant landmark, and optional background landmark through `ZonePresentationProfile`. Flat-color Blender batches remain valid blockout/import carriers, but a critical-route zone is not final until manifested runtime material Resources replace the applicable surfaces. Presentation scripts may apply materials, fog, bounded weather, and quality settings; they never take collision, navigation, progression, or save ownership.
 
-Rain City uses ten original wet-city families generated from editable Material Maker graphs. Mount Hood begins as a locked, presentation-only foundry with ten snow/lodge/lift families and a persistent original mountain landmark. Its gallery/model/materials are excluded from public exports until a future playable-production decision explicitly changes that boundary.
+Rain City uses ten original wet-city families generated from editable Material Maker graphs. Mount Hood began as a locked, presentation-only foundry and is now governed by D-016. Its ten snow/lodge/lift families support the public BETA route while the standalone foundry gallery remains a development-only artifact.
 
 ## D-014 — High-resolution 2.5D is the production constraint
 
@@ -26,9 +32,9 @@ Blender MCP is pinned locally with telemetry and all external asset services dis
 
 The right stick remains a rate-based aiming control: displacement controls angular speed, not an unbounded swipe delta. Fine aim uses a configurable response curve and time-based smoothing; sustained outer-ring input receives a delayed, bounded turn boost; visible targets may reduce angular rate through configurable friction. No gyro or swipe-look is added in this pass. Profiles live in typed Resources and transient response state lives outside the player controller.
 
-## D-010 — Future levels are illustrated promises, not false routes (superseded for Vancouver by D-012)
+## D-010 — Future levels are illustrated promises, not false routes (superseded for Vancouver by D-012 and Mount Hood by D-016)
 
-Mount Hood, Moon, and Ventura Pier appear as original illustrated mission cards. They remain locked, contain no scene route, and say COMING SOON. Vancouver followed this rule through Alpha.8 and is now governed by D-012.
+Moon and Ventura Pier remain original illustrated locked mission cards with no scene route. Vancouver followed this rule through Alpha.8 and is governed by D-012; Mount Hood is governed by D-016.
 
 ## D-012 — Public development uses explicit beta routes
 

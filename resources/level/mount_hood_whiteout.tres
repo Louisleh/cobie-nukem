@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="LevelMetadata" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/level/level_metadata.gd" id="1"]
+[ext_resource type="Resource" path="res://resources/loadouts/mount_hood_loadout.tres" id="2"]
+
+[resource]
+script = ExtResource("1")
+level_id = &"mount_hood_whiteout"
+title = "MOUNT HOOD WHITEOUT"
+subtitle = "Off-Leash Summit"
+target_minutes_min = 18
+target_minutes_max = 25
+total_secrets = 4
+opening_objective = "REACH THE SNOWBOUND LODGE"
+replay_scene = "res://scenes/levels/mount_hood_whiteout.tscn"
+next_mission_id = &""
+next_mission_scene = ""
+next_mission_title = ""
+mission_loadout = ExtResource("2")
+zones = Array[Dictionary]([{"id": &"forest_pullout", "title": "FOREST PULLOUT", "target_minutes": 3.0}, {"id": &"mountain_road", "title": "MOUNTAIN ROAD", "target_minutes": 4.0}, {"id": &"snowbound_lodge", "title": "SNOWBOUND LODGE", "target_minutes": 4.5}, {"id": &"service_tunnels", "title": "SERVICE TUNNELS", "target_minutes": 4.0}, {"id": &"summit", "title": "OFF-LEASH SUMMIT", "target_minutes": 6.0}])

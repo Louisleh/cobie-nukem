@@ -1,0 +1,28 @@
+[gd_resource type="Resource" script_class="EnemyDefinition" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/ai/enemy_definition.gd" id="1"]
+[ext_resource type="Resource" path="res://resources/enemies/reaction_light.tres" id="2"]
+
+[resource]
+script = ExtResource("1")
+id = &"avalanche_recon_drone"
+display_name = "AVALANCHE RECON DRONE"
+archetype = 5
+warning_text = "AVALANCHE SEARCH CONE // BREAK LINE OR SHOOT IT DOWN"
+max_health = 46.0
+move_speed = 5.4
+acceleration = 24.0
+detection_range = 36.0
+attack_range = 12.0
+attack_damage = 8.0
+attack_cooldown = 2.5
+telegraph_seconds = 0.95
+threat_weight = 0.85
+threat_value = 3
+navigation_radius = 0.35
+weak_point_multiplier = 1.4
+reaction_profile = ExtResource("2")
+allowed_encounter_tags = Array[StringName]([&"flying", &"support", &"mount_hood"])
+score_value = 380
+preferred_distance = 8.5
+retreat_distance = 4.0

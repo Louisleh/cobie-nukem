@@ -263,11 +263,11 @@ func _test_teardown_without_leaks() -> void:
 	presentation.set_player(player)
 	await process_frame
 	var rain := presentation._player_weather
-	_expect(rain != null and is_instance_valid(rain), "presentation owns player rain while configured")
+	_expect(rain != null and is_instance_valid(rain), "presentation owns bounded player weather while configured")
 	presentation._exit_tree()
 	await process_frame
-	_expect(presentation._player_weather == null, "presentation clears player rain ownership during teardown")
-	_expect(not player.has_meta(&"mission_presentation_rain"), "presentation clears player rain metadata during teardown")
+	_expect(presentation._player_weather == null, "presentation clears player weather ownership during teardown")
+	_expect(not player.has_meta(&"mission_presentation_weather"), "presentation clears player weather metadata during teardown")
 	player.free()
 	var director := presentation.get_audio_director()
 	var bridge := presentation.get_combat_audio_bridge()

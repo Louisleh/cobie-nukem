@@ -2,8 +2,8 @@ schema_version: 1
 mission_id: mount_hood_whiteout
 card_title: MOUNT HOOD WHITEOUT
 set_piece_phrase: OFF-LEASH SUMMIT
-status: locked_visual_foundry
-public_playable: false
+status: public_beta_candidate
+public_playable: true
 target_duration_minutes: [18, 25]
 target_secret_count: 4
 environment_identity: snowbound_pacific_northwest_alpine_pursuit
@@ -40,7 +40,7 @@ zones:
 pilot_acceptance:
   required_elements: [mountain, snowbanks, firs, snowman, warm_lodge, fictional_signage, readable_future_route]
   aspects: [1280x720, 1680x1050, 1024x768, 3440x1440]
-  constraints: [no_collision, no_navigation, no_campaign_unlock, original_geometry, manifested_provenance]
+  constraints: [presentation_separate_from_collision, original_geometry, manifested_provenance, tablet_readability]
 future_boss: original_snowplow_weather_control_mech
 legal:
   copied_maps_or_floorplans: prohibited

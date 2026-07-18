@@ -66,7 +66,7 @@ Record build/commit: __________  Godot: __________  OS/device: __________  Teste
 Automated/package note (2026-07-16): the exact RC package rendered the title and mission selector at 1024×768, accepted the first activation tap without a focus-recovery detour, and emitted no game-origin Chrome error. The unchecked items below still require human route/device judgment.
 
 - [ ] The normal mission selector shows `BETA`, `START BETA`, and a visible work-in-progress warning before launch.
-- [ ] Rain City is immediately available as public `BETA` on a fresh campaign; Salmon Creek victory still offers `CONTINUE TO RAIN CITY`; Mount Hood, Moon, and Ventura remain locked teasers.
+- [ ] Rain City and Mount Hood are immediately available as public `BETA` missions on a fresh campaign; Salmon Creek victory offers `CONTINUE TO RAIN CITY`; Rain City victory offers `CONTINUE TO MOUNT HOOD`; Moon and Ventura remain locked teasers.
 - [ ] Clicking/tapping a card commits the selection without launching; hover/focus alone never changes the details or footer action, and only `START MISSION`/`START BETA` launches.
 - [ ] The explicit Start action transfers focus/capture into gameplay; one non-firing click restores released pointer capture without opening a menu detour.
 - [ ] `PLAY AGAIN` reloads the completed mission rather than always returning to Salmon Creek.
@@ -84,6 +84,20 @@ Automated/package note (2026-07-16): the exact RC package rendered the title and
 - [ ] Harbour water/out-of-bounds falls kill and restore at the pier checkpoint rather than falling forever.
 - [ ] Completing the convoy unlocks the departure control and campaign result; no earlier interaction can consume the departure switch.
 - [ ] Route target: ______ minutes (15–22); human pacing, landmark, humor, art, and mix findings recorded separately.
+
+## Mount Hood Whiteout public beta
+
+- [ ] Selector shows `BETA`, `START BETA`, and the public-development warning; card selection never launches without Start.
+- [ ] `PREPARING…` is truthful and Start enables only after mission warmup completes.
+- [ ] Forest Pullout, Mountain Road, Snowbound Lodge, Service Tunnels, and Summit form a continuous readable route with the mountain as an intentional exterior landmark.
+- [ ] Full/Reduced/Off surface movement settings produce bounded, understandable powder/ice response with identical desktop/touch physics.
+- [ ] Five checkpoints and four secrets restore without progression loss; Municipal Recall is available on direct and campaign entry.
+- [ ] Exactly 24 regular enemies appear while only 2/3/4 attack simultaneously on Story/Classic/Mayhem.
+- [ ] Ski-Patrol Ranger telegraphs ranged attacks; Avalanche Recon Drone visibly marks, can be interrupted, and cleans up safely.
+- [ ] Chairlift can board, move, complete, die/reset, and restore from checkpoint without stale motion or stranded actors.
+- [ ] Snowcat phases read ROAD CLOSED, WHITEOUT WARNING, CHAINS REQUIRED, and OFF-LEASH SUMMIT; health reaches zero and summons clear before the Golden Ball becomes available.
+- [ ] Snowbanks, firs, snowman, lodge, lift machinery, warm windows, signs, and mountain remain readable at 1024×768 without hiding enemies, pickups, objectives, captions, or touch controls.
+- [ ] Target route: ______ minutes (18–25); human traction, boss fairness, art, mix, humor, motion, thermal, and photosensitivity findings recorded separately.
 
 ## Accessibility and presentation
 

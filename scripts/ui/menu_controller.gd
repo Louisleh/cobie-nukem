@@ -23,7 +23,8 @@ func _ready() -> void:
 	_wire_button(%OptionsButton, func() -> void: _route(options_scene_path))
 	_wire_button(%CreditsButton, func() -> void: _route(credits_scene_path))
 	_wire_button(%QuitButton, _quit)
-	%QuitButton.visible = not OS.has_feature("web")
+	%QuitButton.text = "RETURN TO SITE" if OS.has_feature("web") else "QUIT"
+	%QuitButton.visible = true
 	continue_button.disabled = CheckpointPayload.sanitize(SaveManager.load_slot(&"checkpoint")).is_empty()
 	continue_button.focus_mode = Control.FOCUS_NONE if continue_button.disabled else Control.FOCUS_ALL
 	%NewGameButton.grab_focus()
@@ -81,4 +82,10 @@ func _route(path: String) -> void:
 		sounds.play(ProceduralAudio.Cue.ERROR)
 
 func _quit() -> void:
+	if OS.has_feature("web"):
+		# Derive the game landing page from the deployed path. This works for the
+		# public /play/ subdirectory, previews, and custom mount points without a
+		# hard-coded production URL.
+		JavaScriptBridge.eval("(() => { const here = new URL(window.location.href); const parts = here.pathname.split('/').filter(Boolean); if (parts.at(-1) === 'play') parts.pop(); const target = '/' + parts.join('/') + '/'; if (window.top !== window) window.top.location.href = target; else window.location.href = target; })();", true)
+		return
 	get_tree().quit()

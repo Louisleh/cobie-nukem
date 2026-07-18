@@ -1,0 +1,8 @@
+[gd_resource type="Resource" script_class="MissionWarmupProfile" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/mission_warmup_profile.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = &"mount_hood_warmup"
+critical_paths = PackedStringArray("res://scenes/player/cobie_player.tscn", "res://scenes/enemies/ski_patrol_ranger.tscn", "res://scenes/enemies/avalanche_recon_drone.tscn", "res://scenes/enemies/municipal_snowcat.tscn", "res://assets/materials/mount_hood/packed_snow.tres", "res://assets/materials/mount_hood/lodge_timber.tres")
