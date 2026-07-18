@@ -11,6 +11,8 @@ const SCENE_PATHS := [
 	"res://scenes/levels/episode_1_level_1.tscn",
 	"res://scenes/levels/episode_1_vancouver_waterfront.tscn",
 	"res://scenes/levels/mount_hood_whiteout.tscn",
+	"res://scenes/levels/dark_side_fetch.tscn",
+	"res://scenes/levels/ventura_pier_pressure.tscn",
 ]
 
 var failures: Array[String] = []
@@ -35,6 +37,10 @@ func _measure_scene(scene_path: String) -> void:
 	if instance is MountHoodWhiteout:
 		(instance as MountHoodWhiteout).build_navigation = false
 		(instance as MountHoodWhiteout).spawn_player = false
+	if instance is BiomeMissionController:
+		(instance as BiomeMissionController).build_navigation = false
+		(instance as BiomeMissionController).spawn_player = false
+		(instance as BiomeMissionController).setup_presentation = false
 	root.add_child(instance)
 	for _index in WARMUP_FRAMES:
 		await process_frame
@@ -83,7 +89,7 @@ func _measure_scene(scene_path: String) -> void:
 	# necessarily the first headless process frame. Give scene-owned audio voices
 	# a bounded drain window so the smoke test measures real lifetime cleanup
 	# instead of intermittently quitting between stop and mixer release.
-	for _cleanup_frame in 4:
+	for _cleanup_frame in 12:
 		await process_frame
 
 
