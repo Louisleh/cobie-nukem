@@ -30,7 +30,15 @@ Build ID: `2026-07-18-doghouse-progression-rc1`
 | `cobie-nukem-0.11.0-alpha.1-rc1-macos-unsigned.zip` | 115,537,576 | `da62f5505b4f5d876ae8b1c99a6b71ae59cab01c8fc9824c6cedea09d1f464df` |
 | Packaged Web PCK | 69,554,484 | `1d86d7747dd73f4a8f120da85d832a816018dbbfdcb8d01a1089e23f45e16501` |
 
-Public source/website integration and downloaded-byte verification are recorded after merge and deployment; they are not pre-claimed here.
+## Publication evidence
+
+- Source integration: [PR #63](https://github.com/Louisleh/cobie-nukem/pull/63), merge `6e107e7`.
+- GitHub prerelease: [`v0.11.0-alpha.1-rc1`](https://github.com/Louisleh/cobie-nukem/releases/tag/v0.11.0-alpha.1-rc1); uploaded ZIP digests match the locally packaged artifacts.
+- Website deployment: [PR #130](https://github.com/Louisleh/louislehmann-site/pull/130), squash `32bcd39`.
+- Packaged and production-browser startup both reached the stamped title and Doghouse hub with no browser error/warning output attributable to the game.
+- Ordinary and cache-busted production URLs serve `0.11.0-alpha.1-rc1` / runtime revision `3c2de29`.
+- The downloaded public PCK is exactly 69,554,484 bytes and matches packaged SHA-256 `1d86d7747dd73f4a8f120da85d832a816018dbbfdcb8d01a1089e23f45e16501`.
+- Rollback release: [`v0.10.0-alpha.1-rc1`](https://github.com/Louisleh/cobie-nukem/releases/tag/v0.10.0-alpha.1-rc1).
 
 ## Human-only gates
 
