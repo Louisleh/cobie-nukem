@@ -1,4 +1,43 @@
-# Release Notes — 0.9.0-alpha.1-rc1 Five-Mission Public Beta
+# Release Notes — 0.11.0-alpha.1-rc1 Doghouse Progression Pilot
+
+Built on 2026-07-18 with Godot `4.7.stable.official.5b4e0cb0f`. Runtime feature revision: `3c2de29`; build ID: `2026-07-18-doghouse-progression-rc1`.
+
+## Player-visible changes
+
+- The new **Doghouse** hub connects missions to a replay loop: Mission Map, Gear Bench, Ball Shelf, Challenge Board, and Kennel Records.
+- Salmon Creek and Rain City each gain 50 persistent Mini Balls with milestone Compliance Tags, HUD/weapon cosmetics, and completion trophies. Levels 3–5 clearly label their collections `COMING SOON`.
+- Mission results now award an S–D rank plus time, secrets, enemy, accuracy, and zero-death medals. Best time/rank, completion count, and mode records persist locally.
+- Ten permanent challenges and enemy/completion/rank/difficulty payouts feed a deterministic Compliance Tag wallet. Six one-per-weapon sidegrade mods and twelve cosmetic/milestone rewards are available without paid currency or randomized loot.
+- Completing all five missions unlocks Salmon Creek **Off-Leash**, a denser remix with faster Walker reinforcements and a 1.5× tag multiplier.
+- `COBIE1` backup codes let players copy and restore the campaign profile with checksum validation, strict sanitization, preview, confirmation, and an automatic pre-import backup.
+- Equipped mods and cosmetics now survive Continue safely; checkpoint data may select only campaign-owned rewards. The Golden Fetch Trail has a bounded visible projectile effect instead of being a no-op.
+
+## Engineering and validation
+
+- Save schema v6 deterministically migrates v5 campaign/checkpoint data while keeping campaign, checkpoint, and settings ownership separate.
+- Typed progression profiles, challenge/result calculators, catalog Resources, collection definitions, and reusable runtime APIs replace mission-specific reward logic.
+- The complete non-export matrix passes 79 scenes, 183 Resources, five manifests, all parser/unit/integration/content/architecture/IP gates, 1,200 route simulations, 1,000 checkpoint restores, 100 shared route/checkpoint/touch/effect cycles, and 500 weapon transitions.
+- Independent `gpt-5.3-codex-spark` review found no Blocker or Critical issue. Its one Major ownership finding was accepted, fixed, and covered by an adversarial loadout test.
+- Native Doghouse and deterministic 1024×768 captures pass responsive-layout inspection. Full Web/macOS export, packaged-browser, public artifact identity, and human/device evidence are recorded in the release evidence file.
+
+## Honest RC boundary
+
+- This is a local-first guest profile, not an account system. Clearing browser storage can remove progress unless the player retained a backup code.
+- Mini Ball collections for Mount Hood, Moon, and Ventura, more remix modes/challenges, and cloud/account sync remain future work.
+- Economy feel, collectible placement/readability, repeat-session motivation, physical iPad touch, and full target-Mac/browser routes remain human gates. Levels 2–5 remain explicit `BETA`.
+- The macOS ZIP remains unsigned and unnotarized. Working-title clearance remains outside this engineering gate.
+
+## Artifacts
+
+| Artifact | Bytes | SHA-256 |
+| --- | ---: | --- |
+| `cobie-nukem-0.11.0-alpha.1-rc1-itch.zip` | 74,238,200 | `2a6d149a7da206f57ed726df374bb81994ea918a1521ad3fc05f95e929599cfd` |
+| `cobie-nukem-0.11.0-alpha.1-rc1-macos-unsigned.zip` | 115,537,576 | `da62f5505b4f5d876ae8b1c99a6b71ae59cab01c8fc9824c6cedea09d1f464df` |
+| Packaged Web PCK | 69,554,484 | `1d86d7747dd73f4a8f120da85d832a816018dbbfdcb8d01a1089e23f45e16501` |
+
+---
+
+# Prior Release Notes — 0.9.0-alpha.1-rc1 Five-Mission Public Beta
 
 Built on 2026-07-18 with Godot `4.7.stable.official.5b4e0cb0f`. Runtime feature revision: `257d112`; build ID: `2026-07-18-five-mission-public-beta-rc1`.
 

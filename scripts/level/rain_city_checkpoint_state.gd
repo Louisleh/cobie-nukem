@@ -22,6 +22,8 @@ static func consume_requested(metadata: LevelMetadata, content_revision: int, ch
 		position = checkpoint_positions[checkpoint_id]
 	if position == null:
 		return {}
+	if game_state != null and game_state.has_method("restore_progression_checkpoint"):
+		game_state.restore_progression_checkpoint(int(saved.get("pending_compliance_tags", 0)), String(saved.get("run_mode", "standard")))
 	return {"payload": saved, "position": position}
 
 
@@ -37,7 +39,7 @@ static func restore(payload: Dictionary, mission_runtime: MissionRuntime, route_
 
 
 static func build_payload(scene_path: String, metadata: LevelMetadata, checkpoint_id: StringName, content_revision: int, position: Vector3, difficulty_id: StringName, runtime_snapshot: Dictionary, route_snapshot: Dictionary, secrets: Dictionary, active_loadout: Dictionary, player_state: Dictionary = {}) -> Dictionary:
-	return {
+	var payload := {
 		"scene_path": scene_path,
 		"level_id": String(metadata.level_id),
 		"checkpoint_id": String(checkpoint_id),
@@ -52,6 +54,17 @@ static func build_payload(scene_path: String, metadata: LevelMetadata, checkpoin
 		"active_mission_upgrades": active_loadout,
 		"player_state": player_state.duplicate(true),
 	}
+	var tree := Engine.get_main_loop() as SceneTree
+	var game_state: Node = tree.root.get_node_or_null("GameState") if tree != null else null
+	if game_state != null:
+		payload["pending_compliance_tags"] = int(game_state.run_stats.get("pending_compliance_tags", 0))
+		payload["run_mode"] = String(game_state.run_stats.get("run_mode", "standard"))
+	var progress := CampaignProgressRuntime.new()
+	var save_manager: Node = tree.root.get_node_or_null("SaveManager") if tree != null else null
+	if save_manager != null and progress.configure(save_manager):
+		payload["equipped_weapon_mods"] = progress.load_progress().get("equipped_weapon_mods", {}).duplicate(true)
+	progress.free()
+	return payload
 
 
 static func restore_player_state(player: CobiePlayer, checkpoint: Dictionary) -> void:

@@ -75,6 +75,10 @@ run_godot_test res://tests/unit/gameplay_foundation_test.gd
 run_godot_test res://tests/unit/world_interaction_test.gd
 run_godot_test res://tests/unit/interaction_catalog_test.gd
 run_godot_test res://tests/unit/save_schema_test.gd
+run_godot_test res://tests/unit/run_result_calculator_test.gd
+run_godot_test res://tests/unit/campaign_backup_codec_test.gd
+run_godot_test res://tests/unit/progression_content_test.gd
+run_godot_test res://tests/unit/weapon_mod_applicator_test.gd
 run_godot_test res://tests/unit/mobile_controls_test.gd
 run_godot_test res://tests/unit/secondary_fire_touch_hud_test.gd
 run_godot_test res://tests/unit/imported_audio_contract_test.gd
@@ -95,6 +99,7 @@ run_godot_test res://tests/unit/mission_loadout_profile_test.gd
 run_godot_test res://tests/unit/alpha8_resource_contract_test.gd
 run_godot_test res://tests/integration/integration_test_runner.gd
 run_godot_test res://tests/integration/mission_runtime_contract_test.gd
+run_godot_test res://tests/integration/off_leash_mode_test.gd
 run_godot_test res://tests/integration/test_episode_1_level.gd
 run_godot_test res://tests/integration/salmon_creek_encounter_pacing_test.gd
 run_godot_test res://tests/integration/vancouver_content_contract_test.gd

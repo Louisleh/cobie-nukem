@@ -10,6 +10,7 @@ extends Resource
 @export var missions: Array[LevelMetadata] = []
 @export var mission_packs: Array[MissionPackDefinition] = []
 @export var completion_upgrade: StringName = &""
+@export var progression_catalog: EpisodeProgressionCatalog
 
 
 func card_for(level_id: StringName) -> LevelCardData:
@@ -47,6 +48,10 @@ func validate() -> PackedStringArray:
 		errors.append("episode definition has empty id")
 	if cards.is_empty():
 		errors.append("episode definition %s has no cards" % id)
+	if progression_catalog == null:
+		errors.append("episode definition %s has no progression catalog" % id)
+	else:
+		errors.append_array(progression_catalog.validate())
 	var card_ids: Dictionary = {}
 	for index in cards.size():
 		var card := cards[index]

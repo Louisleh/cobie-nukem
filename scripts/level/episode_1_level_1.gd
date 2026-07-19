@@ -34,6 +34,12 @@ const ZONE_AMBIENCE: Dictionary = {
 	&"compliance_lab": &"salmon_ambience_lab",
 	&"walker_arena": &"salmon_ambience_arena",
 }
+const OFF_LEASH_REINFORCEMENTS := {
+	&"forbidden_field": {"scene": "res://scenes/enemies/squirrel_trooper.tscn", "position": Vector3(7, 0, -13)},
+	&"equipment_shed": {"scene": "res://scenes/enemies/leash_enforcement_drone.tscn", "position": Vector3(4, 2, -42)},
+	&"maintenance_tunnels": {"scene": "res://scenes/enemies/compliance_hound.tscn", "position": Vector3(-3, 0, -79)},
+	&"compliance_lab": {"scene": "res://scenes/enemies/umbrella_shield_enforcer.tscn", "position": Vector3(5, 0, -119)},
+}
 
 @export var metadata: LevelMetadata = preload("res://resources/level/episode_1_level_1.tres")
 @export var content_manifest: ContentManifest = preload("res://resources/content/salmon_creek_manifest.tres")
@@ -75,6 +81,7 @@ var _boss_runtime: SalmonCreekBossRuntime
 var _walker: Node:
 	get: return _boss_runtime.walker if _boss_runtime != null else null
 var _baseline_attack_budget := 3
+var _collectible_runtime: MissionCollectibleRuntime
 
 func _ready() -> void:
 	_run_started_ms = Time.get_ticks_msec()
@@ -89,6 +96,8 @@ func _ready() -> void:
 		game_state.begin_run(metadata.level_id)
 		if not _restored_checkpoint.is_empty():
 			game_state.run_stats["checkpoint_id"] = String(_restored_checkpoint.get("checkpoint_id", "start"))
+			game_state.restore_progression_checkpoint(int(_restored_checkpoint.get("pending_compliance_tags", 0)), String(_restored_checkpoint.get("run_mode", "standard")))
+	_setup_collectibles()
 	narrative_message.emit("EPISODE 1, LEVEL 1: %s\n%s" % [metadata.title, metadata.subtitle], 4.0)
 	level_ready.emit(player)
 	var announced := _mission_runtime.announce_available_objectives()
@@ -96,6 +105,15 @@ func _ready() -> void:
 		objective_changed.emit(metadata.opening_objective)
 	# Ensure the opening encounter exists even when body-enter events settle before connections.
 	_enter_zone(&"forbidden_field", "FORBIDDEN FIELD", player)
+
+
+func _setup_collectibles() -> void:
+	_collectible_runtime = MissionCollectibleRuntime.new(); _collectible_runtime.name = "MissionCollectibles"; add_child(_collectible_runtime)
+	if not _collectible_runtime.configure(preload("res://resources/progression/salmon_creek_mini_balls.tres"), get_node_or_null("/root/SaveManager")):
+		push_warning("Salmon Creek Mini Ball runtime could not start")
+		return
+	_collectible_runtime.collectible_found.connect(func(_id: StringName, found: int, total: int) -> void: narrative_message.emit("MINI BALL FOUND // %d / %d" % [found, total], 1.6))
+	_collectible_runtime.milestone_unlocked.connect(func(text: String) -> void: narrative_message.emit(text, 3.0))
 
 func _setup_gameplay_systems() -> void:
 	_spawn_registry = MissionSpawnRegistry.new()
@@ -111,6 +129,7 @@ func _setup_gameplay_systems() -> void:
 	_mission_runtime.configure(content_manifest, _spawn_scene)
 	_objective_tracker = _mission_runtime.objectives
 	_encounter_runner = _mission_runtime.encounters
+	if _off_leash_requested(): _apply_off_leash_encounters()
 	_mission_runtime.objective_activated.connect(_on_mission_objective_activated)
 	_mission_runtime.actor_spawned.connect(_on_encounter_actor_spawned)
 	_mission_runtime.actor_defeated.connect(_on_mission_actor_defeated)
@@ -228,10 +247,35 @@ func _build_level() -> void:
 	add_child(_boss_runtime)
 	if not _boss_runtime.configure(encounter_pacing, _golden_ball, _objective_tracker, _spawn_pickup):
 		push_error("Salmon Creek boss runtime failed to configure")
+	_boss_runtime.set_off_leash(_off_leash_requested())
 	_boss_runtime.boss_state_changed.connect(boss_state_changed.emit)
 	_boss_runtime.narrative_message.connect(narrative_message.emit)
 	_boss_runtime.objective_changed.connect(objective_changed.emit)
 	_boss_runtime.phase_caption.connect(boss_phase_caption.emit)
+
+
+func _off_leash_requested() -> bool:
+	if not _restored_checkpoint.is_empty(): return String(_restored_checkpoint.get("run_mode", "standard")) == "off_leash"
+	var game_state := get_node_or_null("/root/GameState")
+	return game_state != null and (String(game_state.requested_run_mode) == "off_leash" or String(game_state.run_stats.get("run_mode", "standard")) == "off_leash")
+
+
+func _apply_off_leash_encounters() -> void:
+	for zone_id in OFF_LEASH_REINFORCEMENTS:
+		var original := _encounter_runner.definitions.get(zone_id) as EncounterDefinition
+		if original == null: continue
+		var remix := original.duplicate(true) as EncounterDefinition
+		var remix_waves: Array[Dictionary] = remix.effective_waves().duplicate(true)
+		if remix_waves.is_empty(): continue
+		var final_wave: Dictionary = remix_waves[remix_waves.size() - 1].duplicate(true)
+		var spawns: Array = final_wave.get("spawns", []).duplicate(true)
+		spawns.append(OFF_LEASH_REINFORCEMENTS[zone_id].duplicate(true))
+		final_wave["spawns"] = spawns
+		remix_waves[remix_waves.size() - 1] = final_wave
+		remix.waves = remix_waves
+		remix.enemy_budget += 1
+		remix.maximum_simultaneous_attackers = mini(4, remix.maximum_simultaneous_attackers + 1)
+		_encounter_runner.definitions[zone_id] = remix
 
 func _emit_narrative_message(text: String, duration: float) -> void:
 	narrative_message.emit(text, duration)
@@ -397,16 +441,22 @@ func _on_golden_ball_claimed(_actor: Node) -> void:
 	completion_started = true
 	_objective_tracker.record(ObjectiveDefinition.Kind.COLLECT_ITEM, &"golden_tennis_ball")
 	narrative_message.emit("THEY SAID NO ANIMALS. THEY SHOULD HAVE SAID PLEASE.", 5.0)
+	var summary := get_level_summary()
 	var save_manager := get_node_or_null("/root/SaveManager")
-	if save_manager: save_manager.delete_slot(&"checkpoint")
+	var game_state := get_node_or_null("/root/GameState")
+	var save_error := _mission_runtime.record_campaign_completion(metadata.level_id, summary, save_manager, game_state.difficulty_id if game_state != null else &"classic", [&"episode_1_vancouver_waterfront"])
+	if save_error != OK:
+		completion_started = false
+		narrative_message.emit("CAMPAIGN SAVE FAILED // CLAIM THE GOLDEN BALL TO RETRY", 4.0)
+		return
+	if save_manager != null and save_manager.delete_slot(&"checkpoint") != OK:
+		push_warning("Campaign result saved, but Salmon Creek checkpoint cleanup failed")
 	_completion_timer.start()
 
 func _finalize_level_completion() -> void:
 	var summary := get_level_summary(); level_completed.emit(summary)
 	var game_state := get_node_or_null("/root/GameState")
 	if game_state: game_state.finish_run(summary)
-	var save_manager := get_node_or_null("/root/SaveManager")
-	if save_manager != null: _mission_runtime.record_campaign_completion(metadata.level_id, summary, save_manager, game_state.difficulty_id if game_state != null else &"classic", [&"episode_1_vancouver_waterfront"])
 
 func get_level_summary() -> Dictionary:
 	return {

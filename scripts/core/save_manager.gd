@@ -15,7 +15,9 @@ signal load_completed(slot: StringName, data: Dictionary)
 #   4 — campaign payloads are canonicalized in a new envelope-compatible shape.
 #   5 — checkpoints and campaign snapshots persist content revision, unlocked weapons,
 #       and active/campaign upgrades with deterministic sanitizer defaults.
-const SAVE_VERSION := 5
+#   6 — campaign checkpoint foundations add run/mission progression deltas while
+#       preserving all v5 progress.
+const SAVE_VERSION := 6
 const SAVE_DIRECTORY := "user://saves"
 
 func save_slot(slot: StringName, payload: Dictionary) -> Error:
@@ -146,6 +148,51 @@ func _migrate(version: int, payload: Dictionary) -> Dictionary:
 				if _is_campaign_payload(migrated):
 					if not migrated.has("campaign_upgrades"):
 						migrated["campaign_upgrades"] = {}
+			5:
+				# v6 introduces Doghouse progression foundations without inventing
+				# progression, only extending payload shape with deterministic
+				# defaults.
+				if _is_checkpoint_payload(migrated):
+					if not migrated.has("pending_compliance_tags") or not _is_nonnegative_int(migrated["pending_compliance_tags"]):
+						migrated["pending_compliance_tags"] = 0
+					else:
+						migrated["pending_compliance_tags"] = int(migrated["pending_compliance_tags"])
+					if not migrated.has("equipped_weapon_mods"):
+						migrated["equipped_weapon_mods"] = {}
+					if not migrated.has("run_mode"):
+						migrated["run_mode"] = "standard"
+					elif not _is_run_mode(migrated["run_mode"]):
+						migrated["run_mode"] = "standard"
+				if _is_campaign_payload(migrated):
+					if not migrated.has("wallet") or not migrated["wallet"] is Dictionary:
+						migrated["wallet"] = {"compliance_tags": 0}
+					else:
+						var wallet: Dictionary = migrated["wallet"].duplicate(true)
+						if not _is_nonnegative_int(wallet.get("compliance_tags")):
+							wallet["compliance_tags"] = 0
+						else:
+							wallet["compliance_tags"] = int(wallet["compliance_tags"])
+						migrated["wallet"] = wallet
+					if not migrated.has("mission_collectibles"):
+						migrated["mission_collectibles"] = {}
+					elif not migrated["mission_collectibles"] is Dictionary:
+						migrated["mission_collectibles"] = {}
+					if not migrated.has("purchased_rewards"):
+						migrated["purchased_rewards"] = []
+					elif not migrated["purchased_rewards"] is Array:
+						migrated["purchased_rewards"] = []
+					if not migrated.has("equipped_weapon_mods"):
+						migrated["equipped_weapon_mods"] = {}
+					elif not migrated["equipped_weapon_mods"] is Dictionary:
+						migrated["equipped_weapon_mods"] = {}
+					if not migrated.has("completed_challenges"):
+						migrated["completed_challenges"] = []
+					elif not migrated["completed_challenges"] is Array:
+						migrated["completed_challenges"] = []
+					if not migrated.has("selected_cosmetics"):
+						migrated["selected_cosmetics"] = {}
+					elif not migrated["selected_cosmetics"] is Dictionary:
+						migrated["selected_cosmetics"] = {}
 	return migrated
 
 func _is_checkpoint_payload(payload: Dictionary) -> bool:
@@ -153,6 +200,24 @@ func _is_checkpoint_payload(payload: Dictionary) -> bool:
 
 func _is_campaign_payload(payload: Dictionary) -> bool:
 	return payload.has("completed_missions") or payload.has("unlocked_missions") or payload.has("mission_records")
+
+
+func _is_nonnegative_int(value: Variant) -> bool:
+	if value is int:
+		return value >= 0
+	if value is float:
+		if not is_finite(value):
+			return false
+		var int_value := int(value)
+		return int_value >= 0 and int_value == value
+	return false
+
+
+func _is_run_mode(value: Variant) -> bool:
+	if value is String or value is StringName:
+		var candidate := String(value).strip_edges().to_lower()
+		return candidate == "standard" or candidate == "off_leash"
+	return false
 
 func _slot_path(slot: StringName) -> String:
 	var safe_slot := String(slot).validate_filename()

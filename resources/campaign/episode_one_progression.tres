@@ -1,0 +1,297 @@
+[gd_resource type="Resource" script_class="EpisodeProgressionCatalog" load_steps=39 format=3]
+
+[ext_resource type="Script" path="res://scripts/gameplay/episode_progression_catalog.gd" id="1"]
+[ext_resource type="Script" path="res://scripts/gameplay/mission_progression_profile.gd" id="2"]
+[ext_resource type="Script" path="res://scripts/gameplay/progression_challenge_definition.gd" id="3"]
+[ext_resource type="Script" path="res://scripts/gameplay/weapon_mod_definition.gd" id="4"]
+[ext_resource type="Script" path="res://scripts/gameplay/cosmetic_reward_definition.gd" id="5"]
+
+[sub_resource type="Resource" id="ProfileSalmon"]
+script = ExtResource("2")
+mission_id = &"episode_1_level_1"
+par_time_msec = 900000
+enemies_total = 16
+secrets_total = 4
+collectible_total = 50
+collection_status = &"active"
+
+[sub_resource type="Resource" id="ProfileRain"]
+script = ExtResource("2")
+mission_id = &"episode_1_vancouver_waterfront"
+par_time_msec = 1080000
+enemies_total = 26
+secrets_total = 4
+collectible_total = 50
+collection_status = &"active"
+
+[sub_resource type="Resource" id="ProfileHood"]
+script = ExtResource("2")
+mission_id = &"mount_hood_whiteout"
+par_time_msec = 1320000
+enemies_total = 24
+secrets_total = 4
+collectible_total = 0
+collection_status = &"coming_soon"
+
+[sub_resource type="Resource" id="ProfileMoon"]
+script = ExtResource("2")
+mission_id = &"dark_side_fetch"
+par_time_msec = 1440000
+enemies_total = 28
+secrets_total = 5
+collectible_total = 0
+collection_status = &"coming_soon"
+
+[sub_resource type="Resource" id="ProfileVentura"]
+script = ExtResource("2")
+mission_id = &"ventura_pier_pressure"
+par_time_msec = 1440000
+enemies_total = 28
+secrets_total = 5
+collectible_total = 0
+collection_status = &"coming_soon"
+
+[sub_resource type="Resource" id="ChallengeGoodNose"]
+script = ExtResource("3")
+id = &"salmon_good_nose"
+mission_id = &"episode_1_level_1"
+title = "GOOD NOSE"
+description = "Find every Salmon Creek secret."
+tag_reward = 40
+requirements = {"all_secrets": true}
+
+[sub_resource type="Resource" id="ChallengeCleanSweep"]
+script = ExtResource("3")
+id = &"salmon_clean_sweep"
+mission_id = &"episode_1_level_1"
+title = "CLEAN SWEEP"
+description = "Defeat every authored enemy."
+tag_reward = 40
+requirements = {"all_enemies": true}
+
+[sub_resource type="Resource" id="ChallengeNoLeash"]
+script = ExtResource("3")
+id = &"salmon_no_leash"
+mission_id = &"episode_1_level_1"
+title = "NO LEASH"
+description = "Finish without a death."
+tag_reward = 50
+requirements = {"max_deaths": 0}
+
+[sub_resource type="Resource" id="ChallengeFieldDay"]
+script = ExtResource("3")
+id = &"salmon_field_day"
+mission_id = &"episode_1_level_1"
+title = "FIELD DAY"
+description = "Finish on Classic or Mayhem within 15 minutes."
+tag_reward = 60
+requirements = {"difficulty_min": "classic", "max_time_msec": 900000}
+
+[sub_resource type="Resource" id="ChallengePawstol"]
+script = ExtResource("3")
+id = &"salmon_pawstol_purist"
+mission_id = &"episode_1_level_1"
+title = "PAWSTOL PURIST"
+description = "Classic+, at least 20 shots, Pawstol only."
+tag_reward = 75
+requirements = {"difficulty_min": "classic", "only_weapon": "pawstol", "min_shots": 20}
+
+[sub_resource type="Resource" id="ChallengeRainCheck"]
+script = ExtResource("3")
+id = &"rain_check"
+mission_id = &"episode_1_vancouver_waterfront"
+title = "RAIN CHECK"
+description = "Find all four Rain City secrets."
+tag_reward = 40
+requirements = {"all_secrets": true}
+
+[sub_resource type="Resource" id="ChallengeCaseClosed"]
+script = ExtResource("3")
+id = &"rain_case_closed"
+mission_id = &"episode_1_vancouver_waterfront"
+title = "CASE CLOSED"
+description = "Defeat all 26 authored enemies."
+tag_reward = 40
+requirements = {"all_enemies": true}
+
+[sub_resource type="Resource" id="ChallengeDryCollar"]
+script = ExtResource("3")
+id = &"rain_dry_collar"
+mission_id = &"episode_1_vancouver_waterfront"
+title = "DRY COLLAR"
+description = "Finish without a death and take no more than 75 damage."
+tag_reward = 50
+requirements = {"max_deaths": 0, "max_damage_taken": 75}
+
+[sub_resource type="Resource" id="ChallengeExpressAppeal"]
+script = ExtResource("3")
+id = &"rain_express_appeal"
+mission_id = &"episode_1_vancouver_waterfront"
+title = "EXPRESS APPEAL"
+description = "Finish on Classic or Mayhem within 18 minutes."
+tag_reward = 60
+requirements = {"difficulty_min": "classic", "max_time_msec": 1080000}
+
+[sub_resource type="Resource" id="ChallengeFullRecall"]
+script = ExtResource("3")
+id = &"rain_full_recall"
+mission_id = &"episode_1_vancouver_waterfront"
+title = "FULL RECALL"
+description = "Classic+, land ten Fetch hits and defeat the Towmaster."
+tag_reward = 75
+requirements = {"difficulty_min": "classic", "weapon_hits": {"fetch_launcher": 10}, "boss_defeated": true}
+
+[sub_resource type="Resource" id="ModQuickDraw"]
+script = ExtResource("4")
+id = &"pawstol_quick_draw"
+weapon_id = &"pawstol"
+title = "QUICK DRAW"
+description = "Faster handling with a measured firing cadence."
+cost = 100
+stat_multipliers = {"raise_seconds": 0.8, "lower_seconds": 0.8, "reload_seconds": 0.8, "primary_cooldown": 1.1}
+
+[sub_resource type="Resource" id="ModDeadCenter"]
+script = ExtResource("4")
+id = &"pawstol_dead_center"
+weapon_id = &"pawstol"
+title = "DEAD CENTER"
+description = "Precision tune with gentler knockback and slower follow-up."
+cost = 150
+unlock_challenge_id = &"salmon_pawstol_purist"
+stat_multipliers = {"spread_degrees": 0.45, "range": 1.1, "knockback": 0.75, "primary_cooldown": 1.12}
+
+[sub_resource type="Resource" id="ModWideBark"]
+script = ExtResource("4")
+id = &"barkshot_wide_bark"
+weapon_id = &"barkshot"
+title = "WIDE BARK"
+description = "Broader close-range control."
+cost = 100
+stat_multipliers = {"spread_degrees": 1.25, "knockback": 1.2, "range": 0.85}
+
+[sub_resource type="Resource" id="ModTightLeash"]
+script = ExtResource("4")
+id = &"barkshot_tight_leash"
+weapon_id = &"barkshot"
+title = "TIGHT LEASH"
+description = "Longer reach at the cost of reload time."
+cost = 150
+unlock_challenge_id = &"rain_case_closed"
+stat_multipliers = {"spread_degrees": 0.65, "range": 1.25, "reload_seconds": 1.15}
+
+[sub_resource type="Resource" id="ModExtraBounce"]
+script = ExtResource("4")
+id = &"fetch_extra_bounce"
+weapon_id = &"fetch_launcher"
+title = "EXTRA BOUNCE"
+description = "Two more ricochets with a slower ball."
+cost = 100
+stat_multipliers = {"projectile_speed": 0.9}
+stat_additions = {"max_bounces": 2}
+
+[sub_resource type="Resource" id="ModRapidReturn"]
+script = ExtResource("4")
+id = &"fetch_rapid_return"
+weapon_id = &"fetch_launcher"
+title = "RAPID RETURN"
+description = "Faster recall with slightly lower primary damage."
+cost = 150
+unlock_challenge_id = &"rain_full_recall"
+stat_multipliers = {"recall_speed": 1.25, "damage": 0.9}
+
+[sub_resource type="Resource" id="CosmeticGoldCollar"]
+script = ExtResource("5")
+id = &"portrait_gold_collar"
+slot = &"portrait_frame"
+title = "GOLD COLLAR"
+cost = 75
+
+[sub_resource type="Resource" id="CosmeticMunicipalTeal"]
+script = ExtResource("5")
+id = &"hud_municipal_teal"
+slot = &"hud_frame"
+title = "MUNICIPAL TEAL"
+cost = 60
+
+[sub_resource type="Resource" id="CosmeticPawStripe"]
+script = ExtResource("5")
+id = &"pawstol_warning_stripe"
+slot = &"pawstol_skin"
+title = "WARNING STRIPE"
+cost = 50
+
+[sub_resource type="Resource" id="CosmeticBarkOrange"]
+script = ExtResource("5")
+id = &"barkshot_safety_orange"
+slot = &"barkshot_skin"
+title = "SAFETY ORANGE"
+cost = 50
+
+[sub_resource type="Resource" id="CosmeticFetchGreen"]
+script = ExtResource("5")
+id = &"fetch_classic_green"
+slot = &"fetch_skin"
+title = "CLASSIC GREEN"
+cost = 50
+
+[sub_resource type="Resource" id="CosmeticGoldenTrail"]
+script = ExtResource("5")
+id = &"fetch_golden_trail"
+slot = &"fetch_trail"
+title = "GOLDEN FETCH TRAIL"
+cost = 75
+
+[sub_resource type="Resource" id="MilestoneSalmonHud"]
+script = ExtResource("5")
+id = &"hud_salmon_field"
+slot = &"hud_frame"
+title = "SALMON FIELD"
+milestone_mission_id = &"episode_1_level_1"
+milestone_collectibles = 25
+
+[sub_resource type="Resource" id="MilestoneSalmonPaw"]
+script = ExtResource("5")
+id = &"pawstol_salmon_turf"
+slot = &"pawstol_skin"
+title = "SALMON TURF"
+milestone_mission_id = &"episode_1_level_1"
+milestone_collectibles = 40
+
+[sub_resource type="Resource" id="MilestoneSalmonTrophy"]
+script = ExtResource("5")
+id = &"trophy_salmon_ball"
+slot = &"trophy"
+title = "SALMON CREEK GOLDEN BALL"
+milestone_mission_id = &"episode_1_level_1"
+milestone_collectibles = 50
+
+[sub_resource type="Resource" id="MilestoneRainHud"]
+script = ExtResource("5")
+id = &"hud_rain_city"
+slot = &"hud_frame"
+title = "RAIN CITY"
+milestone_mission_id = &"episode_1_vancouver_waterfront"
+milestone_collectibles = 25
+
+[sub_resource type="Resource" id="MilestoneRainBark"]
+script = ExtResource("5")
+id = &"barkshot_rain_slick"
+slot = &"barkshot_skin"
+title = "RAIN SLICK"
+milestone_mission_id = &"episode_1_vancouver_waterfront"
+milestone_collectibles = 40
+
+[sub_resource type="Resource" id="MilestoneRainTrophy"]
+script = ExtResource("5")
+id = &"trophy_rain_ball"
+slot = &"trophy"
+title = "RAIN CITY GOLDEN BALL"
+milestone_mission_id = &"episode_1_vancouver_waterfront"
+milestone_collectibles = 50
+
+[resource]
+script = ExtResource("1")
+mission_profiles = Array[Resource]([SubResource("ProfileSalmon"), SubResource("ProfileRain"), SubResource("ProfileHood"), SubResource("ProfileMoon"), SubResource("ProfileVentura")])
+challenges = Array[Resource]([SubResource("ChallengeGoodNose"), SubResource("ChallengeCleanSweep"), SubResource("ChallengeNoLeash"), SubResource("ChallengeFieldDay"), SubResource("ChallengePawstol"), SubResource("ChallengeRainCheck"), SubResource("ChallengeCaseClosed"), SubResource("ChallengeDryCollar"), SubResource("ChallengeExpressAppeal"), SubResource("ChallengeFullRecall")])
+weapon_mods = Array[Resource]([SubResource("ModQuickDraw"), SubResource("ModDeadCenter"), SubResource("ModWideBark"), SubResource("ModTightLeash"), SubResource("ModExtraBounce"), SubResource("ModRapidReturn")])
+cosmetics = Array[Resource]([SubResource("CosmeticGoldCollar"), SubResource("CosmeticMunicipalTeal"), SubResource("CosmeticPawStripe"), SubResource("CosmeticBarkOrange"), SubResource("CosmeticFetchGreen"), SubResource("CosmeticGoldenTrail"), SubResource("MilestoneSalmonHud"), SubResource("MilestoneSalmonPaw"), SubResource("MilestoneSalmonTrophy"), SubResource("MilestoneRainHud"), SubResource("MilestoneRainBark"), SubResource("MilestoneRainTrophy")])

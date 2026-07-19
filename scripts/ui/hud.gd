@@ -51,6 +51,7 @@ const CAPTION_QUEUE_LIMIT := 4
 const CAPTION_DEFAULT_SECONDS := 1.15
 
 func _ready() -> void:
+	_apply_progression_cosmetics()
 	var settings := get_node_or_null("/root/SettingsManager")
 	if settings == null: return
 	var text_scale := clampf(float(settings.get_value(&"accessibility", &"text_scale", 1.0)), 0.75, 1.5)
@@ -71,6 +72,27 @@ func _ready() -> void:
 	_apply_caption_font_settings()
 	boss_panel.visible = false
 	boss_health_bar.value = 0.0
+
+
+func _apply_progression_cosmetics() -> void:
+	var save_manager := get_node_or_null("/root/SaveManager")
+	if save_manager == null: return
+	var campaign := CampaignProgressRuntime.new(); add_child(campaign)
+	if not campaign.configure(save_manager): campaign.queue_free(); return
+	var selected: Dictionary = campaign.load_progress().get("selected_cosmetics", {})
+	match String(selected.get("portrait_frame", "")):
+		"portrait_gold_collar": portrait.ring_color = Color("ffe17a")
+	match String(selected.get("hud_frame", "")):
+		"hud_municipal_teal": _apply_hud_accent(Color("75d7d0"))
+		"hud_salmon_field": _apply_hud_accent(Color("94b85f"))
+		"hud_rain_city": _apply_hud_accent(Color("70aab8"))
+	campaign.queue_free()
+
+
+func _apply_hud_accent(color: Color) -> void:
+	health_label.add_theme_color_override("font_color", color)
+	armor_label.add_theme_color_override("font_color", color.lightened(0.15))
+	weapon_label.add_theme_color_override("font_color", color)
 
 func bind_player(player: Node) -> void:
 	if player.has_signal("weapon_changed"):

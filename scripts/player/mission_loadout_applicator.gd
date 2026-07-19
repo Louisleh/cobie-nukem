@@ -33,8 +33,53 @@ static func apply(player: CobiePlayer, profile: MissionLoadoutProfile, restored_
 				break
 	if selected_index < 0:
 		return false
+	var requested_mods: Dictionary = restored_payload.get("equipped_weapon_mods", {})
+	var campaign_progress: Dictionary = CampaignProgressPayload.sanitize({})
+	var tree := Engine.get_main_loop() as SceneTree
+	var save_manager: Node = tree.root.get_node_or_null("SaveManager") if tree != null else null
+	if save_manager != null:
+		var campaign := CampaignProgressRuntime.new()
+		if campaign.configure(save_manager):
+			campaign_progress = campaign.load_progress()
+			if requested_mods.is_empty():
+				requested_mods = campaign_progress.get("equipped_weapon_mods", {}).duplicate(true)
+		campaign.free()
+	var episode: EpisodeDefinition = load("res://resources/campaign/episode_one.tres")
+	if episode != null and episode.progression_catalog != null:
+		var owned: Array = campaign_progress.get("purchased_rewards", [])
+		var equipped_mods := filter_owned_weapon_mods(requested_mods, owned, episode.progression_catalog)
+		var selected_cosmetics := filter_owned_cosmetics(campaign_progress.get("selected_cosmetics", {}), owned, episode.progression_catalog)
+		WeaponModApplicator.apply(player, equipped_mods, episode.progression_catalog)
+		CosmeticApplicator.apply_weapon_cosmetics(player, selected_cosmetics)
 	player.select_weapon(selected_index)
 	return true
+
+
+static func filter_owned_weapon_mods(requested: Dictionary, owned_rewards: Array, catalog: EpisodeProgressionCatalog) -> Dictionary:
+	var result := {}
+	if catalog == null:
+		return result
+	for raw_weapon_id: Variant in requested:
+		var weapon_id := StringName(String(raw_weapon_id))
+		var mod_id := StringName(String(requested[raw_weapon_id]))
+		var definition := catalog.mod_for(mod_id)
+		if String(mod_id) not in owned_rewards or definition == null or definition.weapon_id != weapon_id:
+			continue
+		result[String(weapon_id)] = String(mod_id)
+	return result
+
+
+static func filter_owned_cosmetics(requested: Dictionary, owned_rewards: Array, catalog: EpisodeProgressionCatalog) -> Dictionary:
+	var result := {}
+	if catalog == null:
+		return result
+	for cosmetic in catalog.cosmetics:
+		if cosmetic == null:
+			continue
+		var slot := String(cosmetic.slot)
+		if String(requested.get(slot, "")) == String(cosmetic.id) and String(cosmetic.id) in owned_rewards:
+			result[slot] = String(cosmetic.id)
+	return result
 
 
 static func snapshot(player: CobiePlayer, mission_id: StringName, mission_upgrades: Array[StringName] = []) -> Dictionary:

@@ -1,7 +1,7 @@
 class_name CampaignProgressPayload
 extends RefCounted
 
-## Canonical v4 campaign payload contract.
+## Canonical v4+ campaign payload contract.
 ## {
 ##   "completed_missions": [String],  # sorted unique mission ids
 ##   "unlocked_missions": [String],   # sorted unique mission ids
@@ -12,11 +12,21 @@ extends RefCounted
 ##       "difficulty": "story"|"classic"|"mayhem",
 ##       "best_secrets": int >= 0,
 ##       "total_secrets": int >= 0,
+##       "completion_count": int >= 0,
+##       "best_modes": {"off_leash": int >= 0},
 ##     }
 ##   }
 ##   "campaign_upgrades": {           # mission_id -> sorted unique upgrade ids
 ##     "mission_id": [String],
 ##   }
+##   "wallet": {"compliance_tags": int >= 0},
+##   "mission_collectibles": {        # mission_id -> sorted unique collectible ids
+##     "mission_id": [String],
+##   }
+##   "purchased_rewards": [String],
+##   "equipped_weapon_mods": {"weapon_id": "mod_id"},
+##   "completed_challenges": [String],
+##   "selected_cosmetics": {"slot_id": "reward_id"},
 ## }
 
 const GameStateScript := preload("res://scripts/core/game_state.gd")
@@ -30,6 +40,12 @@ static func sanitize(raw: Variant) -> Dictionary:
 			"unlocked_missions": [],
 			"mission_records": {},
 			"campaign_upgrades": {},
+			"wallet": {"compliance_tags": 0},
+			"mission_collectibles": {},
+			"purchased_rewards": [],
+			"equipped_weapon_mods": {},
+			"completed_challenges": [],
+			"selected_cosmetics": {},
 		}
 
 	var payload := raw as Dictionary
@@ -38,6 +54,12 @@ static func sanitize(raw: Variant) -> Dictionary:
 		"unlocked_missions": _string_set(payload.get("unlocked_missions", [])),
 		"mission_records": _mission_records(payload.get("mission_records", {})),
 		"campaign_upgrades": _campaign_upgrades(payload.get("campaign_upgrades", {})),
+		"wallet": _wallet(payload.get("wallet", {})),
+		"mission_collectibles": _mission_collectibles(payload.get("mission_collectibles", {})),
+		"purchased_rewards": _string_set(payload.get("purchased_rewards", [])),
+		"equipped_weapon_mods": _equipped_weapon_mods(payload.get("equipped_weapon_mods", {})),
+		"completed_challenges": _string_set(payload.get("completed_challenges", [])),
+		"selected_cosmetics": _selected_cosmetics(payload.get("selected_cosmetics", {})),
 	}
 
 static func _string_set(value: Variant) -> Array[String]:
@@ -45,10 +67,9 @@ static func _string_set(value: Variant) -> Array[String]:
 	if value is not Array:
 		return result
 	for raw_id: Variant in value:
-		if raw_id is String or raw_id is StringName:
-			var id := String(raw_id).strip_edges()
-			if not id.is_empty() and not id in result:
-				result.append(id)
+		var id := _string_id(raw_id)
+		if not id.is_empty() and not id in result:
+			result.append(id)
 	result.sort()
 	return result
 
@@ -86,10 +107,14 @@ static func _mission_record(value: Variant) -> Dictionary:
 	var best_time_msec := -1
 	var best_secrets := -1
 	var total_secrets := -1
+	var completion_count := -1
 	if value.has("best_time_msec"):
-		best_time_msec = _finite_nonnegative_int(value.get("best_time_msec"))
+		best_time_msec = _nonnegative_int(value.get("best_time_msec"))
 	if best_time_msec >= 0:
 		record["best_time_msec"] = best_time_msec
+	var best_modes := _best_modes(value.get("best_modes"))
+	if not best_modes.is_empty():
+		record["best_modes"] = best_modes
 	var rank := _rank(value.get("rank"))
 	if not rank.is_empty():
 		record["rank"] = rank
@@ -97,9 +122,13 @@ static func _mission_record(value: Variant) -> Dictionary:
 	if not difficulty.is_empty():
 		record["difficulty"] = difficulty
 	if value.has("total_secrets"):
-		total_secrets = _finite_nonnegative_int(value.get("total_secrets"))
+		total_secrets = _nonnegative_int(value.get("total_secrets"))
 	if value.has("best_secrets"):
-		best_secrets = _finite_nonnegative_int(value.get("best_secrets"))
+		best_secrets = _nonnegative_int(value.get("best_secrets"))
+	if value.has("completion_count"):
+		completion_count = _nonnegative_int(value.get("completion_count"))
+	if completion_count >= 0:
+		record["completion_count"] = completion_count
 	if total_secrets >= 0:
 		record["total_secrets"] = total_secrets
 	if best_secrets >= 0 and total_secrets >= 0 and best_secrets > total_secrets:
@@ -107,6 +136,65 @@ static func _mission_record(value: Variant) -> Dictionary:
 	if best_secrets >= 0:
 		record["best_secrets"] = best_secrets
 	return record
+
+static func _wallet(value: Variant) -> Dictionary:
+	var wallet := {"compliance_tags": 0}
+	if value is not Dictionary:
+		return wallet
+	var tags := _nonnegative_int(value.get("compliance_tags"))
+	if tags >= 0:
+		wallet["compliance_tags"] = tags
+	return wallet
+
+static func _mission_collectibles(value: Variant) -> Dictionary:
+	var result := {}
+	if value is not Dictionary:
+		return result
+	for raw_mission_id: Variant in value:
+		var mission_id := _string_id(raw_mission_id)
+		if mission_id.is_empty():
+			continue
+		var collectibles := _string_set(value[raw_mission_id])
+		if not collectibles.is_empty():
+			result[mission_id] = collectibles
+	return result
+
+static func _equipped_weapon_mods(value: Variant) -> Dictionary:
+	var result := {}
+	if value is not Dictionary:
+		return result
+	for raw_weapon_id: Variant in value:
+		var weapon_id := _string_id(raw_weapon_id)
+		if weapon_id.is_empty():
+			continue
+		var mod_id := _string_id(value[raw_weapon_id])
+		if mod_id.is_empty():
+			continue
+		result[weapon_id] = mod_id
+	return result
+
+static func _selected_cosmetics(value: Variant) -> Dictionary:
+	var result := {}
+	if value is not Dictionary:
+		return result
+	for raw_slot_id: Variant in value:
+		var slot_id := _string_id(raw_slot_id)
+		if slot_id.is_empty():
+			continue
+		var reward_id := _string_id(value[raw_slot_id])
+		if reward_id.is_empty():
+			continue
+		result[slot_id] = reward_id
+	return result
+
+static func _best_modes(value: Variant) -> Dictionary:
+	if value is not Dictionary:
+		return {}
+	var result := {}
+	var off_leash := _nonnegative_int(value.get("off_leash"))
+	if off_leash >= 0:
+		result["off_leash"] = off_leash
+	return result
 
 static func _difficulty(value: Variant) -> String:
 	if value is String or value is StringName:
@@ -124,14 +212,21 @@ static func _rank(value: Variant) -> String:
 
 static func _string_id(raw_id: Variant) -> String:
 	if raw_id is String or raw_id is StringName:
-		return String(raw_id).strip_edges()
+		var normalized := String(raw_id).strip_edges()
+		return normalized if _is_stable_id(normalized) else ""
 	return ""
 
-static func _finite_nonnegative_int(value: Variant) -> int:
+static func _is_stable_id(id: String) -> bool:
+	if id.is_empty():
+		return false
+	if id.find(" ") != -1 or id.find("\t") != -1 or id.find("\n") != -1 or id.find("\r") != -1:
+		return false
+	return true
+
+static func _nonnegative_int(value: Variant) -> int:
 	if value is int:
 		return value if value >= 0 else -1
 	if value is float and is_finite(value):
-		if value < 0.0:
-			return -1
-		return int(value)
+		var converted := int(value)
+		return converted if converted >= 0 else -1
 	return -1

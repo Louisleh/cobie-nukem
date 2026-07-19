@@ -2,6 +2,14 @@
 
 This file distinguishes confirmed product limitations from unperformed validation. Update it for every release candidate; do not silently convert “not tested” into “passed.”
 
+## Local progression candidate gates
+
+- Progress is an offline guest profile stored in native/Web user storage. There is intentionally no login, cloud sync, telemetry, account recovery, paid currency, advertising, daily streak, randomized reward, or social leaderboard.
+- Portable `COBIE1` backup codes cover campaign progression but require the player to copy and retain the code. Private browsing, browser storage clearing, or device loss can otherwise remove progress.
+- Mini Ball collections are authored only for Salmon Creek and Rain City in this pass. Mount Hood, Moon, and Ventura accurately display `COLLECTION COMING SOON`.
+- Automated tests prove save migration, duplicate protection, payout arithmetic, purchases, equips, backup integrity, Off-Leash lifecycle, and responsive Doghouse layout. They do not establish human economy balance, collectible placement quality, replay motivation, touch comfort, or whether rewards feel sufficiently valuable.
+- The first Off-Leash mode is a denser Salmon Creek remix. It is not yet a campaign-wide prestige system; additional missions/mutators remain future content.
+
 ## Five-mission candidate gates
 
 - **Dark Side of Fetch** and **Pier Pressure** are complete automated-route public betas, not human-approved final missions. Each has five zones, five checkpoints, five secrets, six objectives, 28 regular enemy placements, difficulty pressure caps, a typed 1,000-HP modular boss, post-defeat Golden Ball gating, checkpoint restore, and campaign continuation. Original presentation-only Blender kits and manifested Moon/Ventura material libraries are integrated; bespoke hero animation, imported mission-specific audio, final zone-by-zone composition, human encounter tuning, and physical-iPad review remain open.

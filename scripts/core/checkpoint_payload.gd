@@ -20,6 +20,9 @@ extends RefCounted
 ##       {"magazine": int, "reserve": int} }, "mission_upgrades": [String] }
 ##   "player_state": {"health": float, "armor": float}
 ##   "secrets": Dictionary            — discovered secret id → title
+##   "pending_compliance_tags": int    — non-negative compliance tags
+##   "equipped_weapon_mods": {"weapon_id": "mod_id"}
+##   "run_mode": "standard"|"off_leash"
 ## }
 ##
 ## sanitize() is the single gate between persisted data and runtime state:
@@ -28,6 +31,7 @@ extends RefCounted
 const GameStateScript := preload("res://scripts/core/game_state.gd")
 const MissionLoadoutProfileScript := preload("res://scripts/gameplay/mission_loadout_profile.gd")
 const DEFAULT_DIFFICULTY := "classic"
+const RUN_MODES := ["standard", "off_leash"]
 
 static func sanitize(raw: Dictionary) -> Dictionary:
 	# Returns {} when the payload cannot name a resumable scene; a corrupt save
@@ -47,6 +51,9 @@ static func sanitize(raw: Dictionary) -> Dictionary:
 		"checkpoint_id": checkpoint_id,
 		"difficulty_id": valid_difficulty(raw.get("difficulty_id")),
 		"content_revision": _content_revision(raw.get("content_revision")),
+		"pending_compliance_tags": _nonnegative_int(raw.get("pending_compliance_tags")),
+		"equipped_weapon_mods": _equipped_weapon_mods(raw.get("equipped_weapon_mods", {})),
+		"run_mode": _run_mode(raw.get("run_mode")),
 		"objective_snapshot": _objective_snapshot(raw.get("objective_snapshot", {})),
 		"encounter_snapshot": _encounter_snapshot(raw.get("encounter_snapshot", {})),
 		"route_snapshot": _route_snapshot(raw.get("route_snapshot", {})),
@@ -79,6 +86,21 @@ static func _content_revision(value: Variant) -> int:
 	if value is float and is_finite(value):
 		return int(value) if value >= 0.0 else 0
 	return 0
+
+
+static func _nonnegative_int(value: Variant) -> int:
+	if value is int:
+		return value if value >= 0 else 0
+	if value is float and is_finite(value):
+		var converted := int(value)
+		return converted if converted >= 0 else 0
+	return 0
+
+
+static func _run_mode(value: Variant) -> String:
+	var candidate := String(value).strip_edges().to_lower() if value is String or value is StringName else ""
+	return candidate if candidate in RUN_MODES else "standard"
+
 
 static func _string_field(raw: Dictionary, key: String) -> String:
 	var value: Variant = raw.get(key)
@@ -217,3 +239,29 @@ static func _weapon_ids(raw: Variant) -> Array[String]:
 
 static func _is_valid_weapon_id(weapon_id: String) -> bool:
 	return ResourceLoader.exists("res://resources/weapons/%s.tres" % weapon_id)
+
+
+static func _equipped_weapon_mods(value: Variant) -> Dictionary:
+	if value is not Dictionary:
+		return {}
+	var mods: Dictionary = {}
+	for raw_weapon_id: Variant in value:
+		if not _is_stable_id(raw_weapon_id):
+			continue
+		var weapon_id := String(raw_weapon_id).strip_edges()
+		var mod_id := String(value[raw_weapon_id]).strip_edges() if value[raw_weapon_id] is String or value[raw_weapon_id] is StringName else ""
+		if mod_id.is_empty():
+			continue
+		mods[weapon_id] = mod_id
+	return mods
+
+
+static func _is_stable_id(value: Variant) -> bool:
+	if value is not String and value is not StringName:
+		return false
+	var id := String(value).strip_edges()
+	if id.is_empty():
+		return false
+	if id.find(" ") != -1 or id.find("\t") != -1 or id.find("\n") != -1 or id.find("\r") != -1:
+		return false
+	return true

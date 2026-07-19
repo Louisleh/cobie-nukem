@@ -61,6 +61,7 @@ var _resetting_encounter := false
 var _mission_upgrades: Array[StringName] = []
 var _baseline_attack_budget := 3
 var _terminal_reinforcement_disabled := false
+var _collectible_runtime: MissionCollectibleRuntime
 
 func _ready() -> void:
 	_run_started_ms = Time.get_ticks_msec()
@@ -77,6 +78,8 @@ func _ready() -> void:
 		var game_state := get_node_or_null("/root/GameState")
 		if game_state != null:
 			game_state.begin_run(metadata.level_id)
+			if not _restored_checkpoint.is_empty(): game_state.restore_progression_checkpoint(int(_restored_checkpoint.get("pending_compliance_tags", 0)), String(_restored_checkpoint.get("run_mode", "standard")))
+	_setup_collectibles()
 	narrative_message.emit("EPISODE 1, MISSION 2: RAIN CITY RUN\nPUBLIC BETA PREVIEW", 4.0)
 	level_ready.emit(player)
 	var announced := _mission_runtime.announce_available_objectives()
@@ -84,6 +87,15 @@ func _ready() -> void:
 		objective_changed.emit(metadata.opening_objective)
 	if is_instance_valid(player):
 		_submit_route_position(player.global_position)
+
+
+func _setup_collectibles() -> void:
+	_collectible_runtime = MissionCollectibleRuntime.new(); _collectible_runtime.name = "MissionCollectibles"; add_child(_collectible_runtime)
+	if not _collectible_runtime.configure(preload("res://resources/progression/rain_city_mini_balls.tres"), get_node_or_null("/root/SaveManager")):
+		push_warning("Rain City Mini Ball runtime could not start")
+		return
+	_collectible_runtime.collectible_found.connect(func(_id: StringName, found: int, total: int) -> void: narrative_message.emit("MINI BALL FOUND // %d / %d" % [found, total], 1.6))
+	_collectible_runtime.milestone_unlocked.connect(func(text: String) -> void: narrative_message.emit(text, 3.0))
 
 func _setup_runtime() -> void:
 	var pressure := get_node_or_null("/root/CombatPressure")
@@ -407,28 +419,21 @@ func _finalize_completion() -> void:
 	var game_state := get_node_or_null("/root/GameState")
 	if game_state != null:
 		game_state.finish_run(summary)
-
 func _persist_campaign_completion(summary: Dictionary, save_manager: Node, difficulty_id: StringName) -> Error:
 	return _mission_runtime.record_campaign_completion(metadata.level_id, summary, save_manager, difficulty_id, [], _mission_upgrades)
-
 func _rollback_completion_for_retry(save_error: Error) -> void:
 	RainCityCompletionFlow.rollback(self, save_error)
-
 func _start_completion_transition() -> void:
 	if _completion_timer != null:
 		_completion_timer.start()
-
 func _get_save_manager() -> Node:
 	return get_node_or_null("/root/SaveManager")
-
 func _completion_difficulty_id() -> StringName:
 	var game_state := get_node_or_null("/root/GameState")
 	return game_state.difficulty_id if game_state != null else &"classic"
-
 func _active_control_method() -> StringName:
 	var input_manager := get_node_or_null("/root/InputManager")
 	return input_manager.active_control_method if input_manager != null else &"unknown"
-
 func _report_persistence_failure(context: String, save_error: Error) -> void:
 	var payload := {"context": context, "error": save_error, "error_name": error_string(save_error)}
 	var debug_log := get_node_or_null("/root/DebugLog")
@@ -436,7 +441,6 @@ func _report_persistence_failure(context: String, save_error: Error) -> void:
 		debug_log.warn("Rain City persistence failed", payload)
 	else:
 		push_warning("Rain City persistence failed %s" % payload)
-
 func get_level_summary() -> Dictionary:
 	return {
 		"level_id": metadata.level_id,
@@ -449,10 +453,8 @@ func get_level_summary() -> Dictionary:
 		"control_method": _active_control_method(),
 		"victory_line": "RAIN CITY: CITATION DISPUTED SUCCESSFULLY.",
 	}
-
 func _on_player_died(_source: Node) -> void:
 	narrative_message.emit("GOOD DOG DOWN. PRESS FIRE TO RESTART.", 3.0)
-
 func _on_secret_requested(secret_id: StringName, title: String, _source: Node) -> void:
 	if secrets.has(secret_id):
 		return

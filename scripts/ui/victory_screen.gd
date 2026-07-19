@@ -12,6 +12,7 @@ var _feedback_report: PlaytestReport
 func _ready() -> void:
 	visible = false
 	%MainMenuButton.pressed.connect(func() -> void: _route("res://scenes/menus/main_menu.tscn"))
+	%DoghouseButton.pressed.connect(func() -> void: _route("res://scenes/menus/doghouse_hub.tscn"))
 	%ReplayButton.pressed.connect(_on_replay)
 	%FeedbackButton.pressed.connect(_open_feedback)
 	%ContinueButton.pressed.connect(_on_continue)
@@ -22,7 +23,7 @@ func _ready() -> void:
 func show_summary(summary: Dictionary) -> void:
 	_close_feedback()
 	_routing = false
-	for button in [%MainMenuButton, %ReplayButton, %FeedbackButton, %ContinueButton]:
+	for button in [%MainMenuButton, %DoghouseButton, %ReplayButton, %FeedbackButton, %ContinueButton]:
 		button.disabled = false
 	_summary = summary.duplicate(true)
 	_mission_metadata = _metadata_for(String(summary.get("level_id", "")))
@@ -39,7 +40,9 @@ func show_summary(summary: Dictionary) -> void:
 	%AccuracyValue.text = "%d%%" % int(round(accuracy * 100.0))
 	%DamageValue.text = str(int(round(float(summary.get("damage_taken", 0.0)))))
 	%ControlValue.text = String(summary.get("control_method", "KEYBOARD + MOUSE")).to_upper()
-	%RankLabel.text = _rank(seconds, secrets, accuracy)
+	var profile := Campaign.progression_catalog.profile_for(StringName(summary.get("level_id", ""))) if Campaign.progression_catalog != null else null
+	var canonical := RunResultCalculator.calculate(summary, profile) if profile != null else {}
+	%RankLabel.text = "%s // %s // %d MEDALS" % [canonical.get("rank", "D"), canonical.get("rank_title", "RUFF RUN"), canonical.get("medal_count", 0)]
 	%ProceduralAudio.play(ProceduralAudio.Cue.VICTORY)
 	%ReplayButton.grab_focus()
 
@@ -121,6 +124,6 @@ func _route(path: String) -> bool:
 	if router == null or router.go_to(path) != OK:
 		return false
 	_routing = true
-	for button in [%MainMenuButton, %ReplayButton, %FeedbackButton, %ContinueButton]:
+	for button in [%MainMenuButton, %DoghouseButton, %ReplayButton, %FeedbackButton, %ContinueButton]:
 		button.disabled = true
 	return true

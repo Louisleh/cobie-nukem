@@ -111,6 +111,10 @@ text = "CONTINUE"
 unique_name_in_owner = true
 layout_mode = 2
 text = "MAIN MENU"
+[node name="DoghouseButton" type="Button" parent="Panel/VBox/Buttons"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "DOGHOUSE"
 [node name="FeedbackButton" type="Button" parent="Panel/VBox/Buttons"]
 unique_name_in_owner = true
 layout_mode = 2

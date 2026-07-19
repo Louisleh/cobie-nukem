@@ -7,6 +7,11 @@ const HEALTHY_TEXTURE := preload("res://assets/ui/portraits/cobie_healthy.png")
 const CRITICAL_TEXTURE := preload("res://assets/ui/portraits/cobie_critical.png")
 const CRITICAL_THRESHOLD := 0.65
 
+@export var ring_color := Color("f4b63d"):
+	set(value):
+		ring_color = value
+		queue_redraw()
+
 @export_range(0.0, 1.0) var health_ratio := 1.0:
 	set(value):
 		health_ratio = clampf(value, 0.0, 1.0)
@@ -36,4 +41,4 @@ func _draw() -> void:
 	# owner-approved source art. The tighter 512px crops make Cobie's face read
 	# on Retina iPads while the ring remains crisp at every supported scale.
 	var center := portrait_rect.get_center()
-	draw_arc(center, edge * 0.485, 0.0, TAU, 96, Color("f4b63d"), maxf(2.0, edge * 0.022), true)
+	draw_arc(center, edge * 0.485, 0.0, TAU, 96, ring_color, maxf(2.0, edge * 0.022), true)

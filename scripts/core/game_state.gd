@@ -13,6 +13,7 @@ var run_stats: Dictionary = {}
 var continue_requested := false
 var difficulty_id: StringName = &"classic"
 var local_metrics: Dictionary = {}
+var requested_run_mode := "standard"
 
 const DIFFICULTY_PATHS := {
 	&"story": "res://resources/difficulty/story.tres",
@@ -25,6 +26,10 @@ func begin_boot() -> void:
 	_set_phase(Phase.BOOT)
 
 func begin_run(level_id: StringName) -> void:
+	var run_mode := requested_run_mode
+	if phase == Phase.PLAYING and current_level_id == level_id and not run_stats.is_empty():
+		run_mode = String(run_stats.get("run_mode", requested_run_mode))
+	requested_run_mode = "standard"
 	current_level_id = level_id
 	run_stats = {
 		"started_at_msec": Time.get_ticks_msec(),
@@ -34,17 +39,23 @@ func begin_run(level_id: StringName) -> void:
 		"shots_hit": 0,
 		"damage_taken": 0.0,
 		"deaths": 0,
+		"pending_compliance_tags": 0,
+		"run_mode": run_mode if run_mode == "off_leash" else "standard",
 		"last_zone": "forbidden_field",
 		"checkpoint_id": "start",
 		"difficulty_id": String(difficulty_id),
 	}
 	local_metrics = {
 		"frame_time_buckets": {"under_16_7": 0, "under_33_3": 0, "under_100": 0, "over_100": 0},
-		"weapon_usage": {}, "hit_results": {}, "damage_sources": {},
+		"weapon_usage": {}, "weapon_hits": {}, "hit_results": {}, "damage_sources": {},
 		"pickups_collected": 0, "navigation_recoveries": 0,
 	}
 	_set_phase(Phase.PLAYING)
 	run_started.emit()
+
+
+func request_run_mode(value: String) -> void:
+	requested_run_mode = value if value == "off_leash" else "standard"
 
 
 func _process(delta: float) -> void:
@@ -72,6 +83,10 @@ func record_combat_result(event: CombatFeedbackEvent) -> void:
 	local_metrics["hit_results"] = results
 	if event.hit_type == CombatFeedbackEvent.HitType.ENEMY or event.hit_type == CombatFeedbackEvent.HitType.DESTRUCTIBLE:
 		run_stats.shots_hit = int(run_stats.get("shots_hit", 0)) + 1
+		var weapon_hits: Dictionary = local_metrics.get("weapon_hits", {})
+		var weapon_key := String(event.weapon_id)
+		weapon_hits[weapon_key] = int(weapon_hits.get(weapon_key, 0)) + 1
+		local_metrics["weapon_hits"] = weapon_hits
 
 
 func record_damage(amount: float, source: Node) -> void:
@@ -89,11 +104,24 @@ func record_pickup() -> void:
 	local_metrics["pickups_collected"] = int(local_metrics.get("pickups_collected", 0)) + 1
 
 
+func record_enemy_tag_value(enemy_definition: EnemyDefinition) -> int:
+	if run_stats.is_empty() or enemy_definition == null: return 0
+	var amount := clampi(int(ceil(float(enemy_definition.score_value) / 100.0)), 1, 25)
+	run_stats["pending_compliance_tags"] = int(run_stats.get("pending_compliance_tags", 0)) + amount
+	return amount
+
+
+func restore_progression_checkpoint(pending_tags: int, run_mode: String) -> void:
+	if run_stats.is_empty(): return
+	run_stats["pending_compliance_tags"] = maxi(0, pending_tags)
+	run_stats["run_mode"] = run_mode if run_mode == "off_leash" else "standard"
+
+
 func _ensure_local_metrics() -> void:
 	if not local_metrics.is_empty(): return
 	local_metrics = {
 		"frame_time_buckets": {"under_16_7": 0, "under_33_3": 0, "under_100": 0, "over_100": 0},
-		"weapon_usage": {}, "hit_results": {}, "damage_sources": {},
+		"weapon_usage": {}, "weapon_hits": {}, "hit_results": {}, "damage_sources": {},
 		"pickups_collected": 0, "navigation_recoveries": 0,
 	}
 

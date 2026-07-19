@@ -23,11 +23,13 @@ func _initialize() -> void:
 	_test_campaign_round_trip()
 	_test_campaign_migration_from_v3()
 	_test_v4_schema_migration()
+	_test_v6_schema_migration()
 	_test_campaign_sanitize_shape()
 	_test_checkpoint_and_campaign_slot_isolation()
 	_test_unversioned_legacy_payload()
 	_test_v1_schema_migration()
 	_test_v2_schema_migration()
+	_test_v6_sanitizer_validation()
 	_test_missing_fields()
 	_test_wrong_field_types()
 	_test_invalid_difficulty()
@@ -99,6 +101,81 @@ func _test_v4_schema_migration() -> void:
 	var campaign_payload := _campaign_payload()
 	_write_raw(JSON.stringify({"version": 4, "payload": campaign_payload}), CAMPAIGN_SLOT)
 	_expect(save_manager.load_slot(CAMPAIGN_SLOT).get("campaign_upgrades") == {}, "v4 campaign gains empty upgrade map")
+
+
+func _test_v6_schema_migration() -> void:
+	var checkpoint_payload_v5: Dictionary = {
+		"scene_path": CHECKPOINT_SCENE,
+		"level_id": "episode_1_level_1",
+		"checkpoint_id": "lab_entry",
+	}
+	_write_raw(JSON.stringify({"version": 5, "payload": checkpoint_payload_v5}), SLOT)
+	var migrated_checkpoint: Dictionary = save_manager.load_slot(SLOT)
+	_expect(migrated_checkpoint.get("pending_compliance_tags") == 0, "v6 checkpoint defaults pending compliance tags")
+	_expect(migrated_checkpoint.get("equipped_weapon_mods") == {}, "v6 checkpoint defaults equipped weapon mods")
+	_expect(migrated_checkpoint.get("run_mode") == "standard", "v6 checkpoint defaults run mode to standard")
+
+	var campaign_payload_v5 := {
+		"completed_missions": ["episode_1_level_1"],
+		"mission_records": {
+			"episode_1_level_1": {"best_time_msec": 120000.0},
+		},
+		"campaign_upgrades": {},
+	}
+	_write_raw(JSON.stringify({"version": 5, "payload": campaign_payload_v5}), CAMPAIGN_SLOT)
+	var migrated_campaign := CampaignProgressPayload.sanitize(save_manager.load_slot(CAMPAIGN_SLOT))
+	_expect(migrated_campaign.get("wallet") == {"compliance_tags": 0}, "v6 campaign defaults wallet compliance tags")
+	_expect(migrated_campaign.get("mission_collectibles") == {}, "v6 campaign defaults mission collectibles")
+	_expect(migrated_campaign.get("purchased_rewards") == [], "v6 campaign defaults purchased rewards")
+	_expect(migrated_campaign.get("equipped_weapon_mods") == {}, "v6 campaign defaults equipped weapon mods")
+	_expect(migrated_campaign.get("completed_challenges") == [], "v6 campaign defaults completed challenges")
+	_expect(migrated_campaign.get("selected_cosmetics") == {}, "v6 campaign defaults selected cosmetics")
+
+
+func _test_v6_sanitizer_validation() -> void:
+	var checkpoint_raw := _checkpoint_payload()
+	checkpoint_raw["pending_compliance_tags"] = -1.0
+	checkpoint_raw["run_mode"] = "chaos"
+	checkpoint_raw["equipped_weapon_mods"] = {"weapon one": 2, 7: "scope"}
+	var sanitized_checkpoint: Dictionary = CheckpointPayload.sanitize(checkpoint_raw)
+	_expect(sanitized_checkpoint.get("pending_compliance_tags") == 0, "checkpoint sanitizer clamps negative compliance tags to zero")
+	_expect(sanitized_checkpoint.get("run_mode") == "standard", "checkpoint sanitizer rejects malformed run modes")
+	_expect(sanitized_checkpoint.get("equipped_weapon_mods") == {}, "checkpoint sanitizer drops malformed equipped weapon mods")
+
+	var campaign_raw := {
+		"mission_records": {
+			"mission_one": {
+				"best_time_msec": 120000.0,
+				"completion_count": -3.0,
+				"best_modes": {"off_leash": -2, "mode": 1},
+			},
+			"mission two": {"best_time_msec": 100000.0, "completion_count": 2.0},
+			7: {"best_time_msec": 12345},
+		},
+		"wallet": {"compliance_tags": -5},
+		"mission_collectibles": {
+			"mission_two ": ["collect one", "collect two", ""],
+			"mission_three": [7, "collect_three", "collect_three"],
+		},
+		"purchased_rewards": ["reward_one", 1, "reward_one", ""],
+		"equipped_weapon_mods": {"weapon_one": 7, "weapon two": "mod"},
+		"completed_challenges": ["challenge_one", "challenge_one", ""],
+		"selected_cosmetics": {"slot_one": "cosmetic_one", 1: "bad", "slot two": "bad"},
+	}
+	var sanitized_campaign: Dictionary = CampaignProgressPayload.sanitize(campaign_raw)
+	var mission_records: Dictionary = sanitized_campaign.get("mission_records", {})
+	_expect(mission_records.has("mission_one"), "campaign sanitizer keeps valid mission ids")
+	_expect(not mission_records.has("mission two"), "campaign sanitizer drops unstable mission ids with spacing")
+	var mission_one_record: Dictionary = mission_records.get("mission_one", {})
+	_expect(not mission_one_record.has("completion_count"), "campaign sanitizer drops malformed completion counts")
+	_expect(not mission_one_record.has("best_modes"), "campaign sanitizer drops malformed best mode payloads")
+	_expect(sanitized_campaign.get("wallet") == {"compliance_tags": 0}, "campaign sanitizer defaults malformed wallet tags")
+	_expect(not sanitized_campaign.get("mission_collectibles").has("mission_two "), "campaign sanitizer drops malformed mission collectible ids")
+	_expect(sanitized_campaign.get("mission_collectibles").get("mission_three") == ["collect_three"], "campaign sanitizer sorts and dedupes collectibles")
+	_expect(sanitized_campaign.get("purchased_rewards") == ["reward_one"], "campaign sanitizer keeps stable purchased rewards only")
+	_expect(sanitized_campaign.get("equipped_weapon_mods").is_empty(), "campaign sanitizer drops malformed equipped weapon mods")
+	_expect(sanitized_campaign.get("completed_challenges") == ["challenge_one"], "campaign sanitizer dedupes completed challenges")
+	_expect(sanitized_campaign.get("selected_cosmetics").get("slot_one") == "cosmetic_one", "campaign sanitizer keeps valid selected cosmetics")
 
 
 func _test_campaign_sanitize_shape() -> void:
@@ -235,6 +312,7 @@ func _test_sanitize_canonical_shape() -> void:
 	noisy["cloud_id"] = "nope"
 	var sanitized := CheckpointPayload.sanitize(noisy)
 	var expected_keys := ["scene_path", "level_id", "checkpoint_id", "difficulty_id", "content_revision", "position", "objective_snapshot", "encounter_snapshot", "route_snapshot", "secrets", "unlocked_weapons", "active_mission_upgrades"]
+	expected_keys.append_array(["pending_compliance_tags", "equipped_weapon_mods", "run_mode"])
 	for key: String in sanitized:
 		_expect(key in expected_keys, "sanitize drops unknown key: %s" % key)
 	var missing_scene := _checkpoint_payload()
