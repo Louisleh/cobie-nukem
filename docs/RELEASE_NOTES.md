@@ -35,6 +35,8 @@ Built on 2026-07-18 with Godot `4.7.stable.official.5b4e0cb0f`. Runtime feature 
 | `cobie-nukem-0.11.0-alpha.1-rc1-macos-unsigned.zip` | 115,537,576 | `da62f5505b4f5d876ae8b1c99a6b71ae59cab01c8fc9824c6cedea09d1f464df` |
 | Packaged Web PCK | 69,554,484 | `1d86d7747dd73f4a8f120da85d832a816018dbbfdcb8d01a1089e23f45e16501` |
 
+Published through source [PR #63](https://github.com/Louisleh/cobie-nukem/pull/63) at integration `6e107e7`, [GitHub prerelease `v0.11.0-alpha.1-rc1`](https://github.com/Louisleh/cobie-nukem/releases/tag/v0.11.0-alpha.1-rc1), and website [PR #130](https://github.com/Louisleh/louislehmann-site/pull/130) at deployment `32bcd39`. Packaged and production-browser startup reached the Doghouse without attributable console errors; the downloaded 69,554,484-byte public PCK matches SHA-256 `1d86d7747dd73f4a8f120da85d832a816018dbbfdcb8d01a1089e23f45e16501` exactly.
+
 ---
 
 # Prior Release Notes — 0.9.0-alpha.1-rc1 Five-Mission Public Beta
