@@ -12,6 +12,21 @@ Record build/commit: __________  Godot: __________  OS/device: __________  Teste
 - [ ] Focus loss pauses or safely suppresses gameplay input and audio.
 - [ ] Clean install and existing settings/save both behave correctly.
 
+## Doghouse, progression, and replay
+
+- [ ] `PLAY // DOGHOUSE` opens the hub without changing or deleting a checkpoint.
+- [ ] Mission Map shows all five missions, accurate best rank/time, active collection totals, and `COLLECTION COMING SOON` for Levels 3–5.
+- [ ] Salmon Creek and Rain City each contain exactly 50 readable, reachable Mini Balls; collection saves immediately and cannot be earned twice after retry, Continue, or restart.
+- [ ] Collection milestones at 10/25/40/50 give the stated tags or cosmetic/trophy exactly once.
+- [ ] Compliance Tag payout at victory clearly explains enemy, completion, difficulty, rank, challenge, and Off-Leash contributions.
+- [ ] Gear Bench purchases are deliberate, unaffordable purchases fail safely, one sidegrade equips per weapon, and cosmetics visibly apply after new run and Continue.
+- [ ] Golden Fetch Trail visibly follows the projectile without obscuring collision, enemies, touch HUD, or reduced-effects readability.
+- [ ] Challenge Board progress is permanent and none of the ten launch challenges requires hidden or impossible behavior.
+- [ ] Completing all five missions unlocks Salmon Creek Off-Leash; standard and Off-Leash records remain distinct and Off-Leash awards the advertised 1.5× tags.
+- [ ] Backup export copies a `COBIE1` code; import requires preview and confirmation; invalid, altered, future, or oversized codes are rejected without changing the profile.
+- [ ] After a confirmed import, the previous profile is recoverable from the automatic import-backup slot.
+- [ ] At 1024×768 touch, all five Doghouse stations, wallet, content, and Back remain readable and reachable without overlap.
+
 ## Input setup and diagnostics
 
 - [ ] Keyboard/mouse defaults match README and all actions can be remapped.

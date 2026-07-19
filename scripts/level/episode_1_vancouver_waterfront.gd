@@ -419,28 +419,21 @@ func _finalize_completion() -> void:
 	var game_state := get_node_or_null("/root/GameState")
 	if game_state != null:
 		game_state.finish_run(summary)
-
 func _persist_campaign_completion(summary: Dictionary, save_manager: Node, difficulty_id: StringName) -> Error:
 	return _mission_runtime.record_campaign_completion(metadata.level_id, summary, save_manager, difficulty_id, [], _mission_upgrades)
-
 func _rollback_completion_for_retry(save_error: Error) -> void:
 	RainCityCompletionFlow.rollback(self, save_error)
-
 func _start_completion_transition() -> void:
 	if _completion_timer != null:
 		_completion_timer.start()
-
 func _get_save_manager() -> Node:
 	return get_node_or_null("/root/SaveManager")
-
 func _completion_difficulty_id() -> StringName:
 	var game_state := get_node_or_null("/root/GameState")
 	return game_state.difficulty_id if game_state != null else &"classic"
-
 func _active_control_method() -> StringName:
 	var input_manager := get_node_or_null("/root/InputManager")
 	return input_manager.active_control_method if input_manager != null else &"unknown"
-
 func _report_persistence_failure(context: String, save_error: Error) -> void:
 	var payload := {"context": context, "error": save_error, "error_name": error_string(save_error)}
 	var debug_log := get_node_or_null("/root/DebugLog")
@@ -448,7 +441,6 @@ func _report_persistence_failure(context: String, save_error: Error) -> void:
 		debug_log.warn("Rain City persistence failed", payload)
 	else:
 		push_warning("Rain City persistence failed %s" % payload)
-
 func get_level_summary() -> Dictionary:
 	return {
 		"level_id": metadata.level_id,
@@ -461,10 +453,8 @@ func get_level_summary() -> Dictionary:
 		"control_method": _active_control_method(),
 		"victory_line": "RAIN CITY: CITATION DISPUTED SUCCESSFULLY.",
 	}
-
 func _on_player_died(_source: Node) -> void:
 	narrative_message.emit("GOOD DOG DOWN. PRESS FIRE TO RESTART.", 3.0)
-
 func _on_secret_requested(secret_id: StringName, title: String, _source: Node) -> void:
 	if secrets.has(secret_id):
 		return

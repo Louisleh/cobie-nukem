@@ -35,9 +35,13 @@ All five missions use one typed campaign graph, shared mission runtime, save-v5 
 
 The canonical status/evidence ledger is `docs/PHASE_ROADMAP_PRD.md`. The canonical art rules are `docs/ART_BIBLE.md`; no separate episode-orchestration bible may override them.
 
-## 1.1.1 Active definitive-convergence milestone
+## 1.1.1 Active local progression and replay milestone
 
-The current milestone prioritizes compounding quality over another systems rewrite: transactional startup/retry/victory flow, icon-led tablet controls, evidence-backed Level 1–3 regression fixes, and production presentation for Moon and Ventura. Gameplay layout remains authoritative for collision/navigation while replaceable Blender kits and manifested Material Maker families provide mission identity. The visual capture manifest must include every mission, and no Level 2–5 `BETA` badge may be removed by automation alone.
+The current milestone turns the five-mission public alpha into a replayable offline game without prematurely adding accounts or cloud infrastructure. A local guest profile owns mission results, Mini Ball collections, Compliance Tags, permanent challenges, sidegrade weapon mods, cosmetics, and an unlockable **Off-Leash** remix. The **Doghouse** is the campaign hub for mission records, collections, challenge status, the Gear Bench, and portable human-readable backup codes.
+
+The first production pass deliberately limits authored collectibles to 50 Mini Balls in Salmon Creek and 50 in Rain City; Levels 3–5 clearly report that their collections are coming soon. Rewards may broaden expression or change play style, but may not create a paid-power loop, daily pressure, randomized loot, network telemetry, accounts, ads, or manipulative streak loss. Replay motivation comes from mastery, discovery, authored challenges, rank improvement, and visible ownership. Browser saves remain local-first and the UI must warn that private/incognito storage can be cleared.
+
+The prior definitive-convergence work remains the visual and technical baseline: transactional startup/retry/victory flow, icon-led tablet controls, evidence-backed Level 1–3 regression fixes, and production presentation for Moon and Ventura. Gameplay layout remains authoritative for collision/navigation while replaceable Blender kits and manifested Material Maker families provide mission identity. No Level 2–5 `BETA` badge may be removed by automation alone.
 
 ## 1.2 Archived `0.8.0-alpha.1-rc1` three-mission checkpoint
 

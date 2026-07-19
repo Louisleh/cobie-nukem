@@ -1,6 +1,6 @@
 # Cobie Nukem — Multi-Phase Production PRD
 
-**Status:** Active production source of truth; five-mission public-beta RC released
+**Status:** Active production source of truth; local progression candidate in validation
 
 **Created:** 2026-07-11
 
@@ -8,7 +8,7 @@
 
 **Current public baseline:** `0.10.0-alpha.1-rc1` (`7cb7ac6` gameplay/runtime revision; source integration `be2b048`; website deployment `a80fec3`; PCK SHA-256 `f24a9911c141aefc97c2eb5ad86c87c74e3e87856c484671a9c773e01d9a0aaf`)
 
-**Current production gate:** All five missions are publicly playable and byte-verified. The definitive-convergence RC hardens startup/scene ownership, closes Level 1–3 regressions, and replaces the most visible Moon/Ventura blockout with original authored presentation kits and mission-specific materials. Levels 2–5 remain explicit `BETA` missions until human/device/art/balance approval.
+**Current production gate:** All five missions remain publicly playable and byte-verified at the released baseline. The next candidate adds an offline guest progression layer—Doghouse hub, save schema v6, Mini Balls, Compliance Tags, challenges, sidegrade mods, cosmetics, backups, and Off-Leash remix—without accounts, cloud saves, telemetry, ads, or randomized rewards. Levels 2–5 remain explicit `BETA` missions until human/device/art/balance approval.
 
 **Last released alpha:** [`0.10.0-alpha.1-rc1`](https://github.com/Louisleh/cobie-nukem/releases/tag/v0.10.0-alpha.1-rc1) (`7cb7ac6`) — live at <https://www.louislehmann.fyi/games/cobie-nukem/>; Levels 2–5 retain honest `BETA` badges because human full-route, final-art, and physical-device validation are open
 
@@ -25,6 +25,19 @@
 | Dark Side of Fetch | **PUBLIC `BETA`** | Five-zone lunar route, six objectives, five checkpoints/secrets, 28 enemies, movement environment, 1,000-HP modular boss, restore/finale contracts, and route simulation green | Final hero animation/audio/material pass plus target-Mac, browser, physical-iPad, pacing, combat-readability, mix, humor, and photosensitivity approval open. |
 | Pier Pressure | **PUBLIC `BETA`** | Five-zone coastal route, six objectives, five checkpoints/secrets, 28 enemies, 1,000-HP Tidebreaker, restore/finale contracts, and route simulation green | Final hero animation/audio/material pass plus target-Mac, browser, physical-iPad, pacing, combat-readability, mix, humor, and photosensitivity approval open. |
 | Packaging | **PUBLIC — BYTE VERIFIED** | Full parser/import, test, Web/macOS export, package, desktop Web, 1024×768 touch, source CI, website CI, Vercel production, and public-PCK identity gates are green. | `0.8.0-alpha.1-rc1` remains the rollback; unsigned/notarized status and human/device gates remain explicit. |
+
+### Local progression and replay candidate
+
+| System | Candidate state | Honest boundary |
+| --- | --- | --- |
+| Guest profile | Save schema v6 with deterministic v5 migration, separate checkpoint/campaign ownership, mission results, wallet, collections, challenges, owned rewards, equipped mods, cosmetics, and mode records | Local browser/native storage only; no login, cross-device sync, account recovery, or telemetry |
+| Doghouse | Mission Map, Gear Bench, Ball Shelf, Challenge Board, Kennel Records, local-save warning, and two-step backup import | Native and simulated 1024×768 layout approved; physical iPad ergonomics remain a human gate |
+| Collections | 50 stable Mini Balls in Salmon Creek and 50 in Rain City; immediate durable collection, milestone rewards, and duplicate protection | Level 3–5 collections explicitly say `COMING SOON`; exact placement/readability needs human routes |
+| Economy | Compliance Tags from enemy value, first completion, difficulty, rank, challenges, and Off-Leash; six deterministic sidegrade mods and twelve cosmetic/milestone rewards | No paid currency, loot boxes, daily streaks, ads, or network economy |
+| Replay | S–D mission rank, five medals, ten permanent launch challenges, best records, completion counts, and Salmon Creek Off-Leash remix | Challenge breadth and additional remix modes are future content, not implied complete |
+| Portability | Versioned `COBIE1` backup code with canonical payload, checksum, size limit, strict sanitization, preview, confirmation, and automatic pre-import backup | The user must copy/store the code; no server-side recovery |
+
+Release gate: the candidate must pass the complete Godot 4.7 parser/unit/integration/route/soak/export matrix, independent Spark review, packaged desktop and tablet Web checks, artifact identity verification, and a truthful public RC label. Physical iPad, human economy feel, collectible readability, repeat-session motivation, and balance remain explicitly open.
 
 ### Implemented five-mission integration checkpoint
 

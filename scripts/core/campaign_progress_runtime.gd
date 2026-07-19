@@ -445,33 +445,23 @@ func _merge_best_record(current: Dictionary, incoming: Dictionary) -> Dictionary
 		if completion_delta > 0:
 			merged["completion_count"] = current_count + completion_delta
 	return merged
-
-
 func mission_completed_count(mission_id: StringName) -> int:
 	var record := mission_record(mission_id)
 	return _nonnegative_int(record.get("completion_count"))
-
-
 func _owns_reward(reward_id: String) -> bool:
 	var purchased: Array = _progress.get("purchased_rewards", [])
 	return reward_id in _string_set(purchased)
-
-
 func _mission_id(value: Variant) -> String:
 	if value is not String and value is not StringName:
 		return ""
 	var normalized := String(value).strip_edges()
 	return normalized if _is_stable_id(normalized) else ""
-
-
 func _is_stable_id(id: String) -> bool:
 	if id.is_empty():
 		return false
 	if id.find(" ") != -1 or id.find("\t") != -1 or id.find("\n") != -1 or id.find("\r") != -1:
 		return false
 	return true
-
-
 func _string_set(raw_value: Variant) -> Array[String]:
 	var result: Array[String] = []
 	if raw_value is not Array:
@@ -481,15 +471,11 @@ func _string_set(raw_value: Variant) -> Array[String]:
 		if not stable_id.is_empty() and not stable_id in result:
 			result.append(stable_id)
 	return result
-
-
 func _string_set_is_empty(value: Array[String]) -> bool:
 	for raw_id: Variant in value:
 		if _is_stable_id(String(raw_id).strip_edges()):
 			return false
 	return true
-
-
 func _nonnegative_int(value: Variant) -> int:
 	if value is int:
 		return value if value >= 0 else -1
@@ -497,8 +483,6 @@ func _nonnegative_int(value: Variant) -> int:
 		var converted := int(value)
 		return converted if converted >= 0 else -1
 	return -1
-
-
 func _run_mode(value: Variant) -> String:
 	if value is String or value is StringName:
 		var candidate := String(value).strip_edges().to_lower()

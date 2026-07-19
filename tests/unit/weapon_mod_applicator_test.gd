@@ -30,6 +30,17 @@ func _run() -> void:
 	_expect(pawstol.definition.reload_seconds < original_reload, "Quick Draw improves reload")
 	_expect(pawstol.definition.feel.raise_seconds < original_raise, "Quick Draw improves raise time")
 	_expect(fetch.mod_bounce_bonus == 2, "Extra Bounce adds two ricochets")
+	var filtered_mods := MissionLoadoutApplicator.filter_owned_weapon_mods({
+		"pawstol": "pawstol_quick_draw",
+		"fetch_launcher": "fetch_extra_bounce",
+		"barkshot": "pawstol_quick_draw",
+	}, ["pawstol_quick_draw"], EPISODE.progression_catalog)
+	_expect(filtered_mods == {"pawstol": "pawstol_quick_draw"}, "checkpoint mods require campaign ownership and matching weapon")
+	var filtered_cosmetics := MissionLoadoutApplicator.filter_owned_cosmetics({
+		"fetch_trail": "fetch_golden_trail",
+		"hud_frame": "fetch_golden_trail",
+	}, ["fetch_golden_trail"], EPISODE.progression_catalog)
+	_expect(filtered_cosmetics == {"fetch_trail": "fetch_golden_trail"}, "cosmetics require campaign ownership and matching slot")
 
 	var second_player := PLAYER_SCENE.instantiate() as CobiePlayer
 	root.add_child(second_player)
