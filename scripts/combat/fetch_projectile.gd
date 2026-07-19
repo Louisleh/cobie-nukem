@@ -23,6 +23,24 @@ var _age := 0.0
 var _damaged_on_recall: Dictionary = {}
 var _damaged_on_bounce: Dictionary = {}
 
+
+func set_golden_trail(enabled: bool) -> void:
+	var trail := get_node_or_null("GoldenTrail") as GPUParticles3D
+	if trail != null:
+		trail.emitting = enabled
+	var ball := get_node_or_null("Ball") as MeshInstance3D
+	if ball != null and enabled:
+		var material := StandardMaterial3D.new()
+		material.albedo_color = Color("ffd34d")
+		material.emission_enabled = true
+		material.emission = Color("ffb21f")
+		material.emission_energy_multiplier = 3.2
+		material.roughness = 0.28
+		ball.material_override = material
+	var glow := get_node_or_null("Glow") as OmniLight3D
+	if glow != null and enabled:
+		glow.light_color = Color("ffd34d")
+
 func launch(origin: Vector3, launch_direction: Vector3, owner_node: Node3D) -> void:
 	global_position = origin
 	reset_physics_interpolation()

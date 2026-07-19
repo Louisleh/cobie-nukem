@@ -8,6 +8,7 @@ var recall_speed_multiplier := 1.0
 var recall_stagger_multiplier := 1.0
 var mod_recall_speed_multiplier := 1.0
 var mod_bounce_bonus := 0
+var golden_trail_enabled := false
 var _municipal_recall_enabled := false
 
 func fire_primary() -> bool:
@@ -22,6 +23,7 @@ func fire_primary() -> bool:
 	projectile.recall_speed_multiplier = recall_speed_multiplier
 	projectile.recall_stagger_multiplier = recall_stagger_multiplier
 	projectile.max_bounces += maxi(0, mod_bounce_bonus)
+	projectile.set_golden_trail(golden_trail_enabled)
 	projectile.shot_resolved.connect(_on_projectile_resolved)
 	projectile.launch(camera.global_position + _aim_direction(definition.range) * 0.7, _aim_direction(definition.range), owner_node)
 	latest_projectile = projectile

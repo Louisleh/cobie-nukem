@@ -39,6 +39,14 @@ func _run() -> void:
 	second_fetch.apply_municipal_recall_override()
 	_expect(is_equal_approx(second_fetch.recall_speed_multiplier, 1.6875), "Rapid Return composes with Municipal Recall")
 	_expect(second_fetch.recall_speed_multiplier <= 1.75, "recall composition remains bounded")
+
+	CosmeticApplicator.apply_weapon_cosmetics(second_player, {"fetch_trail": "fetch_golden_trail"})
+	_expect(second_fetch.golden_trail_enabled, "Golden Fetch Trail selection reaches the launcher")
+	var projectile := preload("res://scenes/weapons/fetch_projectile.tscn").instantiate() as FetchProjectile
+	root.add_child(projectile)
+	projectile.set_golden_trail(second_fetch.golden_trail_enabled)
+	_expect((projectile.get_node("GoldenTrail") as GPUParticles3D).emitting, "Golden Fetch Trail emits bounded projectile particles")
+	projectile.queue_free()
 	player.queue_free(); second_player.queue_free()
 	await process_frame
 	if failures.is_empty():
