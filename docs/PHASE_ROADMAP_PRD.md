@@ -49,6 +49,8 @@ This cycle delivers functional, testable five-mission public development—not a
 
 Checkpoint rule: each subsystem lands only after its focused tests and attributable engine-log gate pass. Physical iPad comfort, full human routes, art taste, pacing, mix, fairness, humor, motion, and photosensitivity remain named human gates rather than inferred completion.
 
+**Definitive-convergence release candidate:** feature revision `7cb7ac6` is stamped as `0.10.0-alpha.1-rc1`. The complete Web/macOS export matrix, 1,200-route/1,000-checkpoint five-mission gauntlet, 100-route/100-checkpoint/100-touch-cancellation/500-weapon-transition soak, asset/IP and architecture gates, packaged desktop launch, simulated 1024x768 touch launch, and an isolated Chrome packaged-load trace are green. Source integration, prerelease publication, website deployment, and public-PCK byte identity remain pending until the candidate is merged and deployed. Levels 2–5 remain explicitly `BETA`; physical iPad and human full-route/taste gates remain open.
+
 ### Archived RC5 foundry release evidence
 
 - Fresh full non-export validation passes both mission routes, all unit/integration/content/architecture/asset-IP gates, 100-route/checkpoint/touch/effect soaks, 500 weapon transitions, 100 Towmaster cycles, 66 scenes, and 95 resources.
