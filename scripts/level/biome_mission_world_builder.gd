@@ -34,8 +34,19 @@ func build(owner: Node3D, profile: BiomeMissionProfile) -> bool:
 	presentation = Node3D.new(); presentation.name = "AuthoredPresentation"; owner.add_child(presentation)
 	actors = Node3D.new(); actors.name = "Actors"; owner.add_child(actors)
 	interactables = Node3D.new(); interactables.name = "Interactables"; owner.add_child(interactables)
-	_build_environment(); _build_route(); _build_landmarks(); _build_interactables(); _build_navigation()
+	_build_environment(); _build_route(); _build_landmarks(); _build_authored_presentation(); _build_interactables(); _build_navigation()
 	return true
+
+
+func _build_authored_presentation() -> void:
+	if _profile.presentation_scene == null:
+		return
+	var kit := _profile.presentation_scene.instantiate()
+	kit.name = "MissionPresentationKit"
+	presentation.add_child(kit)
+	var errors := BiomePresentationMaterialApplier.apply(kit, _profile.material_set_id)
+	for error in errors:
+		push_error(error)
 
 
 func _build_environment() -> void:
@@ -66,6 +77,7 @@ func _build_route() -> void:
 		var center: Vector3 = zone.center
 		var size: Vector3 = zone.size
 		var floor := _box("%s_Floor" % zone.id, Vector3(center.x, -0.5, center.z), Vector3(size.x, 1.0, size.z), floor_color, true)
+		_apply_surface_material(floor, StringName(zone.get("surface", &"concrete")))
 		floor.collision_layer = (1 << 19) | 1; floor.set_meta(&"surface_type", StringName(zone.get("surface", &"concrete"))); floor.add_to_group(&"biome_navigation_source")
 		_wall_pair(zone, floor_color.darkened(0.35))
 		if index < _profile.zones.size() - 1:
@@ -73,6 +85,7 @@ func _build_route() -> void:
 			var next_size: Vector3 = _profile.zones[index + 1].size
 			var z_mid: float = (center.z - size.z * 0.5 + next_center.z + next_size.z * 0.5) * 0.5
 			var connector := _box("RouteConnector_%d" % index, Vector3(0, -0.52, z_mid), Vector3(9.0, 0.98, maxf(6.0, abs(center.z - next_center.z) - (size.z + next_size.z) * 0.5 + 2.0)), floor_color, true)
+			_apply_surface_material(connector, StringName(zone.get("surface", &"concrete")))
 			connector.collision_layer = (1 << 19) | 1; connector.add_to_group(&"biome_navigation_source")
 			var gate_z := center.z - size.z * 0.5 + 1.0
 			var gate := _box("EncounterGate_%s" % zone.id, Vector3(0, 1.45, gate_z), Vector3(8.8, 2.9, 0.45), accent.darkened(0.3), true)
@@ -81,8 +94,26 @@ func _build_route() -> void:
 
 func _wall_pair(zone: Dictionary, color: Color) -> void:
 	var center: Vector3 = zone.center; var size: Vector3 = zone.size
-	_box("%s_LeftBoundary" % zone.id, Vector3(center.x - size.x * 0.5, 2.0, center.z), Vector3(0.7, 4.0, size.z), color, true)
-	_box("%s_RightBoundary" % zone.id, Vector3(center.x + size.x * 0.5, 2.0, center.z), Vector3(0.7, 4.0, size.z), color, true)
+	var left := _box("%s_LeftBoundary" % zone.id, Vector3(center.x - size.x * 0.5, 2.0, center.z), Vector3(0.7, 4.0, size.z), color, true)
+	var right := _box("%s_RightBoundary" % zone.id, Vector3(center.x + size.x * 0.5, 2.0, center.z), Vector3(0.7, 4.0, size.z), color, true)
+	_apply_surface_material(left, &"boundary")
+	_apply_surface_material(right, &"boundary")
+
+
+func _apply_surface_material(body: StaticBody3D, surface: StringName) -> void:
+	if body == null or _profile.material_set_id == &"": return
+	var aliases := {
+		&"concrete": &"warm_concrete",
+		&"promenade_concrete": &"sun_bleached_asphalt",
+		&"marina_steel": &"salt_steel",
+		&"offshore_metal": &"weathered_metal",
+		&"boundary": &"habitat_panels" if _profile.material_set_id == &"moon" else &"warm_concrete",
+	}
+	var family: StringName = aliases.get(surface, surface)
+	var path := "res://assets/materials/%s/%s.tres" % [_profile.material_set_id, family]
+	if not ResourceLoader.exists(path): return
+	var mesh := body.get_child(0) as MeshInstance3D
+	if mesh != null: mesh.material_override = load(path) as Material
 
 
 func _build_landmarks() -> void:

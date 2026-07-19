@@ -15,6 +15,9 @@ func _initialize() -> void:
 	await process_frame
 	_expect(controls.visible and controls.is_touch_enabled(), "forced mobile controls are visible")
 	_expect(controls.ONBOARDING_LINES.size() == 2, "touch onboarding uses two bounded lines")
+	_expect(controls.ACTION_ICONS.size() == 8, "touch action buttons use a complete icon set")
+	for action_id in controls.ACTION_ICONS:
+		_expect(controls.ACTION_ICONS[action_id] != null, "touch icon loads for %s" % action_id)
 	_expect(controls._button_at(Vector2(292, 111)) == &"fire_primary", "fire hit target maps correctly")
 	_expect(controls._stick_at(Vector2(48, 105)) == &"move" and controls._stick_at(Vector2(220, 105)) == &"look", "two fixed stick capture zones are distinct")
 	_expect(MobileControls._apply_dead_zone(Vector2(0.05, 0.0)).length() > 0.0, "raw stick preserves fine input for the aim profile")

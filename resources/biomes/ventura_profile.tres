@@ -1,9 +1,12 @@
-[gd_resource type="Resource" load_steps=2 format=3]
+[gd_resource type="Resource" load_steps=3 format=3]
 
 [ext_resource type="Script" path="res://scripts/gameplay/biome_mission_profile.gd" id="1"]
+[ext_resource type="PackedScene" path="res://assets/models/environment/ventura_pier_pressure_environment.glb" id="2"]
 
 [resource]
 script = ExtResource("1")
+presentation_scene = ExtResource("2")
+material_set_id = &"ventura"
 mission_id = &"ventura_pier_pressure"
 content_revision = 1
 intro_message = "EPISODE 5, VENTURA PIER PRESSURE\nSTART BETA"
@@ -92,15 +95,15 @@ secrets = [{
 	"position": Vector3(0.0, 1.7, -136.0)
 }]
 environment = {
-	"sky_top": "f7dd99",
-	"sky_horizon": "f0bf63",
-	"fog_color": "9ec5d4",
-	"ambient_energy": 0.77,
-	"fog_density": 0.05,
+	"sky_top": "4e7898",
+	"sky_horizon": "e6a45f",
+	"fog_color": "789fae",
+	"ambient_energy": 0.28,
+	"fog_density": 0.004,
 	"light_yaw": -20.0,
-	"light_color": "ffcc70",
-	"light_energy": 1.2,
-	"floor_color": "d6ac69",
+	"light_color": "e3a96c",
+	"light_energy": 0.48,
+	"floor_color": "8d7457",
 	"accent_color": "f48b28"
 }
 landmarks = [{

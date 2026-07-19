@@ -17,6 +17,8 @@ extends Resource
 @export var permanent_upgrade_ids: Array[StringName] = []
 @export var campaign_unlock_ids: Array[StringName] = []
 @export var movement_environment: MovementEnvironmentProfile
+@export var presentation_scene: PackedScene
+@export var material_set_id: StringName = &""
 @export var zones: Array[Dictionary] = []
 @export var objective_switches: Array[Dictionary] = []
 @export var secrets: Array[Dictionary] = []
@@ -71,6 +73,10 @@ func validate() -> PackedStringArray:
 	if not zone_ids.has(starting_zone_id): errors.append("biome mission %s starting zone is unknown" % mission_id)
 	if not zone_ids.has(boss_zone_id): errors.append("biome mission %s boss zone is unknown" % mission_id)
 	if movement_environment != null: errors.append_array(movement_environment.validate())
+	if presentation_scene == null and material_set_id != &"":
+		errors.append("biome mission %s declares materials without a presentation scene" % mission_id)
+	if presentation_scene != null and material_set_id == &"":
+		errors.append("biome mission %s presentation scene is missing material_set_id" % mission_id)
 	for entry in objective_switches:
 		if StringName(entry.get("id", &"")) == &"": errors.append("biome mission %s has objective switch without id" % mission_id)
 		if entry.get("position") is not Vector3: errors.append("biome mission %s has objective switch without position" % mission_id)

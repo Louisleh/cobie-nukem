@@ -68,6 +68,8 @@ func _check_profile_contract() -> void:
 	_expect(PROFILE.objective_switches.size() == 3, "Moon profile owns three objective switches")
 	_expect(PROFILE.secrets.size() == 5, "Moon profile owns five secrets")
 	_expect(PROFILE.checkpoint_positions().size() == 5, "Moon profile owns five checkpoints")
+	_expect(PROFILE.presentation_scene != null, "Moon profile owns an authored presentation kit")
+	_expect(PROFILE.material_set_id == &"moon", "Moon profile owns the Moon material family")
 	_expect(MISSION_METADATA != null and MISSION_METADATA.level_id == PROFILE.mission_id, "Moon level metadata targets the same mission id")
 	_expect(CARD != null and CARD.level_id == PROFILE.mission_id, "Moon card targets the same mission id")
 	_expect(CARD.unlock_policy == LevelCardData.UnlockPolicy.ALWAYS, "Moon card remains public-BETA selectable")
@@ -143,6 +145,7 @@ func _check_runtime_boot() -> void:
 	_expect(mission._world_builder != null, "Mission world builder attaches during instantiation")
 	_expect(mission._world_builder.golden_ball != null, "Mission world builder spawns finale Golden Ball")
 	if mission._world_builder != null:
+		_check_presentation_kit(mission._world_builder)
 		_expect(not mission._world_builder.golden_ball.enabled, "Golden Ball starts locked during Moon boss gating")
 		mission._on_golden_ball_claimed(null)
 		_expect(not mission._completion_started, "A premature Golden Ball claim cannot bypass the Moon boss")
@@ -169,6 +172,25 @@ func _check_runtime_boot() -> void:
 	_expect(mission._route_runtime.current_zone == &"leashmaster_crater", "Mission route boots to boss zone at authored end")
 	mission.queue_free()
 	await process_frame
+
+
+func _check_presentation_kit(builder: BiomeMissionWorldBuilder) -> void:
+	var kit := builder.presentation.get_node_or_null("MissionPresentationKit")
+	_expect(kit != null, "Moon authored presentation kit is instantiated")
+	if kit == null:
+		return
+	var meshes := kit.find_children("*", "MeshInstance3D", true, false)
+	_expect(meshes.size() >= 20, "Moon presentation kit contains a substantial authored mesh set")
+	var materialized := 0
+	var collision_nodes := 0
+	for node in kit.find_children("*", "CollisionObject3D", true, false):
+		collision_nodes += 1
+	for node in meshes:
+		var mesh := node as MeshInstance3D
+		if mesh.material_override != null:
+			materialized += 1
+	_expect(materialized >= 15, "Moon presentation meshes receive manifested runtime materials")
+	_expect(collision_nodes == 0, "Moon presentation kit does not own gameplay collision")
 
 
 func _expect(condition: bool, message: String) -> void:

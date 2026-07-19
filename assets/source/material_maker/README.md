@@ -6,9 +6,11 @@ under `assets/textures/materials/`; the `.ptex` graph is the source of truth.
 The first pilot graph, `salmon_wet_municipal.ptex`, establishes the authored
 wet-surface language for Salmon Creek. Rain City now owns ten manifested
 families spanning wet streets, buildings, seawall, harbour, terminal, Slice,
-wood, and route decals. The locked Mount Hood foundry owns ten snow, rock,
-road, lodge, lift, glass, and warm-window families. All use original graph
-parameters and no third-party textures.
+wood, and route decals. Mount Hood owns ten snow, rock, road, lodge, lift,
+glass, and warm-window families. Dark Side of Fetch owns twelve regolith,
+habitat, lunar-metal, glass, landmark, and safety families. Pier Pressure owns
+thirteen coastal concrete, sand, pier, marina, ocean, palm, and warm-light
+families. All use original graph parameters and no third-party textures.
 
 `tools/materials/build_mission_material_library.py` deterministically rebuilds
 the current 512px albedo, tangent-space normal, packed ORM, Material Maker

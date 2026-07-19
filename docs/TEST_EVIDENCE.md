@@ -1,5 +1,20 @@
 # Test Evidence
 
+## 2026-07-18 — definitive-convergence source candidate
+
+| Check | Result | Evidence |
+| --- | --- | --- |
+| Startup/menu lifecycle | Pass | Level-select warmups are cached and drained, launch/retry/restart/victory routes reject duplicate activation, and pointer capture is requested on gameplay re-entry; focused UI and adversarial tests pass |
+| Tablet actions | Pass (simulated) | Eight project-original SVG action icons load through the existing touch targets; multi-finger, 30/120 FPS aim, handedness, scaling, and release contracts pass |
+| Rain/Mount regression fixes | Pass | Rain signs use the authored-world-sign contract, connectors have explicit non-coplanar grouping, and Mount Hood waits real process-frame cleanup before exposing the summit Golden Ball |
+| Moon presentation | Pass with human art gate | Original 53-object Blender kit, twelve material families, runtime material binding, no collision ownership, mission contract, and 1280×720 canonical capture pass |
+| Ventura presentation | Pass with human art gate | Original 122-object Blender kit, thirteen material families, reduced coastal fog, runtime material binding, no collision ownership, mission contract, and 1280×720 canonical capture pass |
+| Five-mission deterministic gauntlet | Pass | Five missions, 1,200 route simulations, and 1,000 checkpoint restores pass on the convergence working tree |
+| Runtime smoke | Pass | 78 scenes and 180 resources load; all five 300-frame headless mission samples return stable nodes/objects with p95 21.950–23.417 ms and p99 24.011–24.383 ms |
+| Asset/IP heuristic | Pass | Blender sources/GLBs, 25 Moon/Ventura material families, and eight touch icons are manifested; no prohibited filenames/source phrases detected |
+| Export/package/public identity | Pending final release gate | Must be recorded only after the exact stamped feature revision passes `QA_EXPORTS=1`, packaging, browser, and byte-identity verification |
+| Human/device acceptance | Not run | Full target-Mac/iPad routes, taste, pacing, fairness, mix, humor, motion, thermals, and photosensitivity remain explicit human gates |
+
 ## 2026-07-17 — Salmon Creek finale integrity and 2.5D production contract
 
 | Check | Result | Evidence |

@@ -3,6 +3,7 @@ extends CanvasLayer
 
 signal retry_requested
 var _retrying := false
+var _routing := false
 
 func _ready() -> void:
 	visible = false
@@ -11,6 +12,7 @@ func _ready() -> void:
 
 func show_death(quips: Array[String] = []) -> void:
 	_retrying = false
+	_routing = false
 	%RetryButton.disabled = false
 	%MainMenuButton.disabled = false
 	visible = true
@@ -31,5 +33,11 @@ func _retry() -> void:
 	retry_requested.emit()
 
 func _route(path: String) -> void:
+	if _retrying or _routing:
+		return
 	var router := get_node_or_null("/root/SceneRouter")
-	if router: router.go_to(path)
+	if router == null or router.go_to(path) != OK:
+		return
+	_routing = true
+	%RetryButton.disabled = true
+	%MainMenuButton.disabled = true

@@ -66,7 +66,7 @@ Record build/commit: __________  Godot: __________  OS/device: __________  Teste
 Automated/package note (2026-07-16): the exact RC package rendered the title and mission selector at 1024×768, accepted the first activation tap without a focus-recovery detour, and emitted no game-origin Chrome error. The unchecked items below still require human route/device judgment.
 
 - [ ] The normal mission selector shows `BETA`, `START BETA`, and a visible work-in-progress warning before launch.
-- [ ] Rain City and Mount Hood are immediately available as public `BETA` missions on a fresh campaign; Salmon Creek victory offers `CONTINUE TO RAIN CITY`; Rain City victory offers `CONTINUE TO MOUNT HOOD`; Moon and Ventura remain locked teasers.
+- [ ] Rain City, Mount Hood, Moon, and Ventura are immediately available as public `BETA` missions on a fresh campaign; mission-aware victory actions advance through the five-mission episode without making direct public testing depend on save state.
 - [ ] Clicking/tapping a card commits the selection without launching; hover/focus alone never changes the details or footer action, and only `START MISSION`/`START BETA` launches.
 - [ ] The explicit Start action transfers focus/capture into gameplay; one non-firing click restores released pointer capture without opening a menu detour.
 - [ ] `PLAY AGAIN` reloads the completed mission rather than always returning to Salmon Creek.
@@ -98,6 +98,22 @@ Automated/package note (2026-07-16): the exact RC package rendered the title and
 - [ ] Snowcat phases read ROAD CLOSED, WHITEOUT WARNING, CHAINS REQUIRED, and OFF-LEASH SUMMIT; health reaches zero and summons clear before the Golden Ball becomes available.
 - [ ] Snowbanks, firs, snowman, lodge, lift machinery, warm windows, signs, and mountain remain readable at 1024×768 without hiding enemies, pickups, objectives, captions, or touch controls.
 - [ ] Target route: ______ minutes (18–25); human traction, boss fairness, art, mix, humor, motion, thermal, and photosensitivity findings recorded separately.
+
+## Dark Side of Fetch public beta
+
+- [ ] Landing pad, habitat, crater trench, satellite array, and Leashmaster crater have distinct authored reads and form one continuous route.
+- [ ] The presentation kit uses manifested Moon materials without adding collision or navigation ownership; Earth remains a readable directional landmark.
+- [ ] Low-gravity movement, vacuum hazards, checkpoints, five secrets, and every critical switch remain comprehensible on desktop and twin-stick touch.
+- [ ] Lunar enemies and the 1,000-HP Leashmaster remain readable against regolith and habitat materials; its defeat reaches zero and gates the Golden Ball.
+- [ ] Target route: ______ minutes; human movement comfort, combat readability, art, mix, humor, motion, thermal, and photosensitivity findings recorded separately.
+
+## Pier Pressure public beta
+
+- [ ] Service lane, Surfers Point, marina docks, Ventura Pier, and offshore platform read as a warm coastal mission rather than generic blockout.
+- [ ] The presentation kit uses manifested Ventura materials without adding collision or navigation ownership; ocean, palms, pier, marina, and sunset landmarks remain readable.
+- [ ] Tide/surf hazards, checkpoints, five secrets, route switches, and every critical pickup remain grounded and reset-safe.
+- [ ] The 1,000-HP Tidebreaker reaches zero, leaves its authored defeat state, and gates the Golden Ball exactly once.
+- [ ] Target route: ______ minutes; human combat pacing, art, mix, humor, motion, thermal, and photosensitivity findings recorded separately.
 
 ## Accessibility and presentation
 

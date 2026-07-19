@@ -225,6 +225,38 @@
       }
     },
     {
+      "id": "moon_landing_pad",
+      "scene_path": "res://scenes/levels/dark_side_fetch.tscn",
+      "staging_id": "moon_landing_pad",
+      "capture_support": "supported",
+      "adapter": "direct_scene_capture",
+      "seed": 2026071816,
+      "frame": 80,
+      "capture": {"quit_after": 90},
+      "filenames": {
+        "1280x720": "moon_landing_pad_1280x720.png",
+        "1680x1050": "moon_landing_pad_1680x1050.png",
+        "1024x768": "moon_landing_pad_1024x768.png",
+        "3440x1440": "moon_landing_pad_3440x1440.png"
+      }
+    },
+    {
+      "id": "ventura_service_lane",
+      "scene_path": "res://scenes/levels/ventura_pier_pressure.tscn",
+      "staging_id": "ventura_service_lane",
+      "capture_support": "supported",
+      "adapter": "direct_scene_capture",
+      "seed": 2026071817,
+      "frame": 80,
+      "capture": {"quit_after": 90},
+      "filenames": {
+        "1280x720": "ventura_service_lane_1280x720.png",
+        "1680x1050": "ventura_service_lane_1680x1050.png",
+        "1024x768": "ventura_service_lane_1024x768.png",
+        "3440x1440": "ventura_service_lane_3440x1440.png"
+      }
+    },
+    {
       "id": "touch_hud_4_3",
       "scene_path": "res://scenes/levels/episode_1_level_1.tscn",
       "staging_id": "touch_hud_4_3",

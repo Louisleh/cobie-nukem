@@ -117,7 +117,8 @@ func _build_route() -> void:
 	_floor("HarbourPier", Vector3(0.0, -0.5, -153.0), Vector3(36.0, 1.0, 50.0), Color("39484e"), &"steel")
 	# Wide overlaps keep the baked navigation path continuous after agent-radius erosion.
 	for connector_z in [-19.0, -53.0, -95.0, -128.0]:
-		_floor("RouteConnector", Vector3(0.0, -0.51, connector_z), Vector3(10.0, 0.96, 8.0), Color("46545a"), &"concrete")
+		var connector := _floor("RouteConnector", Vector3(0.0, -0.51, connector_z), Vector3(10.0, 0.96, 8.0), Color("46545a"), &"concrete")
+		connector.add_to_group(&"rain_city_route_connectors")
 	# Edge rails stop accidental route skips while leaving the authored forward path open.
 	for section in [
 		[11.0, -3.0, 34.0], [13.0, -36.0, 32.0], [17.0, -73.0, 42.0],
@@ -156,8 +157,8 @@ func _build_landmarks() -> void:
 		_prop_box("DowntownTower", Vector3(-7.8, 4.0, z), Vector3(4.5, 8.0, 5.0), Color("263b46"), true)
 		_prop_box("DowntownTower", Vector3(7.8, 3.0, z - 3.0), Vector3(4.5, 6.0, 5.0), Color("314753"), true)
 	_prop_box("RainCitySliceShop", Vector3(-8.5, 2.0, -37.0), Vector3(6.0, 4.0, 14.0), Color("7c3f38"), true)
-	_sign("RAIN CITY SLICE\nHOT PIZZA • COLD COMPLIANCE", Vector3(-5.35, 2.6, -33.0), 90.0, Color("ffc65a"))
-	_sign("SORRY — PATIO CLOSED\nDUE TO EXCESSIVE JOY", Vector3(5.8, 1.4, -43.0), -90.0, Color("e5f0df"))
+	_sign(&"slice_storefront", "RAIN CITY SLICE\nHOT PIZZA • COLD COMPLIANCE", Vector3(-5.35, 2.6, -33.0), Vector3(0.0, 1.5, -33.0), Color("ffc65a"))
+	_sign(&"slice_patio_notice", "SORRY — PATIO CLOSED\nDUE TO EXCESSIVE JOY", Vector3(5.8, 1.4, -43.0), Vector3(0.0, 1.4, -43.0), Color("e5f0df"))
 	# Harbour, bridge, mountain, ferry, and crane silhouettes are deliberately fictionalized.
 	_prop_box("HarbourWater", Vector3(27.0, -0.72, -103.0), Vector3(16.0, 0.25, 120.0), Color("174755"), false, true)
 	for pylon in [-12.0, 0.0, 12.0]:
@@ -217,13 +218,13 @@ func _build_neighbourhood_detail() -> void:
 		_prop_box("FireEscapeRail", Vector3(-7.1, 2.7 + level * 1.8, -7.65), Vector3(2.6, 1.2, 0.12), Color("607178"), false)
 	_prop_box("DowntownDumpster", Vector3(7.0, 0.75, -10.0), Vector3(2.5, 1.5, 1.4), Color("315d53"), true)
 	_prop_box("SteamVent", Vector3(3.0, 0.18, -15.5), Vector3(1.6, 0.25, 1.6), Color("7b8585"), false, true)
-	_sign("RAIN DELAYED\nDUE TO RAIN", Vector3(6.7, 2.0, -1.0), -90.0, Color("ffe28a"))
+	_sign(&"alley_rain_notice", "RAIN DELAYED\nDUE TO RAIN", Vector3(6.7, 2.0, -1.0), Vector3(0.0, 1.5, -1.0), Color("ffe28a"))
 
 	# Rain City Slice is warm, compact, and readable against the cool exterior.
 	_prop_box("SliceAwning", Vector3(-5.2, 2.5, -37.0), Vector3(1.0, 0.25, 10.0), Color("d96b3f"), false, true)
 	_prop_box("DeliveryScooter", Vector3(4.8, 0.55, -34.0), Vector3(0.8, 1.1, 1.8), Color("f0b840"), true)
 	_prop_box("PizzaOven", Vector3(-9.2, 1.1, -43.0), Vector3(2.2, 2.2, 2.0), Color("884a38"), true, true)
-	_sign("DELIVERY WINDOW\nRING BELL • RECEIVE JUSTICE", Vector3(-5.3, 1.4, -43.0), 90.0, Color("fff1c3"))
+	_sign(&"slice_delivery_window", "DELIVERY WINDOW\nRING BELL • RECEIVE JUSTICE", Vector3(-5.3, 1.4, -43.0), Vector3(0.0, 1.4, -43.0), Color("fff1c3"))
 
 	# The seawall has a lower promenade and a glass-canopy upper terrace.
 	for z in [-64.0, -72.0, -80.0, -88.0]:
@@ -231,8 +232,8 @@ func _build_neighbourhood_detail() -> void:
 	for z in [-69.0, -81.0]:
 		_prop_box("GlassCanopyPost", Vector3(-12.0, 2.6, z), Vector3(0.18, 5.2, 0.18), Color("8fb8c2"), false, true)
 		_prop_box("GlassCanopy", Vector3(-9.5, 4.9, z), Vector3(5.2, 0.16, 4.2), Color(0.35, 0.62, 0.70, 0.58), false, true)
-	_sign("SEAWALL SPEED LIMIT:\nZOOMIES", Vector3(12.3, 1.5, -69.0), -90.0, Color("f9df83"))
-	_sign("NO FETCHING\nFROM THE HARBOUR", Vector3(16.0, 1.5, -88.0), -90.0, Color("ff9d70"))
+	_sign(&"seawall_speed_limit", "SEAWALL SPEED LIMIT:\nZOOMIES", Vector3(12.3, 1.5, -69.0), Vector3(0.0, 1.5, -69.0), Color("f9df83"))
+	_sign(&"seawall_harbour_notice", "NO FETCHING\nFROM THE HARBOUR", Vector3(16.0, 1.5, -88.0), Vector3(0.0, 1.5, -88.0), Color("ff9d70"))
 
 	# Terminal machinery frames an interior/exterior loop and elevated control booth.
 	_prop_box("TerminalShellLeft", Vector3(-11.0, 3.0, -112.0), Vector3(1.0, 6.0, 25.0), Color("38474d"), true)
@@ -240,16 +241,16 @@ func _build_neighbourhood_detail() -> void:
 	_prop_box("TerminalControlBooth", Vector3(-8.5, 3.1, -116.0), Vector3(5.0, 3.4, 7.0), Color("526c72"), true)
 	for z in [-102.0, -110.0, -121.0]:
 		_prop_box("CargoMachine", Vector3(5.7, 1.2, z), Vector3(3.0, 2.4, 2.2), Color("566167"), true)
-	_sign("CARGO ROUTING:\nDOGS FIRST • FORMS LAST", Vector3(-5.9, 2.4, -118.0), 90.0, Color("bce9dc"))
-	_sign("AUTHORIZED PERSONNEL\nAND ONE VERY GOOD DOG", Vector3(10.3, 1.7, -103.0), -90.0, Color("f5d68a"))
+	_sign(&"terminal_cargo_routing", "CARGO ROUTING:\nDOGS FIRST • FORMS LAST", Vector3(-5.9, 2.4, -118.0), Vector3(0.0, 1.5, -118.0), Color("bce9dc"))
+	_sign(&"terminal_authorized_dog", "AUTHORIZED PERSONNEL\nAND ONE VERY GOOD DOG", Vector3(10.3, 1.7, -103.0), Vector3(0.0, 1.5, -103.0), Color("f5d68a"))
 
 	# Pier shapes a broad boss loop with obvious cover hierarchy and crane flank.
 	for x in [-13.0, -6.0, 5.0, 12.0]:
 		_prop_box("PierBollard", Vector3(x, 0.65, -169.0), Vector3(0.7, 1.3, 0.7), Color("d8a13d"), true)
 	_prop_box("TowmasterDepartureControl", Vector3(0.0, 1.6, -174.0), Vector3(3.2, 3.2, 1.4), Color("2d5159"), true, true)
-	_sign("APPEALS WINDOW\nCLOSED FOR LUNCH SINCE 1998", Vector3(-15.2, 2.0, -161.0), 90.0, Color("ffd16c"))
-	_sign("PIER 404:\nBOAT NOT FOUND", Vector3(15.2, 1.6, -151.0), -90.0, Color("bbf1ea"))
-	_sign("FINAL NOTICE:\nEXCESSIVE TAIL WAGGING", Vector3(0.0, 2.2, -166.0), 0.0, Color("ff975d"))
+	_sign(&"pier_appeals_window", "APPEALS WINDOW\nCLOSED FOR LUNCH SINCE 1998", Vector3(-15.2, 2.0, -161.0), Vector3(0.0, 1.5, -161.0), Color("ffd16c"))
+	_sign(&"pier_404", "PIER 404:\nBOAT NOT FOUND", Vector3(15.2, 1.6, -151.0), Vector3(0.0, 1.5, -151.0), Color("bbf1ea"))
+	_sign(&"pier_final_notice", "FINAL NOTICE:\nEXCESSIVE TAIL WAGGING", Vector3(0.0, 2.2, -166.0), Vector3(0.0, 1.5, -155.0), Color("ff975d"))
 
 
 func _build_story_objects() -> void:
@@ -299,7 +300,7 @@ func _build_story_objects() -> void:
 	departure_switch.position = Vector3(0.0, 1.2, -173.0)
 	departure_switch.activated.connect(_on_switch_activated)
 	interactables.add_child(departure_switch)
-	_sign("CITATION CONVOY\nPARKING JOY IS A TOWABLE OFFENCE", Vector3(0, 2.2, -137), 0.0, Color("ffb33b"))
+	_sign(&"pier_convoy_notice", "CITATION CONVOY\nPARKING JOY IS A TOWABLE OFFENCE", Vector3(0, 2.2, -137), Vector3(0.0, 1.5, -131.0), Color("ffb33b"))
 
 
 func _build_navigation() -> void:
@@ -365,7 +366,7 @@ func _finish_navigation_bake(succeeded: bool) -> void:
 	navigation_bake_completed.emit(succeeded, polygon_count)
 
 
-func _floor(node_name: String, position: Vector3, size: Vector3, color: Color, surface_id: StringName) -> void:
+func _floor(node_name: String, position: Vector3, size: Vector3, color: Color, surface_id: StringName) -> StaticBody3D:
 	var body := _prop_box(node_name, position, size, color, true)
 	var mesh_instance := body.get_child(0) as MeshInstance3D
 	var production_material := _route_floor_material(surface_id)
@@ -375,6 +376,7 @@ func _floor(node_name: String, position: Vector3, size: Vector3, color: Color, s
 	body.set_meta(&"surface_id", surface_id)
 	body.collision_layer = NAVIGATION_SOURCE_LAYER | 1
 	_navigation_sources.append(body)
+	return body
 
 
 func _route_floor_material(surface_id: StringName) -> StandardMaterial3D:
@@ -436,18 +438,12 @@ func _shared_material(color: Color, emissive: bool) -> StandardMaterial3D:
 	return material
 
 
-func _sign(text: String, position: Vector3, yaw: float, color: Color) -> void:
-	var label := Label3D.new()
-	label.name = "RainCitySign"
-	label.text = text
-	label.position = position
-	label.rotation_degrees.y = yaw
-	label.font_size = 44
-	label.pixel_size = 0.009
-	label.modulate = color
-	label.outline_size = 8
-	label.no_depth_test = false
-	presentation.add_child(label)
+func _sign(id: StringName, text: String, position: Vector3, route_anchor: Vector3, color: Color) -> void:
+	var sign := AuthoredWorldSign.new()
+	sign.name = "RainCitySign_%s" % id
+	sign.configure(id, text, position, route_anchor, color)
+	sign.add_to_group(&"authored_world_signs")
+	presentation.add_child(sign)
 
 
 func _on_zone_triggered(zone_id: StringName, title: String, actor: Node) -> void:

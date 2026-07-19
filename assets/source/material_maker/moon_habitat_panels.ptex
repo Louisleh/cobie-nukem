@@ -1,0 +1,126 @@
+{
+  "type": "graph",
+  "name": "moon_habitat_panels",
+  "label": "Moon Habitat Panels",
+  "connections": [
+    {
+      "from": "surface_pattern",
+      "from_port": 0,
+      "to": "surface_color",
+      "to_port": 0
+    },
+    {
+      "from": "surface_color",
+      "from_port": 0,
+      "to": "Material",
+      "to_port": 0
+    },
+    {
+      "from": "surface_pattern",
+      "from_port": 0,
+      "to": "surface_normal",
+      "to_port": 0
+    },
+    {
+      "from": "surface_normal",
+      "from_port": 0,
+      "to": "Material",
+      "to_port": 4
+    }
+  ],
+  "nodes": [
+    {
+      "name": "surface_pattern",
+      "type": "pattern",
+      "node_position": {
+        "x": -420,
+        "y": 160
+      },
+      "parameters": {
+        "mix": 4,
+        "x_scale": 96,
+        "x_wave": 2,
+        "y_scale": 96,
+        "y_wave": 2
+      }
+    },
+    {
+      "name": "surface_color",
+      "type": "colorize",
+      "node_position": {
+        "x": -130,
+        "y": 70
+      },
+      "parameters": {
+        "gradient": {
+          "type": "Gradient",
+          "interpolation": 1,
+          "points": [
+            {
+              "pos": 0.1,
+              "r": 0.24313725490196078,
+              "g": 0.29411764705882354,
+              "b": 0.34901960784313724,
+              "a": 1
+            },
+            {
+              "pos": 0.9,
+              "r": 0.592156862745098,
+              "g": 0.6509803921568628,
+              "b": 0.6823529411764706,
+              "a": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "surface_normal",
+      "type": "normal_map",
+      "node_position": {
+        "x": 130,
+        "y": 260
+      },
+      "parameters": {
+        "amount": 0.22,
+        "param0": 11,
+        "param1": 0.99,
+        "param2": 0,
+        "param3": 0,
+        "param4": 1,
+        "size": 2
+      }
+    },
+    {
+      "name": "Material",
+      "type": "material",
+      "node_position": {
+        "x": 450,
+        "y": 110
+      },
+      "parameters": {
+        "albedo_color": {
+          "type": "Color",
+          "r": 0.24313725490196078,
+          "g": 0.29411764705882354,
+          "b": 0.34901960784313724,
+          "a": 1
+        },
+        "ao_light_affect": 1,
+        "depth_scale": 1,
+        "emission_energy": 1,
+        "metallic": 0.35,
+        "normal_scale": 0.35,
+        "resolution": 1,
+        "roughness": 0.42,
+        "size": 11,
+        "subsurf_scatter_strength": 0
+      }
+    }
+  ],
+  "parameters": {},
+  "node_position": {
+    "x": 0,
+    "y": 0
+  }
+}
