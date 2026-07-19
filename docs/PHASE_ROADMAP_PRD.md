@@ -6,11 +6,11 @@
 
 **Last status review:** 2026-07-18
 
-**Current public baseline:** `0.9.0-alpha.1-rc1` (`257d112` gameplay/runtime revision; source integration `3854023`; website deployment `7392826`; PCK SHA-256 `56c1c49d3c0ffff180ba79eaba754055b4970a2e7f8718abc20f2fbf2d9b5d5d`)
+**Current public baseline:** `0.10.0-alpha.1-rc1` (`7cb7ac6` gameplay/runtime revision; source integration `be2b048`; website deployment `a80fec3`; PCK SHA-256 `f24a9911c141aefc97c2eb5ad86c87c74e3e87856c484671a9c773e01d9a0aaf`)
 
-**Current production gate:** All five missions are publicly playable and byte-verified. The active convergence branch hardens startup/scene ownership, closes Level 1–3 regressions, and replaces the most visible Moon/Ventura blockout with original authored presentation kits and mission-specific materials. Levels 2–5 remain explicit `BETA` missions until human/device/art/balance approval.
+**Current production gate:** All five missions are publicly playable and byte-verified. The definitive-convergence RC hardens startup/scene ownership, closes Level 1–3 regressions, and replaces the most visible Moon/Ventura blockout with original authored presentation kits and mission-specific materials. Levels 2–5 remain explicit `BETA` missions until human/device/art/balance approval.
 
-**Last released alpha:** `0.9.0-alpha.1-rc1` (`257d112`) — live at <https://www.louislehmann.fyi/games/cobie-nukem/>; Levels 2–5 retain honest `BETA` badges because human full-route, final-art, and physical-device validation are open
+**Last released alpha:** [`0.10.0-alpha.1-rc1`](https://github.com/Louisleh/cobie-nukem/releases/tag/v0.10.0-alpha.1-rc1) (`7cb7ac6`) — live at <https://www.louislehmann.fyi/games/cobie-nukem/>; Levels 2–5 retain honest `BETA` badges because human full-route, final-art, and physical-device validation are open
 
 **Engine:** Godot 4.7 stable, GDScript, Compatibility renderer
 **Purpose:** Turn the family-playtest vertical slice into a sustainable, original multi-level game without sacrificing responsiveness, humor, Web support, or unusual-controller accessibility.
@@ -49,7 +49,7 @@ This cycle delivers functional, testable five-mission public development—not a
 
 Checkpoint rule: each subsystem lands only after its focused tests and attributable engine-log gate pass. Physical iPad comfort, full human routes, art taste, pacing, mix, fairness, humor, motion, and photosensitivity remain named human gates rather than inferred completion.
 
-**Definitive-convergence release candidate:** feature revision `7cb7ac6` is stamped as `0.10.0-alpha.1-rc1`. The complete Web/macOS export matrix, 1,200-route/1,000-checkpoint five-mission gauntlet, 100-route/100-checkpoint/100-touch-cancellation/500-weapon-transition soak, asset/IP and architecture gates, packaged desktop launch, simulated 1024x768 touch launch, and an isolated Chrome packaged-load trace are green. Source integration, prerelease publication, website deployment, and public-PCK byte identity remain pending until the candidate is merged and deployed. Levels 2–5 remain explicitly `BETA`; physical iPad and human full-route/taste gates remain open.
+**Definitive-convergence public release:** feature revision `7cb7ac6` is stamped as `0.10.0-alpha.1-rc1`, merged through source PR #61 at `be2b048`, published as a GitHub prerelease, and deployed through website PR #129 at `a80fec3`. The complete Web/macOS export matrix, 1,200-route/1,000-checkpoint five-mission gauntlet, 100-route/100-checkpoint/100-touch-cancellation/500-weapon-transition soak, asset/IP and architecture gates, packaged desktop launch, simulated 1024x768 touch launch, and isolated packaged/public Chrome traces are green. The downloaded public 69,468,616-byte PCK is byte-identical at SHA-256 `f24a9911c141aefc97c2eb5ad86c87c74e3e87856c484671a9c773e01d9a0aaf`. Levels 2–5 remain explicitly `BETA`; physical iPad and human full-route/taste gates remain open.
 
 ### Archived RC5 foundry release evidence
 
