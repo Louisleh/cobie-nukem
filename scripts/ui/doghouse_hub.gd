@@ -56,8 +56,7 @@ func _show_mission_map() -> void:
 		_add_label("%s  //  %s  //  BEST %s  //  %s" % [metadata.title if metadata else profile.mission_id, String(record.get("rank", "UNRANKED")), best, collection], 7)
 	var play := _add_button("OPEN MISSION MAP")
 	play.pressed.connect(func() -> void: _route("res://scenes/menus/level_select.tscn"))
-	var upgrades: Array = _campaign.snapshot().get("campaign_upgrades", [])
-	if "new_game_plus" in upgrades:
+	if _campaign.has_campaign_upgrade(&"new_game_plus"):
 		var remix := _add_button("SALMON CREEK // OFF-LEASH REMIX // 1.5X TAGS")
 		remix.tooltip_text = "A denser Salmon Creek remix with faster Walker reinforcements."
 		remix.pressed.connect(_start_off_leash)
