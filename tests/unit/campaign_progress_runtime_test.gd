@@ -21,6 +21,9 @@ func _initialize() -> void:
 	_expect(runtime.configure(save_manager), "runtime accepts the injected save service")
 	_test_empty_and_unlock_round_trip()
 	_test_completion_merges_best_results()
+	_test_v6_completion_runtime_extensions()
+	_test_v6_profile_import_rewards_collections()
+	_test_v6_commit_run_result_tracking()
 	_test_checkpoint_isolation()
 	_test_atomic_replacement_and_recovery()
 	_test_corrupt_and_future_save_recovery()
@@ -80,9 +83,53 @@ func _test_completion_merges_best_results() -> void:
 	_expect(record.get("rank") == "A", "highest rank remains best")
 	_expect(record.get("difficulty") == "mayhem", "highest completed difficulty remains best")
 	_expect(record.get("best_secrets") == 3 and record.get("total_secrets") == 4, "best secret result and authored total remain stable")
+	_expect(record.get("completion_count") == 3, "completion count tracks number of recorded completions")
 	_expect(runtime.mission_upgrades(&"episode_1_level_1") == ["municipal_recall_override"], "campaign upgrades persist uniquely by mission")
 	runtime.load_progress()
 	_expect(runtime.mission_record(&"episode_1_level_1") == record, "best result survives disk reload")
+
+
+func _test_v6_completion_runtime_extensions() -> void:
+	_expect(runtime.collection_count(&"episode_1_level_1") == 0, "collection count reads zero when no collectibles are tracked")
+	_expect(runtime.challenge_count() == 0, "challenge count reads zero with no completed challenges")
+	_expect(runtime.commit_run_result({"mission_id": "episode_1_level_1", "best_time_msec": 710000, "run_mode": "off_leash"}) == OK, "commit_run_result increments mission completion")
+	var record := runtime.mission_record(&"episode_1_level_1")
+	_expect(record.get("completion_count") == 4, "commit_run_result advances completion count")
+	_expect(record.get("best_modes").get("off_leash", 0) >= 1, "commit_run_result persists off-leash mode best")
+	_expect(runtime.has_campaign_upgrade(&"municipal_recall_override") == true, "upgrade queries scan mission upgrade map")
+
+
+func _test_v6_profile_import_rewards_collections() -> void:
+	var imported := {
+		"wallet": {"compliance_tags": 2},
+		"purchased_rewards": ["reward_one"],
+		"mission_collectibles": {"episode_1_level_1": ["mini_ball_1", 1, "mini_ball_1"]},
+		"completed_challenges": ["challenge_a", "challenge_a", ""],
+		"selected_cosmetics": {"head_slot": "skin_one", "bad slot": "invalid"},
+	}
+	_expect(runtime.replace_profile_from_import(imported) == OK, "replace_profile_from_import stores sanitized content")
+	_expect(runtime.collection_count(&"episode_1_level_1") == 1, "collection count uses persisted profile data")
+	_expect(runtime.challenge_count() == 1, "challenge_count sanitizes and dedupes completed challenges")
+	_expect(runtime.has_campaign_upgrade(&"reward_one") == false, "has_campaign_upgrade is upgrade-specific")
+	_expect(runtime.purchase_reward(&"reward_two", 3) == ERR_INVALID_DATA, "reward purchases enforce sufficient balance")
+	_expect(runtime.purchase_reward(&"reward_two", -1) == ERR_INVALID_PARAMETER, "reward purchases reject negative cost")
+	_expect(runtime.equip_weapon_mod(&"weapon_alpha", &"reward_two") == ERR_UNAUTHORIZED, "equipping locked mods requires reward ownership")
+	_expect(runtime.select_cosmetic(&"head_slot", &"skin_one") == ERR_UNAUTHORIZED, "selecting locked cosmetics requires reward ownership")
+	_expect(runtime.purchase_reward(&"reward_two", 2) == OK, "valid reward purchase subtracts balance")
+	_expect(runtime.purchase_reward(&"reward_two", 1) == OK, "reward purchases are idempotent after ownership")
+	_expect(runtime.equip_weapon_mod(&"weapon_alpha", &"reward_two") == OK, "equipped mods persist after ownership")
+	_expect(runtime.select_cosmetic(&"head_slot", &"reward_two") == OK, "selected cosmetics persist from purchased rewards")
+	_expect(runtime.select_cosmetic(&"head_slot", &"reward_two") == OK, "selecting the same cosmetic is idempotent")
+
+
+func _test_v6_commit_run_result_tracking() -> void:
+	_expect(runtime.record_completion(&"episode_2_level_1", {"best_time_msec": 810000, "best_modes": {"off_leash": 2}}, [&"episode_2_level_2"], [&"mission_skip", &"mission_skip"]) == OK, "record_completion ignores duplicate upgrades")
+	var record := runtime.mission_record(&"episode_2_level_1")
+	_expect(record.get("completion_count") == 1, "record_completion includes completion counter")
+	_expect(runtime.commit_run_result({"mission_id": "episode_2_level_1", "best_modes": {"off_leash": 1}, "completion_count": 2}) == OK, "commit_run_result merges completion counters")
+	record = runtime.mission_record(&"episode_2_level_1")
+	_expect(record.get("completion_count") == 3, "commit_run_result merges repeated completion data")
+	_expect(record.get("best_modes").get("off_leash") == 2, "best mode metrics keep the best off-leash completion value")
 
 
 func _test_checkpoint_isolation() -> void:
