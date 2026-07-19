@@ -27,13 +27,17 @@ var _campaign_progress: CampaignProgressRuntime
 var _difficulty_group := ButtonGroup.new()
 var _mission_group := ButtonGroup.new()
 var _launching := false
-var _warmup_generation := 0
-var _active_warmup_generation := 0
 var _warmup_paths := PackedStringArray()
 var _warmup_resources: Array[Resource] = []
+var _warmup_requests: Dictionary = {}
+var _warmup_cache: Dictionary = {}
+var _warmup_failures: Dictionary = {}
 var _warmup_ready := false
 var _warmup_failed := false
 var _warmup_locked := false
+var _back_pending := false
+var _pending_launch_index := -1
+var _warmup_error_announced := false
 
 func _ready() -> void:
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
@@ -62,43 +66,103 @@ func _ready() -> void:
 
 
 func _process(_delta: float) -> void:
-	if _launching or _warmup_ready or _warmup_failed or _warmup_paths.is_empty():
+	if _warmup_requests.is_empty():
+		if _pending_launch_index >= 0:
+			_commit_launch(_pending_launch_index)
+		elif _back_pending:
+			_finish_pending_back()
 		return
-	var loaded := 0
-	var generation := _active_warmup_generation
-	for path in _warmup_paths:
-		if generation != _active_warmup_generation:
-			return
+	# Godot does not expose cancellation for threaded resource requests. Keep
+	# polling every request we started, including requests from a card the player
+	# previewed and then left, so each result is consumed exactly once rather than
+	# leaking a loader record across menu churn or scene teardown.
+	for path_variant in _warmup_requests.keys():
+		var path := String(path_variant)
 		var progress: Array = []
 		var status := ResourceLoader.load_threaded_get_status(path, progress)
 		if status == ResourceLoader.THREAD_LOAD_FAILED or status == ResourceLoader.THREAD_LOAD_INVALID_RESOURCE:
-			_warmup_failed = true
-			_set_warmup_controls_locked(false)
-			play_button.disabled = true
-			play_button.focus_mode = Control.FOCUS_NONE
-			play_button.text = "LOAD FAILED"
-			status_label.text = "MISSION ASSETS OFFLINE // SELECT AGAIN TO RETRY"
-			sounds.play(ProceduralAudio.Cue.ERROR)
-			return
+			_warmup_requests.erase(path)
+			_warmup_failures[path] = true
 		if status == ResourceLoader.THREAD_LOAD_LOADED:
-			loaded += 1
-		else:
-			var fraction := float(progress[0]) if not progress.is_empty() else 0.0
-			status_label.text = "PREPARING %s // %d%%" % [levels[_selected].title.to_upper(), roundi((float(loaded) + fraction) / float(_warmup_paths.size()) * 100.0)]
-	if loaded != _warmup_paths.size():
+			var resource := ResourceLoader.load_threaded_get(path)
+			_warmup_requests.erase(path)
+			if resource == null:
+				_warmup_failures[path] = true
+			else:
+				_warmup_cache[path] = resource
+	_refresh_current_warmup()
+	if _warmup_requests.is_empty():
+		if _pending_launch_index >= 0:
+			_commit_launch(_pending_launch_index)
+		elif _back_pending:
+			_finish_pending_back()
+
+
+func _refresh_current_warmup() -> void:
+	if _launching or _back_pending or _warmup_paths.is_empty():
+		return
+	var completed := 0.0
+	_warmup_failed = false
+	for path in _warmup_paths:
+		if _warmup_failures.has(path):
+			_warmup_failed = true
+			break
+		if _warmup_cache.has(path):
+			completed += 1.0
+			continue
+		var progress: Array = []
+		ResourceLoader.load_threaded_get_status(path, progress)
+		completed += float(progress[0]) if not progress.is_empty() else 0.0
+	if _warmup_failed:
+		_warmup_ready = false
+		play_button.disabled = true
+		play_button.focus_mode = Control.FOCUS_NONE
+		play_button.text = "LOAD FAILED"
+		status_label.text = "MISSION ASSETS OFFLINE // SELECT AGAIN TO RETRY"
+		if not _warmup_error_announced:
+			_warmup_error_announced = true
+			sounds.play(ProceduralAudio.Cue.ERROR)
+		return
+	if completed < float(_warmup_paths.size()):
+		_warmup_ready = false
+		if _selected >= 0 and _selected < levels.size():
+			status_label.text = "PREPARING %s // %d%%" % [levels[_selected].title.to_upper(), roundi(completed / float(_warmup_paths.size()) * 100.0)]
 		return
 	_warmup_resources.clear()
 	for path in _warmup_paths:
-		if generation != _active_warmup_generation:
-			return
-		var resource := ResourceLoader.load_threaded_get(path)
+		var resource := _warmup_cache.get(path) as Resource
 		if resource == null:
 			_warmup_failed = true
-			_set_warmup_controls_locked(false)
+			_warmup_ready = false
 			return
 		_warmup_resources.append(resource)
 	_warmup_ready = true
 	_refresh_selected_action()
+
+
+func _finish_pending_back() -> void:
+	_back_pending = false
+	_launching = true
+	_set_launch_controls_disabled(true)
+	var result := SceneRouter.go_to(menu_scene_path)
+	if result != OK:
+		_launching = false
+		_set_launch_controls_disabled(false)
+		status_label.text = "MENU ROUTE OFFLINE"
+		sounds.play(ProceduralAudio.Cue.ERROR)
+
+
+func _exit_tree() -> void:
+	# Consume requests that have already completed. Normal Back navigation drains
+	# all outstanding work before routing; this is the last-resort cleanup path for
+	# application shutdown or an external scene replacement.
+	for path_variant in _warmup_requests.keys():
+		var path := String(path_variant)
+		if ResourceLoader.load_threaded_get_status(path) == ResourceLoader.THREAD_LOAD_LOADED:
+			ResourceLoader.load_threaded_get(path)
+	_warmup_requests.clear()
+	_warmup_cache.clear()
+	_warmup_resources.clear()
 
 func _prepare_campaign_progress() -> void:
 	var save_manager := get_node_or_null("/root/SaveManager")
@@ -236,13 +300,15 @@ func _select(index: int) -> void:
 
 
 func _begin_warmup(data: LevelCardData) -> void:
-	_warmup_generation += 1
-	_active_warmup_generation = _warmup_generation
 	_warmup_resources.clear()
 	_warmup_paths = data.warmup_paths() if data != null else PackedStringArray()
 	_warmup_ready = _warmup_paths.is_empty()
 	_warmup_failed = false
-	_set_warmup_controls_locked(not _warmup_ready and data.is_available(_campaign_progress, _development_unlock_override()))
+	_warmup_error_announced = false
+	# Loading a selected card must not trap the player on it. Other cards,
+	# difficulty, and Back stay responsive while prior requests finish in the
+	# background; Back itself drains those requests before leaving the scene.
+	_set_warmup_controls_locked(false)
 	if not data.is_available(_campaign_progress, _development_unlock_override()):
 		_refresh_selected_action()
 		return
@@ -263,12 +329,24 @@ func _begin_warmup(data: LevelCardData) -> void:
 	play_button.text = "PREPARING…"
 	status_label.text = "PREPARING %s // 0%%" % data.title.to_upper()
 	for path in _warmup_paths:
+		_warmup_failures.erase(path)
+		if _warmup_cache.has(path) or _warmup_requests.has(path):
+			continue
+		var prior_status := ResourceLoader.load_threaded_get_status(path)
+		if prior_status == ResourceLoader.THREAD_LOAD_LOADED:
+			var loaded_resource := ResourceLoader.load_threaded_get(path)
+			if loaded_resource != null:
+				_warmup_cache[path] = loaded_resource
+				continue
 		var error := ResourceLoader.load_threaded_request(path, "", true)
-		if error != OK:
+		if error == OK or error == ERR_BUSY:
+			_warmup_requests[path] = true
+		else:
 			_warmup_failed = true
+			_warmup_failures[path] = true
 			play_button.text = "LOAD FAILED"
 			status_label.text = "MISSION ASSETS OFFLINE // %s" % path.get_file()
-			break
+	_refresh_current_warmup()
 	if _warmup_paths.is_empty():
 		_set_warmup_controls_locked(false)
 		_refresh_selected_action()
@@ -294,7 +372,7 @@ func _refresh_selected_action() -> void:
 
 
 func _on_card_pressed(index: int) -> void:
-	if _launching or index < 0 or index >= levels.size():
+	if _launching or _warmup_locked or index < 0 or index >= levels.size():
 		return
 	_select(index)
 	sounds.play(ProceduralAudio.Cue.ACCEPT, -6.0)
@@ -315,8 +393,8 @@ func _activate(index: int) -> void:
 		sounds.play(ProceduralAudio.Cue.ERROR)
 		return
 	_launching = true
+	_pending_launch_index = index
 	_set_launch_controls_disabled(true)
-	status_label.text = "LOADING %s..." % data.title.to_upper()
 	# Browser pointer lock must be requested synchronously from a trusted click or
 	# key activation. Player._ready() runs after that gesture has expired, which
 	# made a pause/resume round trip appear to "fix" mouse aiming. Capture here,
@@ -324,6 +402,21 @@ func _activate(index: int) -> void:
 	# click-to-aim fallback for focus loss and keyboard-only launches.
 	if not MobileControls.touchscreen_expected():
 		PointerCaptureController.request_from_launch_gesture()
+	if not _warmup_requests.is_empty():
+		status_label.text = "FINALIZING %s..." % data.title.to_upper()
+		return
+	_commit_launch(index)
+
+
+func _commit_launch(index: int) -> void:
+	if index < 0 or index >= levels.size():
+		_pending_launch_index = -1
+		_launching = false
+		_set_launch_controls_disabled(false)
+		return
+	var data := levels[index]
+	_pending_launch_index = -1
+	status_label.text = "LOADING %s..." % data.title.to_upper()
 	var result := SceneRouter.go_to(data.scene_path)
 	if result != OK:
 		_launching = false
@@ -357,9 +450,22 @@ func _set_warmup_controls_locked(value: bool) -> void:
 	%BackButton.disabled = value
 
 func _back() -> void:
-	if _launching or _warmup_locked:
+	if _launching or _back_pending:
 		return
-	SceneRouter.go_to(menu_scene_path)
+	if not _warmup_requests.is_empty():
+		_back_pending = true
+		_set_warmup_controls_locked(true)
+		play_button.disabled = true
+		play_button.focus_mode = Control.FOCUS_NONE
+		status_label.text = "FINISHING PREPARATION…"
+		return
+	_launching = true
+	_set_launch_controls_disabled(true)
+	if SceneRouter.go_to(menu_scene_path) != OK:
+		_launching = false
+		_set_launch_controls_disabled(false)
+		status_label.text = "MENU ROUTE OFFLINE"
+		sounds.play(ProceduralAudio.Cue.ERROR)
 
 func _first_available_index() -> int:
 	for index in levels.size():

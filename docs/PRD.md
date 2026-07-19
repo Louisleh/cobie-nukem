@@ -35,6 +35,10 @@ All five missions use one typed campaign graph, shared mission runtime, save-v5 
 
 The canonical status/evidence ledger is `docs/PHASE_ROADMAP_PRD.md`. The canonical art rules are `docs/ART_BIBLE.md`; no separate episode-orchestration bible may override them.
 
+## 1.1.1 Active definitive-convergence milestone
+
+The current milestone prioritizes compounding quality over another systems rewrite: transactional startup/retry/victory flow, icon-led tablet controls, evidence-backed Level 1–3 regression fixes, and production presentation for Moon and Ventura. Gameplay layout remains authoritative for collision/navigation while replaceable Blender kits and manifested Material Maker families provide mission identity. The visual capture manifest must include every mission, and no Level 2–5 `BETA` badge may be removed by automation alone.
+
 ## 1.2 Archived `0.8.0-alpha.1-rc1` three-mission checkpoint
 
 This cycle hardens truthful loading and transactional scene transitions, keeps Rain City openly playable under its honest `BETA` gate, and introduces Mount Hood Whiteout as a complete five-zone public-development mission. Mount Hood adds bounded Full/Reduced/Off snow traction, 24 regular enemies, Ski-Patrol Ranger and Avalanche Recon Drone families, a reset-safe chairlift, four secrets, five checkpoints, and a four-phase 1,000-HP Municipal Snowcat. Automated acceptance supports an RC; it does not claim physical-iPad comfort, final art, pacing, audio mix, boss fairness, or photosensitivity approval.

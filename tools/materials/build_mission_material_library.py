@@ -1,4 +1,4 @@
-"""Build deterministic Web-safe Rain City and Mount Hood material libraries.
+"""Build deterministic Web-safe five-mission material libraries.
 
 The editable Material Maker graphs remain the semantic authoring records. This
 script makes reproducible 512px preview/runtime exports for CI and local builds
@@ -43,6 +43,35 @@ FAMILIES = {
         "frosted_glass": ((89, 133, 151), (190, 219, 225), 0.28, 0.18, "frost"),
         "warm_windows": ((122, 49, 14), (255, 184, 72), 0.26, 0.04, "panels"),
     },
+    "moon": {
+        "regolith": ((25, 27, 34), (75, 78, 88), 0.92, 0.00, "regolith"),
+        "crater_basalt": ((12, 15, 21), (57, 63, 72), 0.96, 0.00, "rock"),
+        "ice_glaze": ((76, 117, 137), (187, 224, 233), 0.30, 0.00, "frost"),
+        "habitat_panels": ((62, 75, 89), (151, 166, 174), 0.42, 0.35, "panels"),
+        "airlock_steel": ((37, 50, 62), (111, 129, 136), 0.34, 0.72, "metal"),
+        "insulated_floor": ((28, 39, 48), (83, 102, 109), 0.58, 0.08, "tile"),
+        "solar_panels": ((4, 24, 47), (24, 89, 139), 0.22, 0.48, "solar"),
+        "antenna_scaffold": ((48, 58, 67), (143, 154, 158), 0.40, 0.68, "metal"),
+        "cryo_glass": ((64, 126, 151), (180, 232, 242), 0.20, 0.16, "frost"),
+        "safety_lines": ((9, 80, 97), (31, 236, 255), 0.32, 0.08, "stripes"),
+        "habitat_warm_windows": ((126, 44, 10), (255, 184, 68), 0.24, 0.04, "panels"),
+        "earth_landmark": ((12, 47, 91), (45, 150, 213), 0.36, 0.02, "noise"),
+    },
+    "ventura": {
+        "sun_bleached_asphalt": ((54, 48, 42), (130, 116, 95), 0.64, 0.00, "concrete"),
+        "warm_concrete": ((89, 61, 43), (202, 154, 102), 0.72, 0.00, "stucco"),
+        "wet_sand": ((66, 48, 32), (145, 111, 74), 0.44, 0.00, "sand"),
+        "dry_sand": ((132, 95, 56), (230, 190, 121), 0.82, 0.00, "sand"),
+        "timber_pier": ((46, 24, 12), (133, 79, 39), 0.68, 0.00, "wood"),
+        "salt_steel": ((43, 58, 62), (126, 147, 146), 0.42, 0.66, "metal"),
+        "harbor_mast": ((54, 68, 70), (166, 177, 171), 0.40, 0.72, "metal"),
+        "weathered_metal": ((20, 74, 77), (76, 168, 163), 0.52, 0.42, "paint"),
+        "boat_hull": ((43, 63, 70), (226, 135, 72), 0.38, 0.28, "paint"),
+        "ocean_foam": ((45, 117, 142), (217, 244, 239), 0.24, 0.00, "foam"),
+        "coastal_warm": ((129, 45, 14), (255, 185, 78), 0.28, 0.02, "panels"),
+        "palm_leaf": ((22, 64, 45), (73, 143, 74), 0.66, 0.00, "noise"),
+        "ocean_horizon": ((25, 91, 124), (112, 196, 210), 0.26, 0.00, "foam"),
+    },
 }
 
 
@@ -83,6 +112,23 @@ def _height(pattern: str, seed: int) -> np.ndarray:
         base = 0.62 + np.abs(np.sin(x / 37.0) * np.cos(y / 29.0)) * 0.25
     elif pattern == "concrete":
         base = 0.45 + base * 0.32
+    elif pattern == "regolith":
+        base = 0.28 + np.power(base, 2.3) * 0.54
+        pits = rng.random((SIZE, SIZE)) > 0.996
+        base[pits] = 0.04
+    elif pattern == "solar":
+        grid = ((x % 128) < 5) | ((y % 64) < 4)
+        base = 0.38 + base * 0.18
+        base[grid] = 0.08
+    elif pattern == "sand":
+        ripples = 0.5 + 0.5 * np.sin(x / 12.0 + np.sin(y / 29.0))
+        base = 0.48 + base * 0.14 + ripples * 0.16
+    elif pattern == "stucco":
+        base = 0.50 + base * 0.26
+        base += np.sin(x / 31.0) * np.cos(y / 37.0) * 0.05
+    elif pattern == "foam":
+        waves = np.abs(np.sin((x + y * 0.45) / 22.0))
+        base = 0.40 + base * 0.14 + waves * 0.34
     return np.clip(base, 0.0, 1.0)
 
 

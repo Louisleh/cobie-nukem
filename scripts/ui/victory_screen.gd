@@ -7,6 +7,7 @@ const FALLBACK_REPLAY_SCENE := "res://scenes/levels/episode_1_level_1.tscn"
 var _summary: Dictionary = {}
 var _mission_metadata: LevelMetadata
 var _routing := false
+var _feedback_report: PlaytestReport
 
 func _ready() -> void:
 	visible = false
@@ -19,6 +20,10 @@ func _ready() -> void:
 	%BuildLabel.text = BuildInfo.label()
 
 func show_summary(summary: Dictionary) -> void:
+	_close_feedback()
+	_routing = false
+	for button in [%MainMenuButton, %ReplayButton, %FeedbackButton, %ContinueButton]:
+		button.disabled = false
 	_summary = summary.duplicate(true)
 	_mission_metadata = _metadata_for(String(summary.get("level_id", "")))
 	visible = true
@@ -76,10 +81,18 @@ func _on_continue() -> void:
 			game_state.continue_requested = false
 
 func _open_feedback() -> void:
-	var report := FeedbackScene.instantiate() as PlaytestReport
-	add_child(report)
-	report.closed.connect(report.queue_free)
-	report.open(_summary)
+	if is_instance_valid(_feedback_report) or _routing:
+		return
+	_feedback_report = FeedbackScene.instantiate() as PlaytestReport
+	add_child(_feedback_report)
+	_feedback_report.closed.connect(_close_feedback)
+	_feedback_report.open(_summary)
+
+
+func _close_feedback() -> void:
+	if is_instance_valid(_feedback_report):
+		_feedback_report.queue_free()
+	_feedback_report = null
 
 func _rank(seconds: int, secrets: int, accuracy: float) -> String:
 	var score := secrets * 2 + int(accuracy >= 0.5) + int(seconds > 0 and seconds < 900)

@@ -8,7 +8,7 @@
 
 **Current public baseline:** `0.9.0-alpha.1-rc1` (`257d112` gameplay/runtime revision; source integration `3854023`; website deployment `7392826`; PCK SHA-256 `56c1c49d3c0ffff180ba79eaba754055b4970a2e7f8718abc20f2fbf2d9b5d5d`)
 
-**Current production gate:** All five missions are publicly playable and byte-verified. Levels 2–5 remain explicit `BETA` missions pending human/device/art/balance approval; the next production tranche is evidence-backed visual, animation, audio, pacing, and device-quality work rather than another broad runtime rewrite.
+**Current production gate:** All five missions are publicly playable and byte-verified. The active convergence branch hardens startup/scene ownership, closes Level 1–3 regressions, and replaces the most visible Moon/Ventura blockout with original authored presentation kits and mission-specific materials. Levels 2–5 remain explicit `BETA` missions until human/device/art/balance approval.
 
 **Last released alpha:** `0.9.0-alpha.1-rc1` (`257d112`) — live at <https://www.louislehmann.fyi/games/cobie-nukem/>; Levels 2–5 retain honest `BETA` badges because human full-route, final-art, and physical-device validation are open
 
@@ -40,12 +40,16 @@
 
 This cycle delivers functional, testable five-mission public development—not a false declaration that every mission is already visually or subjectively world-class. Human taste, full physical-device play, final hero assets, mission-specific imported audio, combat pacing, fairness, humor, motion comfort, and photosensitivity remain named gates. Findings become the next evidence-backed production tranche rather than being hidden behind an “automated complete” claim.
 
-### Current 10/20/40/30 cycle
+### Current definitive-convergence cycle
 
-- **10% global stabilization:** asynchronous mission warmup, truthful `PREPARING…`, start-only launch, transactional scene routing, input release, pointer handoff, Web Return to Site, and settings cleanup.
-- **20% Salmon Creek closure:** regression-only sign/placement/sprite/pickup/Walker review; no broad redesign.
-- **40% Rain City finalization:** retain public `BETA` until the recorded human/device gate passes; continue evidence-backed material, physics, pacing, audio, and accessibility corrections.
-- **30% Mount Hood public BETA:** five authored zones, readable snow traction, persistent mountain/lodge/lift identity, two new enemies, chairlift, Snowcat, saves, checkpoints, secrets, and a public-development warning.
+- **20% flow and stability:** drain asynchronous warmups, reject duplicate transitions, make retry/restart/victory routes idempotent, preserve pointer recovery, and replace touch action words with scalable icons.
+- **25% Levels 1–3 closure:** retain their proven gameplay contracts while correcting reproduced sign, connector, placement, summon-cleanup, loading, and UI lifecycle defects.
+- **35% Moon/Ventura visual production:** use original Blender-authored presentation-only kits and 25 manifested 512px material families while collision, navigation, objectives, encounters, saves, and boss logic remain independently owned.
+- **20% five-mission evidence:** extend the canonical capture harness to Levels 4–5, run every route/boss/checkpoint/input/export gate, measure package growth, and publish only an honestly labelled RC if automated gates are green.
+
+Checkpoint rule: each subsystem lands only after its focused tests and attributable engine-log gate pass. Physical iPad comfort, full human routes, art taste, pacing, mix, fairness, humor, motion, and photosensitivity remain named human gates rather than inferred completion.
+
+**Definitive-convergence release candidate:** feature revision `7cb7ac6` is stamped as `0.10.0-alpha.1-rc1`. The complete Web/macOS export matrix, 1,200-route/1,000-checkpoint five-mission gauntlet, 100-route/100-checkpoint/100-touch-cancellation/500-weapon-transition soak, asset/IP and architecture gates, packaged desktop launch, simulated 1024x768 touch launch, and an isolated Chrome packaged-load trace are green. Source integration, prerelease publication, website deployment, and public-PCK byte identity remain pending until the candidate is merged and deployed. Levels 2–5 remain explicitly `BETA`; physical iPad and human full-route/taste gates remain open.
 
 ### Archived RC5 foundry release evidence
 

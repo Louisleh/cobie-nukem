@@ -89,6 +89,13 @@ func _check_runtime_world() -> void:
 	_expect(mission._world_builder != null and mission._world_builder.golden_ball != null, "Mount Hood builds its authored world and gated Golden Ball")
 	_expect(mission._world_builder.navigation_region.navigation_mesh.get_polygon_count() > 0, "Mount Hood bakes reachable production navigation")
 	_expect(not mission._world_builder.golden_ball.enabled, "Golden Ball starts unavailable")
+	var connector_count := 0
+	for connector in mission.get_tree().get_nodes_in_group(&"mount_hood_route_connectors"):
+		connector_count += 1
+		var connector_mesh := connector.get_child(0) as MeshInstance3D
+		var connector_box := connector_mesh.mesh as BoxMesh if connector_mesh != null else null
+		_expect(connector_box != null and connector.position.y + connector_box.size.y * 0.5 < -0.005, "Mount Hood connector %d is not coplanar with zone floors" % connector_count)
+	_expect(connector_count == 4, "Mount Hood keeps four non-coplanar route connectors")
 	var pantry := mission._world_builder.interactables.get_node_or_null("LevelSwitch")
 	for child in mission._world_builder.interactables.get_children():
 		if child is LevelSwitch and (child as LevelSwitch).switch_id == &"secret_treat_pantry": pantry = child
@@ -105,6 +112,17 @@ func _check_runtime_world() -> void:
 	if mission._mission_runtime.encounters.active.has(&"forest_pullout"):
 		var restored_state: Dictionary = mission._mission_runtime.encounters.active[&"forest_pullout"]
 		_expect(not (restored_state.get("actors", []) as Array).is_empty(), "Continue rebuilds live actors rather than preserving an empty active marker")
+	mission._restored_checkpoint = {
+		"objective_snapshot": {},
+		"encounter_snapshot": {"completed": ["forest_pullout"], "active": {"mountain_road": {"wave": 0, "remaining": 1}}},
+		"route_snapshot": {"route_id": "mount_hood_whiteout_route", "current_zone": "mountain_road", "current_index": 1, "visited_zones": ["forest_pullout", "mountain_road"], "checkpoint_id": "checkpoint_road_clear"},
+		"secrets": {},
+	}
+	mission._restore_runtime_state()
+	await process_frame
+	_expect(mission._world_builder.is_route_gate_open(&"forest_pullout"), "Continue opens the gate for a completed prior encounter")
+	_expect(not mission._world_builder.is_route_gate_open(&"mountain_road"), "Continue keeps the unfinished current encounter gate closed")
+	_expect(mission._mission_runtime.encounters.active.has(&"mountain_road"), "Continue activates the unfinished current encounter exactly once")
 	var snowcat := load("res://scenes/enemies/municipal_snowcat.tscn") as PackedScene
 	var snowcat_instance := snowcat.instantiate() as MunicipalSnowcat
 	_expect(snowcat_instance != null and snowcat_instance.definition.max_health == 1000.0, "Snowcat owns the readable 1,000 HP boss baseline")
@@ -132,6 +150,14 @@ func _check_runtime_world() -> void:
 		for cycle in 100:
 			lift.set_enabled(true); lift.interact(null); lift._physics_process(0.1); lift.reset_lift()
 			_expect(not lift.riding and lift.position.is_equal_approx(lift.start_position), "Chairlift resets on cycle %d" % cycle)
+	var summit_definition := mission._mission_runtime.encounters.definitions.get(&"summit") as EncounterDefinition
+	var summon := Node3D.new(); summon.add_to_group(&"boss_summons"); mission.add_child(summon)
+	mission._on_encounter_completed(summit_definition)
+	_expect(not mission._world_builder.golden_ball.enabled, "Golden Ball stays unavailable during boss-summon cleanup")
+	await process_frame
+	await process_frame
+	_expect(not is_instance_valid(summon), "Boss summons are gone before the finale reward is released")
+	_expect(mission._world_builder.golden_ball.enabled, "Golden Ball releases after deterministic summon cleanup")
 	mission.queue_free()
 	await process_frame
 

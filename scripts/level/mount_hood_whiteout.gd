@@ -51,6 +51,7 @@ var _completion_timer: Timer
 var _last_combat_zone: StringName = &""
 var _resetting_encounter := false
 var _baseline_attack_budget := 3
+var _summit_reward_generation := 0
 
 
 func _ready() -> void:
@@ -200,6 +201,7 @@ func _save_checkpoint(id: StringName, at: Vector3, announce := true) -> Error:
 
 
 func restart_from_checkpoint() -> void:
+	_summit_reward_generation += 1
 	if _mission_presentation != null: _mission_presentation.reset_for_checkpoint()
 	get_tree().call_group(&"boss_summons", &"queue_free")
 	if _world_builder != null: _world_builder.reset_chairlift()
@@ -239,13 +241,28 @@ func _on_encounter_completed(definition: EncounterDefinition) -> void:
 	_spawn_registry.finish_encounter(definition.zone_id); _world_builder.set_route_gate_open(definition.zone_id, true)
 	if definition.zone_id == &"summit":
 		_last_combat_zone = &""
+		_summit_reward_generation += 1
+		var reward_generation := _summit_reward_generation
 		get_tree().call_group(&"boss_summons", &"queue_free")
-		# Queue-free completes at the end of this frame. Release the reward on the
-		# following frame so no living summon can overlap the post-boss objective.
-		_finish_summit_defeat.call_deferred()
+		_finish_summit_defeat_after_cleanup(reward_generation)
 
 
-func _finish_summit_defeat() -> void:
+func _finish_summit_defeat_after_cleanup(reward_generation: int) -> void:
+	# A process-frame boundary is stronger than call_deferred(): queue_free() is
+	# guaranteed to flush before the reward can join the interactable registry.
+	await get_tree().process_frame
+	if reward_generation != _summit_reward_generation or not is_inside_tree(): return
+	var living_summons := get_tree().get_nodes_in_group(&"boss_summons")
+	if not living_summons.is_empty():
+		# Recover once from summons added during the boss-death signal cascade. Never
+		# expose the progression reward while a living summon still owns the arena.
+		get_tree().call_group(&"boss_summons", &"queue_free")
+		await get_tree().process_frame
+		if reward_generation != _summit_reward_generation or not is_inside_tree(): return
+		living_summons = get_tree().get_nodes_in_group(&"boss_summons")
+	if not living_summons.is_empty():
+		push_error("Mount Hood summit reward blocked: boss summons survived cleanup")
+		return
 	if _completion_started or _world_builder == null: return
 	_world_builder.enable_golden_ball()
 	boss_state_changed.emit("DESTROYED", 0.0)
@@ -322,6 +339,7 @@ func get_level_summary() -> Dictionary:
 
 
 func _exit_tree() -> void:
+	_summit_reward_generation += 1
 	if _route_recovery_timer != null: _route_recovery_timer.stop()
 	if _completion_timer != null: _completion_timer.stop()
 	get_tree().call_group(&"boss_summons", &"queue_free")

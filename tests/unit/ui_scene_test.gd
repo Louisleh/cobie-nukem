@@ -29,6 +29,7 @@ func _initialize() -> void:
 	_check_responsive_main_menu_contract()
 	_check_cobie_portrait_contract()
 	await _check_death_screen_contract()
+	await _check_pause_restart_contract()
 	await _check_caption_contracts()
 	await _check_boss_hud_contract()
 	if failures.is_empty():
@@ -149,6 +150,19 @@ func _check_level_select_activation_contract() -> void:
 		first_card.emit_signal("pressed")
 		if int(instance.get("_selected")) != 0 or bool(instance.get("_launching")):
 			failures.append("Mission-card click must update selection without entering launch state")
+		var back_button := instance.get_node_or_null("SafeArea/Main/Footer/BackButton") as Button
+		if first_card.disabled or (back_button != null and back_button.disabled):
+			failures.append("Mission preparation must not trap the player on one card or disable Back")
+		instance.call("_set_launch_controls_disabled", true)
+		if not first_card.disabled or back_button == null or not back_button.disabled:
+			failures.append("Accepted mission launch must lock cards and Back transactionally")
+		var difficulty_row := instance.get_node_or_null("SafeArea/Main/DifficultySection/DifficultyRow")
+		if difficulty_row != null:
+			for child in difficulty_row.get_children():
+				if child is Button and not child.disabled:
+					failures.append("Accepted mission launch must lock difficulty changes")
+					break
+		instance.call("_set_launch_controls_disabled", false)
 		var status := instance.get_node_or_null("SafeArea/Main/Footer/StatusLabel") as Label
 		if status == null or ("PREPARING" not in status.text and "PRESS START" not in status.text):
 			failures.append("Selected mission must clearly show preparation or instruct the player to press Start")
@@ -394,5 +408,61 @@ func _check_death_screen_contract() -> void:
 	screen.show_death(authored)
 	if screen.get_node("Panel/VBox/QuipLabel").text != "TEST QUIP":
 		failures.append("Authored death quips must retain their typed-array contract")
+	var retry_count := [0]
+	screen.retry_requested.connect(func() -> void: retry_count[0] += 1)
+	PointerCaptureController._launch_capture_requested_msec = -1
+	screen._retry()
+	screen._retry()
+	if retry_count[0] != 1:
+		failures.append("Death Retry must emit exactly once under rapid repeated activation")
+	if not screen.get_node("Panel/VBox/Buttons/RetryButton").disabled or not screen.get_node("Panel/VBox/Buttons/MainMenuButton").disabled:
+		failures.append("Death Retry must lock both actions before handing off the scene")
+	if not MobileControls.touchscreen_expected() and not PointerCaptureController.launch_capture_pending():
+		failures.append("Death Retry must request pointer capture from its trusted activation gesture")
+	PointerCaptureController._launch_capture_requested_msec = -1
 	screen.queue_free()
+	await process_frame
+
+
+func _check_pause_restart_contract() -> void:
+	var packed := load("res://scenes/ui/pause_menu.tscn") as PackedScene
+	var game_state := root.get_node_or_null("/root/GameState")
+	if packed == null or game_state == null:
+		failures.append("Pause restart contract needs the pause scene and GameState")
+		return
+	var pause := packed.instantiate() as PauseMenu
+	root.add_child(pause)
+	await process_frame
+	game_state.begin_run(&"qa_pause_restart")
+	pause.open()
+	var restart_count := [0]
+	pause.restart_requested.connect(func() -> void: restart_count[0] += 1)
+	PointerCaptureController._launch_capture_requested_msec = -1
+	pause._restart()
+	pause._restart()
+	if restart_count[0] != 1:
+		failures.append("Pause Restart must emit exactly once under rapid repeated activation")
+	if pause.visible or paused:
+		failures.append("Pause Restart must hide the overlay and unpause before handing off")
+	for path in [
+		"Panel/VBox/ResumeButton",
+		"Panel/VBox/RestartButton",
+		"Panel/VBox/OptionsButton",
+		"Panel/VBox/FeedbackButton",
+		"Panel/VBox/MainMenuButton",
+	]:
+		var button := pause.get_node(path) as Button
+		if not button.disabled:
+			failures.append("Pause Restart must lock every pause action: %s" % path)
+	if not MobileControls.touchscreen_expected() and not PointerCaptureController.launch_capture_pending():
+		failures.append("Pause Restart must request pointer capture from its trusted activation gesture")
+	PointerCaptureController._launch_capture_requested_msec = -1
+	await process_frame
+	game_state.begin_run(&"qa_pause_reopen")
+	pause.open()
+	if not pause.visible or not paused:
+		failures.append("Pause menu must reopen after an in-place checkpoint restart completes")
+	pause.resume()
+	game_state._set_phase(game_state.Phase.MENU)
+	pause.queue_free()
 	await process_frame

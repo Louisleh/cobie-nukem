@@ -76,7 +76,8 @@ func _build_route() -> void:
 	for connector_z in [-20.0, -58.0, -97.0, -136.0]:
 		# Connector top sits 3 cm below the zone slabs: enough overlap for nav,
 		# never an exactly coplanar visible face that can flicker in WebGL.
-		_floor("RouteConnector", Vector3(0, -0.52, connector_z), Vector3(10, 0.98, 8), &"packed_snow")
+		var connector := _floor("RouteConnector", Vector3(0, -0.52, connector_z), Vector3(10, 0.98, 8), &"packed_snow")
+		connector.add_to_group(&"mount_hood_route_connectors")
 	# Authored traction patches are large and readable; none overlap coplanarly.
 	_floor("PowderTutorial", Vector3(-6, 0.03, -8), Vector3(6, 0.12, 9), &"powder")
 	_floor("IcyRoadBend", Vector3(6, 0.03, -43), Vector3(7, 0.12, 10), &"ice")
@@ -145,6 +146,11 @@ func set_route_gate_open(zone_id: StringName, open: bool) -> void:
 		if child is CollisionShape3D: (child as CollisionShape3D).set_deferred("disabled", open)
 
 
+func is_route_gate_open(zone_id: StringName) -> bool:
+	var gate := _route_gates.get(zone_id) as StaticBody3D
+	return gate != null and gate.collision_layer == 0
+
+
 func enable_golden_ball() -> void:
 	if golden_ball != null: golden_ball.enable_as_reward()
 
@@ -173,9 +179,10 @@ func _bake_navigation() -> void:
 	navigation_bake_completed.emit(navigation_region.navigation_mesh.get_polygon_count() > 0)
 
 
-func _floor(name_value: String, at: Vector3, size: Vector3, surface: StringName) -> void:
+func _floor(name_value: String, at: Vector3, size: Vector3, surface: StringName) -> StaticBody3D:
 	var body := _box(name_value, at, size, surface, true)
 	body.collision_layer = (1 << 19) | 1; body.set_meta(&"surface_type", surface); body.add_to_group(&"mount_hood_navigation_source")
+	return body
 
 
 func _box(name_value: String, at: Vector3, size: Vector3, family: StringName, collision: bool, emissive := false) -> StaticBody3D:

@@ -1,5 +1,25 @@
 # Test Evidence
 
+## 2026-07-18 — definitive-convergence source candidate
+
+| Check | Result | Evidence |
+| --- | --- | --- |
+| Startup/menu lifecycle | Pass | Level-select warmups are cached and drained, launch/retry/restart/victory routes reject duplicate activation, and pointer capture is requested on gameplay re-entry; focused UI and adversarial tests pass |
+| Tablet actions | Pass (simulated) | Eight project-original SVG action icons load through the existing touch targets; multi-finger, 30/120 FPS aim, handedness, scaling, and release contracts pass |
+| Rain/Mount regression fixes | Pass | Rain signs use the authored-world-sign contract, connectors have explicit non-coplanar grouping, and Mount Hood waits real process-frame cleanup before exposing the summit Golden Ball |
+| Moon presentation | Pass with human art gate | Original 53-object Blender kit, twelve material families, runtime material binding, no collision ownership, mission contract, and 1280×720 canonical capture pass |
+| Ventura presentation | Pass with human art gate | Original 122-object Blender kit, thirteen material families, reduced coastal fog, runtime material binding, no collision ownership, mission contract, and 1280×720 canonical capture pass |
+| Five-mission deterministic gauntlet | Pass | Five missions, 1,200 route simulations, and 1,000 checkpoint restores pass on the convergence working tree |
+| Runtime smoke | Pass | 78 scenes and 180 resources load; all five 300-frame headless mission samples return stable nodes/objects with p95 22.296–23.312 ms and p99 23.636–24.706 ms |
+| Asset/IP heuristic | Pass | Blender sources/GLBs, 25 Moon/Ventura material families, and eight touch icons are manifested; no prohibited filenames/source phrases detected |
+| Export/package candidate | Pass | Exact feature revision `7cb7ac6` is stamped as `0.10.0-alpha.1-rc1`; `QA_EXPORTS=1 bash tools/release_validate.sh` passed the complete parser/import, unit, integration, route, adversarial, content, soak, performance, Web, and Universal macOS matrix |
+| Packaged desktop Web | Pass with pointer-lock environment note | Landing identity, truthful title loading, main menu, explicit mission selection, hover stability, Moon launch, gameplay HUD, and recovery overlay rendered with no Godot warning/error. The in-app automation browser denied pointer lock and emitted Chromium's generic `UnknownError`; the game stayed playable and displayed its intended one-click recovery state. |
+| Packaged 1024x768 touch Web | Pass (simulated) | `?touch=1` exercised title, menu, five-card selector, Ventura selection/launch, two-stick onboarding, icon action controls, HUD safe area, and the healthy portrait with zero browser warning/error |
+| Chrome packaged-load trace | Pass | Unthrottled isolated Chrome trace: LCP 89 ms, CLS 0.00, TTFB 0.9 ms, and no blocking startup defect. This localhost load trace is not a physical-iPad network, thermal, memory, or full-route claim. |
+| Candidate artifacts | Pass | Web PCK 69,468,616 bytes, SHA-256 `f24a9911c141aefc97c2eb5ad86c87c74e3e87856c484671a9c773e01d9a0aaf`; Web/itch archive 74,175,765 bytes, SHA-256 `9440c03905485a762d4e73f7be9e80b6506c54708ab277365d49d40f5361ca55`; unsigned Universal macOS archive 115,469,927 bytes, SHA-256 `fd344e1ab937dfcfb6819b3b8d68fd29605d0e94d9884b392fc2d777d0a12c81` |
+| Public identity | Pending deployment | Record source integration, prerelease URL, website integration, public runtime identity, and downloaded-PCK byte identity only after merge and deployment |
+| Human/device acceptance | Not run | Full target-Mac/iPad routes, taste, pacing, fairness, mix, humor, motion, thermals, and photosensitivity remain explicit human gates |
+
 ## 2026-07-17 — Salmon Creek finale integrity and 2.5D production contract
 
 | Check | Result | Evidence |

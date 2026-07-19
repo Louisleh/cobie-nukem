@@ -29,6 +29,16 @@ const ONBOARDING_LINES := [
 	"LEFT STICK: MOVE   RIGHT STICK: AIM",
 	"FIRE: PRIMARY   ALT: SECONDARY",
 ]
+const ACTION_ICONS := {
+	&"fire_primary": preload("res://assets/ui/touch/fire.svg"),
+	&"fire_secondary": preload("res://assets/ui/touch/alt.svg"),
+	&"use": preload("res://assets/ui/touch/use.svg"),
+	&"jump": preload("res://assets/ui/touch/jump.svg"),
+	&"reload": preload("res://assets/ui/touch/reload.svg"),
+	&"weapon_previous": preload("res://assets/ui/touch/previous.svg"),
+	&"weapon_next": preload("res://assets/ui/touch/next.svg"),
+	&"pause": preload("res://assets/ui/touch/menu.svg"),
+}
 const BUTTONS := {
 	&"fire_primary": {"center": Vector2(292, 111), "radius": 20.0, "label": "FIRE"},
 	&"fire_secondary": {"center": Vector2(292, 152), "radius": 11.0, "label": "ALT"},
@@ -200,8 +210,10 @@ func _draw() -> void:
 		var active: bool = action in _button_fingers.values()
 		draw_circle(center, radius, Color(0.95, 0.45, 0.12, control_opacity) if active else Color(0.05, 0.08, 0.09, 0.65 * control_opacity))
 		draw_arc(center, radius, 0.0, TAU, 32, Color(1.0, 0.75, 0.24, 0.9), maxf(1.0, scale_value))
-		var label := String(data.label); var font_size := maxi(7, roundi(8.0 * scale_value)); var text_size := font.get_string_size(label, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size)
-		draw_string(font, center - Vector2(text_size.x * 0.5, -text_size.y * 0.32), label, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size, Color.WHITE)
+		var icon := ACTION_ICONS.get(action) as Texture2D
+		if icon != null:
+			var icon_size := Vector2.ONE * radius * 1.08
+			draw_texture_rect(icon, Rect2(center - icon_size * 0.5, icon_size), false, Color(1.0, 0.86, 0.48) if active else Color.WHITE)
 
 
 func _draw_onboarding_hint(font: Font, scale_value: float) -> void:

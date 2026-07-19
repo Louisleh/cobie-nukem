@@ -46,6 +46,8 @@ func _check_profile_and_route() -> void:
 		failures.append("Biome profile: %s" % error)
 	_expect(PROFILE.zones.size() == EXPECTED_ZONES.size(), "Profile includes exactly five authored zones")
 	_expect(PROFILE.content_revision == 1, "Profile revision remains v1")
+	_expect(PROFILE.presentation_scene != null, "Ventura profile owns an authored presentation kit")
+	_expect(PROFILE.material_set_id == &"ventura", "Ventura profile owns the Ventura material family")
 	_expect(PROFILE.campaign_unlock_ids.is_empty(), "Ventura finale profile does not add mission unlocks")
 	_expect(PROFILE.permanent_upgrade_ids.size() == 1 and PROFILE.permanent_upgrade_ids[0] == &"new_game_plus", "Ventura finale profile records new_game_plus in campaign upgrades")
 	_expect(ROUTE != null, "Ventura route loads")
@@ -148,6 +150,8 @@ func _check_scene_boot() -> void:
 	_expect(controller2 != null, "Scene root is a BiomeMissionController")
 	if controller2 != null:
 		_expect(controller2._world_builder != null, "World builder is constructed")
+		if controller2._world_builder != null:
+			_check_presentation_kit(controller2._world_builder)
 		_expect(controller2.content_manifest == MANIFEST, "Controller points at Ventura manifest")
 		_expect(controller2.biome_profile == PROFILE, "Controller points at Ventura biome profile")
 		_expect(controller2.metadata.level_id == &"ventura_pier_pressure", "Controller metadata uses Ventura level id")
@@ -163,6 +167,25 @@ func _check_scene_boot() -> void:
 	await process_frame
 	if failures.is_empty():
 		print("VENTURA_MISSION_RUNTIME_BOOT: PASS")
+
+
+func _check_presentation_kit(builder: BiomeMissionWorldBuilder) -> void:
+	var kit := builder.presentation.get_node_or_null("MissionPresentationKit")
+	_expect(kit != null, "Ventura authored presentation kit is instantiated")
+	if kit == null:
+		return
+	var meshes := kit.find_children("*", "MeshInstance3D", true, false)
+	_expect(meshes.size() >= 40, "Ventura presentation kit contains a substantial authored mesh set")
+	var materialized := 0
+	var collision_nodes := 0
+	for node in kit.find_children("*", "CollisionObject3D", true, false):
+		collision_nodes += 1
+	for node in meshes:
+		var mesh := node as MeshInstance3D
+		if mesh.material_override != null:
+			materialized += 1
+	_expect(materialized >= 30, "Ventura presentation meshes receive manifested runtime materials")
+	_expect(collision_nodes == 0, "Ventura presentation kit does not own gameplay collision")
 
 
 func _expect(condition: bool, message: String) -> void:

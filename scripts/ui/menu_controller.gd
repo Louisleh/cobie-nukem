@@ -51,6 +51,8 @@ func _reveal_after_layout() -> void:
 
 func _wire_button(button: Button, callback: Callable) -> void:
 	button.pressed.connect(func() -> void:
+		if _routing:
+			return
 		sounds.play(ProceduralAudio.Cue.ACCEPT)
 		callback.call()
 	)
@@ -62,6 +64,8 @@ func _new_game() -> void:
 		GameState.continue_requested = false
 
 func _continue_game() -> void:
+	if _routing:
+		return
 	var checkpoint := CheckpointPayload.sanitize(SaveManager.load_slot(&"checkpoint"))
 	if checkpoint.is_empty():
 		continue_button.disabled = true

@@ -102,6 +102,27 @@ func _test_world_builder_navigation_contract() -> void:
 
 	var pre_bake_sources: Array[Node] = _navigation_source_nodes(owner)
 	_expect(not pre_bake_sources.is_empty(), "Vancouver build creates navigation floor bodies")
+	var environment := owner.get_node_or_null("WorldEnvironment") as WorldEnvironment
+	_expect(environment != null and environment.environment != null, "Rain City exposes the canonical WorldEnvironment for zone fog profiles")
+	var connector_count := 0
+	for body in pre_bake_sources:
+		if not body.is_in_group(&"rain_city_route_connectors"): continue
+		connector_count += 1
+		var connector_mesh := body.get_child(0) as MeshInstance3D
+		var connector_box := connector_mesh.mesh as BoxMesh if connector_mesh != null else null
+		_expect(connector_box != null and body.position.y + connector_box.size.y * 0.5 < -0.005, "Rain City connector %d is not coplanar with zone floors" % connector_count)
+	_expect(connector_count == 4, "Rain City keeps four non-coplanar route connectors")
+	var signs := owner.get_tree().get_nodes_in_group(&"authored_world_signs")
+	var sign_ids: Dictionary = {}
+	_expect(signs.size() == 12, "Rain City registers all twelve authored route signs")
+	for raw_sign in signs:
+		var sign := raw_sign as AuthoredWorldSign
+		_expect(sign != null, "Rain City sign group contains only authored signs")
+		if sign == null: continue
+		_expect(not sign_ids.has(sign.placement_id), "Rain City sign id %s is unique" % sign.placement_id)
+		sign_ids[sign.placement_id] = true
+		for error in sign.validate_authored():
+			failures.append("Rain City sign: " + error)
 	var pre_bake_status := builder.navigation_bake_status()
 	_expect(bool(pre_bake_status.get("requested", false)), "Production route explicitly requests navigation baking")
 	_expect(not bool(pre_bake_status.get("finished", false)), "Production route does not report a deferred bake as complete before it runs")
