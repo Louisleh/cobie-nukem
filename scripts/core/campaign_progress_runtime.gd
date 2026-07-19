@@ -166,6 +166,12 @@ func commit_run_result(result: Dictionary) -> Error:
 					current_challenges.append(challenge_id)
 			current_challenges.sort()
 			candidate["completed_challenges"] = current_challenges
+	var earned_tags := _nonnegative_int(result.get("compliance_tags_earned"))
+	if earned_tags < 0 and result.has("compliance_tags_earned"): return ERR_INVALID_PARAMETER
+	if earned_tags > 0:
+		var wallet: Dictionary = candidate.get("wallet", {"compliance_tags": 0}).duplicate(true)
+		wallet["compliance_tags"] = maxi(0, int(wallet.get("compliance_tags", 0))) + earned_tags
+		candidate["wallet"] = wallet
 
 	var save_error := _persist(candidate)
 	if save_error == OK:
@@ -216,6 +222,31 @@ func collection_count(mission_id: StringName) -> int:
 
 func challenge_count() -> int:
 	return _string_set(_progress.get("completed_challenges", [])).size()
+
+
+func compliance_tags() -> int:
+	return maxi(0, int(_progress.get("wallet", {}).get("compliance_tags", 0)))
+
+
+func grant_reward(reward_id: StringName) -> Error:
+	var normalized := _mission_id(reward_id)
+	if normalized.is_empty(): return ERR_INVALID_PARAMETER
+	var candidate := _progress.duplicate(true)
+	var rewards := _string_set(candidate.get("purchased_rewards", []))
+	if normalized in rewards: return OK
+	rewards.append(normalized); rewards.sort()
+	candidate["purchased_rewards"] = rewards
+	return _persist(candidate)
+
+
+func grant_compliance_tags(amount: int) -> Error:
+	if amount < 0: return ERR_INVALID_PARAMETER
+	if amount == 0: return OK
+	var candidate := _progress.duplicate(true)
+	var wallet: Dictionary = candidate.get("wallet", {"compliance_tags": 0}).duplicate(true)
+	wallet["compliance_tags"] = maxi(0, int(wallet.get("compliance_tags", 0))) + amount
+	candidate["wallet"] = wallet
+	return _persist(candidate)
 
 
 func mission_upgrades(mission_id: StringName) -> Array[String]:

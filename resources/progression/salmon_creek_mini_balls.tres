@@ -1,0 +1,8 @@
+[gd_resource type="Resource" script_class="MiniBallMissionDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/gameplay/mini_ball_mission_definition.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+mission_id = &"episode_1_level_1"
+zones = Array[Dictionary]([{"id": &"field", "count": 12, "origin": Vector3(0, 0.75, 5), "width": 16.0, "depth": 18.0}, {"id": &"shed", "count": 8, "origin": Vector3(0, 0.75, -28), "width": 10.0, "depth": 8.0}, {"id": &"tunnels", "count": 8, "origin": Vector3(0, 0.85, -58), "width": 7.0, "depth": 12.0}, {"id": &"lab", "count": 10, "origin": Vector3(0, 0.85, -98), "width": 11.0, "depth": 14.0}, {"id": &"walker", "count": 12, "origin": Vector3(0, 0.75, -137), "width": 20.0, "depth": 20.0}])

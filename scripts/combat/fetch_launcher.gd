@@ -6,6 +6,9 @@ const PROJECTILE_SCENE := preload("res://scenes/weapons/fetch_projectile.tscn")
 var latest_projectile: FetchProjectile
 var recall_speed_multiplier := 1.0
 var recall_stagger_multiplier := 1.0
+var mod_recall_speed_multiplier := 1.0
+var mod_bounce_bonus := 0
+var _municipal_recall_enabled := false
 
 func fire_primary() -> bool:
 	if not _begin_fire(false):
@@ -18,6 +21,7 @@ func fire_primary() -> bool:
 	projectile.damage = definition.primary_damage
 	projectile.recall_speed_multiplier = recall_speed_multiplier
 	projectile.recall_stagger_multiplier = recall_stagger_multiplier
+	projectile.max_bounces += maxi(0, mod_bounce_bonus)
 	projectile.shot_resolved.connect(_on_projectile_resolved)
 	projectile.launch(camera.global_position + _aim_direction(definition.range) * 0.7, _aim_direction(definition.range), owner_node)
 	latest_projectile = projectile
@@ -27,11 +31,17 @@ func fire_primary() -> bool:
 
 
 func apply_municipal_recall_override() -> void:
-	recall_speed_multiplier = 1.35
+	_municipal_recall_enabled = true
+	refresh_recall_multipliers()
 	recall_stagger_multiplier = 2.0
 	if is_instance_valid(latest_projectile):
 		latest_projectile.recall_speed_multiplier = recall_speed_multiplier
 		latest_projectile.recall_stagger_multiplier = recall_stagger_multiplier
+
+
+func refresh_recall_multipliers() -> void:
+	recall_speed_multiplier = minf(1.75, mod_recall_speed_multiplier * (1.35 if _municipal_recall_enabled else 1.0))
+	if is_instance_valid(latest_projectile): latest_projectile.recall_speed_multiplier = recall_speed_multiplier
 
 func fire_secondary() -> bool:
 	if not enabled or not is_instance_valid(latest_projectile):

@@ -33,6 +33,17 @@ static func apply(player: CobiePlayer, profile: MissionLoadoutProfile, restored_
 				break
 	if selected_index < 0:
 		return false
+	var equipped_mods: Dictionary = restored_payload.get("equipped_weapon_mods", {})
+	if equipped_mods.is_empty():
+		var tree := Engine.get_main_loop() as SceneTree
+		var save_manager: Node = tree.root.get_node_or_null("SaveManager") if tree != null else null
+		if save_manager != null:
+			var campaign := CampaignProgressRuntime.new()
+			if campaign.configure(save_manager): equipped_mods = campaign.load_progress().get("equipped_weapon_mods", {}).duplicate(true)
+			campaign.free()
+	var episode: EpisodeDefinition = load("res://resources/campaign/episode_one.tres")
+	if episode != null and episode.progression_catalog != null:
+		WeaponModApplicator.apply(player, equipped_mods, episode.progression_catalog)
 	player.select_weapon(selected_index)
 	return true
 

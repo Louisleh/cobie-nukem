@@ -75,6 +75,10 @@ run_godot_test res://tests/unit/gameplay_foundation_test.gd
 run_godot_test res://tests/unit/world_interaction_test.gd
 run_godot_test res://tests/unit/interaction_catalog_test.gd
 run_godot_test res://tests/unit/save_schema_test.gd
+run_godot_test res://tests/unit/run_result_calculator_test.gd
+run_godot_test res://tests/unit/campaign_backup_codec_test.gd
+run_godot_test res://tests/unit/progression_content_test.gd
+run_godot_test res://tests/unit/weapon_mod_applicator_test.gd
 run_godot_test res://tests/unit/mobile_controls_test.gd
 run_godot_test res://tests/unit/secondary_fire_touch_hud_test.gd
 run_godot_test res://tests/unit/imported_audio_contract_test.gd

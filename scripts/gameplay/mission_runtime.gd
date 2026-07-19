@@ -111,13 +111,45 @@ func record_campaign_completion(level_id: StringName, summary: Dictionary, save_
 		campaign.queue_free()
 		return ERR_INVALID_PARAMETER
 	campaign.load_progress()
-	var error := campaign.record_completion(level_id, {
-		"best_time_msec": int(summary.get("completion_time_msec", 0)),
-		"rank": "A" if int(summary.get("secrets_found", 0)) >= int(summary.get("secrets_total", 1)) else "B",
-		"difficulty": String(difficulty_id),
-		"best_secrets": int(summary.get("secrets_found", 0)),
-		"total_secrets": int(summary.get("secrets_total", 0)),
-	}, unlocks, upgrades)
+	var episode: EpisodeDefinition = load("res://resources/campaign/episode_one.tres")
+	var profile := episode.progression_catalog.profile_for(level_id) if episode != null and episode.progression_catalog != null else null
+	if profile == null:
+		campaign.queue_free()
+		return ERR_DOES_NOT_EXIST
+	var combined := summary.duplicate(true)
+	var game_state := get_node_or_null("/root/GameState")
+	if game_state != null:
+		var run_stats: Dictionary = game_state.run_stats
+		for key in run_stats: if not combined.has(key): combined[key] = run_stats[key]
+		var local_metrics: Dictionary = game_state.local_metrics
+		combined["weapon_usage"] = local_metrics.get("weapon_usage", {}).duplicate(true)
+		combined["weapon_hits"] = local_metrics.get("weapon_hits", {}).duplicate(true)
+	combined["mission_id"] = String(level_id)
+	combined["difficulty"] = String(difficulty_id)
+	var canonical := RunResultCalculator.calculate(combined, profile)
+	canonical["difficulty"] = String(difficulty_id)
+	canonical["damage_taken"] = float(combined.get("damage_taken", 0.0))
+	canonical["pending_compliance_tags"] = int(combined.get("pending_compliance_tags", 0))
+	canonical["run_mode"] = String(combined.get("run_mode", "standard"))
+	canonical["weapon_usage"] = combined.get("weapon_usage", {}).duplicate(true)
+	canonical["weapon_hits"] = combined.get("weapon_hits", {}).duplicate(true)
+	canonical["boss_defeated"] = bool(combined.get("boss_defeated", true))
+	canonical["best_time_msec"] = canonical.completion_time_msec
+	canonical["best_secrets"] = canonical.secrets_found
+	canonical["total_secrets"] = canonical.secrets_total
+	canonical["unlocked_missions"] = unlocks
+	canonical["campaign_upgrades"] = upgrades
+	var completed_before: Array = campaign.snapshot().get("completed_challenges", [])
+	var new_challenges: Array[ProgressionChallengeDefinition] = ProgressionChallengeEvaluator.newly_completed(canonical, episode.progression_catalog.challenges_for(level_id), completed_before)
+	var challenge_ids: Array[String] = []
+	var challenge_reward := 0
+	for challenge in new_challenges:
+		challenge_ids.append(String(challenge.id)); challenge_reward += challenge.tag_reward
+	canonical["completed_challenges"] = challenge_ids
+	var payout: Dictionary = ProgressionChallengeEvaluator.tag_payout(canonical, not campaign.is_mission_completed(level_id), challenge_reward)
+	canonical["compliance_tags_earned"] = payout.total
+	canonical["reward_breakdown"] = payout
+	var error := campaign.commit_run_result(canonical)
 	campaign.queue_free()
 	return error
 
@@ -180,6 +212,9 @@ func _on_actor_spawned(actor: Node, definition: EncounterDefinition) -> void:
 
 
 func _on_actor_defeated(actor: Node, definition: EncounterDefinition) -> void:
+	var game_state := get_node_or_null("/root/GameState")
+	if game_state != null and actor is EnemyAgent and (actor as EnemyAgent).definition != null:
+		game_state.record_enemy_tag_value((actor as EnemyAgent).definition)
 	actor_defeated.emit(actor, definition)
 
 

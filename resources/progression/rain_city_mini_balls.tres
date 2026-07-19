@@ -1,0 +1,8 @@
+[gd_resource type="Resource" script_class="MiniBallMissionDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/gameplay/mini_ball_mission_definition.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+mission_id = &"episode_1_vancouver_waterfront"
+zones = Array[Dictionary]([{"id": &"alley", "count": 10, "origin": Vector3(0, 0.75, -5), "width": 10.0, "depth": 12.0}, {"id": &"slice", "count": 10, "origin": Vector3(0, 0.75, -31), "width": 12.0, "depth": 12.0}, {"id": &"seawall", "count": 10, "origin": Vector3(0, 0.75, -67), "width": 15.0, "depth": 17.0}, {"id": &"terminal", "count": 10, "origin": Vector3(0, 0.75, -107), "width": 13.0, "depth": 15.0}, {"id": &"pier", "count": 10, "origin": Vector3(0, 0.75, -147), "width": 21.0, "depth": 18.0}])

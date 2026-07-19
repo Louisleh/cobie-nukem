@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="EpisodeDefinition" load_steps=14 format=3]
+[gd_resource type="Resource" script_class="EpisodeDefinition" load_steps=15 format=3]
 
 [ext_resource type="Script" path="res://scripts/gameplay/episode_definition.gd" id="1"]
 [ext_resource type="Resource" path="res://resources/level/salmon_creek_card.tres" id="2"]
@@ -11,6 +11,7 @@
 [ext_resource type="Resource" path="res://resources/level/mount_hood_whiteout.tres" id="9"]
 [ext_resource type="Resource" path="res://resources/level/dark_side_fetch.tres" id="10"]
 [ext_resource type="Resource" path="res://resources/level/ventura_pier_pressure.tres" id="11"]
+[ext_resource type="Resource" path="res://resources/campaign/episode_one_progression.tres" id="12"]
 
 [resource]
 script = ExtResource("1")
@@ -19,3 +20,4 @@ title = "COBIE NUKEM // FIVE-MISSION CAMPAIGN"
 cards = Array[Resource]([ExtResource("2"), ExtResource("3"), ExtResource("4"), ExtResource("5"), ExtResource("6")])
 missions = Array[Resource]([ExtResource("7"), ExtResource("8"), ExtResource("9"), ExtResource("10"), ExtResource("11")])
 completion_upgrade = &"new_game_plus"
+progression_catalog = ExtResource("12")

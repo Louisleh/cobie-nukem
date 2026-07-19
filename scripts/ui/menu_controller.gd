@@ -3,6 +3,7 @@ extends Control
 
 @export_file("*.tscn") var level_scene_path := "res://scenes/levels/episode_1_level_1.tscn"
 @export_file("*.tscn") var level_select_scene_path := "res://scenes/menus/level_select.tscn"
+@export_file("*.tscn") var doghouse_scene_path := "res://scenes/menus/doghouse_hub.tscn"
 @export_file("*.tscn") var options_scene_path := "res://scenes/menus/options_menu.tscn"
 @export_file("*.tscn") var credits_scene_path := "res://scenes/menus/credits.tscn"
 @export_file("*.tscn") var input_setup_scene_path := "res://scenes/debug/input_diagnostics.tscn"
@@ -25,6 +26,7 @@ func _ready() -> void:
 	_wire_button(%CreditsButton, func() -> void: _route(credits_scene_path))
 	_wire_button(%QuitButton, _quit)
 	%QuitButton.text = "RETURN TO SITE" if OS.has_feature("web") else "QUIT"
+	%NewGameButton.text = "PLAY // DOGHOUSE"
 	%QuitButton.visible = true
 	continue_button.disabled = CheckpointPayload.sanitize(SaveManager.load_slot(&"checkpoint")).is_empty()
 	continue_button.focus_mode = Control.FOCUS_NONE if continue_button.disabled else Control.FOCUS_ALL
@@ -60,7 +62,7 @@ func _wire_button(button: Button, callback: Callable) -> void:
 	button.mouse_entered.connect(button.grab_focus)
 
 func _new_game() -> void:
-	if _route(level_select_scene_path):
+	if _route(doghouse_scene_path):
 		GameState.continue_requested = false
 
 func _continue_game() -> void:
