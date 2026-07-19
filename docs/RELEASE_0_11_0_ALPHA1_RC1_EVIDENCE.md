@@ -21,7 +21,16 @@ Build ID: `2026-07-18-doghouse-progression-rc1`
 
 ## Export and artifact evidence
 
-Pending the final `QA_EXPORTS=1` package run and public byte-identity verification.
+- Full `QA_EXPORTS=1 bash tools/release_validate.sh`: pass, including Web and unsigned Universal macOS exports.
+- Package source stamp: `6d9dae914cbad46d461d414c5bf683aea61a1306`; runtime revision remains `3c2de29`.
+
+| Artifact | Bytes | SHA-256 |
+| --- | ---: | --- |
+| `cobie-nukem-0.11.0-alpha.1-rc1-itch.zip` | 74,238,200 | `2a6d149a7da206f57ed726df374bb81994ea918a1521ad3fc05f95e929599cfd` |
+| `cobie-nukem-0.11.0-alpha.1-rc1-macos-unsigned.zip` | 115,537,576 | `da62f5505b4f5d876ae8b1c99a6b71ae59cab01c8fc9824c6cedea09d1f464df` |
+| Packaged Web PCK | 69,554,484 | `1d86d7747dd73f4a8f120da85d832a816018dbbfdcb8d01a1089e23f45e16501` |
+
+Public source/website integration and downloaded-byte verification are recorded after merge and deployment; they are not pre-claimed here.
 
 ## Human-only gates
 

@@ -27,6 +27,14 @@ Built on 2026-07-18 with Godot `4.7.stable.official.5b4e0cb0f`. Runtime feature 
 - Economy feel, collectible placement/readability, repeat-session motivation, physical iPad touch, and full target-Mac/browser routes remain human gates. Levels 2–5 remain explicit `BETA`.
 - The macOS ZIP remains unsigned and unnotarized. Working-title clearance remains outside this engineering gate.
 
+## Artifacts
+
+| Artifact | Bytes | SHA-256 |
+| --- | ---: | --- |
+| `cobie-nukem-0.11.0-alpha.1-rc1-itch.zip` | 74,238,200 | `2a6d149a7da206f57ed726df374bb81994ea918a1521ad3fc05f95e929599cfd` |
+| `cobie-nukem-0.11.0-alpha.1-rc1-macos-unsigned.zip` | 115,537,576 | `da62f5505b4f5d876ae8b1c99a6b71ae59cab01c8fc9824c6cedea09d1f464df` |
+| Packaged Web PCK | 69,554,484 | `1d86d7747dd73f4a8f120da85d832a816018dbbfdcb8d01a1089e23f45e16501` |
+
 ---
 
 # Prior Release Notes — 0.9.0-alpha.1-rc1 Five-Mission Public Beta
