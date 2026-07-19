@@ -17,6 +17,7 @@ var _spawn_pickup: Callable
 var _cannon_attacks := 0
 var _reward_timer: Timer
 var _last_health_fraction := -1.0
+var _off_leash := false
 
 
 func configure(pacing: SalmonCreekPacingProfile, golden_ball: GoldenBallFinale, objectives: ObjectiveTracker, spawn_pickup: Callable) -> bool:
@@ -29,11 +30,17 @@ func configure(pacing: SalmonCreekPacingProfile, golden_ball: GoldenBallFinale, 
 	return true
 
 
+func set_off_leash(enabled: bool) -> void:
+	_off_leash = enabled
+
+
 func bind_walker(value: Node) -> bool:
 	if value == null or value == walker:
 		return false
 	reset(false)
 	walker = value
+	if _off_leash and "summon_attack_interval" in walker:
+		walker.summon_attack_interval = maxi(2, int(walker.summon_attack_interval) - 1)
 	if walker is EnemyAgent and walker.definition != null:
 		walker.definition.preferred_distance = walker.definition.attack_range
 		walker.definition.retreat_distance = _pacing.pressure_distance.x

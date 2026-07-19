@@ -126,6 +126,9 @@ func record_campaign_completion(level_id: StringName, summary: Dictionary, save_
 		combined["weapon_hits"] = local_metrics.get("weapon_hits", {}).duplicate(true)
 	combined["mission_id"] = String(level_id)
 	combined["difficulty"] = String(difficulty_id)
+	if String(combined.get("run_mode", "standard")) == "off_leash":
+		profile = profile.duplicate(true) as MissionProgressionProfile
+		profile.enemies_total += 4
 	var canonical := RunResultCalculator.calculate(combined, profile)
 	canonical["difficulty"] = String(difficulty_id)
 	canonical["damage_taken"] = float(combined.get("damage_taken", 0.0))
@@ -214,7 +217,15 @@ func _on_actor_spawned(actor: Node, definition: EncounterDefinition) -> void:
 func _on_actor_defeated(actor: Node, definition: EncounterDefinition) -> void:
 	var game_state := get_node_or_null("/root/GameState")
 	if game_state != null and actor is EnemyAgent and (actor as EnemyAgent).definition != null:
-		game_state.record_enemy_tag_value((actor as EnemyAgent).definition)
+		var amount: int = game_state.record_enemy_tag_value((actor as EnemyAgent).definition)
+		var scene := get_tree().current_scene
+		if scene != null:
+			var token := ComplianceTagToken.new()
+			token.name = "ComplianceTagToken"
+			var target := get_tree().get_first_node_in_group(&"player") as Node3D
+			token.configure(amount, target)
+			scene.add_child(token)
+			token.global_position = (actor as Node3D).global_position + Vector3.UP * 0.55
 	actor_defeated.emit(actor, definition)
 
 

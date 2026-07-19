@@ -13,6 +13,7 @@ var run_stats: Dictionary = {}
 var continue_requested := false
 var difficulty_id: StringName = &"classic"
 var local_metrics: Dictionary = {}
+var requested_run_mode := "standard"
 
 const DIFFICULTY_PATHS := {
 	&"story": "res://resources/difficulty/story.tres",
@@ -25,6 +26,10 @@ func begin_boot() -> void:
 	_set_phase(Phase.BOOT)
 
 func begin_run(level_id: StringName) -> void:
+	var run_mode := requested_run_mode
+	if phase == Phase.PLAYING and current_level_id == level_id and not run_stats.is_empty():
+		run_mode = String(run_stats.get("run_mode", requested_run_mode))
+	requested_run_mode = "standard"
 	current_level_id = level_id
 	run_stats = {
 		"started_at_msec": Time.get_ticks_msec(),
@@ -35,7 +40,7 @@ func begin_run(level_id: StringName) -> void:
 		"damage_taken": 0.0,
 		"deaths": 0,
 		"pending_compliance_tags": 0,
-		"run_mode": "standard",
+		"run_mode": run_mode if run_mode == "off_leash" else "standard",
 		"last_zone": "forbidden_field",
 		"checkpoint_id": "start",
 		"difficulty_id": String(difficulty_id),
@@ -47,6 +52,10 @@ func begin_run(level_id: StringName) -> void:
 	}
 	_set_phase(Phase.PLAYING)
 	run_started.emit()
+
+
+func request_run_mode(value: String) -> void:
+	requested_run_mode = value if value == "off_leash" else "standard"
 
 
 func _process(delta: float) -> void:

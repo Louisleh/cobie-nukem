@@ -34,6 +34,12 @@ const ZONE_AMBIENCE: Dictionary = {
 	&"compliance_lab": &"salmon_ambience_lab",
 	&"walker_arena": &"salmon_ambience_arena",
 }
+const OFF_LEASH_REINFORCEMENTS := {
+	&"forbidden_field": {"scene": "res://scenes/enemies/squirrel_trooper.tscn", "position": Vector3(7, 0, -13)},
+	&"equipment_shed": {"scene": "res://scenes/enemies/leash_enforcement_drone.tscn", "position": Vector3(4, 2, -42)},
+	&"maintenance_tunnels": {"scene": "res://scenes/enemies/compliance_hound.tscn", "position": Vector3(-3, 0, -79)},
+	&"compliance_lab": {"scene": "res://scenes/enemies/umbrella_shield_enforcer.tscn", "position": Vector3(5, 0, -119)},
+}
 
 @export var metadata: LevelMetadata = preload("res://resources/level/episode_1_level_1.tres")
 @export var content_manifest: ContentManifest = preload("res://resources/content/salmon_creek_manifest.tres")
@@ -123,6 +129,7 @@ func _setup_gameplay_systems() -> void:
 	_mission_runtime.configure(content_manifest, _spawn_scene)
 	_objective_tracker = _mission_runtime.objectives
 	_encounter_runner = _mission_runtime.encounters
+	if _off_leash_requested(): _apply_off_leash_encounters()
 	_mission_runtime.objective_activated.connect(_on_mission_objective_activated)
 	_mission_runtime.actor_spawned.connect(_on_encounter_actor_spawned)
 	_mission_runtime.actor_defeated.connect(_on_mission_actor_defeated)
@@ -240,10 +247,35 @@ func _build_level() -> void:
 	add_child(_boss_runtime)
 	if not _boss_runtime.configure(encounter_pacing, _golden_ball, _objective_tracker, _spawn_pickup):
 		push_error("Salmon Creek boss runtime failed to configure")
+	_boss_runtime.set_off_leash(_off_leash_requested())
 	_boss_runtime.boss_state_changed.connect(boss_state_changed.emit)
 	_boss_runtime.narrative_message.connect(narrative_message.emit)
 	_boss_runtime.objective_changed.connect(objective_changed.emit)
 	_boss_runtime.phase_caption.connect(boss_phase_caption.emit)
+
+
+func _off_leash_requested() -> bool:
+	if not _restored_checkpoint.is_empty(): return String(_restored_checkpoint.get("run_mode", "standard")) == "off_leash"
+	var game_state := get_node_or_null("/root/GameState")
+	return game_state != null and (String(game_state.requested_run_mode) == "off_leash" or String(game_state.run_stats.get("run_mode", "standard")) == "off_leash")
+
+
+func _apply_off_leash_encounters() -> void:
+	for zone_id in OFF_LEASH_REINFORCEMENTS:
+		var original := _encounter_runner.definitions.get(zone_id) as EncounterDefinition
+		if original == null: continue
+		var remix := original.duplicate(true) as EncounterDefinition
+		var remix_waves: Array[Dictionary] = remix.effective_waves().duplicate(true)
+		if remix_waves.is_empty(): continue
+		var final_wave: Dictionary = remix_waves[remix_waves.size() - 1].duplicate(true)
+		var spawns: Array = final_wave.get("spawns", []).duplicate(true)
+		spawns.append(OFF_LEASH_REINFORCEMENTS[zone_id].duplicate(true))
+		final_wave["spawns"] = spawns
+		remix_waves[remix_waves.size() - 1] = final_wave
+		remix.waves = remix_waves
+		remix.enemy_budget += 1
+		remix.maximum_simultaneous_attackers = mini(4, remix.maximum_simultaneous_attackers + 1)
+		_encounter_runner.definitions[zone_id] = remix
 
 func _emit_narrative_message(text: String, duration: float) -> void:
 	narrative_message.emit(text, duration)

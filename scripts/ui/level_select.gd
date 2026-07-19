@@ -428,6 +428,7 @@ func _commit_launch(index: int) -> void:
 		return
 	SaveManager.delete_slot(&"checkpoint")
 	GameState.continue_requested = false
+	GameState.request_run_mode("standard")
 	GameState.begin_run(data.level_id)
 
 
