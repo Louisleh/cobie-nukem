@@ -7,9 +7,9 @@ This is the durable continuation ledger for the Cobie Nukem 3/6/9 quality progra
 - **Program branch:** `hermes/world-class-369-buildout`
 - **Baseline source:** `4dbbe2e8571efec290ed863415a78f09bc970ca9`
 - **Public baseline declared by roadmap:** `0.11.0-alpha.1-rc1`, gameplay/runtime `3c2de29`
-- **Current packet:** WCB-000 — PRD, governance, and continuity (ready to integrate)
-- **Last verified packet:** WCB-000 documentation checks passed; integration commit pending
-- **Next dependency-safe packet:** WCB-001 — record and close the reproduced Godot 4.7 baseline
+- **Current packet:** WCB-001 — reproducible Godot 4.7 workstation and baseline (ready to integrate)
+- **Last verified packet:** WCB-000 integrated and pushed at `6b8077a1b4d0bcf6fcffb1c290c53dab1679c0ba`
+- **Next dependency-safe packets:** WCB-002 input ownership, WCB-003 checkpoint invariants, and the non-overlapping halves of WCB-004
 - **Toolchain state:** Godot 4.7.1 and matching export templates are installed; automated import, tests, and export validation pass. Optional Blender/MCP production-art tooling remains unavailable and is recorded below.
 - **Human-only gates:** target-Mac feel/playthrough, physical iPad, flight stick, art taste, pacing, mix, fairness, humor, motion comfort, photosensitivity
 
@@ -17,11 +17,11 @@ This is the durable continuation ledger for the Cobie Nukem 3/6/9 quality progra
 
 | Packet | State | Owner | Integrated commit | Verification | Honest boundary |
 | --- | --- | --- | --- | --- | --- |
-| WCB-000 Governance | READY TO INTEGRATE | Integration/docs | — | Diff/link/syntax checks pass | No gameplay claim |
-| WCB-001 Toolchain baseline | NOT STARTED — PRECOMPUTED EVIDENCE ONLY | Architecture | — | Godot 4.7.1 import/tests/exports precomputed after intake | Cannot advance until WCB-000 integrates; optional art MCP tooling is not ready |
-| WCB-002 Input ownership | BLOCKED by WCB-001 | Input/player seam | — | — | Remapping not proven at player level |
-| WCB-003 Checkpoint invariants | BLOCKED by WCB-001 | Save/mission runtime | — | — | Later-mission restore risk remains |
-| WCB-004 Settings/allocation | BLOCKED by WCB-001 | UI + combat | — | — | Runtime defaults/allocation budget unproven |
+| WCB-000 Governance | COMPLETE | Integration/docs | `6b8077a` | Diff/link/validator/reviews pass | No gameplay claim |
+| WCB-001 Toolchain baseline | READY TO INTEGRATE | Architecture | — | Godot 4.7.1 import/tests/exports pass | Optional art MCP tooling is not ready |
+| WCB-002 Input ownership | PENDING WCB-001 COMMIT | Input/player seam | — | — | Remapping not proven at player level |
+| WCB-003 Checkpoint invariants | PENDING WCB-001 COMMIT | Save/mission runtime | — | — | Later-mission restore risk remains |
+| WCB-004 Settings/allocation | PENDING WCB-001 COMMIT | UI + combat | — | — | Runtime defaults/allocation budget unproven |
 | WCB-005 Rain City spatial slice | BLOCKED by WCB-002–004 | Level | — | — | Current route remains public BETA |
 | WCB-006 Encounters | BLOCKED by WCB-005 | Enemy/encounter | — | — | Human pacing/fairness open |
 | WCB-007 Towmaster | BLOCKED by WCB-005 | Boss/presentation | — | — | Human spectacle/fairness open |
@@ -120,8 +120,21 @@ Copy this section for every packet before marking it complete.
 - Evidence and class: documentation/source review plus `docs/RELEASE_0_11_0_ALPHA1_RC1_EVIDENCE.md`, `docs/TEST_EVIDENCE.md`, `docs/evidence/rain_city_stabilization_2026-07-16.md`, and `docs/RAIN_CITY_LEVEL2_QA_REPORT.md`; no new gameplay, rendered, browser, device, or human approval claim.
 - Review findings: the historical roadmap remains release provenance; §1.5 and this ledger now own current product requirements and execution state respectively.
 - Human-only/open claims: all product feel, art taste, pacing, fairness, mix, humor, motion comfort, photosensitivity, and physical-device claims remain open.
-- Integrated commit: pending.
+- Integrated commit: `6b8077a1b4d0bcf6fcffb1c290c53dab1679c0ba` (pushed to `origin/hermes/world-class-369-buildout`).
 - Next dependency-safe packet: WCB-001 baseline closure, followed by WCB-002–004.
+
+## 2026-07-21 — WCB-001 Reproducible Godot 4.7 workstation and baseline
+
+- Source commit: `6b8077a1b4d0bcf6fcffb1c290c53dab1679c0ba`
+- Owner / writer: GPT-5.6 architecture/integration
+- Acceptance condition: a clean Godot 4.7.1 import, canonical test entry point, and Web/macOS export matrix run locally with attributable output; optional privileged art-tool failures are named rather than hidden.
+- Files changed: `docs/IMPLEMENTATION_PLAN.md`, `docs/WORLD_CLASS_BUILDOUT_LOG.md`.
+- Commands and exact results: `/opt/homebrew/bin/godot --version` → `4.7.1.stable.official.a13da4feb`; `bash tools/run_godot_safe.sh --timeout 600 -- --headless --path . --editor --quit` → exit 0; `bash tools/run_godot_safe.sh --timeout 300 -- --headless --path . --script res://tests/run_tests.gd` → exit 0 and `PASS: core contract checks`; `QA_EXPORTS=1 bash tools/release_validate.sh` → exit 0 and `Automated release validation passed`; `bash tools/game_dev_health.sh` → exit 1 with four named optional visual-tool findings and both Godot/source-bridge safety checks passing.
+- Evidence and class: automated functional and packaged export evidence. No native rendered playthrough, browser interaction route, physical device, joystick, or human approval claim.
+- Review findings: Godot 4.7.1, matching export templates, and Material Maker 1.7 are available. Blender and the privileged Godot/Blender MCP paths are not ready, so visual-production packets must repair/re-audit them before use. This does not block WCB-002–004's headless gameplay/correctness work.
+- Human-only/open claims: target-Mac feel/playthrough, physical iPad, flight stick, art taste, pacing, fairness, mix, humor, motion comfort, and photosensitivity remain open.
+- Integrated commit: pending.
+- Next dependency-safe packets: WCB-002, WCB-003, and the non-overlapping settings/allocation halves of WCB-004.
 
 ## Resume protocol
 

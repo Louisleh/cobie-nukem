@@ -43,7 +43,7 @@ WCB-002, WCB-003, and the non-overlapping halves of WCB-004 may run in parallel 
 
 ### WCB-000 — PRD, governance, and continuity
 
-**Status:** In progress
+**Status:** Complete — integrated and pushed at `6b8077a`
 **Owner:** Integration/documentation
 **Paths:** `AGENTS.md`, `docs/PRD.md`, `docs/IMPLEMENTATION_PLAN.md`, `docs/WORLD_CLASS_BUILDOUT_LOG.md`, `docs/PHASE_ROADMAP_PRD.md`, `docs/DECISIONS.md`, `docs/design/README.md`, `.agents/skills/cobie-godot-production/SKILL.md`, `tools/validate_world_class_docs.py`
 
@@ -61,7 +61,7 @@ WCB-002, WCB-003, and the non-overlapping halves of WCB-004 may run in parallel 
 
 ### WCB-001 — Reproducible Godot 4.7 workstation and baseline
 
-**Status:** Pending WCB-000
+**Status:** Ready to integrate; core baseline green, optional visual-tool findings recorded
 **Owner:** Architecture/integration
 **Paths:** tooling/docs only unless a verified compatibility fix is required
 
