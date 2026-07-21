@@ -45,7 +45,12 @@ func set_value(section: StringName, key: StringName, value: Variant, persist: bo
 func reset_to_defaults() -> Error:
 	_config = ConfigFile.new()
 	_apply_defaults()
-	return save_settings()
+	var error := save_settings()
+	for section: String in DEFAULTS:
+		var values: Dictionary = DEFAULTS[section]
+		for key: String in values:
+			setting_changed.emit(StringName(section), StringName(key), _config.get_value(section, key))
+	return error
 
 func _apply_defaults() -> void:
 	# Existing 0.5 settings stored one swipe-look speed. Preserve that preference

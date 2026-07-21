@@ -9,6 +9,9 @@ var current: QualityProfile
 var _temporary_effects: Array[Node] = []
 
 func _ready() -> void:
+	var settings := get_node_or_null("/root/SettingsManager")
+	if settings != null and settings.has_signal("setting_changed"):
+		settings.setting_changed.connect(_on_setting_changed)
 	apply_auto_profile()
 
 func apply_auto_profile() -> void:
@@ -27,6 +30,12 @@ func apply_profile(profile: QualityProfile) -> void:
 	var pressure := get_parent().get_node_or_null("CombatPressure") if get_parent() != null else null
 	if pressure != null: pressure.configure_limit(profile.maximum_attackers)
 	profile_changed.emit(profile)
+
+
+func _on_setting_changed(section: StringName, key: StringName, _value: Variant) -> void:
+	if section != &"video" or key != &"quality":
+		return
+	apply_auto_profile()
 
 
 func claim_temporary_effect(effect: Node) -> void:
