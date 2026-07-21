@@ -22,9 +22,15 @@ static func consume_requested(metadata: LevelMetadata, content_revision: int, ch
 		position = checkpoint_positions[checkpoint_id]
 	if position == null:
 		return {}
-	if game_state != null and game_state.has_method("restore_progression_checkpoint"):
-		game_state.restore_progression_checkpoint(int(saved.get("pending_compliance_tags", 0)), String(saved.get("run_mode", "standard")))
 	return {"payload": saved, "position": position}
+
+
+static func restore_progression_state(payload: Dictionary, game_state: Node) -> void:
+	if game_state == null or payload.is_empty():
+		return
+	if not game_state.has_method("restore_progression_checkpoint"):
+		return
+	game_state.restore_progression_checkpoint(int(payload.get("pending_compliance_tags", 0)), String(payload.get("run_mode", "standard")))
 
 
 static func restore(payload: Dictionary, mission_runtime: MissionRuntime, route_runtime: MissionRouteRuntime, route_definition: MissionRouteDefinition) -> Dictionary:

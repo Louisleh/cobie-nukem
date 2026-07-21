@@ -12,6 +12,14 @@ var failures: Array[String] = []
 
 class FakeGameState extends Node:
 	var continue_requested := true
+	var restore_calls := 0
+	var restored_tags := 0
+	var restored_mode := &""
+
+	func restore_progression_checkpoint(pending_tags: int, run_mode: String) -> void:
+		restore_calls += 1
+		restored_tags = pending_tags
+		restored_mode = StringName(run_mode)
 
 
 class FakeSaveManager extends Node:
@@ -98,6 +106,7 @@ func _initialize() -> void:
 	_test_missing_position_uses_authored_anchor()
 	_test_unknown_stale_checkpoint_is_rejected()
 	_test_unknown_positionless_checkpoint_is_rejected()
+	_test_checkpoint_restore_is_post_begin_payload()
 	_test_completion_persistence_is_transactional_and_retryable()
 	_test_checkpoint_success_is_announced_only_after_write()
 	_test_secret_discovery_saves_once()
@@ -112,7 +121,7 @@ func _initialize() -> void:
 		quit(1)
 
 
-func _base_payload(checkpoint_id: StringName, revision: int, include_position := true) -> Dictionary:
+func _base_payload(checkpoint_id: StringName, revision: int, include_position := true, pending_tags := -1, run_mode := &"standard") -> Dictionary:
 	var payload := {
 		"scene_path": SCENE_PATH,
 		"level_id": String(MISSION_ID),
@@ -121,7 +130,31 @@ func _base_payload(checkpoint_id: StringName, revision: int, include_position :=
 	}
 	if include_position:
 		payload["position"] = [11.0, 2.0, -77.0]
+	if pending_tags >= 0:
+		payload["pending_compliance_tags"] = pending_tags
+		payload["run_mode"] = String(run_mode)
 	return payload
+
+
+func _test_checkpoint_restore_is_post_begin_payload() -> void:
+	var metadata := LevelMetadata.new()
+	metadata.level_id = MISSION_ID
+	var game_state := FakeGameState.new()
+	var save_manager := FakeSaveManager.new()
+	save_manager.payload = _base_payload(KNOWN_CHECKPOINT, CURRENT_REVISION, true, 12, &"off_leash")
+	var result := RainCityCheckpointState.consume_requested(
+		metadata,
+		CURRENT_REVISION,
+		{KNOWN_CHECKPOINT: KNOWN_POSITION},
+		game_state,
+		save_manager
+	)
+	_expect(result.get("payload", {}).get("pending_compliance_tags", 0) == 12, "Payload preserves pending-compliance metadata")
+	_expect(result.get("payload", {}).get("run_mode", "") == "off_leash", "Payload preserves run-mode metadata")
+	_expect(game_state.restore_calls == 0, "consume_requested does not restore GameState progression before begin_run")
+	_expect(not game_state.continue_requested, "continue request is still consumed")
+	game_state.free()
+	save_manager.free()
 
 
 func _consume(payload: Dictionary) -> Dictionary:

@@ -63,7 +63,9 @@ func _ready() -> void:
 	if spawn_player: _spawn_player()
 	if setup_presentation: _setup_presentation()
 	var game_state := get_node_or_null("/root/GameState")
-	if game_state != null: game_state.begin_run(metadata.level_id)
+	if game_state != null:
+		game_state.begin_run(metadata.level_id)
+		RainCityCheckpointState.restore_progression_state(_restored_checkpoint, game_state)
 	narrative_message.emit("EPISODE 1, MISSION 3: MOUNT HOOD WHITEOUT\nPUBLIC BETA", 4.0)
 	level_ready.emit(player)
 	var announced := _mission_runtime.announce_available_objectives()
