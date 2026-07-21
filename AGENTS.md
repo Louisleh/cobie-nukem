@@ -15,6 +15,15 @@ These rules apply to the entire repository.
 9. Billboard scale is data, not per-scene taste. Every manifested sprite atlas records a fixed cell size, opaque-frame height, feet baseline, direction order, intended world height, and `pixel_size = intended_world_height / opaque_frame_height`; validation must reject missing or implausible scale metadata.
 10. Production zones declare an environment identity, manifested texture/material families, surface responses, and dominant landmarks through `ZonePresentationProfile`. Flat-color blockout materials are not final critical-route environment art. Presentation assets never take gameplay collision or navigation ownership.
 
+## World-class buildout continuity
+
+- For the active 3/6/9 program, read `docs/PRD.md` §1.5, `docs/IMPLEMENTATION_PLAN.md`, and `docs/WORLD_CLASS_BUILDOUT_LOG.md` before changing files.
+- `docs/PRD.md` owns requirements; `docs/IMPLEMENTATION_PLAN.md` owns dependency order; `docs/WORLD_CLASS_BUILDOUT_LOG.md` owns current packet state; `docs/PHASE_ROADMAP_PRD.md` owns release history. Do not create a competing roadmap.
+- Work only on a dependency-safe WCB packet. Record acceptance condition, owned paths, exact commands/results, evidence class, remaining human gates, integrated commit, and next packet in the buildout log.
+- Freeze new mission, weapon, enemy-variant, economy, and meta-progression breadth until the definitive Rain City slice passes its PRD gates.
+- One writer owns a path at a time. Parallel writers use isolated checkouts and non-overlapping ownership; the integration owner reviews and reruns tests.
+- New sessions resume from repository files and Git state, not chat history. If blocked or unverified, leave the packet blocked rather than claiming progress.
+
 ## Spark acceleration
 
 - For complex multi-subsystem phases or requests to use GPT-5.3-Codex-Spark credits, invoke the repo skill `cobie-spark-orchestration`.

@@ -1,7 +1,7 @@
 # Cobie Nukem: Retro Mayhem 3D
-## Research-Informed Product Requirements Document + Codex Autonomous Build Goal
+## Research-Informed Product Requirements Document + Autonomous World-Class 3/6/9 Build Goal
 
-**Document status:** Original vertical-slice requirements; implementation status is maintained in `docs/PHASE_ROADMAP_PRD.md`
+**Document status:** Active product contract. The audited world-class buildout mandate is §1.5; dependency order is maintained in `docs/IMPLEMENTATION_PLAN.md`; live execution state is maintained in `docs/WORLD_CLASS_BUILDOUT_LOG.md`; release history remains in `docs/PHASE_ROADMAP_PRD.md`.
 **Working title:** *Cobie Nukem: Retro Mayhem 3D*  
 **Primary platform:** macOS, especially Apple-silicon Mac mini  
 **Secondary platform:** Browser-playable Web export  
@@ -33,7 +33,7 @@ The current production cycle makes the complete Episode 1 arc functional and pub
 
 All five missions use one typed campaign graph, shared mission runtime, save-v5 contracts, three-weapon kit, accessibility/input systems, encounter-pressure rules, checkpoint lifecycle, boss-module architecture, Golden Ball finale contract, and environmental-identity art bible. Levels 2–5 remain honest public betas until physical iPad and target-Mac playthroughs plus human art, pacing, mix, fairness, humor, motion, and photosensitivity review pass. “Functional” and “automated green” never mean “human-approved world-class.”
 
-The canonical status/evidence ledger is `docs/PHASE_ROADMAP_PRD.md`. The canonical art rules are `docs/ART_BIBLE.md`; no separate episode-orchestration bible may override them.
+Release history and prior candidate evidence remain in `docs/PHASE_ROADMAP_PRD.md`; active buildout status and packet evidence live in `docs/WORLD_CLASS_BUILDOUT_LOG.md`. The canonical art rules are `docs/ART_BIBLE.md`; no separate episode-orchestration bible may override them.
 
 ## 1.1.1 Active local progression and replay milestone
 
@@ -56,6 +56,134 @@ Alpha.9 preserves the Rain City Forge systems and exposes Vancouver through an u
 The public Rain City RC is an always-available second mission so open development and family testing do not depend on campaign-save state. It preserves five authored gameplay/presentation zones, 26 enemies with difficulty-specific pressure caps, the Compliance Gull, Umbrella Shield Enforcer, four secrets, save schema v5, Municipal Recall Override, and the four-phase 1,000-HP Municipal Towmaster finale while adding deterministic route gates, collectible secret rewards, shield/attack/pressure fixes, bounded navigation recovery, truthful Rain City performance coverage, transactional completion saves, and serialized crash-safe Godot automation. Its `BETA` badge and opening warning remain until physical iPad, target-Mac, browser, pacing, art, mix, fairness, humor, and photosensitivity gates receive human approval. Automated completion evidence and release identity are maintained in `docs/PHASE_ROADMAP_PRD.md`.
 
 Mission-card hover and keyboard focus are intentionally non-committing. A card changes the selected mission, description, and footer action only when the player activates it by click, touch, Enter, or controller accept. Locked teasers remain selectable for their descriptions but cannot enable Start; Rain City deliberately exposes `START BETA` without a prerequisite.
+
+## 1.5 2026-07-21 world-class buildout mandate
+
+The five-mission alpha proves breadth, architecture, packaging, and deterministic route coverage. It does **not** yet prove that the game delivers one world-class authored shooter experience. The next program therefore freezes speculative breadth and closes the gap between functional systems, promotional promise, and the minute-to-minute game a player sees, hears, and controls.
+
+This mandate is evidence-backed against source commit `4dbbe2e8571efec290ed863415a78f09bc970ca9`, `docs/RELEASE_0_11_0_ALPHA1_RC1_EVIDENCE.md`, `docs/TEST_EVIDENCE.md`, `docs/evidence/rain_city_stabilization_2026-07-16.md`, `docs/RAIN_CITY_LEVEL2_QA_REPORT.md`, the source/assets/tests named below, and the public build at <https://www.louislehmann.fyi/games/cobie-nukem/>. The different source and public gameplay revisions are not automatically a defect, but every new candidate must explicitly map source commit → package hash → website commit → downloaded public PCK hash.
+
+### 1.5.1 Audited problem statement
+
+The project is systems-rich and still lacks human-approved authorship relative to its ambition. Repository evidence proves systems and prior candidates; it repeatedly leaves art cohesion, route clarity, pacing, boss feel, mix, and physical-device quality open. Qualitative statements below are product-review hypotheses until the named human protocol in §1.5.3 closes them:
+
+- Five mission routes exist, but Levels 2–5 remain honest public betas and do not yet have equivalent human/device/art/audio approval.
+- Existing runtime evidence in `docs/TEST_EVIDENCE.md` and `docs/evidence/rain_city_stabilization_2026-07-16.md` does not approve art cohesion, route clarity, or boss spectacle. Candidate review must test the working hypotheses of sparse dressing, weak landmark density, broad flat surfaces, limited environmental storytelling, and a gap between runtime boss spectacle and `assets/level_previews/` concept art.
+- Promotional images under `assets/level_previews/` are concept/marketing art, not in-engine evidence. They must remain labeled as such until paired runtime captures deliver the same identity and promise.
+- Several later-mission enemies and bosses inherit earlier scenes; several mission audio profiles reuse Salmon Creek or Rain City cues. Reuse is acceptable only when the resulting role, silhouette, animation, sound, and counterplay remain distinctly authored.
+- Shared route progression is predominantly forward and arena-sequential. Rain City has the strongest secondary-lane foundation, but the campaign does not yet consistently deliver interconnected spatial loops, meaningful revisits, vertical crossfire, route-state changes, or observation-led secrets.
+- Enemy code supports states, attack budgets, shields, dives, phases, summons, and navigation recovery, but authored encounters still rely too heavily on spawning waves into bounded arenas rather than patrols, reveals, ambushes, crossfires, retreats, traps, and environmental counterplay.
+- Boss phase machinery exists, but the committed boss evidence lacks the dominant silhouette, arena transformation, telegraph hierarchy, audiovisual escalation, and defeat payoff expected of a signature finale.
+- The input service exposes profile-aware mappings while the player consumes global actions and shortcut paths. A profile is not accepted as working until a deliberately non-default mapping drives the real `CobiePlayer`, not only diagnostics or stored settings.
+- Later-mission checkpoint restore order can reset progression after applying saved state. Restore invariants must be proven across all five missions.
+- Resetting options can update persisted values without immediately reapplying every runtime quality effect. The screen and runtime must agree in the same frame.
+- Weapon impacts create transient meshes, materials, timers, tweens, and effect nodes. Quality caps bound survivors but do not prove allocation stability; sustained combat requires measured object/allocation budgets and pooling where evidence warrants it.
+
+These findings supersede any interpretation that route completion, asset count, generated mission art, or a green headless suite alone constitutes world-class completion. Durable evidence pointers and exact current commands belong in `docs/WORLD_CLASS_BUILDOUT_LOG.md`; unsupported delegated summaries or chat observations cannot close a gate.
+
+### 1.5.2 Quality-first scope decision
+
+Rain City Run is the default definitive vertical slice because it has the strongest existing upper/lower-route and urban-interaction foundation. Freeze new missions, weapons, enemy variants, collectibles, economy, and meta-progression until Rain City passes the gates below. Existing content remains playable and honestly labeled; it is not deleted or falsely promoted.
+
+Changing the definitive slice requires a recorded comparison of route quality, implementation cost, and verification risk in `docs/WORLD_CLASS_BUILDOUT_LOG.md`.
+
+### 1.5.3 Definitive vertical-slice acceptance contract
+
+Numeric counts, route-state transitions, resource metadata, resets, bounded lifetimes, imports, hashes, and performance budgets are mechanical gates. Adjectives such as *unmistakable*, *meaningful*, *readable*, *recognizable*, *memorable*, and *major* are human-review gates: automation may assemble consistent 16:9 and 4:3 captures, route maps, encounter cards, and telemetry, but may not mark those terms passed. The product owner or a named human playtester records pass/fail and notes in the buildout log against the applicable checklist; until then the corresponding gate is `HUMAN REVIEW OPEN` and the `BETA` label remains.
+
+**Controls and movement**
+
+- A non-default saved profile drives movement, look, jump, primary/secondary fire, reload, interaction, pause, and weapon switching in the real player scene.
+- Keyboard/mouse recovery remains available after any malformed joystick/browser mapping.
+- Camera motion, recoil, hit pause, flash, and shake respect reduced-motion/flash settings.
+- Movement and combat remain deterministic enough for seeded regression and checkpoint replay.
+
+**Weapons and feedback**
+
+- Pawstol, Barkshot, and Fetch Launcher have unmistakable tactical roles, viewmodel silhouettes, cadence, recoil, impact response, reload language, and audio identity.
+- Damage surfaces, enemies, destructibles, misses, kills, and boss weak points provide distinct bounded feedback.
+- Sustained fire after warm-up shows no monotonic node/material/timer growth; effect budgets are recorded for native and Web targets.
+
+**World and route**
+
+- First human playthrough target is 15–22 minutes without padding.
+- The route contains at least three meaningful loops or shortcuts, two combat elevations, two cross-area sightline windows, one route-state change, and one revisit that gains new meaning or access.
+- At least four secrets are found through observation or interaction rather than blind wall use.
+- Opening, mid-route, and finale landmarks are recognizable within ten seconds from their canonical entrances at 16:9 and 4:3.
+- Every critical-route zone declares manifested material families, dominant landmarks, surface responses, and presentation ownership separate from collision/navigation.
+
+**Encounters and enemies**
+
+- Six readable enemy roles appear across the slice; each major fight combines at least three roles and two attack directions while preserving a recovery lane.
+- Major encounters include an authored pre-combat or transition state such as patrol, warning, reveal, ambush, reposition, retreat, or reinforcement.
+- Each major fight offers at least one environment-dependent decision: elevation, explosive chain, cover break, chokepoint, alternate route, hazard, or interactive prop.
+- Attacker budgets, line of sight, navigation recovery, checkpoint reset, and difficulty-specific damage remain mechanically bounded.
+
+**Boss**
+
+- Municipal Towmaster has a unique production silhouette, at least three distinct attacks, four readable phases, two arena-state changes, phase-specific audiovisual escalation, deterministic reset, and a captured ten-second defeat payoff.
+- Boss health, weak-point state, summon ownership, reward sequencing, and post-defeat route state remain transactional and soak-tested.
+
+**Art, audio, and honesty**
+
+- Critical-route presentation is not flat-color blockout.
+- Directional enemy scale follows the manifested feet-baseline/world-height contract.
+- Rain City owns mission-specific exploration, combat, boss, and victory audio identity; reuse is declared and does not substitute for hero cues.
+- Promotional/concept images are labeled and paired with current in-engine evidence.
+- Editable source, license/provenance, deterministic export, import checks, multi-aspect captures, and human review are required for production assets.
+
+**Reliability and release identity**
+
+- Parser/import, unit, integration, route, checkpoint, soak, performance, Web export, and Universal macOS export gates pass from a clean checkout.
+- Packaged Chrome and Safari routes cover boot, selector, gameplay entry, focus/pointer recovery, death/retry, pause, completion, and console state.
+- Simulated 4:3 tablet evidence remains distinct from physical-iPad evidence.
+- Rain City loses `BETA` only after a human 15–22 minute target-Mac route plus applicable physical-iPad, art, pacing, fairness, mix, humor, motion, and photosensitivity gates are recorded.
+
+### 1.5.4 3/6/9 quality program
+
+The week numbers define sequencing and ambition, not a claim that autonomous compute replaces elapsed human/device evaluation.
+
+#### Weeks 0–3 — trustworthy foundation
+
+1. Restore a reproducible local Godot 4.7 and export-template environment.
+2. Establish a clean import/test/export baseline before gameplay edits.
+3. Make input-profile activation effective at the real player boundary and add non-default remapping regressions.
+4. Fix checkpoint restore invariants for Mount Hood, Moon, and Ventura.
+5. Make reset-to-default immediately reapply runtime quality state.
+6. Baseline and bound combat effect allocation/object churn.
+7. Record exact source/package/site/public artifact identity.
+
+**Three-week exit:** local and CI baselines are green; the four correctness risks above have focused regressions; public behavior remains honestly labeled.
+
+#### Weeks 4–6 — definitive Rain City vertical slice
+
+1. Freeze a 15–22 minute authored route meeting the loop, verticality, revisit, landmark, and secret gates.
+2. Replace wave-box pacing with multi-role choreography and environment-dependent choices.
+3. Deliver a production Towmaster fight with unique silhouette, telegraphs, arena changes, and defeat spectacle.
+4. Close weapon feel, enemy readability, material, lighting, interaction, VFX, and mission-specific audio gaps against canonical captures.
+5. Run native/Web performance and route/reset soaks continuously rather than at the end.
+
+**Six-week exit:** Rain City passes every automated vertical-slice gate and has a complete human review packet. The `BETA` badge remains until humans approve the named subjective/device gates.
+
+#### Weeks 7–9 — prove replication and release discipline
+
+1. Apply the accepted Rain City pipeline to exactly one additional mission selected by measured cost and quality.
+2. Replace inherited hero scenes/audio where reuse obscures mission identity.
+3. Produce desktop, Web, simulated-tablet, and human/device evidence without collapsing evidence classes.
+4. Publish an honest release candidate only after byte-verifiable source/package/site/public identity.
+5. Convert remaining missions into scoped, evidence-backed packets rather than broad autonomous rewrites.
+
+**Nine-week exit:** one definitive mission, one proven replication, a reproducible production pipeline, and an honest campaign roadmap. Five merely functional missions do not substitute for this exit.
+
+### 1.5.5 Autonomous execution and anti-drift contract
+
+- `docs/PRD.md` owns requirements; `docs/IMPLEMENTATION_PLAN.md` owns dependency order; `docs/WORLD_CLASS_BUILDOUT_LOG.md` owns current state; `docs/PHASE_ROADMAP_PRD.md` owns release history.
+- Every work packet has one acceptance condition, explicit owned paths, exact tests, evidence class, and dependency-safe successor.
+- Parallel writers use isolated checkouts and non-overlapping ownership. GPT-5.6/Hermes remains architect, reviewer, integrator, evidence owner, and final claimant.
+- No agent merges, stamps, deploys, overwrites approved baselines, or claims human/physical-device evidence.
+- Every milestone updates the buildout log, runs root verification, and lands as a focused commit before the next dependent packet starts.
+- New sessions resume from repository files and Git state, not conversational memory.
+- If validation is blocked, the packet remains blocked with the exact command/error recorded. Documentation or generated output is never counted as gameplay completion.
 
 ---
 
@@ -297,7 +425,7 @@ Includes:
 - Multiplayer.
 - Procedural campaign generation.
 - Full voice-acted cinematic story.
-- More than the two current production missions during the Rain City finalization gate; later missions remain locked asset/route foundations until individually approved.
+- A sixth mission, additional weapon family, additional enemy-variant family, or new economy/meta-progression breadth before the §1.5 Rain City vertical-slice gate passes. The existing five public missions remain playable under their honest status labels.
 - Online accounts.
 - Cloud saves.
 - Mod SDK.
@@ -1199,7 +1327,9 @@ Maintain `docs/ASSET_MANIFEST.md` with source, license, modifications, and file 
 
 ---
 
-# 23. Milestones
+# 23. Archived foundation milestones
+
+These milestones describe the original repository-to-vertical-slice build and are retained as historical requirements. They are implemented or superseded. Active autonomous work must use §1.5, `docs/IMPLEMENTATION_PLAN.md`, and `docs/WORLD_CLASS_BUILDOUT_LOG.md`; agents must not restart these scaffold phases.
 
 ## Milestone 0: Repository and proof of life
 
@@ -1267,7 +1397,9 @@ Maintain `docs/ASSET_MANIFEST.md` with source, license, modifications, and file 
 
 ---
 
-# 24. Definition of Done
+# 24. Archived foundation Definition of Done
+
+This checklist remains the minimum historical product contract. The active world-class Rain City Definition of Done is §1.5.3 and is stricter where the two differ.
 
 The vertical slice is complete when:
 
@@ -1331,11 +1463,11 @@ Mitigation:
 
 Mitigation:
 
-- One level.
-- Three weapons.
-- Three regular enemies.
-- No multiplayer.
-- Procedural/placeholders permitted until full graybox is complete.
+- Freeze new breadth until Rain City passes §1.5.3.
+- Keep the existing three-weapon kit and five public mission routes rather than adding a sixth route or speculative arsenal.
+- Complete one definitive mission and one measured replication before broad campaign polishing.
+- Keep multiplayer, network services, and procedural campaign generation out of scope.
+- Permit blockout only outside the definitive critical route; do not call it production art.
 
 ## Risk: Working title is too derivative for public commercial use
 
@@ -1347,9 +1479,11 @@ Mitigation:
 
 ---
 
-# 26. One-Shot Codex Goal Prompt
+# 26. Archived one-shot Codex goal prompt — do not use for active work
 
-Copy everything below into Codex after creating or selecting an empty GitHub repository and placing the PRD in `docs/PRD.md`.
+This prompt created the original vertical slice and is retained for provenance only. It is not an active handoff: running it now would encourage rebuilding implemented foundations and conflict with the §1.5 quality-first program. Active Hermes/Codex sessions use `AGENTS.md`, `docs/IMPLEMENTATION_PLAN.md`, and `docs/WORLD_CLASS_BUILDOUT_LOG.md`.
+
+Archived content follows for provenance. Do not copy it into an active task for the current repository.
 
 ---
 

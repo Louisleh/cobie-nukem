@@ -1,5 +1,11 @@
 # Decisions
 
+## D-017 — One active world-class buildout document stack
+
+For the 2026-07-21 3/6/9 quality program, `docs/PRD.md` §1.5 owns active product requirements, `docs/IMPLEMENTATION_PLAN.md` owns dependency order and packet boundaries, and `docs/WORLD_CLASS_BUILDOUT_LOG.md` owns current execution state and packet evidence. `docs/PHASE_ROADMAP_PRD.md` remains the release-history and prior-candidate evidence record; it does not compete with the active stack.
+
+Every packet records one acceptance condition, owned paths, exact commands/results, evidence class, remaining human gates, integrated commit, and next dependency-safe packet. New sessions resume from repository and Git state rather than chat history. This decision changes documentation governance only; it makes no gameplay, rendered, device, or human-quality claim.
+
 ## D-016 — Mount Hood enters public development as an explicit BETA
 
 Mount Hood Whiteout retains stable ID `mount_hood_whiteout` and becomes an always-available public-development route once its five zones, typed objectives/encounters, five checkpoints, four secrets, navigation, bounded traction, chairlift lifecycle, Snowcat gating, parser/content checks, and export matrix are green. Its card, launch action, and opening presentation all say `BETA`. This supersedes D-010 and D-015 only for Mount Hood's locked/public boundary; Moon and Ventura remain locked.

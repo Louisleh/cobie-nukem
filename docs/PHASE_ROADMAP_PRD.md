@@ -1,14 +1,14 @@
 # Cobie Nukem — Multi-Phase Production PRD
 
-**Status:** Active production source of truth; Doghouse progression RC publicly released
+**Status:** Release history and prior candidate evidence; active product requirements and execution state live in the WCB document stack below
 
 **Created:** 2026-07-11
 
-**Last status review:** 2026-07-18
+**Last status review:** 2026-07-21
 
 **Current public baseline:** `0.11.0-alpha.1-rc1` (`3c2de29` gameplay/runtime revision; source integration `6e107e7`; website deployment `32bcd39`; PCK SHA-256 `1d86d7747dd73f4a8f120da85d832a816018dbbfdcb8d01a1089e23f45e16501`)
 
-**Current production gate:** All five missions and the local-first Doghouse progression loop are publicly playable and byte-verified. The next evidence-driven tranche is human economy/collectible/replay evaluation, Level 3–5 collectible production, additional challenge/remix breadth, and continued visual/audio closure—without accounts, telemetry, ads, or randomized rewards. Levels 2–5 remain explicit `BETA` missions until human/device/art/balance approval.
+**Current production gate:** The five-mission/Doghouse alpha remains publicly playable and byte-verified, but new breadth is frozen. The active program is the audited world-class Rain City 3/6/9 buildout in `docs/PRD.md` §1.5, dependency-ordered in `docs/IMPLEMENTATION_PLAN.md`, with live state in `docs/WORLD_CLASS_BUILDOUT_LOG.md`. Levels 2–5 remain explicit `BETA` missions until human/device/art/balance approval.
 
 **Last released alpha:** [`0.11.0-alpha.1-rc1`](https://github.com/Louisleh/cobie-nukem/releases/tag/v0.11.0-alpha.1-rc1) (`3c2de29`) — live at <https://www.louislehmann.fyi/games/cobie-nukem/>; Levels 2–5 retain honest `BETA` badges because human full-route, final-art, and physical-device validation are open
 
@@ -213,18 +213,18 @@ Batch 1 evidence: audit ledger `b1ae6c9`; accepted worker changes `7b649ef` and 
 
 Batches 2–6 evidence: the root rejected and corrected incomplete Spark handoffs before integration. `MissionInteractionRuntime`, `WorldInteraction`, and the Salmon Creek catalog now produce 16 unique live props with floor-correct transforms, bounded loot/effects, permanent in-run secrets, and deterministic checkpoint reset. Walker damage advances through explicit phase thresholds, the final vulnerability accepts normal weapon damage to zero, and the Golden Ball is a post-defeat reward rather than an unexplained finishing lock; attack cadence, summon cap, weak-point behavior, recovery, defeat spectacle, and reward sequencing are typed. `GameHUD` uses a bounded priority/deduplication queue across all critical cue families. Hot player/aim registries no longer materialize arrays per physics tick. Mission 2 now owns a five-zone typed route and schema-v2 encounters, including the locked three-wave citation convoy. Focused Episode 1, interaction, catalog, Walker pacing, UI, Vancouver route, and content validation suites are green; physical iPad, human boss feel, and human interaction-density review remain open.
 
-This section is the first place a new Codex or external-auditor run should read. “Foundation complete” means the reusable contract exists, Salmon Creek exercises it, and automated regression passes; it does not mean every future extension listed in the phase is finished.
+This is historical Alpha.7 evidence, not an active task entry point. New Codex or external-auditor runs must start with `AGENTS.md`, `docs/PRD.md` §1.5, `docs/IMPLEMENTATION_PLAN.md`, and `docs/WORLD_CLASS_BUILDOUT_LOG.md`. “Foundation complete” here means the reusable contract existed at that candidate, Salmon Creek exercised it, and its recorded automated regression passed; it does not define current work.
 
 | Phase | Status | Completed | Explicitly remaining |
 | --- | --- | --- | --- |
 | 1. Gameplay systems foundation | **VERTICAL-SLICE FOUNDATION IMPLEMENTED — IN REVIEW** | Previous foundation plus profile-driven feel/combat, encounter schema v2, shared mission host, event registries, navigation, reusable directional shields, and reusable moving set pieces | Final human feel/balance and broader mission-host adoption |
 | 2. Content-production pipeline | **PRODUCTION PIPELINE EXERCISED BY TWO MISSIONS** | Versioned manifests, validators, authoring guides, provenance gates, Salmon interaction/environment content, Rain City production data/art/audio, and the visual-foundry art/capture loop | Encounter visual editor tooling, human-approved Rain City art baseline, and human pacing review |
-| 3. World and episode structure | **MISSION 2 RC — HUMAN REVIEW OPEN** | Rain City has five authored zones, campaign continuity, route/objectives/checkpoints/secrets, Gull and Umbrella enemies, interactions, and a four-phase Towmaster finale; Mount Hood, Moon, and Ventura remain illustrated briefs | Rain City human production approval and `BETA` removal; later missions remain unbuilt |
+| 3. World and episode structure | **HISTORICAL MISSION 2 RC — SUPERSEDED BY LATER RELEASES** | At this checkpoint Rain City had five authored zones, campaign continuity, route/objectives/checkpoints/secrets, Gull and Umbrella enemies, interactions, and a four-phase Towmaster finale; later releases subsequently made Mount Hood, Moon, and Ventura public `BETA` routes | Use the current dashboard and WCB stack for present state; this row is provenance only |
 | 4. Combat and presentation expansion | **ALPHA.10 PRODUCTION TRANCHE PUBLIC** | Existing combat/audio plus bespoke Hound/Walker atlases, Salmon environment materials/landmarks, adaptive mission audio, ambience, event-driven Cobie barks, production weapon viewmodels/lifecycle, shield enemy, and convoy spectacle | Human art, animation, mix, boss, encounter, and effects review |
 | 5. Accessibility, persistence, observability | **SAVE V5 + TOUCH + VISUAL/WEB QA FOUNDATION IMPLEMENTED** | Save schema v5, campaign/checkpoint separation, content-revision remap, loadout/upgrades, route snapshots, local metrics, accessible HUD/touch controls, canonical captures, and packaged-Web trace tooling | Human-approved visual baselines, complete settings review, long-session Web memory evidence, and physical devices |
 | 6. Alpha, beta, release | **PUBLIC ALPHA PROGRAM ACTIVE** | Reproducible CI/export/package/deploy gates and public Alpha.3–Alpha.10 evidence; Vancouver public beta remains explicitly unfinished | Human/device/browser matrices, content completion, signing/notarization, legal review, store readiness |
 
-### Immediate next gate
+### Archived immediate gates (historical; do not execute as current instructions)
 
 **2026-07-17 public-startup and reload stabilization candidate:** mission-card clicks now only select and display `SELECTED // PRESS START`; the explicit Start action is the sole launch path, is guarded against double activation, and preserves the trusted Web pointer-lock request through scene startup. Packaged-Chrome evidence confirms pointer lock is active on gameplay entry and a released lock is restored by one direct canvas click. The `R` action is handled before raw weapon-shortcut keys, allowing proactive reload at any partially depleted magazine; the HUD reports both available and active reload states while the existing original per-weapon mechanical samples play their complete start/step/finish sequence. Focused UI, input, adversarial-state, imported-audio, parser/import, and packaged-Web checks are green. Physical iPad and full human route gates remain open.
 

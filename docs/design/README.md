@@ -7,5 +7,4 @@ These short records are the durable contract map for autonomous and human work:
 - `performance-accessibility.md` — platform tiers and information-preserving assists.
 - `agentic-toolchain.md` — privileged local tools, evidence loop, and export safety.
 
-The active product source of truth remains `docs/PHASE_ROADMAP_PRD.md`. Changes to
-these contracts require tests and a short entry in `docs/DECISIONS.md`.
+The active product source of truth is `docs/PRD.md`, especially §1.5. Dependency order is in `docs/IMPLEMENTATION_PLAN.md`; current packet state is in `docs/WORLD_CLASS_BUILDOUT_LOG.md`; release history is in `docs/PHASE_ROADMAP_PRD.md`. Changes to these contracts require tests and a short entry in `docs/DECISIONS.md`.
