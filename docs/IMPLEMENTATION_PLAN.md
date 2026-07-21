@@ -85,7 +85,7 @@ bash tools/run_godot_safe.sh --timeout 300 -- --headless --path . --script res:/
 
 ### WCB-002 — Effective input-profile ownership
 
-**Status:** Corrective verification and packaged exports green — evidence commit/push pending; physical joystick gate open
+**Status:** Complete — corrective runtime pass integrated at `f8a78e5`; physical joystick gate open
 **Owner:** Input, with a surgical player integration seam
 **Paths:** `scripts/input/`, `scripts/input/player_input_adapter.gd`, `scripts/player/player_controller.gd`, `scripts/ui/pause_menu.gd`, `resources/input_profiles/`, `tests/unit/input_system_test.gd`, `tests/integration/input_profile_service_boundary_test.gd`, `docs/design/input.md`
 
@@ -102,7 +102,7 @@ bash tools/run_godot_safe.sh --timeout 300 -- --headless --path . --script res:/
 
 ### WCB-003 — Checkpoint restore invariants across all missions
 
-**Status:** Corrective verification and packaged exports green — evidence commit/push pending
+**Status:** Complete — corrective runtime pass integrated at `f8a78e5`
 **Owner:** Save/mission runtime
 **Paths:** `scripts/level/rain_city_checkpoint_state.gd`, `scripts/level/mount_hood_whiteout.gd`, `scripts/level/biome_mission_controller.gd`, checkpoint/campaign tests, `docs/design/checkpoints.md`
 
@@ -119,7 +119,7 @@ bash tools/run_godot_safe.sh --timeout 300 -- --headless --path . --script res:/
 
 ### WCB-004 — Runtime setting truth and combat allocation budget
 
-**Status:** Corrective verification and packaged exports green — evidence commit/push pending
+**Status:** Complete — corrective runtime pass integrated at `f8a78e5`
 **Owner:** UI/presentation for settings; combat for effects
 **Paths:** `scripts/core/settings_manager.gd`, `scripts/core/quality_manager.gd`, `scripts/core/projectile_pool.gd`, `scripts/player/player_runtime_settings.gd`, `scripts/player/player_impact_effects.gd`, `scripts/player/tactile_feedback.gd`, `scripts/combat/weapon_base.gd`, `scripts/combat/impact_effect_pool.gd`, `scripts/combat/fetch_launcher.gd`, `scripts/combat/fetch_projectile.gd`, focused settings/combat/pool/performance tests, `docs/design/performance-accessibility.md`
 
@@ -134,7 +134,7 @@ bash tools/run_godot_safe.sh --timeout 300 -- --headless --path . --script res:/
 
 ### WCB-005 — Rain City authored spatial vertical slice
 
-**Status:** Blocked pending WCB-002–004 evidence commit/push
+**Status:** Ready — WCB-002–004 corrective runtime pass integrated and verified
 **Owner:** Level
 **Paths:** Rain City scenes/resources/world builder, route definitions, interaction catalog, route tests
 

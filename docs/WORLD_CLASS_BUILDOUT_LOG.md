@@ -7,9 +7,9 @@ This is the durable continuation ledger for the Cobie Nukem 3/6/9 quality progra
 - **Program branch:** `hermes/world-class-369-buildout`
 - **Baseline source:** `4dbbe2e8571efec290ed863415a78f09bc970ca9`
 - **Public baseline declared by roadmap:** `0.11.0-alpha.1-rc1`, gameplay/runtime `3c2de29`
-- **Current packet:** WCB-002–004 corrective evidence commit/push
-- **Last verified packet:** WCB-002/003/004 corrective nine-test matrix and packaged Web/macOS release validation passed on the current working tree
-- **Next dependency-safe packet:** WCB-005 — blocked until the corrective evidence commit/push completes
+- **Current packet:** WCB-005 — Rain City authored spatial vertical slice
+- **Last verified packet:** WCB-002/003/004 corrective nine-test matrix and packaged Web/macOS release validation passed; runtime correction integrated at `f8a78e5`
+- **Next dependency-safe packet:** WCB-005 — author and freeze the definitive Rain City spatial route
 - **Toolchain state:** Godot 4.7.1 and matching export templates are installed; automated import, tests, and export validation pass. Optional Blender/MCP production-art tooling remains unavailable and is recorded below.
 - **Human-only gates:** target-Mac feel/playthrough, physical iPad, flight stick, art taste, pacing, mix, fairness, humor, motion comfort, photosensitivity
 
@@ -19,10 +19,10 @@ This is the durable continuation ledger for the Cobie Nukem 3/6/9 quality progra
 | --- | --- | --- | --- | --- | --- |
 | WCB-000 Governance | COMPLETE | Integration/docs | `6b8077a` | Diff/link/validator/reviews pass | No gameplay claim |
 | WCB-001 Toolchain baseline | COMPLETE | Architecture | `4479e2f` | Godot 4.7.1 import/tests/exports pass | Optional art MCP tooling is not ready |
-| WCB-002 Input ownership | VERIFIED; PUSH PENDING | Input/player seam | `1b1579f` + pending | Service + real player-boundary tests + packaged exports pass | Physical joystick remains unverified |
-| WCB-003 Checkpoint invariants | VERIFIED; PUSH PENDING | Save/mission runtime | `23a657d` + pending | Real controller order + boss write policy + progression + packaged exports pass | Manual continues remain open |
-| WCB-004 Settings/allocation | VERIFIED; PUSH PENDING | UI + combat | `5ce5501`, `5b8ad45`, `502535a` + pending | Runtime reset, shared effects, reuse contamination, performance + packaged exports pass | Headless timing is not rendered GPU evidence |
-| WCB-005 Rain City spatial slice | BLOCKED by corrective push | Level | — | — | Current route remains public BETA |
+| WCB-002 Input ownership | COMPLETE | Input/player seam | `1b1579f`, `f8a78e5` | Service + real player-boundary tests + packaged exports pass | Physical joystick remains unverified |
+| WCB-003 Checkpoint invariants | COMPLETE | Save/mission runtime | `23a657d`, `f8a78e5` | Real controller order + boss write policy + progression + packaged exports pass | Manual continues remain open |
+| WCB-004 Settings/allocation | COMPLETE | UI + combat | `5ce5501`, `5b8ad45`, `502535a`, `f8a78e5` | Runtime reset, shared effects, reuse contamination, performance + packaged exports pass | Headless timing is not rendered GPU evidence |
+| WCB-005 Rain City spatial slice | READY | Level | — | — | Current route remains public BETA |
 | WCB-006 Encounters | BLOCKED by WCB-005 | Enemy/encounter | — | — | Human pacing/fairness open |
 | WCB-007 Towmaster | BLOCKED by WCB-005 | Boss/presentation | — | — | Human spectacle/fairness open |
 | WCB-008 Art/audio identity | BLOCKED by WCB-005 | Visual Foundry/audio | — | — | Human art/mix/humor open |
@@ -186,8 +186,8 @@ Copy this section for every packet before marking it complete.
 - Evidence and class: automated functional/headless evidence. Custom fire/use/weapon switching and axis hysteresis run through the real player scene; Mount Hood/shared biome tests execute the production initialization transaction; impact tests inspect real instance IDs and teardown; Fetch reuse mutates and verifies every mutable exported runtime field.
 - Review findings: checkpoint consumption is payload-only; later missions now run `consume -> progression -> mission runtime -> mission restore -> player`. Checkpoint writes return `ERR_BUSY` during active boss combat, so continuation starts from a deterministic pre-boss checkpoint until WCB-007 implements complete phase serialization. Impact effects are one shared player-owned pool rather than one pool per weapon.
 - Human-only/open claims: physical joystick/browser-controller feel, manual checkpoint playthrough, rendered native/Web/iPad GPU performance, thermals, motion comfort, and photosensitivity remain open.
-- Integrated commit: pending corrective commit/push.
-- Next dependency-safe packet: WCB-005 only after this entry records the pushed corrective commit and packaged validation result.
+- Integrated commit: `f8a78e5293b2dd343ba400840f41761f690e64d1`.
+- Next dependency-safe packet: WCB-005 Rain City spatial route authoring and freeze.
 
 ## Resume protocol
 
