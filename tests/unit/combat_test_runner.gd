@@ -14,6 +14,7 @@ func _initialize() -> void:
 	_test_footstep_conditions()
 	await _test_visible_muzzle_flash()
 	_test_enemy_hit_pop()
+	_test_impact_effect_pooling()
 	_test_player_forwards_weapon_ammo()
 	_test_instant_weapon_selection()
 	_test_weapon_balance_and_fetch_bounce()
@@ -296,6 +297,57 @@ func _test_enemy_hit_pop() -> void:
 	var sparks := pop.find_children("Spark*", "MeshInstance3D", false, false)
 	_expect(sparks.size() == 6, "enemy hit creates six lightweight explosion fragments")
 	pop.free()
+	weapon.free()
+
+
+func _test_impact_effect_pooling() -> void:
+	var definition := WeaponDefinition.new()
+	definition.ammo_type = "test"
+	definition.magazine_size = 999
+	definition.starting_ammo = 999
+	var weapon := WeaponBase.new()
+	weapon.definition = definition
+	weapon.ammo = 999
+	weapon.camera = Camera3D.new()
+	weapon.add_child(weapon.camera)
+	root.add_child(weapon)
+	await process_frame
+	var pool := weapon._impact_effect_pool
+	_expect(pool != null, "weapon owns an impact effect pool")
+	var initial_allocations := pool.allocated_count()
+	var initial_nodes := pool.allocated_node_count()
+	var initial_resources := pool.allocated_resource_count()
+	_expect(initial_allocations == pool.max_active_count(), "impact pool preallocates its complete root budget before the first hit")
+
+	for hit in 36:
+		var point := Vector3(float(hit) * 0.02, 0.0, float(hit) * 0.02)
+		weapon._spawn_impact_marker(point, Vector3.UP, &"enemy" if hit % 3 == 0 else &"world")
+		weapon._process(0.006)
+	for hit in 420:
+		var point := Vector3(float(hit) * 0.02, 0.0, -float(hit) * 0.015)
+		weapon._spawn_impact_marker(point, Vector3.UP, &"enemy" if hit % 2 == 0 else &"world")
+		weapon._process(0.006)
+		_expect(pool.active_count() <= pool.max_active_count(), "impact pooling keeps active effects bounded during burst")
+
+	_expect(pool.allocated_count() == initial_allocations, "impact pool root allocation count remains fixed during the first burst")
+	_expect(pool.allocated_node_count() == initial_nodes, "impact pool node count remains fixed during the first burst")
+	_expect(pool.allocated_resource_count() == initial_resources, "impact pool resource count remains fixed during the first burst")
+
+	for _tick in 260:
+		weapon._process(0.02)
+	_expect(pool.active_count() == 0, "impact effects recycle and fully expire after burst")
+
+	for hit in 420:
+		var point := Vector3(-float(hit) * 0.015, 0.0, float(hit) * 0.02)
+		weapon._spawn_impact_marker(point, Vector3.UP, &"enemy" if hit % 2 == 0 else &"world")
+		weapon._process(0.006)
+
+	_expect(pool.allocated_count() == initial_allocations, "impact pool allocation count remains fixed after repeated bursts")
+	_expect(pool.allocated_node_count() == initial_nodes, "impact pool node count remains fixed after repeated bursts")
+	_expect(pool.allocated_resource_count() == initial_resources, "impact pool resource count remains fixed after repeated bursts")
+	for _tick in 260:
+		weapon._process(0.02)
+	_expect(pool.active_count() == 0, "impact effects recycle on every burst cycle")
 	weapon.free()
 
 func _test_all_pickups_collect() -> void:

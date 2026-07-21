@@ -49,8 +49,10 @@ var _lifecycle_remaining := 0.0
 var lifecycle_state := LifecycleState.HOLSTERED
 var _shot_sequence := 0
 var _muzzle_timer: Timer
+var _impact_effect_pool := ImpactEffectPool.new()
 
 func _ready() -> void:
+	_impact_effect_pool.prewarm()
 	_muzzle_timer = Timer.new()
 	_muzzle_timer.name = "MuzzleTimer"
 	_muzzle_timer.one_shot = true
@@ -73,7 +75,18 @@ func _ready() -> void:
 		lifecycle_state = LifecycleState.HOLSTERED
 		visible = false
 
+func _exit_tree() -> void:
+	if _impact_effect_pool != null:
+		_impact_effect_pool.clear()
+
+
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_PREDELETE and _impact_effect_pool != null:
+		_impact_effect_pool.clear()
+
 func _process(delta: float) -> void:
+	if _impact_effect_pool != null:
+		_impact_effect_pool.update(delta)
 	_cooldown_remaining = maxf(0.0, _cooldown_remaining - delta)
 	if lifecycle_state == LifecycleState.RAISING:
 		_lifecycle_remaining = maxf(0.0, _lifecycle_remaining - delta)
@@ -378,86 +391,16 @@ func _hide_muzzle_flash() -> void:
 func _spawn_impact_marker(position_value: Vector3, normal: Vector3, kind: StringName) -> void:
 	if not is_inside_tree():
 		return
-	var marker := MeshInstance3D.new()
-	marker.name = "EnemyHit" if kind == &"enemy" else "SurfaceImpact"
-	marker.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-	var mesh := SphereMesh.new()
-	mesh.radius = 0.075 if kind == &"enemy" else 0.045
-	mesh.height = mesh.radius * 2.0
-	marker.mesh = mesh
-	var material := StandardMaterial3D.new()
-	material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
-	material.albedo_color = Color(1.0, 0.18, 0.06) if kind == &"enemy" else Color(1.0, 0.82, 0.28)
-	material.emission_enabled = true
-	material.emission = material.albedo_color
-	material.emission_energy_multiplier = 4.0
-	marker.material_override = material
 	var parent := get_tree().current_scene if get_tree().current_scene != null else get_tree().root
-	parent.add_child(marker)
-	var quality := get_node_or_null("/root/QualityManager") if is_inside_tree() else null
-	if quality != null: quality.claim_temporary_effect(marker)
-	marker.global_position = position_value + normal * 0.035
+	_impact_effect_pool.spawn_marker(parent, position_value, normal, kind == &"enemy")
 	if kind == &"enemy":
 		_spawn_enemy_hit_pop(position_value, normal, parent)
-	var tween := marker.create_tween()
-	tween.tween_property(marker, "scale", Vector3.ONE * 2.2, 0.06)
-	tween.tween_property(marker, "scale", Vector3.ONE * 0.05, 0.24)
-	tween.tween_callback(marker.queue_free)
 
 
 func _spawn_enemy_hit_pop(position_value: Vector3, normal: Vector3, parent: Node) -> Node3D:
-	var pop := Node3D.new()
-	pop.name = "EnemyHitPop"
-	parent.add_child(pop)
-	var quality := get_node_or_null("/root/QualityManager") if is_inside_tree() else null
-	if quality != null: quality.claim_temporary_effect(pop)
-	if pop.is_inside_tree():
-		pop.global_position = position_value + normal * 0.055
-	else:
-		pop.position = position_value + normal * 0.055
-
-	var flash := MeshInstance3D.new()
-	flash.name = "ContactFlash"
-	flash.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-	var flash_mesh := SphereMesh.new()
-	flash_mesh.radius = 0.11
-	flash_mesh.height = 0.22
-	flash.mesh = flash_mesh
-	flash.material_override = _impact_pop_material(Color("fff1a8"), 6.0)
-	flash.scale = Vector3.ONE * 0.25
-	pop.add_child(flash)
-	if pop.is_inside_tree():
-		var flash_tween := flash.create_tween()
-		flash_tween.tween_property(flash, "scale", Vector3.ONE * 1.75, 0.045)
-		flash_tween.tween_property(flash, "scale", Vector3.ZERO, 0.14)
-
-	var spark_count := 3 if _reduced_flashes() else 6
-	for index in spark_count:
-		var spark := MeshInstance3D.new()
-		spark.name = "Spark%02d" % index
-		spark.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-		var spark_mesh := SphereMesh.new()
-		spark_mesh.radius = 0.025
-		spark_mesh.height = 0.05
-		spark.mesh = spark_mesh
-		spark.material_override = _impact_pop_material(Color("ff7a24") if index % 2 == 0 else Color("ffd166"), 4.5)
-		pop.add_child(spark)
-		var scatter := Vector3(randf_range(-0.85, 0.85), randf_range(-0.55, 0.85), randf_range(-0.85, 0.85))
-		var direction := (normal * 0.65 + scatter).normalized()
-		if pop.is_inside_tree():
-			var spark_tween := spark.create_tween().set_parallel()
-			spark_tween.tween_property(spark, "position", direction * randf_range(0.20, 0.36), 0.22)
-			spark_tween.tween_property(spark, "scale", Vector3.ZERO, 0.22)
-
-	if pop.is_inside_tree():
-		var cleanup := Timer.new()
-		cleanup.name = "CleanupTimer"
-		cleanup.one_shot = true
-		cleanup.wait_time = 0.27
-		cleanup.timeout.connect(pop.queue_free)
-		pop.add_child(cleanup)
-		cleanup.start()
-	return pop
+	if not is_instance_valid(parent):
+		return null
+	return _impact_effect_pool.spawn_enemy_hit_pop(parent, position_value, normal, _reduced_flashes())
 
 
 func _reduced_flashes() -> bool:
