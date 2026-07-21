@@ -3,6 +3,8 @@
 These short records are the durable contract map for autonomous and human work:
 
 - `combat.md` — weapon lifecycle and terminal feedback.
+- `input.md` — profile-aware gameplay intent and event-edge boundaries.
+- `checkpoints.md` — mission bootstrap and restore-order invariants.
 - `enemies-and-encounters.md` — pressure, persistence, and actor recovery.
 - `performance-accessibility.md` — platform tiers and information-preserving assists.
 - `agentic-toolchain.md` — privileged local tools, evidence loop, and export safety.

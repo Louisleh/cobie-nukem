@@ -11,16 +11,29 @@ var _trauma := 0.0
 var _time := 0.0
 var _base_h_offset := 0.0
 var _base_v_offset := 0.0
+var _base_shake_scale := 1.0
 
 func _ready() -> void:
 	if camera != null:
 		_base_h_offset = camera.h_offset
 		_base_v_offset = camera.v_offset
+	_base_shake_scale = shake_scale
 	var settings := get_node_or_null("/root/SettingsManager")
 	if settings != null:
-		shake_scale = clampf(float(settings.get_value(&"accessibility", &"camera_shake", 1.0)), 0.0, 1.0)
-		if bool(settings.get_value(&"accessibility", &"reduced_motion", false)): shake_scale = 0.0
-		reduced_flashes = bool(settings.get_value(&"video", &"reduced_flashes", false))
+		_apply_runtime_settings(settings)
+		settings.setting_changed.connect(_on_setting_changed)
+
+
+func _apply_runtime_settings(settings: Node) -> void:
+	shake_scale = _base_shake_scale * clampf(float(settings.get_value(&"accessibility", &"camera_shake", 1.0)), 0.0, 1.0)
+	if bool(settings.get_value(&"accessibility", &"reduced_motion", false)):
+		shake_scale = 0.0
+	reduced_flashes = bool(settings.get_value(&"video", &"reduced_flashes", false))
+
+
+func _on_setting_changed(section: StringName, _key: StringName, _value: Variant) -> void:
+	if section in [&"accessibility", &"video"]:
+		_apply_runtime_settings(get_node("/root/SettingsManager"))
 
 func _process(delta: float) -> void:
 	if camera == null:

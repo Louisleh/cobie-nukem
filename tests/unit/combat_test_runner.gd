@@ -14,7 +14,7 @@ func _initialize() -> void:
 	_test_footstep_conditions()
 	await _test_visible_muzzle_flash()
 	_test_enemy_hit_pop()
-	_test_impact_effect_pooling()
+	await _test_impact_effect_pooling()
 	_test_player_forwards_weapon_ammo()
 	_test_instant_weapon_selection()
 	_test_weapon_balance_and_fetch_bounce()
@@ -297,7 +297,9 @@ func _test_enemy_hit_pop() -> void:
 	var sparks := pop.find_children("Spark*", "MeshInstance3D", false, false)
 	_expect(sparks.size() == 6, "enemy hit creates six lightweight explosion fragments")
 	pop.free()
+	pop = null
 	weapon.free()
+	weapon = null
 
 
 func _test_impact_effect_pooling() -> void:
@@ -312,12 +314,13 @@ func _test_impact_effect_pooling() -> void:
 	weapon.add_child(weapon.camera)
 	root.add_child(weapon)
 	await process_frame
+	weapon._ensure_impact_effect_pool()
 	var pool := weapon._impact_effect_pool
 	_expect(pool != null, "weapon owns an impact effect pool")
 	var initial_allocations := pool.allocated_count()
-	var initial_nodes := pool.allocated_node_count()
-	var initial_resources := pool.allocated_resource_count()
+	var initial_ids: PackedInt64Array = pool.debug_instance_ids()
 	_expect(initial_allocations == pool.max_active_count(), "impact pool preallocates its complete root budget before the first hit")
+	_expect(not initial_ids.is_empty(), "impact pool exposes real prewarmed node/resource identities")
 
 	for hit in 36:
 		var point := Vector3(float(hit) * 0.02, 0.0, float(hit) * 0.02)
@@ -330,8 +333,7 @@ func _test_impact_effect_pooling() -> void:
 		_expect(pool.active_count() <= pool.max_active_count(), "impact pooling keeps active effects bounded during burst")
 
 	_expect(pool.allocated_count() == initial_allocations, "impact pool root allocation count remains fixed during the first burst")
-	_expect(pool.allocated_node_count() == initial_nodes, "impact pool node count remains fixed during the first burst")
-	_expect(pool.allocated_resource_count() == initial_resources, "impact pool resource count remains fixed during the first burst")
+	_expect(pool.debug_instance_ids() == initial_ids, "impact pool reuses the exact prewarmed nodes and resources during the first burst")
 
 	for _tick in 260:
 		weapon._process(0.02)
@@ -343,12 +345,33 @@ func _test_impact_effect_pooling() -> void:
 		weapon._process(0.006)
 
 	_expect(pool.allocated_count() == initial_allocations, "impact pool allocation count remains fixed after repeated bursts")
-	_expect(pool.allocated_node_count() == initial_nodes, "impact pool node count remains fixed after repeated bursts")
-	_expect(pool.allocated_resource_count() == initial_resources, "impact pool resource count remains fixed after repeated bursts")
+	_expect(pool.debug_instance_ids() == initial_ids, "impact pool reuses the exact prewarmed nodes and resources after repeated bursts")
 	for _tick in 260:
 		weapon._process(0.02)
 	_expect(pool.active_count() == 0, "impact effects recycle on every burst cycle")
 	weapon.free()
+	pool = null
+	weapon = null
+	await process_frame
+	for instance_id in initial_ids:
+		_expect(not is_instance_id_valid(instance_id), "owned impact pool releases every prewarmed instance on teardown")
+	var player := preload("res://scenes/player/cobie_player.tscn").instantiate() as CobiePlayer
+	root.add_child(player)
+	await process_frame
+	var shared_pools: Dictionary = {}
+	var player_weapon: WeaponBase
+	for weapon_index in player.weapons.size():
+		player_weapon = player.weapons[weapon_index]
+		shared_pools[player_weapon._impact_effect_pool.get_instance_id()] = true
+	_expect(shared_pools.size() == 1, "all player weapons share one impact-effect pool")
+	_expect(player._impact_effects.pool.max_active_count() <= 20, "shared player impact pool stays below the Web decal budget")
+	var shared_ids: PackedInt64Array = player._impact_effects.pool.debug_instance_ids()
+	player.free()
+	player = null
+	player_weapon = null
+	await process_frame
+	for instance_id in shared_ids:
+		_expect(not is_instance_id_valid(instance_id), "player teardown releases every shared impact-pool instance")
 
 func _test_all_pickups_collect() -> void:
 	var collector := preload("res://tests/fixtures/pickup_collector.gd").new()

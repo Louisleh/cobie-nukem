@@ -119,13 +119,35 @@ func allocated_count() -> int:
 	return _marker_pool.size() + _active_markers.size() + _pop_pool.size() + _active_pops.size()
 
 
-func allocated_node_count() -> int:
-	# Marker: root + mesh. Pop: root + flash + all sparks.
-	return MARKER_POOL_CAPACITY * 2 + POP_POOL_CAPACITY * (2 + SPARK_FULL_COUNT)
+func debug_instance_ids() -> PackedInt64Array:
+	var seen: Dictionary = {}
+	for marker in _marker_pool + _active_markers:
+		_collect_node_instance_ids(marker.node, seen)
+	for pop in _pop_pool + _active_pops:
+		_collect_node_instance_ids(pop.node, seen)
+	var ids := PackedInt64Array()
+	for id in seen.keys():
+		ids.append(int(id))
+	ids.sort()
+	return ids
 
 
-func allocated_resource_count() -> int:
-	return 8 # Three shared meshes and five shared materials.
+func _collect_node_instance_ids(node: Node, seen: Dictionary) -> void:
+	if not is_instance_valid(node):
+		return
+	seen[node.get_instance_id()] = true
+	if node is MeshInstance3D:
+		var mesh_instance := node as MeshInstance3D
+		if mesh_instance.mesh != null:
+			seen[mesh_instance.mesh.get_instance_id()] = true
+			for surface in mesh_instance.mesh.get_surface_count():
+				var surface_material := mesh_instance.mesh.surface_get_material(surface)
+				if surface_material != null:
+					seen[surface_material.get_instance_id()] = true
+		if mesh_instance.material_override != null:
+			seen[mesh_instance.material_override.get_instance_id()] = true
+	for child in node.get_children():
+		_collect_node_instance_ids(child, seen)
 
 
 func spawn_marker(parent: Node, position: Vector3, normal: Vector3, is_enemy: bool) -> Node3D:

@@ -46,7 +46,7 @@ func _initialize() -> void:
 	if pool == null:
 		failures.append("ProjectilePool unavailable for fetch launch cycles")
 	else:
-		_run_fetch_projectile_cycle(pool, stage, failures)
+		await _run_fetch_projectile_cycle(pool, stage, failures)
 	stage.queue_free()
 	if failures.is_empty():
 		print("PROJECTILE PERFORMANCE PROFILE: PASS")
@@ -67,7 +67,7 @@ func _run_fetch_projectile_cycle(pool: Node, stage: Node3D, failures: PackedStri
 		failures.append("fetch projectile pool should prewarm at least one projectile")
 		return
 	var start_available: int = int(pool.available_count_for_scene(FETCH_PROJECTILE))
-	var start_nodes: int = int(get_root().get_node_count())
+	var start_nodes: int = int(Performance.get_monitor(Performance.OBJECT_NODE_COUNT))
 	var max_active := 0
 	for sample_index in FETCH_CYCLE_COUNT:
 		var projectile := pool.acquire(FETCH_PROJECTILE) as FetchProjectile
@@ -93,6 +93,7 @@ func _run_fetch_projectile_cycle(pool: Node, stage: Node3D, failures: PackedStri
 		failures.append("fetch cycle left active projectiles in pool")
 	if max_active > 2:
 		failures.append("fetch cycle exceeded bounded active count: %d" % max_active)
-	var end_nodes: int = int(get_root().get_node_count())
+	await process_frame
+	var end_nodes: int = int(Performance.get_monitor(Performance.OBJECT_NODE_COUNT))
 	if end_nodes > start_nodes:
 		failures.append("fetch projectile cycles increased node count from %d to %d" % [start_nodes, end_nodes])

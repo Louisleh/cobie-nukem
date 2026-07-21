@@ -18,7 +18,7 @@ const PROFILE_BINDINGS: Dictionary[StringName, int] = {
 	&"look_right": KEY_O,
 	&"jump": KEY_Y,
 	&"fire_primary": KEY_H,
-	&"fire_secondary": KEY_J,
+	&"fire_secondary": KEY_M,
 	&"use": KEY_G,
 	&"run": KEY_R,
 	&"weapon_next": KEY_N,
@@ -59,7 +59,7 @@ func _run() -> void:
 		default_profile.ensure_defaults()
 	custom_profile = _build_custom_profile()
 	manager.set_active_profile(custom_profile)
-	_custom_profile_reaches_player_and_pause()
+	await _custom_profile_reaches_player_and_pause()
 	if not failures.is_empty():
 		_finish(1)
 		return
@@ -76,6 +76,7 @@ func _setup() -> void:
 	root.add_child(pause_menu)
 	interactable = _make_interactable()
 	root.add_child(interactable)
+	interactable.global_position = player.camera.global_position + -player.camera.global_basis.z * 1.4
 
 
 func _build_custom_profile() -> InputProfile:
@@ -83,13 +84,16 @@ func _build_custom_profile() -> InputProfile:
 	profile.profile_id = "wcb-002-boundary"
 	profile.preset = "keyboard_mouse"
 	profile.ensure_defaults()
+	var unique_keys: Dictionary = {}
 	for action in PROFILE_BINDINGS.keys():
+		unique_keys[PROFILE_BINDINGS[action]] = true
 		profile.set_binding(action, {
 			"type": "key",
 			"index": PROFILE_BINDINGS[action],
 			"direction": 1.0,
 			"range": "directional",
 		})
+	_expect(unique_keys.size() == PROFILE_BINDINGS.size(), "Custom input fixture uses unique bindings")
 	return profile
 
 
@@ -127,6 +131,8 @@ func _custom_profile_reaches_player_and_pause() -> void:
 	_expect(player.velocity.y > 0.01, "Custom jump tap is latched through the next player physics boundary")
 
 	var weapon := player.weapons[player.current_weapon_index]
+	for candidate in player.weapons:
+		candidate.unlocked = true
 	weapon.ammo = max(weapon.ammo, 8)
 	weapon.reserve_ammo = max(weapon.reserve_ammo, 12)
 	var fired := [0]
@@ -147,6 +153,8 @@ func _custom_profile_reaches_player_and_pause() -> void:
 	_expect(manager.is_action_event_pressed(fire_event, &"fire_primary"), "Service seam does not report custom fire-primary action")
 	weapon.ammo = 8
 	weapon.reserve_ammo = 4
+	weapon.enabled = true
+	weapon.lifecycle_state = WeaponBase.LifecycleState.READY
 	await process_frame
 	_send_key(PROFILE_BINDINGS[&"fire_primary"], true)
 	_send_key(PROFILE_BINDINGS[&"fire_primary"], false)
@@ -167,11 +175,11 @@ func _custom_profile_reaches_player_and_pause() -> void:
 	await process_frame
 	_expect(int(player._queued_weapon_index) == next_weapon or player.current_weapon_index == next_weapon, "Custom weapon-next binding reaches switching boundary")
 
-	var prior_weapon := player.current_weapon_index
+	var previous_weapon := posmod(player.current_weapon_index - 1, player.weapons.size())
 	_send_key(PROFILE_BINDINGS[&"weapon_previous"], true)
 	_send_key(PROFILE_BINDINGS[&"weapon_previous"], false)
 	await process_frame
-	_expect(int(player._queued_weapon_index) == prior_weapon or player.current_weapon_index == prior_weapon, "Custom weapon-previous binding reaches switching boundary")
+	_expect(int(player._queued_weapon_index) == previous_weapon or player.current_weapon_index == previous_weapon, "Custom weapon-previous binding reaches switching boundary")
 
 	await process_frame
 	_send_key(PROFILE_BINDINGS[&"use"], true)
@@ -197,9 +205,9 @@ func _default_profile_still_reaches_player() -> void:
 
 func _make_interactable() -> FakeInteractable:
 	var node := FakeInteractable.new()
+	node.add_to_group(&"interactables")
 	node.collision_layer = 1
 	node.collision_mask = 1
-	node.position = Vector3(0.0, 0.8, -1.4)
 	var shape := CollisionShape3D.new()
 	var bounds := BoxShape3D.new()
 	bounds.size = Vector3(0.4, 0.4, 0.4)

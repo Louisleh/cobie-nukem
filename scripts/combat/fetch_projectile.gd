@@ -34,8 +34,12 @@ var _base_collision_layer := 0
 var _base_collision_mask := 0
 var _base_max_bounces := 0
 var _base_process_mode := Node.PROCESS_MODE_INHERIT
+var _base_speed := 0.0
 var _base_fuse_seconds := 0.0
 var _base_damage := 0.0
+var _base_blast_radius := 0.0
+var _base_collision_mask_for_blast := 0
+var _base_recall_damage := 0.0
 var _base_recall_speed_multiplier := 1.0
 var _base_recall_stagger_multiplier := 1.0
 var _base_ball_material: Material
@@ -49,8 +53,12 @@ func _ready() -> void:
 	_base_collision_mask = collision_mask
 	_base_max_bounces = max_bounces
 	_base_process_mode = process_mode
+	_base_speed = speed
 	_base_fuse_seconds = fuse_seconds
 	_base_damage = damage
+	_base_blast_radius = blast_radius
+	_base_collision_mask_for_blast = collision_mask_for_blast
+	_base_recall_damage = recall_damage
 	_base_recall_speed_multiplier = recall_speed_multiplier
 	_base_recall_stagger_multiplier = recall_stagger_multiplier
 	_base_ball_material = _ball.material_override if _ball != null else null
@@ -117,8 +125,12 @@ func activate_from_pool() -> void:
 	recalling = false
 	bounces = 0
 	_age = 0.0
+	speed = _base_speed
 	fuse_seconds = _base_fuse_seconds
 	damage = _base_damage
+	blast_radius = _base_blast_radius
+	collision_mask_for_blast = _base_collision_mask_for_blast
+	recall_damage = _base_recall_damage
 	recall_speed_multiplier = _base_recall_speed_multiplier
 	recall_stagger_multiplier = _base_recall_stagger_multiplier
 	max_bounces = _base_max_bounces
@@ -144,8 +156,12 @@ func deactivate_for_pool() -> void:
 	velocity = Vector3.ZERO
 	direction = Vector3.FORWARD
 	_age = 0.0
+	speed = _base_speed
 	fuse_seconds = _base_fuse_seconds
 	damage = _base_damage
+	blast_radius = _base_blast_radius
+	collision_mask_for_blast = _base_collision_mask_for_blast
+	recall_damage = _base_recall_damage
 	recall_speed_multiplier = _base_recall_speed_multiplier
 	recall_stagger_multiplier = _base_recall_stagger_multiplier
 	max_bounces = _base_max_bounces

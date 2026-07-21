@@ -301,6 +301,7 @@ func _on_world_checkpoint(checkpoint_id: StringName, respawn_position: Vector3) 
 		checkpoint_position = respawn_position
 
 func _save_checkpoint(checkpoint_id: StringName, position_value: Vector3, announce := true) -> Error:
+	if not RainCityCheckpointState.checkpoint_write_allowed(_last_combat_zone == &"harbour_pier"): return ERR_BUSY
 	var save_manager := _get_save_manager()
 	var save_error := OK
 	if save_manager != null:

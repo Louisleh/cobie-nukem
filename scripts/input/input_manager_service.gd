@@ -26,6 +26,7 @@ var last_input_description := "none"
 var _pressed_keys: Dictionary = {}
 var _pressed_mouse_buttons: Dictionary = {}
 var _discrete_action_pressed: Dictionary = {}
+var _axis_event_latch := InputAxisEventLatch.new()
 var _capture_action := StringName()
 var _capture_device_id := -1
 var _calibration_mode := ""
@@ -90,6 +91,7 @@ func set_active_profile(profile: InputProfile) -> void:
 	active_profile = profile
 	active_profile.ensure_defaults()
 	_discrete_action_pressed.clear()
+	_axis_event_latch.clear()
 	if active_profile.preferred_device_id in Input.get_connected_joypads():
 		active_device_id = active_profile.preferred_device_id
 	profile_changed.emit(active_profile)
@@ -151,6 +153,7 @@ func select_device(device_id: int) -> bool:
 	if device_id != -1 and device_id not in Input.get_connected_joypads():
 		return false
 	active_device_id = device_id
+	_axis_event_latch.clear()
 	if active_profile:
 		active_profile.preferred_device_id = device_id
 		if device_id >= 0:
@@ -215,6 +218,13 @@ func get_action_just_pressed(action: StringName) -> bool:
 
 func is_action_event_pressed(event: InputEvent, action: StringName) -> bool:
 	if event == null:
+		return false
+	if event is InputEventJoypadMotion:
+		if active_profile == null:
+			return false
+		for binding in active_profile.bindings_for(action):
+			if _axis_event_latch.pressed(action, binding, event, active_profile, active_device_id):
+				return true
 		return false
 	if event.is_action_pressed(action):
 		return true
@@ -404,17 +414,6 @@ func _binding_matches_event(binding: Dictionary, event: InputEvent) -> bool:
 		if active_device_id >= 0 and int(event.device) != active_device_id:
 			return false
 		return binding.get("type", "") == "button" and int(event.button_index) == int(binding.get("index", -1))
-	if event is InputEventJoypadMotion:
-		if absf(event.axis_value) < 0.65:
-			return false
-		if active_device_id >= 0 and int(event.device) != active_device_id:
-			return false
-		if binding.get("type", "") != "axis":
-			return false
-		if int(event.axis) != int(binding.get("index", -1)):
-			return false
-		var binding_direction := signf(float(binding.get("direction", 1.0)))
-		return signf(event.axis_value) == binding_direction
 	return false
 
 

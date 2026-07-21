@@ -6,6 +6,8 @@ const CURRENT_REVISION := 2
 const KNOWN_CHECKPOINT := &"checkpoint_terminal_service"
 const KNOWN_POSITION := Vector3(7.0, 1.1, -98.0)
 const RAIN_CITY_CARD := preload("res://resources/level/rain_city_card.tres") as LevelCardData
+const MOUNT_ORDER_PROBE := preload("res://tests/fixtures/mount_checkpoint_order_probe.gd")
+const BIOME_ORDER_PROBE := preload("res://tests/fixtures/biome_checkpoint_order_probe.gd")
 
 var failures: Array[String] = []
 
@@ -107,6 +109,8 @@ func _initialize() -> void:
 	_test_unknown_stale_checkpoint_is_rejected()
 	_test_unknown_positionless_checkpoint_is_rejected()
 	_test_checkpoint_restore_is_post_begin_payload()
+	_test_boss_checkpoint_write_policy()
+	_test_later_mission_initialization_order()
 	_test_completion_persistence_is_transactional_and_retryable()
 	_test_checkpoint_success_is_announced_only_after_write()
 	_test_secret_discovery_saves_once()
@@ -155,6 +159,43 @@ func _test_checkpoint_restore_is_post_begin_payload() -> void:
 	_expect(not game_state.continue_requested, "continue request is still consumed")
 	game_state.free()
 	save_manager.free()
+
+
+func _test_boss_checkpoint_write_policy() -> void:
+	_expect(RainCityCheckpointState.checkpoint_write_allowed(false), "Checkpoint writes remain available outside boss combat")
+	_expect(not RainCityCheckpointState.checkpoint_write_allowed(true), "Checkpoint writes are rejected during active boss combat")
+	var mount := MountHoodWhiteout.new()
+	mount._mission_runtime = _runtime_with_active_boss(&"summit")
+	mount.add_child(mount._mission_runtime)
+	_expect(mount._save_checkpoint(&"checkpoint_summit", Vector3.ZERO, false) == ERR_BUSY, "Mount Hood rejects checkpoint writes during the summit boss")
+	mount.free()
+	var biome := BiomeMissionController.new()
+	biome.biome_profile = preload("res://resources/biomes/ventura_profile.tres")
+	biome._mission_runtime = _runtime_with_active_boss(biome.biome_profile.boss_zone_id)
+	biome.add_child(biome._mission_runtime)
+	_expect(biome._save_checkpoint(&"checkpoint_boss", Vector3.ZERO, false) == ERR_BUSY, "Shared biome missions reject checkpoint writes during their boss")
+	biome.free()
+	var rain_city := EpisodeOneVancouverWaterfront.new()
+	rain_city._last_combat_zone = &"harbour_pier"
+	_expect(rain_city._save_checkpoint(&"checkpoint_harbour_pier", Vector3.ZERO, false) == ERR_BUSY, "Rain City rejects checkpoint writes during the convoy boss")
+	rain_city.free()
+
+
+func _runtime_with_active_boss(zone_id: StringName) -> MissionRuntime:
+	var runtime := MissionRuntime.new()
+	runtime.encounters = EncounterRunner.new()
+	runtime.add_child(runtime.encounters)
+	runtime.encounters.active[zone_id] = {}
+	return runtime
+
+
+func _test_later_mission_initialization_order() -> void:
+	var expected: Array[StringName] = [&"consume", &"progression", &"mission_runtime", &"mission_restore", &"player"]
+	for probe_script in [MOUNT_ORDER_PROBE, BIOME_ORDER_PROBE]:
+		var probe: Node = probe_script.new()
+		probe.run_order_probe()
+		_expect(probe.call_order == expected, "%s order was %s; expected %s" % [probe.get_script().resource_path, probe.call_order, expected])
+		probe.free()
 
 
 func _consume(payload: Dictionary) -> Dictionary:

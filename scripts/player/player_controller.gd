@@ -71,31 +71,25 @@ var _surface_movement_mode := "full"
 var _movement_environment: MovementEnvironmentProfile
 var _movement_environment_mode := "full"
 var _external_transport_active := false
+var _base_mouse_sensitivity := 0.002
+var _base_head_bob_amount := 0.035
+var _impact_effects: PlayerImpactEffects
 func _ready() -> void:
 	# Level zones key progression off this stable identity. Keeping it in code
 	# prevents a scene metadata omission from silently disabling every later wave.
 	add_to_group(&"player")
 	add_to_group(&"damageable_player")
+	_impact_effects = PlayerImpactEffects.new()
+	add_child(_impact_effects)
 	_apply_feel_profile()
+	_base_mouse_sensitivity = mouse_sensitivity
+	_base_head_bob_amount = head_bob_amount
 	_touch_aim.profile = touch_aim_profile
 	_head_base_position = head.position
 	_last_step_position = global_position
 	var settings := get_node_or_null("/root/SettingsManager")
 	if settings != null and settings.has_method("get_value"):
-		mouse_sensitivity *= clampf(float(settings.call("get_value", &"gameplay", &"mouse_sensitivity", 1.0)), 0.25, 3.0)
-		camera.fov = clampf(float(settings.call("get_value", &"video", &"fov", 90.0)), 70.0, 110.0)
-		head_bob_amount *= clampf(float(settings.call("get_value", &"accessibility", &"head_bob", 1.0)), 0.0, 1.0)
-		if bool(settings.call("get_value", &"accessibility", &"reduced_motion", false)): head_bob_amount = 0.0
-		_touch_horizontal_sensitivity = clampf(float(settings.call("get_value", &"gameplay", &"touch_horizontal_sensitivity", settings.call("get_value", &"gameplay", &"touch_sensitivity", 1.0))), 0.25, 3.0)
-		_touch_vertical_sensitivity = clampf(float(settings.call("get_value", &"gameplay", &"touch_vertical_sensitivity", settings.call("get_value", &"gameplay", &"touch_sensitivity", 1.0))), 0.25, 3.0)
-		_touch_invert_y = bool(settings.call("get_value", &"gameplay", &"touch_invert_y", false))
-		_touch_aim.select_profile(String(settings.call("get_value", &"gameplay", &"touch_aim_preset", "balanced")))
-		touch_aim_profile = _touch_aim.profile
-		_touch_turn_boost = bool(settings.call("get_value", &"gameplay", &"touch_turn_boost", true))
-		_touch_aim.turn_boost = _touch_turn_boost
-		_touch_aim_friction = TouchAimProfile.friction_strength(String(settings.call("get_value", &"gameplay", &"touch_aim_friction", "standard")))
-		_surface_movement_mode = String(settings.call("get_value", &"gameplay", &"surface_movement", "full"))
-		_movement_environment_mode = String(settings.call("get_value", &"gameplay", &"movement_environment", "full"))
+		PlayerRuntimeSettings.apply(self, settings)
 		if settings.has_signal("setting_changed"): settings.setting_changed.connect(_on_setting_changed)
 	health_armor.died.connect(_on_died)
 	health_armor.damaged.connect(_on_damaged)
@@ -107,7 +101,7 @@ func _ready() -> void:
 		if child is WeaponBase:
 			var weapon := child as WeaponBase
 			weapons.append(weapon)
-			weapon.configure(camera, auto_aim, feedback)
+			weapon.configure(camera, auto_aim, feedback, _impact_effects.pool)
 			weapon.ammo_changed.connect(_on_weapon_ammo_changed.bind(weapon))
 			weapon.ammo_state_changed.connect(_on_weapon_ammo_state_changed.bind(weapon))
 			weapon.shot_resolved.connect(_on_shot_resolved)
@@ -124,76 +118,58 @@ func _ready() -> void:
 		select_weapon(0)
 
 
+func _exit_tree() -> void:
+	if _impact_effects != null:
+		_impact_effects.pool.clear()
+
+
 func _input_manager_service() -> Node:
-	var service := _input_manager
-	if service == null:
-		service = get_node_or_null("/root/InputManager")
-		_input_manager = service
-	return service
+	_input_manager = PlayerInputAdapter.resolve_service(_input_manager, self)
+	return _input_manager
 
 func _input(event: InputEvent) -> void:
 	var input_manager := _input_manager_service()
 	if is_dead or get_tree().paused:
 		return
-	if input_manager != null and input_manager.is_action_event_pressed(event, &"jump"):
-		_jump_requested = true
-		get_viewport().set_input_as_handled()
-		return
-	if input_manager != null and _run_mode() == "toggle" and input_manager.is_action_event_pressed(event, &"run"):
-		_run_toggled = not _run_toggled
-		get_viewport().set_input_as_handled()
-		return
-	# Named actions must run before raw-key weapon shortcuts so R reaches reload.
-	if input_manager != null and input_manager.is_action_event_pressed(event, &"reload"):
-		request_reload()
-		get_viewport().set_input_as_handled()
-		return
-	# Arrow keys replace momentum-heavy trackpad scrolling. Ignore key repeat so
-	# one physical press always produces exactly one visible weapon change.
-	if event is InputEventKey and event.pressed and not event.echo:
-		match event.physical_keycode:
-			KEY_UP:
-				select_weapon(current_weapon_index - 1)
+	match PlayerInputAdapter.event_action(input_manager, event):
+		&"jump":
+			_jump_requested = true
+			get_viewport().set_input_as_handled(); return
+		&"run":
+			if PlayerInputAdapter.run_mode(self) == "toggle":
+				_run_toggled = not _run_toggled
 				get_viewport().set_input_as_handled()
-			KEY_DOWN:
-				select_weapon(current_weapon_index + 1)
-				get_viewport().set_input_as_handled()
-			KEY_1:
-				select_weapon_slot(0)
-				get_viewport().set_input_as_handled()
-			KEY_2:
-				select_weapon_slot(1)
-				get_viewport().set_input_as_handled()
-			KEY_3:
-				select_weapon_slot(2)
-				get_viewport().set_input_as_handled()
-	elif event is InputEventMouseButton and event.pressed and event.button_index in [MOUSE_BUTTON_WHEEL_UP, MOUSE_BUTTON_WHEEL_DOWN]:
-		var now := Time.get_ticks_msec()
-		if now - _wheel_switch_time_ms >= 180:
-			select_weapon(current_weapon_index - 1 if event.button_index == MOUSE_BUTTON_WHEEL_UP else current_weapon_index + 1)
-			_wheel_switch_time_ms = now
-		get_viewport().set_input_as_handled()
-	elif input_manager != null and input_manager.is_action_event_pressed(event, &"weapon_next"):
-		select_weapon(current_weapon_index + 1)
-		get_viewport().set_input_as_handled()
-	elif input_manager != null and input_manager.is_action_event_pressed(event, &"weapon_previous"):
-		select_weapon(current_weapon_index - 1)
-		get_viewport().set_input_as_handled()
+			return
+		&"reload":
+			request_reload(); get_viewport().set_input_as_handled(); return
+		&"weapon_next":
+			select_weapon(current_weapon_index + 1); get_viewport().set_input_as_handled(); return
+		&"weapon_previous":
+			select_weapon(current_weapon_index - 1); get_viewport().set_input_as_handled(); return
+	var shortcut := PlayerInputAdapter.weapon_shortcut(event, _wheel_switch_time_ms)
+	if shortcut.is_empty(): return
+	if shortcut.has("slot"):
+		select_weapon_slot(int(shortcut.slot))
+	elif not bool(shortcut.get("debounced", false)):
+		select_weapon(current_weapon_index + int(shortcut.get("delta", 0)))
+		_wheel_switch_time_ms = int(shortcut.get("wheel_time_ms", _wheel_switch_time_ms))
+	get_viewport().set_input_as_handled()
 func _unhandled_input(event: InputEvent) -> void:
 	var input_manager := _input_manager_service()
+	var action := PlayerInputAdapter.event_action(input_manager, event)
 	if is_dead:
-		if input_manager != null and (input_manager.is_action_event_pressed(event, &"fire_primary") or input_manager.is_action_event_pressed(event, &"jump") or input_manager.is_action_event_pressed(event, &"use")):
+		if action in [&"fire_primary", &"jump", &"use"]:
 			restart_requested.emit()
 		return
 	if event is InputEventMouseMotion and Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
 		var relative: Vector2 = event.relative.limit_length(180.0)
 		rotate_y(-relative.x * mouse_sensitivity)
 		head.rotation.x = clampf(head.rotation.x - relative.y * mouse_sensitivity, deg_to_rad(-max_look_degrees), deg_to_rad(max_look_degrees))
-	if input_manager != null and input_manager.is_action_event_pressed(event, &"fire_primary"):
+	if action == &"fire_primary":
 		_current_weapon_fire(false)
-	elif input_manager != null and input_manager.is_action_event_pressed(event, &"fire_secondary"):
+	elif action == &"fire_secondary":
 		_current_weapon_fire(true)
-	elif input_manager != null and input_manager.is_action_event_pressed(event, &"use"):
+	elif action == &"use":
 		_try_interact()
 func _physics_process(delta: float) -> void:
 	var input_manager := _input_manager_service()
@@ -233,7 +209,7 @@ func _physics_process(delta: float) -> void:
 		input = input_manager.get_vector("strafe_left", "strafe_right", "move_forward", "move_backward")
 	if _touch_move.length_squared() > input.length_squared(): input = _touch_move
 	var wish_direction := (global_basis * Vector3(input.x, 0.0, input.y)).normalized()
-	var run_mode := _run_mode()
+	var run_mode := PlayerInputAdapter.run_mode(self)
 	var running: bool = _run_toggled if run_mode == "toggle" else (input_manager != null and input_manager.get_action_pressed(&"run"))
 	var movement_profile := _surface_profile(_ground_surface()) if is_on_floor() else null
 	var speed_scale := movement_profile.scaled_multiplier(movement_profile.speed_multiplier, _surface_movement_mode) if movement_profile != null else 1.0
@@ -300,19 +276,9 @@ func _apply_touch_stick_look(delta: float) -> void:
 	rotate_y(-response.x * deg_to_rad(touch_aim_profile.yaw_degrees_per_second) * _touch_horizontal_sensitivity * delta)
 	var pitch_direction := -1.0 if not _touch_invert_y else 1.0
 	head.rotation.x = clampf(head.rotation.x + response.y * deg_to_rad(touch_aim_profile.pitch_degrees_per_second) * _touch_vertical_sensitivity * pitch_direction * delta, deg_to_rad(-max_look_degrees), deg_to_rad(max_look_degrees))
-func _on_setting_changed(section: StringName, key: StringName, value: Variant) -> void:
-	if section != &"gameplay": return
-	match key:
-		&"touch_horizontal_sensitivity": _touch_horizontal_sensitivity = clampf(float(value), 0.25, 3.0)
-		&"touch_vertical_sensitivity": _touch_vertical_sensitivity = clampf(float(value), 0.25, 3.0)
-		&"touch_invert_y": _touch_invert_y = bool(value)
-		&"touch_aim_preset":
-			_touch_aim.select_profile(String(value)); touch_aim_profile = _touch_aim.profile
-		&"touch_turn_boost":
-			_touch_turn_boost = bool(value); _touch_aim.turn_boost = _touch_turn_boost
-		&"touch_aim_friction": _touch_aim_friction = TouchAimProfile.friction_strength(String(value))
-		&"surface_movement": _surface_movement_mode = String(value)
-		&"movement_environment": _movement_environment_mode = String(value)
+func _on_setting_changed(section: StringName, _key: StringName, _value: Variant) -> void:
+	if section in [&"gameplay", &"video", &"accessibility"]:
+		PlayerRuntimeSettings.apply(self, get_node_or_null("/root/SettingsManager"))
 func apply_touch_look(relative: Vector2) -> void:
 	# Compatibility shim. Gameplay touch controls use set_touch_look() so aiming
 	# advances in physics ticks instead of depending on drag-event frequency.
@@ -466,21 +432,9 @@ func _surface_profile(surface_id: StringName) -> SurfaceMovementProfile:
 static func should_play_footsteps(grounded: bool, horizontal_speed: float, dead: bool, paused: bool) -> bool:
 	return grounded and horizontal_speed >= 0.8 and not dead and not paused
 func _apply_keyboard_look(delta: float) -> void:
-	var input_manager := _input_manager_service()
-	var yaw := 0.0
-	var pitch := 0.0
-	if input_manager != null:
-		yaw = input_manager.get_axis(&"look_left", &"look_right")
-		pitch = input_manager.get_axis(&"look_up", &"look_down")
-	rotate_y(-yaw * 2.2 * delta)
-	head.rotation.x = clampf(head.rotation.x - pitch * 1.65 * delta, deg_to_rad(-max_look_degrees), deg_to_rad(max_look_degrees))
-
-
-func _run_mode() -> String:
-	var settings := get_node_or_null("/root/SettingsManager")
-	if settings != null and settings.has_method("get_value"):
-		return String(settings.call("get_value", &"gameplay", &"run_mode", "hold"))
-	return "hold"
+	var look := PlayerInputAdapter.look_axes(_input_manager_service())
+	rotate_y(-look.x * 2.2 * delta)
+	head.rotation.x = clampf(head.rotation.x - look.y * 1.65 * delta, deg_to_rad(-max_look_degrees), deg_to_rad(max_look_degrees))
 
 
 func _update_head_bob(delta: float, input_amount: float) -> void:

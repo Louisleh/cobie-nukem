@@ -61,7 +61,7 @@ WCB-002, WCB-003, and the non-overlapping halves of WCB-004 may run in parallel 
 
 ### WCB-001 — Reproducible Godot 4.7 workstation and baseline
 
-**Status:** Ready to integrate; core baseline green, optional visual-tool findings recorded
+**Status:** Complete — integrated and pushed at `4479e2f`
 **Owner:** Architecture/integration
 **Paths:** tooling/docs only unless a verified compatibility fix is required
 
@@ -85,9 +85,9 @@ bash tools/run_godot_safe.sh --timeout 300 -- --headless --path . --script res:/
 
 ### WCB-002 — Effective input-profile ownership
 
-**Status:** Pending WCB-001
+**Status:** Corrective verification and packaged exports green — evidence commit/push pending; physical joystick gate open
 **Owner:** Input, with a surgical player integration seam
-**Paths:** `scripts/input/`, `scripts/player/player_controller.gd`, `resources/input_profiles/`, `tests/unit/input_system_test.gd`
+**Paths:** `scripts/input/`, `scripts/input/player_input_adapter.gd`, `scripts/player/player_controller.gd`, `scripts/ui/pause_menu.gd`, `resources/input_profiles/`, `tests/unit/input_system_test.gd`, `tests/integration/input_profile_service_boundary_test.gd`, `docs/design/input.md`
 
 **Problem:** profile-aware input accessors exist, while the player also consumes global named actions and hard-coded shortcut paths. A saved profile is not accepted as functional until non-default bindings drive the real player.
 
@@ -102,25 +102,26 @@ bash tools/run_godot_safe.sh --timeout 300 -- --headless --path . --script res:/
 
 ### WCB-003 — Checkpoint restore invariants across all missions
 
-**Status:** Pending WCB-001
+**Status:** Corrective verification and packaged exports green — evidence commit/push pending
 **Owner:** Save/mission runtime
-**Paths:** `scripts/level/*checkpoint*`, mission controllers, `scripts/core/game_state.gd`, checkpoint/campaign tests
+**Paths:** `scripts/level/rain_city_checkpoint_state.gd`, `scripts/level/mount_hood_whiteout.gd`, `scripts/level/biome_mission_controller.gd`, checkpoint/campaign tests, `docs/design/checkpoints.md`
 
 **Problem:** later mission restore paths can call run initialization after applying checkpoint data, risking reset of pending progression state.
 
 **Deliverables**
 
 - Define restore order once and reuse it.
-- Preserve route gate, objective, health, armor, loadout, ammo, boss phase, tags, secrets, and mission mode.
+- Preserve route gate, objective, health, armor, loadout, ammo, tags, secrets, and mission mode.
+- Reject checkpoint writes during active boss combat. Until WCB-007 owns phase serialization, continuation resumes from the last pre-boss checkpoint into a fresh deterministic boss.
 - Add deterministic tests for Mount Hood, Moon, and Ventura matching Salmon/Rain City coverage.
 
 **Exit:** 100 seeded restore cycles per mission reproduce the saved state and finish without orphaned progression or duplicate rewards.
 
 ### WCB-004 — Runtime setting truth and combat allocation budget
 
-**Status:** Pending WCB-001
+**Status:** Corrective verification and packaged exports green — evidence commit/push pending
 **Owner:** UI/presentation for settings; combat for effects
-**Paths:** `scripts/ui/options_menu.gd`, quality settings tests, `scripts/combat/weapon_base.gd`, VFX resources/pools, `tests/smoke/projectile_performance_profile.gd`
+**Paths:** `scripts/core/settings_manager.gd`, `scripts/core/quality_manager.gd`, `scripts/core/projectile_pool.gd`, `scripts/player/player_runtime_settings.gd`, `scripts/player/player_impact_effects.gd`, `scripts/player/tactile_feedback.gd`, `scripts/combat/weapon_base.gd`, `scripts/combat/impact_effect_pool.gd`, `scripts/combat/fetch_launcher.gd`, `scripts/combat/fetch_projectile.gd`, focused settings/combat/pool/performance tests, `docs/design/performance-accessibility.md`
 
 **Deliverables**
 
@@ -133,7 +134,7 @@ bash tools/run_godot_safe.sh --timeout 300 -- --headless --path . --script res:/
 
 ### WCB-005 — Rain City authored spatial vertical slice
 
-**Status:** Pending WCB-002–004
+**Status:** Blocked pending WCB-002–004 evidence commit/push
 **Owner:** Level
 **Paths:** Rain City scenes/resources/world builder, route definitions, interaction catalog, route tests
 

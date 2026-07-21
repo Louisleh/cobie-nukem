@@ -33,6 +33,10 @@ static func restore_progression_state(payload: Dictionary, game_state: Node) -> 
 	game_state.restore_progression_checkpoint(int(payload.get("pending_compliance_tags", 0)), String(payload.get("run_mode", "standard")))
 
 
+static func checkpoint_write_allowed(boss_combat_active: bool) -> bool:
+	return not boss_combat_active
+
+
 static func restore(payload: Dictionary, mission_runtime: MissionRuntime, route_runtime: MissionRouteRuntime, route_definition: MissionRouteDefinition) -> Dictionary:
 	if payload.is_empty() or mission_runtime == null or route_runtime == null:
 		return {}

@@ -14,6 +14,7 @@ func _initialize() -> void:
 	check_close("calibration negative", InputMathScript.normalize_calibrated_axis(-0.35, -0.8, 0.1, 0.9), -0.5)
 	check_profile_round_trip()
 	check_action_event_dispatch()
+	check_axis_event_edges()
 	check_default_profiles()
 	check_diagnostics_scene()
 	check_pointer_capture_policy()
@@ -74,6 +75,38 @@ func check_action_event_dispatch() -> void:
 	manager._input(jump_press)
 	if not manager.get_action_just_pressed(&"jump"):
 		failures.append("Profile-aware action-edge dispatch misses second custom press edge")
+	manager.free()
+
+
+func check_axis_event_edges() -> void:
+	var manager := InputManagerService.new()
+	var profile := InputProfileScript.new()
+	profile.profile_id = "axis_event_edges"
+	profile.preset = "generic_gamepad"
+	profile.ensure_defaults()
+	profile.set_binding(&"weapon_next", {"type": "axis", "index": 2, "direction": 1.0, "range": "directional"})
+	var config := profile.axis_config(2)
+	config.dead_zone = 0.1
+	config.invert = true
+	profile.set_axis_config(2, config)
+	manager.set_active_profile(profile)
+	manager.active_device_id = 3
+	var motion := InputEventJoypadMotion.new()
+	motion.device = 3
+	motion.axis = 2
+	motion.axis_value = -0.9
+	if not manager.is_action_event_pressed(motion, &"weapon_next"):
+		failures.append("Calibrated inverted axis does not produce its first discrete edge")
+	if manager.is_action_event_pressed(motion, &"weapon_next"):
+		failures.append("Held axis repeats a discrete action without crossing release hysteresis")
+	motion.axis_value = -0.2
+	manager.is_action_event_pressed(motion, &"weapon_next")
+	motion.axis_value = -0.9
+	if not manager.is_action_event_pressed(motion, &"weapon_next"):
+		failures.append("Axis discrete action does not re-arm after calibrated release")
+	motion.device = 4
+	if manager.is_action_event_pressed(motion, &"weapon_next"):
+		failures.append("Axis discrete action accepts input from the wrong device")
 	manager.free()
 
 

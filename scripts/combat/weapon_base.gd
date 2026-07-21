@@ -49,10 +49,10 @@ var _lifecycle_remaining := 0.0
 var lifecycle_state := LifecycleState.HOLSTERED
 var _shot_sequence := 0
 var _muzzle_timer: Timer
-var _impact_effect_pool := ImpactEffectPool.new()
+var _impact_effect_pool: ImpactEffectPool
+var _owns_impact_effect_pool := false
 
 func _ready() -> void:
-	_impact_effect_pool.prewarm()
 	_muzzle_timer = Timer.new()
 	_muzzle_timer.name = "MuzzleTimer"
 	_muzzle_timer.one_shot = true
@@ -76,16 +76,16 @@ func _ready() -> void:
 		visible = false
 
 func _exit_tree() -> void:
-	if _impact_effect_pool != null:
+	if _owns_impact_effect_pool and _impact_effect_pool != null:
 		_impact_effect_pool.clear()
 
 
 func _notification(what: int) -> void:
-	if what == NOTIFICATION_PREDELETE and _impact_effect_pool != null:
+	if what == NOTIFICATION_PREDELETE and _owns_impact_effect_pool and _impact_effect_pool != null:
 		_impact_effect_pool.clear()
 
 func _process(delta: float) -> void:
-	if _impact_effect_pool != null:
+	if _owns_impact_effect_pool and _impact_effect_pool != null:
 		_impact_effect_pool.update(delta)
 	_cooldown_remaining = maxf(0.0, _cooldown_remaining - delta)
 	if lifecycle_state == LifecycleState.RAISING:
@@ -114,10 +114,16 @@ func _process(delta: float) -> void:
 		if _reload_remaining <= 0.0:
 			_complete_reload_step()
 
-func configure(aim_camera: Camera3D, aim_component: AutoAimComponent, tactile: TactileFeedback) -> void:
+func configure(aim_camera: Camera3D, aim_component: AutoAimComponent, tactile: TactileFeedback, shared_impact_pool: ImpactEffectPool = null) -> void:
 	camera = aim_camera
 	auto_aim = aim_component
 	feedback = tactile
+	if _owns_impact_effect_pool and _impact_effect_pool != null:
+		_impact_effect_pool.clear()
+	_impact_effect_pool = shared_impact_pool
+	_owns_impact_effect_pool = false
+	if _impact_effect_pool == null:
+		_ensure_impact_effect_pool()
 
 func can_fire(secondary := false) -> bool:
 	if not unlocked or not enabled or definition == null or camera == null or lifecycle_state != LifecycleState.READY or is_reloading:
@@ -391,6 +397,7 @@ func _hide_muzzle_flash() -> void:
 func _spawn_impact_marker(position_value: Vector3, normal: Vector3, kind: StringName) -> void:
 	if not is_inside_tree():
 		return
+	_ensure_impact_effect_pool()
 	var parent := get_tree().current_scene if get_tree().current_scene != null else get_tree().root
 	_impact_effect_pool.spawn_marker(parent, position_value, normal, kind == &"enemy")
 	if kind == &"enemy":
@@ -400,7 +407,16 @@ func _spawn_impact_marker(position_value: Vector3, normal: Vector3, kind: String
 func _spawn_enemy_hit_pop(position_value: Vector3, normal: Vector3, parent: Node) -> Node3D:
 	if not is_instance_valid(parent):
 		return null
+	_ensure_impact_effect_pool()
 	return _impact_effect_pool.spawn_enemy_hit_pop(parent, position_value, normal, _reduced_flashes())
+
+
+func _ensure_impact_effect_pool() -> void:
+	if _impact_effect_pool != null:
+		return
+	_impact_effect_pool = ImpactEffectPool.new()
+	_impact_effect_pool.prewarm()
+	_owns_impact_effect_pool = true
 
 
 func _reduced_flashes() -> bool:
@@ -413,13 +429,3 @@ func _reduced_motion() -> bool:
 	if not is_inside_tree(): return false
 	var settings := get_node_or_null("/root/SettingsManager")
 	return settings != null and bool(settings.get_value(&"accessibility", &"reduced_motion", false))
-
-
-func _impact_pop_material(color: Color, energy: float) -> StandardMaterial3D:
-	var material := StandardMaterial3D.new()
-	material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
-	material.albedo_color = color
-	material.emission_enabled = true
-	material.emission = color
-	material.emission_energy_multiplier = energy
-	return material

@@ -1,5 +1,7 @@
 extends SceneTree
 
+const PLAYER_SCENE := preload("res://scenes/player/cobie_player.tscn")
+
 var failures: Array[String] = []
 var _settings: Node
 var _quality: Node
@@ -11,6 +13,7 @@ var _settings_backup_valid: bool = false
 var _original_fps: int = 60
 var _original_scale: float = 1.0
 var _original_pressure_limit: int = -1
+var _player: CobiePlayer
 
 
 func _initialize() -> void:
@@ -28,7 +31,11 @@ func _run() -> void:
 		return
 
 	_capture_state()
+	_player = PLAYER_SCENE.instantiate() as CobiePlayer
+	root.add_child(_player)
 	_override_settings()
+	_expect(is_equal_approx(_player.camera.fov, 87.5), "player receives non-default FOV before reset")
+	_expect(_player.feedback.reduced_flashes, "tactile feedback receives non-default flash setting before reset")
 
 	var setting_events: Array[Dictionary] = []
 	_settings.setting_changed.connect(func(section: StringName, key: StringName, value: Variant) -> void:
@@ -44,10 +51,9 @@ func _run() -> void:
 	if error != OK:
 		failures.append("settings reset returns an error: %d" % error)
 
-	await process_frame
-
 	_validate_reset_notifications(setting_events)
 	_validate_runtime_reapply()
+	_validate_player_runtime_reapply()
 	_validate_single_quality_reapply(profile_events)
 
 	_restore_state()
@@ -75,6 +81,8 @@ func _capture_state() -> void:
 
 
 func _restore_state() -> void:
+	if is_instance_valid(_player):
+		_player.free()
 	Engine.max_fps = _original_fps
 	var viewport := root as Viewport
 	if viewport != null:
@@ -214,6 +222,27 @@ func _validate_runtime_reapply() -> void:
 
 func _validate_single_quality_reapply(profile_events: Array[QualityProfile]) -> void:
 	_expect(profile_events.size() == 1, "quality profile changes once during reset")
+
+
+func _validate_player_runtime_reapply() -> void:
+	if not is_instance_valid(_player):
+		failures.append("real player fixture is unavailable after reset")
+		return
+	var gameplay: Dictionary = _settings.DEFAULTS["gameplay"]
+	var video: Dictionary = _settings.DEFAULTS["video"]
+	var accessibility: Dictionary = _settings.DEFAULTS["accessibility"]
+	var expected_mouse := _player._base_mouse_sensitivity * float(gameplay["mouse_sensitivity"])
+	var expected_bob := _player._base_head_bob_amount * float(accessibility["head_bob"])
+	if bool(accessibility["reduced_motion"]):
+		expected_bob = 0.0
+	var expected_shake := _player.feedback._base_shake_scale * float(accessibility["camera_shake"])
+	if bool(accessibility["reduced_motion"]):
+		expected_shake = 0.0
+	_expect(is_equal_approx(_player.mouse_sensitivity, expected_mouse), "reset reapplies player mouse sensitivity immediately")
+	_expect(is_equal_approx(_player.camera.fov, float(video["fov"])), "reset reapplies player FOV immediately")
+	_expect(is_equal_approx(_player.head_bob_amount, expected_bob), "reset reapplies player head bob immediately")
+	_expect(is_equal_approx(_player.feedback.shake_scale, expected_shake), "reset reapplies tactile shake immediately")
+	_expect(_player.feedback.reduced_flashes == bool(video["reduced_flashes"]), "reset reapplies reduced flashes immediately")
 
 
 func _expected_quality_profile() -> QualityProfile:

@@ -1,5 +1,9 @@
 # Decisions
 
+## D-018 — Player input and checkpoint continuation use explicit runtime seams
+
+The selected `InputProfile` owns player/UI gameplay intent through `InputManager`; direct gameplay polling may not bypass that seam. Checkpoint consumption is payload-only, and later-mission controllers execute one explicit `consume -> begin/restore progression -> mission runtime -> mission restore -> player` transaction so run initialization cannot erase saved tags or mode. Because complete boss phase state is not serialized, checkpoint writes are rejected during active boss combat; continuation restarts from the deterministic pre-boss checkpoint until WCB-007 owns phase snapshots. Settings reset emits restored values to runtime listeners, and combat hot paths use bounded shared reuse rather than allocate-then-cap cleanup. The contracts and regression commands live in `docs/design/`.
+
 ## D-017 — One active world-class buildout document stack
 
 For the 2026-07-21 3/6/9 quality program, `docs/PRD.md` §1.5 owns active product requirements, `docs/IMPLEMENTATION_PLAN.md` owns dependency order and packet boundaries, and `docs/WORLD_CLASS_BUILDOUT_LOG.md` owns current execution state and packet evidence. `docs/PHASE_ROADMAP_PRD.md` remains the release-history and prior-candidate evidence record; it does not compete with the active stack.

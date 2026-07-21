@@ -56,21 +56,28 @@ var _summit_reward_generation := 0
 
 func _ready() -> void:
 	_run_started_ms = Time.get_ticks_msec()
-	_apply_requested_checkpoint()
-	_setup_runtime()
-	_build_world()
-	_restore_runtime_state()
-	if spawn_player: _spawn_player()
-	if setup_presentation: _setup_presentation()
-	var game_state := get_node_or_null("/root/GameState")
-	if game_state != null:
-		game_state.begin_run(metadata.level_id)
-		RainCityCheckpointState.restore_progression_state(_restored_checkpoint, game_state)
+	_initialize_runtime_and_player(get_node_or_null("/root/GameState"))
 	narrative_message.emit("EPISODE 1, MISSION 3: MOUNT HOOD WHITEOUT\nPUBLIC BETA", 4.0)
 	level_ready.emit(player)
 	var announced := _mission_runtime.announce_available_objectives()
 	if announced.is_empty(): objective_changed.emit(metadata.opening_objective)
 	if is_instance_valid(player): _submit_route_position(player.global_position)
+
+
+func _initialize_runtime_and_player(game_state: Node) -> void:
+	_apply_requested_checkpoint()
+	if game_state != null:
+		_start_or_restore_progression(game_state)
+	_setup_runtime()
+	_build_world()
+	_restore_runtime_state()
+	if spawn_player: _spawn_player()
+	if setup_presentation: _setup_presentation()
+
+
+func _start_or_restore_progression(game_state: Node) -> void:
+	game_state.begin_run(metadata.level_id)
+	RainCityCheckpointState.restore_progression_state(_restored_checkpoint, game_state)
 
 
 func _setup_runtime() -> void:
@@ -185,6 +192,8 @@ func _on_world_checkpoint(id: StringName, respawn: Vector3) -> void:
 
 
 func _save_checkpoint(id: StringName, at: Vector3, announce := true) -> Error:
+	var boss_active := _mission_runtime != null and _mission_runtime.encounters != null and _mission_runtime.encounters.active.has(&"summit")
+	if not RainCityCheckpointState.checkpoint_write_allowed(boss_active): return ERR_BUSY
 	var manager := get_node_or_null("/root/SaveManager")
 	if manager == null: return ERR_UNCONFIGURED
 	var runtime_snapshot := _mission_runtime.snapshot()

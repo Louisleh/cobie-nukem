@@ -31,6 +31,28 @@ func _test_fetch_projectile_reuse() -> void:
 	var start_available: int = int(pool.available_count_for_scene(FETCH_PROJECTILE))
 	if start_created <= 0:
 		_expect(false, "fetch projectile pool is prewarmed before lifecycle assertions")
+	var contamination_probe := pool.acquire(FETCH_PROJECTILE) as FetchProjectile
+	_expect(contamination_probe != null, "fetch pool provides a contamination probe")
+	if contamination_probe != null:
+		var expected := {
+			"speed": contamination_probe.speed,
+			"blast_radius": contamination_probe.blast_radius,
+			"blast_mask": contamination_probe.collision_mask_for_blast,
+			"recall_damage": contamination_probe.recall_damage,
+		}
+		contamination_probe.speed = 99.0
+		contamination_probe.blast_radius = 99.0
+		contamination_probe.collision_mask_for_blast = 1
+		contamination_probe.recall_damage = 99.0
+		pool.release_projectile(contamination_probe)
+		var reset_probe := pool.acquire(FETCH_PROJECTILE) as FetchProjectile
+		_expect(reset_probe != null, "fetch pool reacquires the contamination probe")
+		if reset_probe != null:
+			_expect(is_equal_approx(reset_probe.speed, float(expected.speed)), "fetch reuse resets speed")
+			_expect(is_equal_approx(reset_probe.blast_radius, float(expected.blast_radius)), "fetch reuse resets blast radius")
+			_expect(reset_probe.collision_mask_for_blast == int(expected.blast_mask), "fetch reuse resets blast mask")
+			_expect(is_equal_approx(reset_probe.recall_damage, float(expected.recall_damage)), "fetch reuse resets recall damage")
+			pool.release_projectile(reset_probe)
 	for index in 12:
 		var projectile := pool.acquire(FETCH_PROJECTILE) as FetchProjectile
 		_expect(projectile != null, "fetch pool returns a valid projectile")
