@@ -13,6 +13,7 @@ func _initialize() -> void:
 	check_close("calibration positive", InputMathScript.normalize_calibrated_axis(0.6, -0.8, 0.1, 0.9), 0.625)
 	check_close("calibration negative", InputMathScript.normalize_calibrated_axis(-0.35, -0.8, 0.1, 0.9), -0.5)
 	check_profile_round_trip()
+	check_action_event_dispatch()
 	check_default_profiles()
 	check_diagnostics_scene()
 	check_pointer_capture_policy()
@@ -38,6 +39,42 @@ func check_profile_round_trip() -> void:
 	check_close("serialized dead zone", restored.axis_config(0).dead_zone, 0.23)
 	if not restored.axis_config(0).invert: failures.append("Serialized inversion was lost")
 	if int(restored.bindings_for(&"jump")[0].index) != 9: failures.append("Serialized remap was lost")
+
+
+func check_action_event_dispatch() -> void:
+	var manager := InputManagerService.new()
+	var profile := InputProfileScript.new()
+	profile.profile_id = "test_action_events"
+	profile.preset = "keyboard_mouse"
+	profile.ensure_defaults()
+	profile.set_binding(&"fire_primary", {"type": "key", "index": KEY_Q, "direction": 1.0, "range": "directional"})
+	profile.set_binding(&"jump", {"type": "key", "index": KEY_B, "direction": 1.0, "range": "directional"})
+	manager.set_active_profile(profile)
+	var fire_key := InputEventKey.new()
+	fire_key.keycode = KEY_Q
+	fire_key.physical_keycode = KEY_Q
+	fire_key.pressed = true
+	fire_key.echo = false
+	if not manager.is_action_event_pressed(fire_key, &"fire_primary"):
+		failures.append("InputManager service does not dispatch custom keyboard bindings through event-facing seams")
+	var jump_press := InputEventKey.new()
+	jump_press.keycode = KEY_B
+	jump_press.physical_keycode = KEY_B
+	jump_press.pressed = true
+	manager._input(jump_press)
+	if not manager.get_action_just_pressed(&"jump"):
+		failures.append("Action-edge dispatch does not surface custom profile input for profile-aware actions")
+	if manager.get_action_just_pressed(&"jump"):
+		failures.append("Profile-aware action-edge dispatch reports pressed when input did not change")
+	jump_press.pressed = false
+	manager._input(jump_press)
+	if manager.get_action_just_pressed(&"jump"):
+		failures.append("Profile-aware action-edge dispatch reports held input as fresh edge after release")
+	jump_press.pressed = true
+	manager._input(jump_press)
+	if not manager.get_action_just_pressed(&"jump"):
+		failures.append("Profile-aware action-edge dispatch misses second custom press edge")
+	manager.free()
 
 
 func check_default_profiles() -> void:

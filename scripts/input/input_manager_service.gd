@@ -25,6 +25,7 @@ var last_input_timestamp_ms := 0
 var last_input_description := "none"
 var _pressed_keys: Dictionary = {}
 var _pressed_mouse_buttons: Dictionary = {}
+var _discrete_action_pressed: Dictionary = {}
 var _capture_action := StringName()
 var _capture_device_id := -1
 var _calibration_mode := ""
@@ -88,6 +89,7 @@ func _input(event: InputEvent) -> void:
 func set_active_profile(profile: InputProfile) -> void:
 	active_profile = profile
 	active_profile.ensure_defaults()
+	_discrete_action_pressed.clear()
 	if active_profile.preferred_device_id in Input.get_connected_joypads():
 		active_device_id = active_profile.preferred_device_id
 	profile_changed.emit(active_profile)
@@ -190,15 +192,37 @@ func get_action_strength(action: StringName) -> float:
 	return clampf(result, 0.0, 1.0)
 
 
+func get_axis(negative: StringName, positive: StringName) -> float:
+	return get_action_strength(positive) - get_action_strength(negative)
+
+
 func get_action_pressed(action: StringName) -> bool:
 	return get_action_strength(action) >= 0.5
 
 
 func get_action_just_pressed(action: StringName) -> bool:
 	if InputMap.has_action(action) and Input.is_action_just_pressed(action):
+		_discrete_action_pressed[action] = true
 		return true
-	# Custom raw bindings intentionally expose stable pressed state. Gameplay systems
-	# that require edge detection should cache `get_action_pressed` per physics frame.
+	if active_profile == null:
+		_discrete_action_pressed[action] = false
+		return false
+	var is_pressed := get_action_strength(action) >= 0.5
+	var was_pressed := bool(_discrete_action_pressed.get(action, false))
+	_discrete_action_pressed[action] = is_pressed
+	return is_pressed and not was_pressed
+
+
+func is_action_event_pressed(event: InputEvent, action: StringName) -> bool:
+	if event == null:
+		return false
+	if event.is_action_pressed(action):
+		return true
+	if active_profile == null:
+		return false
+	for binding in active_profile.bindings_for(action):
+		if _binding_matches_event(binding, event):
+			return true
 	return false
 
 
@@ -360,6 +384,38 @@ func _complete_binding_capture(binding: Dictionary) -> void:
 	_capture_action = StringName()
 	_capture_device_id = -1
 	binding_captured.emit(action, binding, conflicts)
+
+
+func _binding_matches_event(binding: Dictionary, event: InputEvent) -> bool:
+	if event is InputEventKey:
+		if not event.pressed or event.echo:
+			return false
+		if binding.get("type", "") != "key":
+			return false
+		var binding_key := int(binding.get("index", -1))
+		return event.physical_keycode == binding_key or event.keycode == binding_key
+	if event is InputEventMouseButton:
+		if not event.pressed:
+			return false
+		return binding.get("type", "") == "mouse_button" and int(event.button_index) == int(binding.get("index", -1))
+	if event is InputEventJoypadButton:
+		if not event.pressed:
+			return false
+		if active_device_id >= 0 and int(event.device) != active_device_id:
+			return false
+		return binding.get("type", "") == "button" and int(event.button_index) == int(binding.get("index", -1))
+	if event is InputEventJoypadMotion:
+		if absf(event.axis_value) < 0.65:
+			return false
+		if active_device_id >= 0 and int(event.device) != active_device_id:
+			return false
+		if binding.get("type", "") != "axis":
+			return false
+		if int(event.axis) != int(binding.get("index", -1)):
+			return false
+		var binding_direction := signf(float(binding.get("direction", 1.0)))
+		return signf(event.axis_value) == binding_direction
+	return false
 
 
 func _capture_matches_device(event_device: int) -> bool:

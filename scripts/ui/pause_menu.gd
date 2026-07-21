@@ -5,6 +5,7 @@ signal restart_requested
 
 const OptionsScene := preload("res://scenes/menus/options_menu.tscn")
 const FeedbackScene := preload("res://scenes/ui/playtest_report.tscn")
+@onready var _input_manager: Node = get_node_or_null("/root/InputManager")
 
 var _options_overlay: OptionsMenu
 var _feedback_overlay: PlaytestReport
@@ -24,8 +25,17 @@ func _ready() -> void:
 	%BuildLabel.text = "v%s • %s" % [BuildInfo.VERSION, BuildInfo.REVISION]
 	%MainMenuButton.pressed.connect(_go_main_menu)
 
+
+func _input_manager_service() -> Node:
+	var service := _input_manager
+	if service == null:
+		service = get_node_or_null("/root/InputManager")
+		_input_manager = service
+	return service
+
 func _input(event: InputEvent) -> void:
-	if event.is_action_pressed("pause"):
+	var input_manager := _input_manager_service()
+	if input_manager != null and input_manager.is_action_event_pressed(event, &"pause"):
 		if _routing or _restarting:
 			get_viewport().set_input_as_handled()
 			return
