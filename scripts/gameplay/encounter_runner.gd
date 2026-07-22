@@ -53,6 +53,7 @@ func activate_zone(zone_id: StringName, target: Node3D = null) -> Array[Node]:
 		"generation": _next_zone_generation(zone_id),
 		"pending_external_advance": false,
 		"next_wave": -1,
+		"choreography_context": {},
 		"suspended": false,
 	}
 	encounter_started.emit(definition)
@@ -79,6 +80,18 @@ func _spawn_wave(definition: EncounterDefinition, wave_index: int, expected_gene
 	var actors: Array[Node] = []
 	var wave_spawns: Array = wave.get("spawns", [])
 	var target: Node3D = state.get("target")
+	var choreography_context := {}
+	if definition.schema_version >= 3 and definition.choreography_profile != null:
+		choreography_context = definition.choreography_profile.context_for_wave(wave_index)
+	else:
+		choreography_context = {
+			"encounter_role_id": &"",
+			"encounter_approach_id": &"",
+			"encounter_transition_id": &"",
+			"encounter_recovery_position": Vector3.ZERO,
+			"encounter_environment_choice_ids": [],
+		}
+	state.choreography_context = choreography_context
 	wave_started.emit(definition, wave_index)
 	for spawn_index in wave_spawns.size():
 		var spawn: Dictionary = wave_spawns[spawn_index]
@@ -91,6 +104,11 @@ func _spawn_wave(definition: EncounterDefinition, wave_index: int, expected_gene
 			_fail(definition, "spawned actor %s does not expose required died signal" % actor.name)
 			return []
 		actors.append(actor)
+		actor.set_meta(&"encounter_role_id", StringName(spawn.get("role_id", "")))
+		actor.set_meta(&"encounter_approach_id", StringName(spawn.get("approach_id", "")))
+		actor.set_meta(&"encounter_transition_id", StringName(choreography_context.get("encounter_transition_id", "")))
+		actor.set_meta(&"encounter_recovery_position", choreography_context.get("encounter_recovery_position", Vector3.ZERO))
+		actor.set_meta(&"encounter_environment_choice_ids", _normalize_environment_choice_ids(choreography_context.get("encounter_environment_choice_ids", [])))
 		actor.set_meta(&"encounter_spawn_slot", "%s:%d:%d" % [definition.id, wave_index, spawn_index])
 		state.actors.append(actor)
 		state.remaining = int(state.remaining) + 1
@@ -173,6 +191,7 @@ func restore(data: Dictionary) -> void:
 				"generation": _next_zone_generation(zone_id),
 				"remaining": 0,
 				"actors": [],
+				"choreography_context": {},
 				"wave": clamp(wave, 0, waves.size() - 1),
 				"target": null,
 				"timer": null,
@@ -338,3 +357,14 @@ func _next_zone_generation(zone_id: StringName) -> int:
 
 func _invalidate_zone_generation(zone_id: StringName) -> void:
 	_next_zone_generation(zone_id)
+
+
+func _normalize_environment_choice_ids(value: Variant) -> Array[StringName]:
+	var normalized: Array[StringName] = []
+	if value is Array:
+		for item in value:
+			if item is StringName or item is String:
+				var entry := StringName(item)
+				if entry != &"":
+					normalized.append(entry)
+	return normalized
