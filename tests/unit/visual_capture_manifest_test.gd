@@ -17,9 +17,10 @@ const CANONICAL_VIEWS := [
 	"mount_hood_foundry",
 	"moon_landing_pad",
 	"ventura_service_lane",
+	"rain_city_towmaster",
 	"touch_hud_4_3",
 ]
-const CANONICAL_COUNT := 15
+const CANONICAL_COUNT := 16
 
 var failures: Array[String] = []
 var safe_filename_pattern: RegEx = RegEx.new()
@@ -150,6 +151,13 @@ func _validate_views(manifest: Dictionary) -> void:
 			failures.append("Scene path must be res:// for view %s" % view_id)
 		if staging_id.is_empty() or not staging_id.is_valid_filename():
 			failures.append("staging_id must be filename-safe for view %s" % view_id)
+		if view_id == "rain_city_towmaster":
+			if scene_path != "res://scenes/levels/episode_1_vancouver_waterfront.tscn":
+				failures.append("rain_city_towmaster must use the production Rain City scene")
+			if staging_id != "rain_city_towmaster" or adapter != "direct_scene_capture":
+				failures.append("rain_city_towmaster must use its direct staging adapter")
+			if int(seed) != 2026072107 or int(frame) != 80:
+				failures.append("rain_city_towmaster seed/frame contract drifted")
 		if not (support == "supported" or support == "unsupported"):
 			failures.append("Invalid capture_support for view %s: %s" % [view_id, support])
 		elif safe_support_states.has(support) == false:

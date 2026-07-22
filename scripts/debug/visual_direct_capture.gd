@@ -5,6 +5,13 @@ var _frame := 0
 var _cleanup_frame := 60
 var _staging_id := ""
 var _staged := false
+const RAIN_CITY_TOWMASTER_ACTOR_PARENT_PATH := "Actors"
+const RAIN_CITY_TOWMASTER_PLAYER_OFFSET := Vector3(6.0, 1.1, -160.0)
+const RAIN_CITY_TOWMASTER_ACTOR_POSITION := Vector3(0.0, 0.0, -151.0)
+const RAIN_CITY_TOWMASTER_PHASE_INDEX := 3
+const RAIN_CITY_TOWMASTER_VIEW_ATTACK_ID := &"tow_sweep"
+const RAIN_CITY_TOWMASTER_VIEW_BARRAGE_ID := &"citation_barrage"
+const PRODUCTION_CITATION_CONVOY_SCENE: PackedScene = preload("res://scenes/set_pieces/citation_convoy.tscn")
 
 
 func _ready() -> void:
@@ -81,11 +88,24 @@ func _stop_target_audio() -> void:
 
 
 func _stage_target_when_ready() -> void:
-	if _staged or _staging_id != "waterfront_seawall" or not is_instance_valid(_target):
+	if _staged or not is_instance_valid(_target):
 		return
 	var player := _target.get("player") as Node3D
 	if player == null:
 		return
+	match _staging_id:
+		"waterfront_seawall":
+			_stage_waterfront_seawall(player)
+		"rain_city_towmaster":
+			if _stage_rain_city_towmaster(player):
+				_staged = true
+			else:
+				get_tree().quit(1)
+		_:
+			pass
+
+
+func _stage_waterfront_seawall(player: Node3D) -> void:
 	player.global_position = Vector3(0.0, 1.1, -73.0)
 	player.set("velocity", Vector3.ZERO)
 	player.rotation = Vector3.ZERO
@@ -96,3 +116,81 @@ func _stage_target_when_ready() -> void:
 	if _target.has_method("_submit_route_position"):
 		_target.call("_submit_route_position", player.global_position)
 	_staged = true
+
+
+func _stage_rain_city_towmaster(player: Node3D) -> bool:
+	player.global_position = RAIN_CITY_TOWMASTER_PLAYER_OFFSET
+	player.set("velocity", Vector3.ZERO)
+	var actor_parent := _target.get_node_or_null(RAIN_CITY_TOWMASTER_ACTOR_PARENT_PATH) as Node
+	if actor_parent == null:
+		push_error("rain_city_towmaster staging requires the authored Actors node")
+		return false
+	var actor := PRODUCTION_CITATION_CONVOY_SCENE.instantiate() as Node
+	if actor == null:
+		push_error("Failed to instantiate citation_convoy for rain_city_towmaster capture staging")
+		return false
+	actor_parent.add_child(actor)
+	var head := player.get_node_or_null("Head") as Node3D
+	if head != null:
+		head.rotation = Vector3.ZERO
+	player.look_at(RAIN_CITY_TOWMASTER_ACTOR_POSITION + Vector3(0.0, 1.3, 0.0), Vector3.UP)
+	player.reset_physics_interpolation()
+	var convoy_actor := actor as CitationConvoyActor
+	if convoy_actor == null or not is_instance_valid(convoy_actor):
+		push_error("Production citation_convoy instance is not a CitationConvoyActor")
+		actor.queue_free()
+		return false
+	convoy_actor.global_position = RAIN_CITY_TOWMASTER_ACTOR_POSITION
+	convoy_actor.set_physics_process(false)
+	convoy_actor.set_target(player)
+	convoy_actor.set_active_phase(RAIN_CITY_TOWMASTER_PHASE_INDEX)
+	convoy_actor.set_combat_enabled(true)
+	if convoy_actor.current_arena_state_id() != &"impound_field":
+		push_error("rain_city_towmaster stage did not enter impound_field arena state")
+		convoy_actor.queue_free()
+		return false
+	if convoy_actor.current_attack_id() != &"":
+		push_error("rain_city_towmaster stage started with a live attack")
+		convoy_actor.queue_free()
+		return false
+	var profile := convoy_actor.get("combat_profile") as TowmasterCombatProfile
+	if profile == null:
+		push_error("rain_city_towmaster stage actor has no combat profile")
+		convoy_actor.queue_free()
+		return false
+	var phase := profile.phase_at(RAIN_CITY_TOWMASTER_PHASE_INDEX)
+	if phase == null:
+		push_error("rain_city_towmaster stage actor has no phase 3 profile")
+		convoy_actor.queue_free()
+		return false
+	if phase.attack_ids.is_empty() or phase.attack_ids[0] != RAIN_CITY_TOWMASTER_VIEW_BARRAGE_ID:
+		push_error("rain_city_towmaster stage phase 3 does not begin with citation_barrage")
+		convoy_actor.queue_free()
+		return false
+	var barrage_attack := profile.attack_for_id(phase.attack_ids[0])
+	if barrage_attack == null:
+		push_error("rain_city_towmaster stage profile is missing citation_barrage definition")
+		convoy_actor.queue_free()
+		return false
+
+	convoy_actor.advance_combat(0.0)
+	convoy_actor.advance_combat(phase.telegraph_scale * barrage_attack.telegraph_seconds + 0.001)
+	convoy_actor.advance_combat(phase.cooldown_scale * barrage_attack.cooldown_seconds + 0.001)
+	convoy_actor.advance_combat(0.0)
+	if convoy_actor.current_attack_id() != RAIN_CITY_TOWMASTER_VIEW_ATTACK_ID:
+		push_error("rain_city_towmaster stage failed to reach frozen tow_sweep telegraph")
+		convoy_actor.queue_free()
+		return false
+	var warning_lights := convoy_actor.get_node_or_null("WarningLights") as Node
+	if warning_lights != null:
+		warning_lights.visible = true
+	var hud_nodes := _target.find_children("*", "GameHUD", true, false)
+	if hud_nodes.is_empty():
+		push_error("rain_city_towmaster staging requires the production GameHUD")
+		convoy_actor.queue_free()
+		return false
+	var hud := hud_nodes[0] as GameHUD
+	hud.show_objective("DISABLE THE MUNICIPAL TOWMASTER")
+	hud.set_boss_state("MUNICIPAL TOWMASTER", &"case_closed", 0.25)
+	hud.show_boss_phase_caption("CASE CLOSED // CITATION CORE EXPOSED", 3.0)
+	return true

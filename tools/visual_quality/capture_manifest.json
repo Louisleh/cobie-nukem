@@ -225,6 +225,22 @@
       }
     },
     {
+      "id": "rain_city_towmaster",
+      "scene_path": "res://scenes/levels/episode_1_vancouver_waterfront.tscn",
+      "staging_id": "rain_city_towmaster",
+      "capture_support": "supported",
+      "adapter": "direct_scene_capture",
+      "seed": 2026072107,
+      "frame": 80,
+      "capture": {"quit_after": 90},
+      "filenames": {
+        "1280x720": "rain_city_towmaster_1280x720.png",
+        "1680x1050": "rain_city_towmaster_1680x1050.png",
+        "1024x768": "rain_city_towmaster_1024x768.png",
+        "3440x1440": "rain_city_towmaster_3440x1440.png"
+      }
+    },
+    {
       "id": "mount_hood_foundry",
       "scene_path": "res://scenes/debug/mount_hood_foundry_gallery.tscn",
       "staging_id": "mount_hood_foundry",
