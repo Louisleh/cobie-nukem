@@ -10,6 +10,15 @@ on retry. Spawn failure is named and cannot count as completion. Navigation
 failure must recover or fail loudly; falling through terrain is never a death
 presentation.
 
+Rain City schema-v3 encounters attach a typed `EncounterChoreographyProfile`.
+The profile declares at least three roles, two approaches, a finite recovery
+position, environment-dependent choices, one transition per wave, and named
+counterplay. Every spawn declares a profile-owned role and approach. The runner
+derives current-wave context and tags actors without forking shared AI or
+serializing redundant state. Schema-v2 encounters remain compatible. Rain
+City's authored cards and human-review boundary live in
+`rain-city-encounters.md`.
+
 Ground enemies use `EnemyNavigator`, which throttles moving-target path updates,
 keeps gravity in the actor physics tick, and requests recovery only after three
 failed repaths. Recovery is clamped to a valid navigation point within three

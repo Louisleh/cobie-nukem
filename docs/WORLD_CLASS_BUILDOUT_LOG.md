@@ -23,7 +23,7 @@ This is the durable continuation ledger for the Cobie Nukem 3/6/9 quality progra
 | WCB-003 Checkpoint invariants | COMPLETE | Save/mission runtime | `23a657d`, `f8a78e5` | Real controller order + boss write policy + progression + packaged exports pass | Manual continues remain open |
 | WCB-004 Settings/allocation | COMPLETE | UI + combat | `5ce5501`, `5b8ad45`, `502535a`, `f8a78e5` | Runtime reset, shared effects, reuse contamination, performance + packaged exports pass | Headless timing is not rendered GPU evidence |
 | WCB-005 Rain City spatial slice | COMPLETE | Level | `8a5a807` | Route/state/navigation/catalog/core + multi-aspect comparison + packaged exports pass | Human pacing, meaningfulness, and landmark readability remain open |
-| WCB-006 Encounters | READY | Enemy/encounter | — | — | Human pacing/fairness open |
+| WCB-006 Encounters | IN PROGRESS | Enemy/encounter + bounded integration transfer | — | Cards/schema audits complete; implementation verification pending | Human pacing/fairness open |
 | WCB-007 Towmaster | BLOCKED by WCB-006 | Boss/presentation | — | — | Human spectacle/fairness open |
 | WCB-008 Art/audio identity | BLOCKED by WCB-006/007 | Visual Foundry/audio | — | — | Human art/mix/humor open |
 | WCB-009 RC evidence/selection | BLOCKED by WCB-005–008 | Integration/release | — | — | Human/device gates required |
@@ -202,6 +202,17 @@ Copy this section for every packet before marking it complete.
 - Human-only/open claims: 15–22 minute first-playthrough timing, meaningful combat payoff of loops/shortcut, ten-second landmark recognition, readability/taste, target-Mac/iPad feel, and renderer-leak attribution. The captures are review prompts, not visual approval.
 - Integrated commit: `8a5a807f36f7e9cba776ab00a98ff3c95309a4c5`.
 - Next dependency-safe packet: WCB-006 encounter choreography only.
+
+## 2026-07-21 — WCB-006 Rain City encounter choreography
+
+- Source commit: `0d8a0b0321bd6aa5af8c10611c0933813ecbec12`.
+- Owner / writers: GPT-5.6 architecture, encounter cards, review, integration, and evidence; four explicitly pinned GPT-5.3-Codex-Spark read-only audits; one isolated Spark schema writer under root review.
+- Acceptance condition: each of the four pre-boss fights declares and runs at least three existing roles, two approach directions, a recovery lane, one environment-dependent choice, and an authored reveal/ambush/reposition/reinforcement transition; the existing six-role, 26-enemy mission budget, attacker caps, navigation recovery, checkpoint semantics, optional-secret reduction, and four-wave external harbour boundary remain deterministic through 100 complete pre-boss route/reset cycles.
+- Owned paths: Vancouver encounter resources, new Rain City choreography-profile resources, focused encounter tests, `docs/design/rain-city-encounters.md`, and encounter contract/ledger files. Integration temporarily owns the additive shared seam in `scripts/gameplay/encounter_choreography_profile.gd`, `encounter_definition.gd`, and `encounter_runner.gd`, plus the exact-ID secret-reduction seam in `scripts/level/rain_city_secret_policy.gd`. No `scripts/ai/`, boss, presentation, route-geometry, project, export, or release ownership is transferred.
+- Current evidence: Spark setup → `SPARK SETUP: PASS (6 profiles pinned to gpt-5.3-codex-spark)` using Python 3.11; Godot editor import → exit `0`; `game_dev_health.sh` still reports only the four recorded optional Blender/MCP failures and confirms no live source bridge. Four bounded audits completed; root rejected a role-count overstatement and synthetic all-external soak design, retained the conservative external-wave checkpoint policy for WCB-007, and froze harbour composition/order.
+- Human-only/open claims: pacing, fairness, practical recovery-lane usability, role readability under final presentation, environment-choice meaningfulness, 15–22 minute route timing, and physical-device feel remain open.
+- Integrated commit: pending.
+- Next dependency-safe packet: finish WCB-006 schema/content/tests and evidence before WCB-007.
 
 ## Resume protocol
 

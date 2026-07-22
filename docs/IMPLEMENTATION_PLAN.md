@@ -150,7 +150,7 @@ bash tools/run_godot_safe.sh --timeout 300 -- --headless --path . --script res:/
 
 ### WCB-006 — Authored encounter choreography
 
-**Status:** Ready — WCB-005 route freeze integrated and verified
+**Status:** In progress — encounter cards authored; schema seam reviewed; content/runtime/reset evidence pending
 **Owner:** Encounter/enemy
 **Paths:** `resources/encounters/vancouver_*.tres`, Rain City encounter-only resources declared in the packet, and `tests/integration/rain_city_*encounter*.gd`. Any `scripts/ai/` change requires a separately recorded ownership transfer and cannot overlap another writer.
 
