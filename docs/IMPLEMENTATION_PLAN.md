@@ -180,7 +180,7 @@ bash tools/run_godot_safe.sh --timeout 300 -- --headless --path . --script res:/
 
 ### WCB-008 — Mission-specific visual and audio identity
 
-**Status:** In progress — first readability/presentation slice implemented 2026-07-22; full capture/audio/human identity gates remain open
+**Status:** In progress — readability/gate and authored harbour-backdrop slices implemented 2026-07-22; explicit audio-event, remaining-view, and human identity gates remain open
 **Owner:** Visual Foundry/audio
 **Paths:** `assets/models/environment/rain_city_*`, `assets/source/blender/rain_city_run_foundry.blend`, `assets/source/material_maker/rain_city_*.ptex`, `assets/textures/materials/rain_city/`, `resources/presentation/vancouver_*.tres`, `resources/audio/vancouver_mission_audio.tres`, `assets/audio/**/vancouver_*.wav`, `scenes/levels/vancouver/rain_city_presentation.tscn`, `scripts/level/rain_city_material_applier.gd`, `docs/ART_BIBLE.md`, `docs/ASSET_MANIFEST.md`, and canonical non-boss captures. WCB-007 boss paths are explicitly excluded.
 

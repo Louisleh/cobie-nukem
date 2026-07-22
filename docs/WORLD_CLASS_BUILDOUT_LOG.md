@@ -25,7 +25,7 @@ This is the durable continuation ledger for the Cobie Nukem 3/6/9 quality progra
 | WCB-005 Rain City spatial slice | COMPLETE | Level | `8a5a807` | Route/state/navigation/catalog/core + multi-aspect comparison + packaged exports pass | Human pacing, meaningfulness, and landmark readability remain open |
 | WCB-006 Encounters | COMPLETE | Enemy/encounter + bounded integration transfer | `e61b73c` | Schema-v3 content/runtime/reset/navigation + 100-cycle soak + packaged exports pass | Human pacing/fairness open |
 | WCB-007 Towmaster | COMPLETE | Boss/presentation + bounded integration transfer | `45bf41a` | Three attacks/four phases/two arena states + 100-cycle combat/reset + native comparison + packaged exports pass | Human spectacle/fairness/readability open |
-| WCB-008 Art/audio identity | IN PROGRESS | Visual Foundry/audio | working tree after `5dbe291` | First fog/readability + authored barrier slice implemented; focused contracts and 16:9/4:3 captures pass | Full foundry/audio evidence and human art/mix/humor approval open |
+| WCB-008 Art/audio identity | IN PROGRESS | Visual Foundry/audio | `152b65d` | Fog/readability, authored route barriers, original harbour skyline/ridgelines/beacon, and four-aspect waterfront captures pass; runtime audio-event evidence is next | Remaining non-boss views and human art/mix/humor approval open |
 | WCB-009 RC evidence/selection | BLOCKED by WCB-008 | Integration/release | — | WCB-005–007 verified | Human/device gates required |
 | WCB-010 Second-mission replication | BLOCKED by WCB-009 | Assigned after selection | — | — | Mission-specific human gates required |
 | WCB-011 Release identity/roadmap | BLOCKED by WCB-010 | Integration/release | — | — | Publish only an honest candidate |
@@ -258,6 +258,33 @@ Copy this section for every packet before marking it complete.
 - Human-only/open claims: final foundry/landmark identity, ordinary-distance hero-enemy recognition, humor, combat readability, audio mix and mission signature, motion comfort, photosensitivity, target-Mac route playthrough, physical iPad, and baseline approval. Native captures still emit the recorded one-`ParticlesShaderGLES3`/RID teardown warning and are not clean renderer-leak evidence.
 - Integrated implementation commit: `229de16c5cde4880a2f06aa6baf47b297615b9f1`.
 - Next dependency-safe packet: continue WCB-008 only with the authored foundry/landmark pass, explicit Rain City audio event evidence, remaining canonical aspects/views, and human review packet. WCB-009 remains blocked.
+
+## 2026-07-22 — WCB-008 authored harbour-backdrop slice
+
+- Source commit: `d5639bd`; integrated implementation commit: `152b65d`.
+- Owner / writers: GPT-5.6-sol architecture, implementation, native visual review, verification, and integration; three pinned GPT-5.3-Codex-Spark read-only audits for visual identity, audio identity, and UX/performance risk.
+- Acceptance condition: make the unlabelled waterfront read as an original rain-soaked harbour city through persistent skyline/mountain/terminal silhouette rather than labels alone; preserve route, crosshair, HUD, combat sightlines, collision/navigation ownership, and the existing 13-batch Web-safe foundry budget; produce deterministic 16:9, 16:10, 4:3, and ultrawide candidate evidence without touching frozen WCB-007 boss paths.
+- Implemented work:
+  - expanded the deterministic Blender foundry from 216 to 272 source parts while retaining 13 consolidated material batches;
+  - added an original broad harbour skyline, facade window-light scale cues, a tall Rainline beacon, and two source-built lightly extruded north-shore ridgelines;
+  - replaced reused close-surface materials on skyline/mountain batches with two dedicated restrained distance-silhouette materials;
+  - regenerated and manifested both editable `.blend` source and runtime `.glb` with current SHA-256 provenance;
+  - extended the asset contract to guard skyline/ridgeline batch presence, production-scale bounds, dedicated material routing, and presentation-only collision separation.
+- Visual iteration evidence:
+  - v1 at realistic literal scale remained too small to affect the empty-sky composition;
+  - v2 enlarged separate cone mountains but was rejected during native review as a crude repeated-pyramid chain;
+  - v3 replaced those cones with irregular continuous two-layer profiles and darker distance materials. Four-aspect review retained v3: the route/crosshair/HUD remain clear, the ridgeline frames rather than occludes the terminal, and ultrawide exposes no edge repetition or clipping. Human taste approval remains open.
+- Verification:
+  - Blender 5.2.0 deterministic build -> `Rain City foundry: parts=272 batches=13`;
+  - `res://tests/unit/asset_contract_test.gd` -> `ASSET CONTRACT TESTS: PASS`;
+  - `res://tests/integration/vancouver_content_contract_test.gd` -> `VANCOUVER CONTENT CONTRACT TEST: PASS`;
+  - `res://tests/integration/rain_city_route_production_test.gd` -> `VANCOUVER ROUTE PRODUCTION TEST: PASS`;
+  - `res://tests/run_tests.gd` -> `PASS: core contract checks`;
+  - `QA_EXPORTS=1 bash tools/release_validate.sh` initially rejected Blender's unmanifested `.blend1` backup; the generated backup was removed, then the complete validation/export matrix passed, including asset/IP scan plus Web and macOS exports;
+  - `/tmp/cobie-wcb008-candidate/harbour-backdrop-final/` contains successful 1280×720, 1680×1050, 1024×768, and 3440×1440 captures;
+  - comparison against `authored-gates-pass` exits `0` with no hard failures; perceptual MAE is `0.003288` at 16:9 and `0.003668` at 4:3.
+- Human-only/open claims: final unlabelled landmark/district identity, remaining non-boss views, combat-scale recognition, humor, audio mix/signature, motion comfort, photosensitivity, target-Mac route playthrough, physical iPad, and baseline approval. The native capture path still emits the previously recorded one-`ParticlesShaderGLES3`/RID teardown warning on some aspect runs, so this is not clean renderer-leak evidence.
+- Next dependency-safe packet: explicit Rain City runtime audio-event evidence for mission state/ambience, Compliance Gull, Umbrella Shield Enforcer, and convoy cues; then remaining non-boss capture views and the human review packet. WCB-009 remains blocked.
 
 ## Resume protocol
 
