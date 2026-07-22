@@ -10,7 +10,7 @@ Keep the root GPT-5.6 task responsible for requirements, architecture, task part
 ## Establish the run
 
 1. Read `AGENTS.md`, `docs/PHASE_ROADMAP_PRD.md`, the relevant design records, and the `cobie-godot-production` skill.
-2. Confirm a clean baseline, create one `codex/` integration branch, and run `scripts/verify_spark_setup.py` from this skill.
+2. Confirm a clean baseline, create one `codex/` integration branch, and run `scripts/verify_spark_setup.py` from this skill with Python 3.11+ (`/Users/orion/.hermes/hermes-agent/venv/bin/python` on the current workstation). macOS' older system `python3` lacks `tomllib` and will fail before validation.
 3. Read [worker-contracts.md](references/worker-contracts.md) before drafting any task packet.
 4. Read [batch-playbook.md](references/batch-playbook.md) before starting workers, worktrees, integration, or release work.
 5. Verify the worker actually uses `gpt-5.3-codex-spark`. If in-app metadata cannot prove this, invoke `codex exec --model gpt-5.3-codex-spark` in an isolated checkout. Never count or silently substitute an unverified model.
