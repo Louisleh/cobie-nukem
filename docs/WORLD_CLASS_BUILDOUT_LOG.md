@@ -7,9 +7,9 @@ This is the durable continuation ledger for the Cobie Nukem 3/6/9 quality progra
 - **Program branch:** `hermes/world-class-369-buildout`
 - **Baseline source:** `4dbbe2e8571efec290ed863415a78f09bc970ca9`
 - **Public baseline declared by roadmap:** `0.11.0-alpha.1-rc1`, gameplay/runtime `3c2de29`
-- **Current packet:** WCB-007 — Municipal Towmaster production boss
-- **Last verified packet:** WCB-006 schema/content/runtime/reset/navigation matrix and packaged Web/macOS validation pass
-- **Next dependency-safe packet:** WCB-007 only — boss-owned Towmaster resources/scripts/tests plus the bounded presentation seam declared in the implementation plan
+- **Current packet:** WCB-008 — Mission-specific visual and audio identity
+- **Last verified packet:** WCB-007 Towmaster combat/presentation/reset/capture matrix and packaged Web/macOS validation pass
+- **Next dependency-safe packet:** WCB-008 only — Rain City Visual Foundry/audio paths declared in the implementation plan; WCB-007 boss paths remain frozen
 - **Toolchain state:** Godot 4.7.1 and matching export templates are installed; automated import, tests, and export validation pass. Optional Blender/MCP production-art tooling remains unavailable and is recorded below.
 - **Human-only gates:** target-Mac feel/playthrough, physical iPad, flight stick, art taste, pacing, mix, fairness, humor, motion comfort, photosensitivity
 
@@ -24,9 +24,9 @@ This is the durable continuation ledger for the Cobie Nukem 3/6/9 quality progra
 | WCB-004 Settings/allocation | COMPLETE | UI + combat | `5ce5501`, `5b8ad45`, `502535a`, `f8a78e5` | Runtime reset, shared effects, reuse contamination, performance + packaged exports pass | Headless timing is not rendered GPU evidence |
 | WCB-005 Rain City spatial slice | COMPLETE | Level | `8a5a807` | Route/state/navigation/catalog/core + multi-aspect comparison + packaged exports pass | Human pacing, meaningfulness, and landmark readability remain open |
 | WCB-006 Encounters | COMPLETE | Enemy/encounter + bounded integration transfer | `e61b73c` | Schema-v3 content/runtime/reset/navigation + 100-cycle soak + packaged exports pass | Human pacing/fairness open |
-| WCB-007 Towmaster | IN PROGRESS | Boss/presentation | — | Art/combat brief frozen; implementation/evidence pending | Human spectacle/fairness open |
-| WCB-008 Art/audio identity | BLOCKED by WCB-007 | Visual Foundry/audio | — | — | Human art/mix/humor open |
-| WCB-009 RC evidence/selection | BLOCKED by WCB-005–008 | Integration/release | — | — | Human/device gates required |
+| WCB-007 Towmaster | COMPLETE | Boss/presentation + bounded integration transfer | `45bf41a` | Three attacks/four phases/two arena states + 100-cycle combat/reset + native comparison + packaged exports pass | Human spectacle/fairness/readability open |
+| WCB-008 Art/audio identity | READY | Visual Foundry/audio | — | WCB-007 boss seam frozen | Human art/mix/humor open |
+| WCB-009 RC evidence/selection | BLOCKED by WCB-008 | Integration/release | — | WCB-005–007 verified | Human/device gates required |
 | WCB-010 Second-mission replication | BLOCKED by WCB-009 | Assigned after selection | — | — | Mission-specific human gates required |
 | WCB-011 Release identity/roadmap | BLOCKED by WCB-010 | Integration/release | — | — | Publish only an honest candidate |
 
@@ -225,8 +225,24 @@ Copy this section for every packet before marking it complete.
 - Owned paths: `scenes/set_pieces/citation_convoy.tscn`, `scripts/level/citation_convoy_actor.gd`, `scripts/level/rain_city_convoy_presentation.gd`, new `scripts/level/towmaster_*`, `resources/set_pieces/vancouver_citation_convoy.tres`, `resources/set_pieces/vancouver_convoy_phases/`, new `resources/set_pieces/towmaster_*`, `tests/integration/rain_city_convoy_boss_test.gd`, the bounded visual capture manifest/adapter/test seam, `docs/design/rain-city-towmaster.md`, this plan, and this ledger. Enemy AI, encounter resources, route geometry/navigation, new audio assets, project/export settings, progression, and release identity are excluded.
 - Start-gate evidence: Godot `4.7.1` and Material Maker `1.7` detected; clean repository/no live bridge confirmed. Visual Foundry verifier and `game_dev_health.sh` fail only on the recorded optional Blender/MCP/Chrome capability stack. Existing `assets/source/blender/municipal_towmaster.blend` and `assets/models/set_pieces/municipal_towmaster.glb` remain manifested project-original assets; no new Blender authoring/export or live-MCP evidence will be claimed.
 - Human-only/open claims: silhouette dominance at intended combat distance, attack/phase readability, fairness, recovery-lane usability, perceived weight, ten-second spectacle, humor, mix, motion comfort, photosensitivity, target-Mac feel, and physical-iPad behavior.
-- Integrated commit: pending.
-- Next dependency-safe packet: finish WCB-007 only before WCB-008.
+- Implemented paths: typed `TowmasterAttackDefinition`, `TowmasterPhaseCombatDefinition`, and `TowmasterCombatProfile` resources; pure `TowmasterCombatGeometry`; production `CitationConvoyActor` attack/arena/defeat runtime; bounded `TowmasterHazardVisual`; `RainCityConvoyPresentation` stop-only target/cue/caption/generation seam; production scene warning lights, arena fields, core beacon, and bounded particles; dedicated combat soak; mission-host lifecycle assertions; release-validator registration; and deterministic visual capture manifest/adapter coverage.
+- Spark/integration review: bounded profile, actor, host, test, and capture packets were independently reviewed before cherry-pick. The final read-only adversarial review returned `FINAL VERDICT: NO BLOCKERS`. Root accepted and fixed its stop-state/generation lifecycle findings; production mission-host assertions now prove combat disabled while moving, enabled at every authored stop, disabled after phase advance/defeat, and disabled during checkpoint path restart.
+- Functional evidence:
+  - `RAIN CITY TOWMASTER COMBAT TEST: PASS (3 attacks, 4 phases, 2 arena changes, 100 reset cycles, 10.2s defeat)`.
+  - `RAIN CITY CONVOY BOSS SOAK TEST: PASS` for four external waves/modules, exact 1,000-HP budget, reset/retry, stale generation, one completion, and completed-wreck restore.
+  - `VANCOUVER MISSION HOST TEST: PASS`, including production stop/move/checkpoint combat gating.
+  - `VISUAL CAPTURE MANIFEST TEST: PASS`; Python visual-quality suite 10/10 PASS.
+  - `ARCHITECTURE CHECK: PASS`; actor split to 498 lines plus a 55-line pure geometry helper rather than suppressing the 500-line limit.
+  - Mandatory editor import and core contract suite PASS on final code revision `45bf41acb23fa018bf03f16a65552194aa03446f`.
+- Visual evidence:
+  - Pre-WCB-007 static baseline reconstructed from exact source `cf8c5d5` with a temporary uncommitted static staging adapter at `/tmp/cobie-wcb007-baseline-captures/cf8c5d5-static`.
+  - Canonical candidate captured from the production adapter at `/tmp/cobie-wcb007-candidate-captures/460c111-candidate` for `1280x720` and `1024x768`; both PNGs were non-empty and visually inspected.
+  - `env -u PYTHONPATH -u VIRTUAL_ENV bash tools/visual_quality/compare.sh --baseline /tmp/cobie-wcb007-baseline-captures/cf8c5d5-static --candidate /tmp/cobie-wcb007-candidate-captures/460c111-candidate --out /tmp/cobie-wcb007-comparison --view rain_city_towmaster --aspect 1280x720 --aspect 1024x768`: PASS, no hard failures. Review warnings were intentional deltas: MAE `0.007904` / perceptual `0.005635` at 16:9 and MAE `0.009027` / perceptual `0.006248` at 4:3. Automated differences were treated as review prompts; root inspection confirmed correct boss HUD/objective, three-vehicle silhouette, red impound field, amber sweep lane, emissive final core, and no severe clipping.
+  - Each native capture still emits the recorded teardown warning for one `ParticlesShaderGLES3` and one GLES shader RID; captures complete successfully, but renderer evidence is not clean.
+- Release evidence: `QA_EXPORTS=1 bash tools/release_validate.sh` on `45bf41a` exits `0`; complete tests, architecture/IP/content scans, five-mission gauntlet, adversarial/soak/performance smoke, Web export, and macOS ZIP export pass. The first attempt on `2f84bb4` correctly failed the 500-line architecture limit and is not counted as pass evidence.
+- Integrated commits: `2a562bf` (brief), `d9ef81b` (profile), `ca69296` (actor/arena), `b6939ec` (host presentation), `0fa9fb4` (combat evidence), `48d8f56` (hazard/core readability), `460c111` (capture staging), `2f84bb4` (lifecycle hardening), `45bf41a` (architecture-compliant geometry split).
+- Remaining human gates: ordinary-distance silhouette dominance, telegraph fairness and readability, recovery-lane usability, perceived weight, full ten-second spectacle, humor, final audio mix, motion comfort, photosensitivity, target-Mac playthrough, and physical iPad behavior. No manual/device approval is claimed.
+- Next dependency-safe packet: WCB-008 only; WCB-007 boss paths are frozen unless regression repair is explicitly transferred.
 
 ## Resume protocol
 

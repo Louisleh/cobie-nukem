@@ -7,11 +7,11 @@ baseline_revision: cf8c5d5906d7431d0be674dae794122ea3c697de
 canonical_views:
   - rain_city_towmaster at 1280x720
   - rain_city_towmaster at 1024x768
-gameplay_readability: warm red/orange attack telegraphs, cyan active weak point, distinct lane/locked-zone/ring geometry, shape-plus-color state communication
+gameplay_readability: warm red/orange attack telegraphs, concentrated emissive-red final core beacon, distinct lane/locked-zone/ring geometry, shape-plus-value state communication
 silhouette_goal: preserve the project-original armoured tow vehicle, citation vault, tow fork, warning bar, and two escorts as a dominant harbour-pier threat
 visual_story: an officious municipal towing convoy escalates from targeted paperwork bombardment to a tow-lane sweep and an impound pulse before collapsing into a ten-second ticket-and-sparks wreck payoff
-palette: Rain City slate and harbour green environment; painted municipal orange; warm threat red; cyan weak points; cream ticket debris
-value_hierarchy: active attack telegraph and weak point first, Towmaster silhouette second, recovery lane third, harbour landmark support last
+palette: Rain City slate and harbour green environment; painted municipal orange; translucent warm threat fields; concentrated hot-red final core; cream ticket debris
+value_hierarchy: active attack telegraph and concentrated core beacon first, Towmaster silhouette second, recovery lane third, harbour landmark support last
 materials: existing manifested Municipal Towmaster six-batch GLB; Godot-authored unshaded bounded VFX only
 lighting_and_fog: phase warning lights escalate without adding shadows or flattening threat/background separation
 animation_or_state_vocabulary: idle convoy, attack telegraph, attack resolve, four phase states, two arena states, module break, ordered ten-second defeat milestones, persistent wreck
