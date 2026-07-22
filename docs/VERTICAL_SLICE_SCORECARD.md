@@ -13,7 +13,7 @@ Cobie Nukem is a mechanically substantial production candidate, not a finalized 
 | Rain City Towmaster | WCB-007 combat/presentation seam is integrated and frozen from WCB-008 edits | Mechanically complete; human fight/readability gate remains |
 | Rain City visual identity | Manifested foundry/material pipeline exists. The 2026-07-22 slices corrected excessive fog, replaced opaque collision-debug gate slabs with authored barriers, and added an original harbour skyline, Rainline beacon, and layered north-shore silhouette | In progress — WCB-008; human identity/taste gate remains |
 | Rain City audio identity | Mission-specific music states, zone ambience, hero-enemy cues, and convoy cues exist; runtime event→cue routing is now explicitly regression-tested | Mechanically evidenced; human mix/signature review remains |
-| Canonical visual evidence | Deterministic 16:9, 16:10, 4:3, and ultrawide candidate captures exist for `vancouver_waterfront` | Partial; remaining non-boss views and human approval open |
+| Canonical visual evidence | Isolated deterministic 16:9, 16:10, 4:3, and ultrawide captures exist for all five non-boss Rain City route zones | Mechanically complete; human visual approval remains open |
 | Integrated native/Web/device evidence | Validation, package, capture, motion, and provenance tooling exists; current source validation/export matrix passes | WCB-009 blocked behind WCB-008 |
 | Pipeline replication | No second mission has passed the same end-to-end production contract | Pending WCB-009 selection / WCB-010 |
 | Final release identity | No final source→package→public-download identity ledger is closed | Pending WCB-011 |
@@ -27,9 +27,11 @@ Cobie Nukem is a mechanically substantial production candidate, not a finalized 
 - The asset contract guards the skyline/ridgeline batch presence, production-scale bounds, dedicated runtime materials, and presentation-only collision separation.
 - `rain_city_audio_event_contract_test.gd` drives production mission-presentation methods, concrete hero-enemy signals, and generation-gated convoy handlers to prove exact Vancouver music/ambience plus Rain City Gull, shield, module, movement, and defeat cue IDs. The test is part of `release_validate.sh`; it deliberately disables playback only for deterministic state routing, not data substitution.
 - `QA_EXPORTS=1 bash tools/release_validate.sh` passes the full scripted matrix and Web/macOS exports.
-- Candidate captures contain no capture failures at 1280×720, 1680×1050, 1024×768, or 3440×1440 under `/tmp/cobie-wcb008-candidate/harbour-backdrop-final/`.
+- Twenty isolated canonical captures cover downtown, Rain City Slice, waterfront, terminal, and harbour at 1280×720, 1680×1050, 1024×768, and 3440×1440 under `/tmp/cobie-wcb008-candidate/rain-city-route-views-clean-final/` and `/tmp/cobie-wcb008-candidate/rain-city-waterfront-isolated-final/`.
+- Native/direct capture subprocesses use temporary `HOME`, `CFFIXED_USER_HOME`, and XDG roots. A real-run check preserved the production checkpoint hash and user-data file count; the release matrix now includes four isolation/diagnostic-classifier regressions.
 - Image comparison against the authored-gate candidate exits `0` with no hard failures. Intentional backdrop deltas are perceptual MAE `0.003288` at 16:9 and `0.003668` at 4:3.
-- The candidate is not an approved baseline. The capture renderer still emits the previously recorded one-shader teardown warning, and human visual approval remains open.
+- Cross-aspect capture review found no actor/event contamination, HUD clipping, or FOV blocker. It also exposed the honest remaining art gap: downtown, Slice, terminal, and harbour still share too much rectilinear corridor geometry and weak material/landmark hierarchy to satisfy world-class unlabelled district identity.
+- The candidate is not an approved baseline. The capture renderer still emits one exact shader and one exact RID teardown diagnostic per direct run; those two bounded exceptions are classified explicitly while any duplicate, near-match, script error, ObjectDB/resource leak, or orphan diagnostic fails capture.
 
 ## Roadmap authority
 
@@ -37,7 +39,7 @@ The dependency-complete roadmap is maintained in [`IMPLEMENTATION_PLAN.md`](IMPL
 
 Immediate dependency-safe order:
 
-1. Finish WCB-008 remaining non-boss views and multi-aspect human art/mix/humor/accessibility review.
+1. Finish WCB-008 district-specific landmark/material composition, then run multi-aspect human art/mix/humor/accessibility review against the mechanically complete capture set.
 2. Run WCB-009 integrated native/Web/browser/device evidence and select exactly one replication target.
 3. Execute WCB-010 for that one second mission.
 4. Execute WCB-011 release identity and remaining campaign packetization.

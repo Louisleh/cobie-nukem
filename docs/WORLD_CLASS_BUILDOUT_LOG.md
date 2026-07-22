@@ -25,7 +25,7 @@ This is the durable continuation ledger for the Cobie Nukem 3/6/9 quality progra
 | WCB-005 Rain City spatial slice | COMPLETE | Level | `8a5a807` | Route/state/navigation/catalog/core + multi-aspect comparison + packaged exports pass | Human pacing, meaningfulness, and landmark readability remain open |
 | WCB-006 Encounters | COMPLETE | Enemy/encounter + bounded integration transfer | `e61b73c` | Schema-v3 content/runtime/reset/navigation + 100-cycle soak + packaged exports pass | Human pacing/fairness open |
 | WCB-007 Towmaster | COMPLETE | Boss/presentation + bounded integration transfer | `45bf41a` | Three attacks/four phases/two arena states + 100-cycle combat/reset + native comparison + packaged exports pass | Human spectacle/fairness/readability open |
-| WCB-008 Art/audio identity | IN PROGRESS | Visual Foundry/audio | `aeeb303` | Fog/readability, authored barriers, original harbour skyline/ridgelines/beacon, four-aspect waterfront captures, and explicit runtime audio-event evidence pass | Remaining non-boss views and human art/mix/humor approval open |
+| WCB-008 Art/audio identity | IN PROGRESS | Visual Foundry/audio | `5650453` | Fog/readability, authored barriers, original harbour backdrop, explicit audio events, and isolated four-aspect captures for all five non-boss route zones pass mechanically | District-specific landmark/material differentiation and human art/mix/humor approval remain open |
 | WCB-009 RC evidence/selection | BLOCKED by WCB-008 | Integration/release | — | WCB-005–007 verified | Human/device gates required |
 | WCB-010 Second-mission replication | BLOCKED by WCB-009 | Assigned after selection | — | — | Mission-specific human gates required |
 | WCB-011 Release identity/roadmap | BLOCKED by WCB-010 | Integration/release | — | — | Publish only an honest candidate |
@@ -301,6 +301,37 @@ Copy this section for every packet before marking it complete.
   - fresh `QA_EXPORTS=1 bash tools/release_validate.sh` includes the new test and passes the complete scripted, smoke, soak, performance, asset/IP, Web-export, and macOS-export matrix.
 - Evidence boundary: playback is disabled only inside the music/ambience state-routing test so headless timing cannot masquerade as an audible mix review. Imported WAV/cue data and emitter playback retain their separate passing tests. Final loudness, layering, voice contention, humor, and mission-signature judgment remain human mix gates.
 - Next dependency-safe packet: finish the remaining canonical non-boss capture views and assemble the human art/mix/humor/accessibility review packet. WCB-009 remains blocked.
+
+## 2026-07-22 — WCB-008 isolated five-zone capture-evidence slice
+
+- Source commit: `aeeb303`; integrated implementation commit: `5650453`.
+- Owner / review: GPT-5.6-sol implementation and integration, native visual review across 4:3/16:9/16:10/ultrawide, and repeated GPT-5.6-sol/high read-only review. Final blocker-only review result: `APPROVE`.
+- Acceptance target: register deterministic non-boss views for all five Rain City route zones, capture every canonical aspect without gameplay-event contamination or production save/settings access, fail on unexpected engine diagnostics, and keep human art approval explicitly open.
+
+Implemented:
+
+1. Added canonical `rain_city_downtown`, `rain_city_slice`, `rain_city_terminal`, and `rain_city_harbour` direct-scene views alongside the existing `vancouver_waterfront` view; manifest contracts now require all twenty view/aspect combinations.
+2. Route staging freezes level/player simulation, removes collision and non-player actor visibility, clears transient captions, sets the zone-specific objective/caption, and leaves production mission logic untouched outside the capture process.
+3. Native and direct capture subprocesses now receive temporary `HOME`, `CFFIXED_USER_HOME`, `XDG_DATA_HOME`, `XDG_CONFIG_HOME`, and `XDG_CACHE_HOME` roots. A real capture preserved the production checkpoint SHA-256 and user-data file count.
+4. Capture now accepts each of the two known Godot renderer teardown diagnostics exactly once and rejects duplicates, near matches, other `ERROR:`, `SCRIPT ERROR:`, ObjectDB/resource leaks, and orphan diagnostics even when Godot exits `0`.
+5. Added dependency-free capture isolation/classifier regressions to `release_validate.sh`; Pillow is imported lazily only for actual image copying, so CI gains no new package requirement.
+6. Raised the Rain City Slice hero sign above its awning and added a geometric clearance contract. The capture pass also exposed and removed an unsafe `monitoring = false` mutation inside `MiniBallCollectible.body_entered`; repeated clean captures no longer emit that engine error.
+
+Verification:
+
+- `python3 tools/visual_quality/test_capture_tool.py` → four tests pass, including isolated-home launch wiring and bounded fatal-diagnostic classification.
+- `res://tests/unit/visual_capture_manifest_test.gd` → `VISUAL CAPTURE MANIFEST TEST: PASS`.
+- `res://tests/integration/rain_city_route_production_test.gd` → `VANCOUVER ROUTE PRODUCTION TEST: PASS` with Slice sign/awning clearance guarded.
+- `QA_EXPORTS=1 bash tools/release_validate.sh` → complete scripted matrix plus Web/macOS exports pass after the final staging, collectible, and capture-tool changes.
+- `/tmp/cobie-wcb008-candidate/rain-city-route-views-clean-final/` → sixteen clean downtown/Slice/terminal/harbour captures at all four aspects; every run reaches 103 frames and emits only the two exact bounded teardown diagnostics.
+- `/tmp/cobie-wcb008-candidate/rain-city-waterfront-isolated-final/` → four clean waterfront captures at all four aspects under the same isolated policy.
+- GPT-5.6-sol/high review caught and forced fixes for production-user-data inheritance, CI `uv` coupling, unclassified `SCRIPT ERROR:`, unbounded renderer exceptions, and the canonical ObjectDB leak form before returning `APPROVE`.
+
+Decision and remaining gate:
+
+- Canonical Rain City non-boss capture coverage is mechanically complete and trustworthy enough to guide art work; no candidate is promoted to baseline.
+- The captures honestly show that downtown, Slice, terminal, and harbour still repeat too much corridor massing, flat facade treatment, and weak unlabelled landmark hierarchy. WCB-008 remains `IN PROGRESS`; the next dependency-safe packet is district-specific landmark/material composition followed by human visual/audio/humor/accessibility review.
+- WCB-009 remains blocked. No human, physical-device, or public-artifact approval is inferred.
 
 ## Resume protocol
 
