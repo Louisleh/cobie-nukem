@@ -5,6 +5,7 @@ const CAPTURE_SCRIPT_PATH := "res://tools/visual_quality/capture.sh"
 const CANONICAL_VIEWS := [
 	"title",
 	"mission_select",
+	"doghouse_hub",
 	"salmon_opening",
 	"salmon_sports_field",
 	"salmon_shed",
@@ -18,7 +19,7 @@ const CANONICAL_VIEWS := [
 	"ventura_service_lane",
 	"touch_hud_4_3",
 ]
-const CANONICAL_COUNT := 14
+const CANONICAL_COUNT := 15
 
 var failures: Array[String] = []
 var safe_filename_pattern: RegEx = RegEx.new()

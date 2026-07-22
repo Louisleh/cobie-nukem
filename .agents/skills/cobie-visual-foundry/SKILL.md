@@ -43,6 +43,7 @@ Image generation is for concepts and reference sheets, not uncontrolled final at
 1. Import with Godot 4.7 stable and fix every attributable parser/import error.
 2. Run the lowest-level asset, animation, material, UI, or presentation contract first.
 3. Use `tools/visual_quality/capture.sh` and `tools/visual_quality/compare.sh` for the affected canonical views. Visual differences are review prompts; missing, blank, transparent, malformed, or wrong-size captures are hard failures.
+   - When Hermes runs inside its own Python virtualenv, call capture/compare with `env -u PYTHONPATH -u VIRTUAL_ENV` so `uv` cannot import binary Pillow/NumPy packages from Hermes' interpreter. An `_imaging` import error is an environment-isolation failure, not visual evidence; rerun cleanly.
 4. Capture deterministic motion at 30, 60, and 120 rendered FPS. Run the 10-TPS diagnostic for movement, weapon, enemy, teleport, and knockback work; authoritative transforms remain in physics ticks and reset interpolation after teleports.
 5. Inspect the real runtime through Godot MCP when available. Editor/process output remains authoritative over MCP summaries.
 6. Confirm temporary nodes, particles, decals, timers, audio voices, and animation players return to baseline after reset.

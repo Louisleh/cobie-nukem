@@ -1,5 +1,11 @@
 # Decisions
 
+## D-019 — Rain City route topology is gameplay-owned, stateful, and mechanically inspectable
+
+Rain City freezes three two-ended vertical loops (`seawall_overlook`, `terminal_control`, and `pier_crane_flank`) plus the terminal-powered `rainline_return` shortcut. `VancouverWaterfrontWorldBuilder` retains collision/navigation ownership and delegates only route geometry construction to `RainCitySpatialRouteBuilder`; presentation may style but never move or own those nodes. Completing `restore_terminal` opens the return gate and checkpoint restoration derives that gate state from the objective snapshot. The optional graph edge back to `waterfront_seawall` documents revisit reachability while ordered mission progression remains forward-only.
+
+Mechanical tests own node topology, collision toggling, sightline raycasts, navigation presence, stable secret placement, and manifested landmark IDs. Human review owns 15–22 minute pacing, whether the alternatives are meaningful in combat, and ten-second landmark readability at 16:9/4:3. The contract is `docs/design/rain-city-route.md`.
+
 ## D-018 — Player input and checkpoint continuation use explicit runtime seams
 
 The selected `InputProfile` owns player/UI gameplay intent through `InputManager`; direct gameplay polling may not bypass that seam. Checkpoint consumption is payload-only, and later-mission controllers execute one explicit `consume -> begin/restore progression -> mission runtime -> mission restore -> player` transaction so run initialization cannot erase saved tags or mode. Because complete boss phase state is not serialized, checkpoint writes are rejected during active boss combat; continuation restarts from the deterministic pre-boss checkpoint until WCB-007 owns phase snapshots. Settings reset emits restored values to runtime listeners, and combat hot paths use bounded shared reuse rather than allocate-then-cap cleanup. The contracts and regression commands live in `docs/design/`.

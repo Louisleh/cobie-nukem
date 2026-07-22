@@ -6,6 +6,7 @@ signal navigation_bake_completed(succeeded: bool, polygon_count: int)
 const CheckpointScene = preload("res://scenes/interactables/level_checkpoint.tscn")
 const SwitchScene = preload("res://scenes/interactables/level_switch.tscn")
 const ZoneScene = preload("res://scenes/interactables/zone_trigger.tscn")
+const SpatialRouteBuilder = preload("res://scripts/level/rain_city_spatial_route_builder.gd")
 const NAVIGATION_SOURCE_LAYER := 1 << 19
 const SURFACE_MATERIALS := {
 	&"asphalt": preload("res://assets/materials/rain_city/wet_asphalt.tres"),
@@ -135,20 +136,10 @@ func _build_route() -> void:
 		_prop_box("PierLandRail", Vector3(-18.8, 0.65, rail_z), Vector3(0.45, 1.3, 12.0), Color("25363b"), true)
 	for rail_z in [-137.0, -170.0]:
 		_prop_box("PierWaterRail", Vector3(18.8, 0.65, rail_z), Vector3(0.45, 1.3, 10.0), Color("25363b"), true)
-	# The upper seawall lane creates authored vertical combat without disconnecting the lower path.
-	_floor("SeawallUpperLane", Vector3(-9.5, 1.1, -76.0), Vector3(8.0, 0.5, 24.0), Color("61747a"), &"concrete")
-	for step in 6:
-		_floor("SeawallRampStep", Vector3(-7.5 + step * 0.7, -0.32 + step * 0.22, -62.0), Vector3(1.6, 0.35, 3.0), Color("61747a"), &"concrete")
-	# Secondary authored lanes break the former single straight corridor while keeping
-	# every objective reachable from the lower accessibility route.
+	# Secondary ground lanes retain a full lower accessibility route.
 	_floor("AlleyParkingLeg", Vector3(6.0, -0.48, 3.5), Vector3(10.0, 0.96, 9.0), Color("343d43"), &"asphalt")
 	_floor("SlicePlaza", Vector3(5.0, -0.46, -37.0), Vector3(12.0, 0.92, 15.0), Color("555158"), &"concrete")
-	_floor("TerminalControlLoop", Vector3(-7.5, 1.15, -115.0), Vector3(7.0, 0.45, 13.0), Color("596970"), &"metal")
-	for step in 5:
-		_floor("TerminalBoothStep", Vector3(-5.0 - step * 0.55, -0.30 + step * 0.30, -105.0), Vector3(1.4, 0.34, 2.5), Color("596970"), &"metal")
-	_floor("PierCraneFlank", Vector3(-12.5, 1.0, -155.0), Vector3(8.0, 0.45, 17.0), Color("4f6065"), &"steel")
-	for step in 5:
-		_floor("PierCraneStep", Vector3(-9.2 - step * 0.6, -0.30 + step * 0.26, -144.5), Vector3(1.5, 0.32, 2.6), Color("4f6065"), &"steel")
+	SpatialRouteBuilder.build(self)
 
 
 func _build_landmarks() -> void:
@@ -204,6 +195,10 @@ func set_route_gate_open(zone_id: StringName, is_open: bool) -> void:
 	for child in gate.get_children():
 		if child is CollisionShape3D:
 			(child as CollisionShape3D).set_deferred("disabled", is_open)
+
+
+func register_route_state_gate(route_state_id: StringName, gate: StaticBody3D) -> void:
+	_route_gates[route_state_id] = gate
 
 
 func is_route_gate_open(zone_id: StringName) -> bool:

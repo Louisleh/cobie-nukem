@@ -17,6 +17,7 @@ const WorldBuilderScript = preload("res://scripts/level/vancouver_waterfront_wor
 const PLAYER_SCENE := "res://scenes/player/cobie_player.tscn"
 const CONTENT_REVISION := 2
 const MUNICIPAL_RECALL_OVERRIDE := &"municipal_recall_override"
+const RAINLINE_RETURN_ROUTE := &"rainline_return"
 const CHECKPOINT_POSITIONS: Dictionary = {
 	&"checkpoint_downtown_alley": Vector3(0, 1.1, 8),
 	&"checkpoint_ruse_block": Vector3(0, 1.1, -23),
@@ -238,6 +239,8 @@ func _rehydrate_restored_gameplay() -> void:
 		return
 	current_zone = _route_runtime.current_zone
 	var convoy_complete := _mission_runtime.objectives.completed.has(&"stop_citation_convoy")
+	if _world_builder != null:
+		_world_builder.set_route_gate_open(RAINLINE_RETURN_ROUTE, _mission_runtime.objectives.completed.has(&"restore_terminal"))
 	if _world_builder != null and _world_builder.departure_switch != null:
 		_world_builder.departure_switch.set_enabled(convoy_complete)
 	if convoy_complete:
@@ -377,12 +380,15 @@ func _sync_route_gates() -> void:
 		return
 	for zone_id in [&"downtown_alley", &"ruse_block", &"waterfront_seawall", &"terminal_service"]:
 		_world_builder.set_route_gate_open(zone_id, _mission_runtime.encounters.completed.has(zone_id))
+	_world_builder.set_route_gate_open(RAINLINE_RETURN_ROUTE, _mission_runtime.objectives.completed.has(&"restore_terminal"))
 
 func _on_objective_activated(definition: ObjectiveDefinition) -> void:
 	objective_changed.emit(definition.title)
 
 func _on_objective_completed(definition: ObjectiveDefinition) -> void:
 	if definition.id == &"restore_terminal":
+		if _world_builder != null:
+			_world_builder.set_route_gate_open(RAINLINE_RETURN_ROUTE, true)
 		_award_municipal_recall_override()
 	if definition.id == &"stop_citation_convoy" and _world_builder != null and _world_builder.departure_switch != null:
 		# Once the clear checkpoint is authoritative, death/retry must preserve the
@@ -485,12 +491,9 @@ func _disable_harbour_reinforcement() -> void:
 		return
 	_mission_runtime.encounters.definitions[&"harbour_pier"] = reduced
 	_terminal_reinforcement_disabled = true
-
 func _on_loot_requested(loot_scene: String, count: int, source: Node) -> void:
 	_spawn_registry.spawn_loot_burst(loot_scene, count, source as Node3D, player)
-
 func _on_pickup_collected(message: String) -> void:
 	narrative_message.emit(message, 2.0)
-
 func _spawn_scene(path: String, position_value: Vector3) -> Node:
 	return _spawn_registry.spawn_scene(path, position_value)

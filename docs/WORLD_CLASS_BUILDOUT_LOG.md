@@ -8,8 +8,8 @@ This is the durable continuation ledger for the Cobie Nukem 3/6/9 quality progra
 - **Baseline source:** `4dbbe2e8571efec290ed863415a78f09bc970ca9`
 - **Public baseline declared by roadmap:** `0.11.0-alpha.1-rc1`, gameplay/runtime `3c2de29`
 - **Current packet:** WCB-005 — Rain City authored spatial vertical slice
-- **Last verified packet:** WCB-002/003/004 corrective nine-test matrix and packaged Web/macOS release validation passed; runtime correction integrated at `f8a78e5`
-- **Next dependency-safe packet:** WCB-005 — author and freeze the definitive Rain City spatial route
+- **Last verified packet:** WCB-005 focused route/state/navigation/catalog matrix, reconstructed multi-aspect comparison, and packaged Web/macOS validation pass
+- **Next dependency-safe packet:** WCB-005 packaged validation/evidence commit, then WCB-006 encounter choreography
 - **Toolchain state:** Godot 4.7.1 and matching export templates are installed; automated import, tests, and export validation pass. Optional Blender/MCP production-art tooling remains unavailable and is recorded below.
 - **Human-only gates:** target-Mac feel/playthrough, physical iPad, flight stick, art taste, pacing, mix, fairness, humor, motion comfort, photosensitivity
 
@@ -22,7 +22,7 @@ This is the durable continuation ledger for the Cobie Nukem 3/6/9 quality progra
 | WCB-002 Input ownership | COMPLETE | Input/player seam | `1b1579f`, `f8a78e5` | Service + real player-boundary tests + packaged exports pass | Physical joystick remains unverified |
 | WCB-003 Checkpoint invariants | COMPLETE | Save/mission runtime | `23a657d`, `f8a78e5` | Real controller order + boss write policy + progression + packaged exports pass | Manual continues remain open |
 | WCB-004 Settings/allocation | COMPLETE | UI + combat | `5ce5501`, `5b8ad45`, `502535a`, `f8a78e5` | Runtime reset, shared effects, reuse contamination, performance + packaged exports pass | Headless timing is not rendered GPU evidence |
-| WCB-005 Rain City spatial slice | READY | Level | — | — | Current route remains public BETA |
+| WCB-005 Rain City spatial slice | VERIFIED; PUSH PENDING | Level | — | Route/state/navigation/catalog/core + multi-aspect comparison + packaged exports pass | Human pacing, meaningfulness, and landmark readability remain open |
 | WCB-006 Encounters | BLOCKED by WCB-005 | Enemy/encounter | — | — | Human pacing/fairness open |
 | WCB-007 Towmaster | BLOCKED by WCB-005 | Boss/presentation | — | — | Human spectacle/fairness open |
 | WCB-008 Art/audio identity | BLOCKED by WCB-005 | Visual Foundry/audio | — | — | Human art/mix/humor open |
@@ -188,6 +188,20 @@ Copy this section for every packet before marking it complete.
 - Human-only/open claims: physical joystick/browser-controller feel, manual checkpoint playthrough, rendered native/Web/iPad GPU performance, thermals, motion comfort, and photosensitivity remain open.
 - Integrated commit: `f8a78e5293b2dd343ba400840f41761f690e64d1`.
 - Next dependency-safe packet: WCB-005 Rain City spatial route authoring and freeze.
+
+## 2026-07-21 — WCB-005 Rain City spatial-route freeze
+
+- Source commit: `58d7058` plus the current reviewed working tree.
+- Owner / writers: GPT-5.6 architecture, implementation, visual review, and integration; four broad GPT-5.3-Codex-Spark audits produced no final summary and are not cited; one bounded final Spark diff review reported no blockers and one non-progressive-revisit coverage gap, which was closed.
+- Acceptance condition: preserve the continuous lower route while providing three two-ended vertical loops, at least two baked elevations, two cross-zone sightlines, a terminal-powered state change, a prior-zone revisit with new access, four stable interaction-backed secrets, and opening/mid/finale landmark anchors without moving presentation into collision/navigation ownership.
+- Files changed: `scripts/level/rain_city_spatial_route_builder.gd`, Vancouver world/mission controllers, route/interaction resources, route/mission/capture tests, `docs/design/rain-city-route.md`, D-019, toolchain truth, and the repository Visual Foundry capture-environment pitfall.
+- Commands and exact results: editor import → exit `0`; route production → `VANCOUVER ROUTE PRODUCTION TEST: PASS`; route foundation → `Vancouver route foundation test PASS`; mission host → `VANCOUVER MISSION HOST TEST: PASS`; interaction catalog → `VANCOUVER INTERACTION CATALOG TEST: PASS`; content contract → `VANCOUVER CONTENT CONTRACT TEST: PASS`; visual manifest → `VISUAL CAPTURE MANIFEST TEST: PASS` after correcting its stale 14-view expectation to the manifested 15; core → `PASS: core contract checks`.
+- Packaged validation: `QA_EXPORTS=1 bash tools/release_validate.sh` → exit `0`, `Automated release validation passed` after the adversarial suite, 100-cycle soak, 79-scene/183-resource smoke load, performance checks, Web export, and macOS ZIP export.
+- Visual evidence: clean `58d7058` was imported in an isolated worktree and recaptured at 1280×720 and 1024×768; the working tree was captured with the same canonical `vancouver_waterfront` staging. `tools/visual_quality/compare.sh` → PASS with perceptual MAE `0.001790` (16:9) and `0.001635` (4:3). The candidate visibly adds the cyan powered-route panel without HUD clipping; the panel remains blockout-level and landmark silhouettes remain weak. Capture teardown reports one `ParticlesShaderGLES3`/RID leak warning and is not treated as clean renderer evidence.
+- Evidence and class: automated functional, collision-ray, navigation, restore-state, route-graph, and deterministic image-difference evidence. The optional revisit edge is behaviorally tested to leave ordered objective/checkpoint progression at `terminal_service`.
+- Human-only/open claims: 15–22 minute first-playthrough timing, meaningful combat payoff of loops/shortcut, ten-second landmark recognition, readability/taste, target-Mac/iPad feel, and renderer-leak attribution. The captures are review prompts, not visual approval.
+- Integrated commit: pending.
+- Next dependency-safe packet: packaged Web/macOS validation and WCB-005 evidence commit; then WCB-006 only.
 
 ## Resume protocol
 

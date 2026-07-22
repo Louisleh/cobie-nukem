@@ -15,6 +15,7 @@ const NAVIGATION_BAKE_TIMEOUT_MSEC := 20_000
 const MANIFEST := preload("res://resources/content/vancouver_waterfront_manifest.tres") as ContentManifest
 const WORLD_BUILDER_SCRIPT = preload("res://scripts/level/vancouver_waterfront_world_builder.gd")
 const PRESENTATION_SCENE = preload("res://scenes/levels/vancouver/rain_city_presentation.tscn")
+const INTERACTION_CATALOG := preload("res://resources/interactions/vancouver_waterfront_interactions.tres") as InteractionCatalog
 
 var failures: Array[String] = []
 var navigation_bake_signal_received := false
@@ -50,6 +51,16 @@ func _test_vancouver_route_contracts() -> void:
 	if route == null:
 		return
 	_expect(route.ordered_zone_ids() == EXPECTED_ZONE_IDS, "Vancouver uses five canonical zones")
+	var terminal_zone := route.zone_for_id(&"terminal_service")
+	_expect(terminal_zone != null and terminal_zone.outgoing_edge_ids.has(&"waterfront_seawall"), "Terminal route graph declares the powered seawall revisit")
+	var runtime := MissionRouteRuntime.new()
+	_expect(runtime.configure(route), "Runtime configures the route with its optional revisit edge")
+	for zone_id in [&"downtown_alley", &"ruse_block", &"waterfront_seawall", &"terminal_service"]:
+		var zone := route.zone_for_id(zone_id)
+		runtime.submit_actor_position(zone.bounds.get_center())
+	runtime.submit_actor_position(route.zone_for_id(&"waterfront_seawall").bounds.get_center())
+	_expect(runtime.current_zone == &"terminal_service", "Optional seawall revisit never regresses ordered objective/checkpoint progression")
+	runtime.free()
 
 	var encountered_secret_ids: Dictionary = {}
 	var total_secrets := 0
@@ -99,6 +110,11 @@ func _test_world_builder_navigation_contract() -> void:
 		owner.queue_free()
 		builder.queue_free()
 		return
+	var pre_bake_status := builder.navigation_bake_status()
+	_expect(bool(pre_bake_status.get("requested", false)), "Production route explicitly requests navigation baking")
+	_expect(not bool(pre_bake_status.get("finished", false)), "Production route does not report a deferred bake as complete before it runs")
+	await physics_frame
+	await _test_spatial_route_geometry(owner, builder)
 
 	var pre_bake_sources: Array[Node] = _navigation_source_nodes(owner)
 	_expect(not pre_bake_sources.is_empty(), "Vancouver build creates navigation floor bodies")
@@ -123,10 +139,6 @@ func _test_world_builder_navigation_contract() -> void:
 		sign_ids[sign.placement_id] = true
 		for error in sign.validate_authored():
 			failures.append("Rain City sign: " + error)
-	var pre_bake_status := builder.navigation_bake_status()
-	_expect(bool(pre_bake_status.get("requested", false)), "Production route explicitly requests navigation baking")
-	_expect(not bool(pre_bake_status.get("finished", false)), "Production route does not report a deferred bake as complete before it runs")
-
 	var bake_finished := await _wait_for_navigation_bake(builder)
 	_expect(bake_finished, "Vancouver navigation bake completes within the bounded timeout")
 	var post_bake_status := builder.navigation_bake_status()
@@ -162,11 +174,109 @@ func _test_world_builder_navigation_contract() -> void:
 			_expect(baked_path.size() >= 2, "Baked navigation connects the opening checkpoint to harbour departure")
 			_expect(route_start.distance_to(Vector3(0.0, 0.0, 8.0)) <= 2.0, "Opening checkpoint resolves onto baked navigation")
 			_expect(route_end.distance_to(Vector3(0.0, 0.0, -173.0)) <= 2.0, "Harbour departure resolves onto baked navigation")
+			_test_elevated_navigation_sources(navigation_map, owner)
 
 	owner.queue_free()
 	builder.queue_free()
 	await process_frame
 	await process_frame
+
+
+func _test_spatial_route_geometry(owner: Node3D, builder: VancouverWaterfrontWorldBuilder) -> void:
+	var loop_roles: Dictionary = {}
+	var shortcut_found := false
+	for raw_node in owner.get_tree().get_nodes_in_group(&"rain_city_route_features"):
+		var node := raw_node as Node3D
+		if node == null or not owner.is_ancestor_of(node):
+			continue
+		var feature_id := StringName(node.get_meta(&"route_feature_id", &""))
+		var kind := StringName(node.get_meta(&"route_feature_kind", &""))
+		var role := StringName(node.get_meta(&"route_feature_role", &""))
+		if kind == &"loop":
+			if not loop_roles.has(feature_id):
+				loop_roles[feature_id] = {}
+			(loop_roles[feature_id] as Dictionary)[role] = true
+		elif kind == &"shortcut" and feature_id == &"rainline_return":
+			shortcut_found = node.get_meta(&"revisit_zone_id", &"") == &"waterfront_seawall"
+	var expected_loops := [&"seawall_overlook", &"terminal_control", &"pier_crane_flank"]
+	_expect(loop_roles.size() == expected_loops.size(), "Rain City builds exactly three authored vertical loops")
+	for loop_id in expected_loops:
+		var roles := loop_roles.get(loop_id, {}) as Dictionary
+		_expect(roles.has(&"entry") and roles.has(&"path") and roles.has(&"exit"), "Route loop %s reconnects through entry, elevated path, and exit" % loop_id)
+	_expect(shortcut_found, "Rain Line return declares a terminal-to-seawall revisit shortcut")
+
+	var state_gates: Array[Node] = []
+	for gate in owner.get_tree().get_nodes_in_group(&"rain_city_route_state_gates"):
+		if owner.is_ancestor_of(gate): state_gates.append(gate)
+	_expect(state_gates.size() == 1, "Rain City owns one explicit route-state gate")
+	if state_gates.size() == 1:
+		var gate := state_gates[0] as StaticBody3D
+		_expect(gate != null and gate.collision_layer != 0 and gate.get_meta(&"unlocked_by", &"") == &"terminal_power", "Rain Line return starts collision-closed and binds to terminal power")
+		builder.set_route_gate_open(&"rainline_return", true)
+		await physics_frame
+		_expect(gate.collision_layer == 0 and _all_gate_shapes_disabled(gate), "Terminal power opens the Rain Line return collision gate")
+		builder.set_route_gate_open(&"rainline_return", false)
+		await physics_frame
+		_expect(gate.collision_layer != 0 and not _all_gate_shapes_disabled(gate), "Route-state reset closes the Rain Line return gate")
+
+	var sightlines: Array[Node] = []
+	for marker in owner.get_tree().get_nodes_in_group(&"rain_city_sightline_windows"):
+		if owner.is_ancestor_of(marker): sightlines.append(marker)
+	_expect(sightlines.size() == 2, "Rain City declares two cross-area sightline windows")
+	for raw_marker in sightlines:
+		var marker := raw_marker as Node3D
+		var target: Vector3 = marker.get_meta(&"target_position", marker.global_position)
+		var query := PhysicsRayQueryParameters3D.create(marker.global_position, target)
+		query.collision_mask = 1
+		var hit := owner.get_world_3d().direct_space_state.intersect_ray(query)
+		_expect(hit.is_empty(), "Sightline %s is unobstructed across authored route geometry" % marker.get_meta(&"sightline_id", &""))
+
+	var landmark_roles: Dictionary = {}
+	for raw_anchor in owner.get_tree().get_nodes_in_group(&"rain_city_landmark_anchors"):
+		var anchor := raw_anchor as Node3D
+		if anchor != null and owner.is_ancestor_of(anchor):
+			landmark_roles[anchor.get_meta(&"canonical_role", &"")] = anchor.get_meta(&"landmark_id", &"")
+	_expect(landmark_roles == {
+		&"opening": &"vancouver_downtown_waypoint",
+		&"mid_route": &"vancouver_waterfront_pier",
+		&"finale": &"vancouver_harbour_mast",
+	}, "Opening, mid-route, and finale anchors bind to manifested landmark ids")
+	_test_return_route_secret()
+
+
+func _test_return_route_secret() -> void:
+	var placement: InteractionPlacement
+	for candidate: InteractionPlacement in INTERACTION_CATALOG.placements:
+		if candidate != null and candidate.definition != null and candidate.definition.secret_id == &"secret_waterfront_seawall":
+			placement = candidate
+			break
+	_expect(placement != null, "Waterfront revisit owns an interaction-backed secret")
+	if placement == null:
+		return
+	var position_value := placement.transform.origin
+	_expect(position_value.y > 1.5 and position_value.z < -89.3, "Waterfront secret sits on the elevated terminal side of the locked return gate")
+	_expect(placement.definition.prompt.contains("RAIN LINE"), "Waterfront revisit secret provides an observation/interaction clue")
+
+
+func _all_gate_shapes_disabled(gate: StaticBody3D) -> bool:
+	for child in gate.get_children():
+		if child is CollisionShape3D and not (child as CollisionShape3D).disabled:
+			return false
+	return true
+
+
+func _test_elevated_navigation_sources(navigation_map: RID, owner: Node3D) -> void:
+	var elevated_paths := 0
+	for raw_node in owner.get_tree().get_nodes_in_group(&"rain_city_route_features"):
+		var node := raw_node as Node3D
+		if node == null or not owner.is_ancestor_of(node):
+			continue
+		if node.get_meta(&"route_feature_kind", &"") != &"loop" or node.get_meta(&"route_feature_role", &"") != &"path":
+			continue
+		elevated_paths += 1
+		var closest := NavigationServer3D.map_get_closest_point(navigation_map, node.global_position + Vector3.UP * 0.25)
+		_expect(closest.distance_to(node.global_position + Vector3.UP * 0.25) <= 1.0, "Elevated loop %s contributes baked navigation" % node.get_meta(&"route_feature_id", &""))
+	_expect(elevated_paths >= 2, "Rain City provides at least two baked combat elevations")
 
 
 func _wait_for_navigation_bake(builder: VancouverWaterfrontWorldBuilder) -> bool:

@@ -143,14 +143,14 @@ loot_drop_count = 1
 script = ExtResource("3")
 schema_version = 1
 id = &"waterfront_secret_drift_anchor_01"
-prompt = "SLAM THE FLOOD GATE"
+prompt = "RESET THE RAIN LINE BALL RETURN"
 enabled = true
 kind = 4
 visual_size = Vector3(1.2, 1.05, 0.7)
 visual_color = Color(0.4118, 0.5647, 0.7608, 1)
 surface_type = &"steel"
 secret_id = &"secret_waterfront_seawall"
-secret_title = "DOCK SECURITY LOOP CLOSED"
+secret_title = "RAIN LINE RETURN CACHE"
 persistence_id = &"secret_waterfront_seawall"
 persists_across_reset = true
 
@@ -356,7 +356,7 @@ schema_version = 1
 id = &"placement_waterfront_secret_drift_anchor_01"
 zone_id = &"waterfront_seawall"
 definition = SubResource("WaterfrontSecretA")
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.8, 0.5, -68.5)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.5, 1.85, -91.2)
 
 [sub_resource type="Resource" id="PlacementTerminalBreakableA"]
 script = ExtResource("2")

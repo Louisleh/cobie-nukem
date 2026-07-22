@@ -66,8 +66,10 @@ func _run() -> void:
 	mission._world_builder.departure_switch.interact(null)
 	_expect(not mission._world_builder.departure_switch.is_active, "departure switch cannot be consumed before convoy completion")
 	_expect(not mission._mission_runtime.objectives.completed.has(&"complete_harbour_pier"), "early departure interaction cannot bypass prerequisites")
+	_expect(not mission._world_builder.is_route_gate_open(&"rainline_return"), "Rain Line return remains closed before terminal power")
 	mission._mission_runtime.record_objective(ObjectiveDefinition.Kind.ACTIVATE, &"terminal_power")
 	_expect(mission._mission_runtime.objectives.completed.has(&"restore_terminal"), "terminal objective completes before convoy")
+	_expect(mission._world_builder.is_route_gate_open(&"rainline_return"), "terminal objective opens the Rain Line return")
 	await _exercise_convoy(mission)
 	_expect(mission._mission_runtime.objectives.completed.has(&"stop_citation_convoy"), "convoy completion satisfies objective exactly once")
 	_expect(mission._route_runtime.current_checkpoint_id == &"checkpoint_harbour_clear", "convoy completion promotes the clear checkpoint")
@@ -118,6 +120,7 @@ func _test_harbour_checkpoint_rehydration() -> void:
 	_expect(mission.current_zone == &"harbour_pier", "harbour Continue restores controller zone truth")
 	_expect(mission._set_piece_runtime != null and bool(mission._set_piece_runtime.current_state().get("has_actor", false)), "harbour Continue rehydrates the citation convoy")
 	_expect(not mission._world_builder.departure_switch.enabled, "restored departure remains locked until convoy objective completes")
+	_expect(mission._world_builder.is_route_gate_open(&"rainline_return"), "restored terminal objective reopens the Rain Line return")
 	mission.queue_free()
 	await process_frame
 
@@ -152,6 +155,7 @@ func _test_completed_checkpoint_rehydrates_wreck() -> void:
 	var wreck := _find_convoy(mission._world_builder.actors)
 	_expect(wreck != null and wreck.defeat_started(), "Completed Continue restores the persistent defeated wreck")
 	_expect(mission._world_builder.departure_switch.enabled, "Completed Continue keeps departure control enabled")
+	_expect(mission._world_builder.is_route_gate_open(&"rainline_return"), "completed Continue preserves the Rain Line return")
 	var generation := mission._set_piece_runtime.generation()
 	mission.restart_from_checkpoint()
 	_expect(mission._set_piece_runtime.generation() == generation, "Post-victory retry never resets or resurrects the convoy")

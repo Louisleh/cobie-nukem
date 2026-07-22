@@ -52,7 +52,7 @@ prop_set_id = &"vancouver_terminal_props"
 surface_ids = [&"concrete", &"metal", &"hazmat"]
 checkpoint_ids = [&"checkpoint_terminal_service"]
 secret_ids = [&"secret_terminal_service"]
-outgoing_edge_ids = [&"harbour_pier"]
+outgoing_edge_ids = [&"harbour_pier", &"waterfront_seawall"]
 
 [sub_resource type="Resource" id="HarbourPier"]
 script = ExtResource("2")

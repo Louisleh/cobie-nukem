@@ -134,9 +134,9 @@ bash tools/run_godot_safe.sh --timeout 300 -- --headless --path . --script res:/
 
 ### WCB-005 — Rain City authored spatial vertical slice
 
-**Status:** Ready — WCB-002–004 corrective runtime pass integrated and verified
+**Status:** Mechanical route, multi-aspect capture, and packaged validation green — evidence commit/push pending
 **Owner:** Level
-**Paths:** Rain City scenes/resources/world builder, route definitions, interaction catalog, route tests
+**Paths:** `scripts/level/rain_city_spatial_route_builder.gd`, Rain City world/mission controllers, route definition, interaction catalog, route/mission/capture tests, and `docs/design/rain-city-route.md`
 
 **Deliverables**
 
@@ -150,7 +150,7 @@ bash tools/run_godot_safe.sh --timeout 300 -- --headless --path . --script res:/
 
 ### WCB-006 — Authored encounter choreography
 
-**Status:** Pending WCB-005 route freeze
+**Status:** Blocked pending WCB-005 packaged validation and evidence commit
 **Owner:** Encounter/enemy
 **Paths:** `resources/encounters/vancouver_*.tres`, Rain City encounter-only resources declared in the packet, and `tests/integration/rain_city_*encounter*.gd`. Any `scripts/ai/` change requires a separately recorded ownership transfer and cannot overlap another writer.
 
@@ -165,7 +165,7 @@ bash tools/run_godot_safe.sh --timeout 300 -- --headless --path . --script res:/
 
 ### WCB-007 — Municipal Towmaster production boss
 
-**Status:** Pending WCB-005 route freeze
+**Status:** Blocked pending WCB-005 packaged validation and evidence commit
 **Owner:** Enemy/boss + presentation integration
 **Paths:** `scenes/set_pieces/citation_convoy.tscn`, `scripts/gameplay/citation_convoy_actor.gd`, `scripts/level/rain_city_convoy_presentation.gd`, `resources/set_pieces/vancouver_citation_convoy.tres`, `resources/set_pieces/vancouver_convoy_phases/`, `assets/models/set_pieces/municipal_towmaster.glb`, `assets/source/blender/municipal_towmaster.blend`, `tests/integration/rain_city_convoy_boss_test.gd`. Additional paths require an integration-owner transfer recorded before editing.
 
@@ -180,7 +180,7 @@ bash tools/run_godot_safe.sh --timeout 300 -- --headless --path . --script res:/
 
 ### WCB-008 — Mission-specific visual and audio identity
 
-**Status:** Pending WCB-005 route freeze
+**Status:** Blocked pending WCB-005 packaged validation and evidence commit
 **Owner:** Visual Foundry/audio
 **Paths:** `assets/models/environment/rain_city_*`, `assets/source/blender/rain_city_run_foundry.blend`, `assets/source/material_maker/rain_city_*.ptex`, `assets/textures/materials/rain_city/`, `resources/presentation/vancouver_*.tres`, `resources/audio/vancouver_mission_audio.tres`, `assets/audio/**/vancouver_*.wav`, `scenes/levels/vancouver/rain_city_presentation.tscn`, `scripts/level/rain_city_material_applier.gd`, `docs/ART_BIBLE.md`, `docs/ASSET_MANIFEST.md`, and canonical non-boss captures. WCB-007 boss paths are explicitly excluded.
 
