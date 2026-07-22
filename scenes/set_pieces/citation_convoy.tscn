@@ -1,9 +1,10 @@
-[gd_scene load_steps=21 format=3]
+[gd_scene load_steps=28 format=3]
 
 [ext_resource type="Script" path="res://scripts/level/citation_convoy_actor.gd" id="1"]
 [ext_resource type="Script" path="res://scripts/level/world_interaction.gd" id="2"]
 [ext_resource type="Script" path="res://scripts/gameplay/world_interaction_definition.gd" id="3"]
 [ext_resource type="PackedScene" path="res://assets/models/set_pieces/municipal_towmaster.glb" id="4_vehicle"]
+[ext_resource type="Resource" path="res://resources/set_pieces/towmaster_combat_profile.tres" id="5"]
 
 [sub_resource type="StandardMaterial3D" id="CitationMaterial"]
 shading_mode = 0
@@ -31,6 +32,26 @@ material = SubResource("CoreMaterial")
 top_radius = 0.52
 bottom_radius = 0.52
 height = 0.58
+
+[sub_resource type="StandardMaterial3D" id="CitationLaneMaterial"]
+shading_mode = 0
+transparency = 1
+albedo_color = Color(1, 1, 0.65, 0.25)
+
+[sub_resource type="BoxMesh" id="CitationLaneMesh"]
+material = SubResource("CitationLaneMaterial")
+size = Vector3(2.4, 0.03, 16)
+
+[sub_resource type="StandardMaterial3D" id="ImpoundFieldMaterial"]
+shading_mode = 0
+transparency = 1
+albedo_color = Color(0.9, 0.2, 0.2, 0.2)
+
+[sub_resource type="CylinderMesh" id="ImpoundFieldMesh"]
+material = SubResource("ImpoundFieldMaterial")
+top_radius = 4.5
+bottom_radius = 4.5
+height = 0.03
 
 [sub_resource type="StandardMaterial3D" id="TicketDebrisMaterial"]
 shading_mode = 0
@@ -103,6 +124,7 @@ breakable_reset_health = 250.0
 
 [node name="CitationConvoy" type="Node3D"]
 script = ExtResource("1")
+combat_profile = ExtResource("5")
 
 [node name="LeadVehicle" parent="." instance=ExtResource("4_vehicle")]
 
@@ -181,3 +203,36 @@ position = Vector3(0, 1.0, -3.2)
 collision_layer = 1
 script = ExtResource("2")
 definition = SubResource("CoreModuleDefinition")
+
+[node name="ArenaStates" type="Node3D" parent="."]
+
+[node name="CitationLanes" type="Node3D" parent="ArenaStates"]
+visible = false
+
+[node name="LaneLeft" type="MeshInstance3D" parent="ArenaStates/CitationLanes"]
+position = Vector3(-3.5, 0.0, 0.0)
+mesh = SubResource("CitationLaneMesh")
+cast_shadow = 0
+
+[node name="LaneRight" type="MeshInstance3D" parent="ArenaStates/CitationLanes"]
+position = Vector3(3.5, 0.0, 0.0)
+mesh = SubResource("CitationLaneMesh")
+cast_shadow = 0
+
+[node name="ImpoundField" type="Node3D" parent="ArenaStates"]
+visible = false
+
+[node name="ImpoundRing" type="MeshInstance3D" parent="ArenaStates/ImpoundField"]
+mesh = SubResource("ImpoundFieldMesh")
+cast_shadow = 0
+
+[node name="WarningLights" type="Node3D" parent="."]
+visible = false
+
+[node name="WarningLeft" type="OmniLight3D" parent="WarningLights"]
+position = Vector3(-2.25, 1.7, 0.25)
+shadow_enabled = false
+
+[node name="WarningRight" type="OmniLight3D" parent="WarningLights"]
+position = Vector3(2.25, 1.7, 0.25)
+shadow_enabled = false
