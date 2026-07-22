@@ -25,7 +25,7 @@ This is the durable continuation ledger for the Cobie Nukem 3/6/9 quality progra
 | WCB-005 Rain City spatial slice | COMPLETE | Level | `8a5a807` | Route/state/navigation/catalog/core + multi-aspect comparison + packaged exports pass | Human pacing, meaningfulness, and landmark readability remain open |
 | WCB-006 Encounters | COMPLETE | Enemy/encounter + bounded integration transfer | `e61b73c` | Schema-v3 content/runtime/reset/navigation + 100-cycle soak + packaged exports pass | Human pacing/fairness open |
 | WCB-007 Towmaster | COMPLETE | Boss/presentation + bounded integration transfer | `45bf41a` | Three attacks/four phases/two arena states + 100-cycle combat/reset + native comparison + packaged exports pass | Human spectacle/fairness/readability open |
-| WCB-008 Art/audio identity | IN PROGRESS | Visual Foundry/audio | `152b65d` | Fog/readability, authored route barriers, original harbour skyline/ridgelines/beacon, and four-aspect waterfront captures pass; runtime audio-event evidence is next | Remaining non-boss views and human art/mix/humor approval open |
+| WCB-008 Art/audio identity | IN PROGRESS | Visual Foundry/audio | `aeeb303` | Fog/readability, authored barriers, original harbour skyline/ridgelines/beacon, four-aspect waterfront captures, and explicit runtime audio-event evidence pass | Remaining non-boss views and human art/mix/humor approval open |
 | WCB-009 RC evidence/selection | BLOCKED by WCB-008 | Integration/release | — | WCB-005–007 verified | Human/device gates required |
 | WCB-010 Second-mission replication | BLOCKED by WCB-009 | Assigned after selection | — | — | Mission-specific human gates required |
 | WCB-011 Release identity/roadmap | BLOCKED by WCB-010 | Integration/release | — | — | Publish only an honest candidate |
@@ -285,6 +285,22 @@ Copy this section for every packet before marking it complete.
   - comparison against `authored-gates-pass` exits `0` with no hard failures; perceptual MAE is `0.003288` at 16:9 and `0.003668` at 4:3.
 - Human-only/open claims: final unlabelled landmark/district identity, remaining non-boss views, combat-scale recognition, humor, audio mix/signature, motion comfort, photosensitivity, target-Mac route playthrough, physical iPad, and baseline approval. The native capture path still emits the previously recorded one-`ParticlesShaderGLES3`/RID teardown warning on some aspect runs, so this is not clean renderer-leak evidence.
 - Next dependency-safe packet: explicit Rain City runtime audio-event evidence for mission state/ambience, Compliance Gull, Umbrella Shield Enforcer, and convoy cues; then remaining non-boss capture views and the human review packet. WCB-009 remains blocked.
+
+## 2026-07-22 — WCB-008 runtime audio-event evidence slice
+
+- Source commit: `fb2002f`; integrated implementation commit: `aeeb303`.
+- Owner / review: GPT-5.6-sol implementation, verification, and integration; pinned GPT-5.3-Codex-Spark audio audit identified the precise runtime-evidence gap and mapped every authored event/cue path before implementation.
+- Acceptance condition: prove exact runtime event→cue IDs for Vancouver music state, zone ambience, Compliance Gull, Umbrella Shield Enforcer, and citation-convoy identity without starting nondeterministic audio playback in headless CI; retain the real production classes, concrete hero enemy scenes, convoy actor, generation checks, objective/checkpoint completion effects, and normal release matrix.
+- Implemented `tests/unit/rain_city_audio_event_contract_test.gd` and registered it in `tools/release_validate.sh`.
+  - Mission presentation evidence drives exploration, terminal-zone, encounter tension/combat/completion, harbour boss, and mission-victory events and verifies `vancouver_music_*` plus `vancouver_ambience_*` resolution.
+  - Hero-enemy evidence binds concrete Compliance Gull and Umbrella Shield Enforcer scenes, emits their production signals, and verifies mark/dive/death plus shield brace/open/break cue IDs and live spatial positions.
+  - Convoy evidence uses the concrete Citation Convoy actor and generation-gated production handlers to verify movement, tow/module break, defeat milestone, and final defeat cues while retaining the canonical objective and harbour-clear checkpoint effects.
+- Verification:
+  - focused command -> `RAIN CITY AUDIO EVENT CONTRACT TEST: PASS`;
+  - `bash -n tools/release_validate.sh` passes;
+  - fresh `QA_EXPORTS=1 bash tools/release_validate.sh` includes the new test and passes the complete scripted, smoke, soak, performance, asset/IP, Web-export, and macOS-export matrix.
+- Evidence boundary: playback is disabled only inside the music/ambience state-routing test so headless timing cannot masquerade as an audible mix review. Imported WAV/cue data and emitter playback retain their separate passing tests. Final loudness, layering, voice contention, humor, and mission-signature judgment remain human mix gates.
+- Next dependency-safe packet: finish the remaining canonical non-boss capture views and assemble the human art/mix/humor/accessibility review packet. WCB-009 remains blocked.
 
 ## Resume protocol
 

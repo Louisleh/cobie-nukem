@@ -12,7 +12,7 @@ Cobie Nukem is a mechanically substantial production candidate, not a finalized 
 | Rain City encounters and set piece | Authored 26-enemy budget, choreography, pressure, convoy integration, and reset contracts pass | Mechanically complete; human pacing/taste gate remains |
 | Rain City Towmaster | WCB-007 combat/presentation seam is integrated and frozen from WCB-008 edits | Mechanically complete; human fight/readability gate remains |
 | Rain City visual identity | Manifested foundry/material pipeline exists. The 2026-07-22 slices corrected excessive fog, replaced opaque collision-debug gate slabs with authored barriers, and added an original harbour skyline, Rainline beacon, and layered north-shore silhouette | In progress — WCB-008; human identity/taste gate remains |
-| Rain City audio identity | Mission-specific music states, zone ambience, hero-enemy cues, and convoy cues exist and are event-wired | Mechanically present; final bounded evidence and human mix review remain |
+| Rain City audio identity | Mission-specific music states, zone ambience, hero-enemy cues, and convoy cues exist; runtime event→cue routing is now explicitly regression-tested | Mechanically evidenced; human mix/signature review remains |
 | Canonical visual evidence | Deterministic 16:9, 16:10, 4:3, and ultrawide candidate captures exist for `vancouver_waterfront` | Partial; remaining non-boss views and human approval open |
 | Integrated native/Web/device evidence | Validation, package, capture, motion, and provenance tooling exists; current source validation/export matrix passes | WCB-009 blocked behind WCB-008 |
 | Pipeline replication | No second mission has passed the same end-to-end production contract | Pending WCB-009 selection / WCB-010 |
@@ -25,6 +25,7 @@ Cobie Nukem is a mechanically substantial production candidate, not a finalized 
 - Contracts cover fog ceiling, collision/presentation separation, dressing idempotence, and dedicated Compliance Gull/Umbrella Shield Enforcer behavior and visual paths.
 - The reproducible Blender foundry now authors 272 source parts into the same 13 runtime material batches, including a broad harbour skyline, window-light scale cues, an original Rainline beacon, and two source-built north-shore ridgelines. Dedicated distance materials preserve restrained atmospheric value separation without owning collision or navigation.
 - The asset contract guards the skyline/ridgeline batch presence, production-scale bounds, dedicated runtime materials, and presentation-only collision separation.
+- `rain_city_audio_event_contract_test.gd` drives production mission-presentation methods, concrete hero-enemy signals, and generation-gated convoy handlers to prove exact Vancouver music/ambience plus Rain City Gull, shield, module, movement, and defeat cue IDs. The test is part of `release_validate.sh`; it deliberately disables playback only for deterministic state routing, not data substitution.
 - `QA_EXPORTS=1 bash tools/release_validate.sh` passes the full scripted matrix and Web/macOS exports.
 - Candidate captures contain no capture failures at 1280×720, 1680×1050, 1024×768, or 3440×1440 under `/tmp/cobie-wcb008-candidate/harbour-backdrop-final/`.
 - Image comparison against the authored-gate candidate exits `0` with no hard failures. Intentional backdrop deltas are perceptual MAE `0.003288` at 16:9 and `0.003668` at 4:3.
@@ -36,7 +37,7 @@ The dependency-complete roadmap is maintained in [`IMPLEMENTATION_PLAN.md`](IMPL
 
 Immediate dependency-safe order:
 
-1. Finish WCB-008 explicit Rain City audio-event evidence, remaining non-boss views, and multi-aspect human review.
+1. Finish WCB-008 remaining non-boss views and multi-aspect human art/mix/humor/accessibility review.
 2. Run WCB-009 integrated native/Web/browser/device evidence and select exactly one replication target.
 3. Execute WCB-010 for that one second mission.
 4. Execute WCB-011 release identity and remaining campaign packetization.
