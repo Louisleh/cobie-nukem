@@ -1,34 +1,36 @@
-[gd_resource type="Resource" script_class="EncounterDefinition" load_steps=2 format=3]
+[gd_resource type="Resource" script_class="EncounterDefinition" load_steps=3 format=3]
 [ext_resource type="Script" path="res://scripts/gameplay/encounter_definition.gd" id="1"]
+[ext_resource type="Resource" path="res://resources/encounters/choreography/vancouver_harbour_pier_profile.tres" id="2"]
 [resource]
 script = ExtResource("1")
 id = &"vancouver_convoy_showdown"
 zone_id = &"harbour_pier"
 display_name = "CITATION CONVOY"
-schema_version = 2
+schema_version = 3
+choreography_profile = ExtResource("2")
 spawns = []
 waves = Array[Dictionary]([{
 "spawns": [
-	{"scene":"res://scenes/enemies/compliance_hound.tscn","position":Vector3(-4,0,-130)},
-	{"scene":"res://scenes/enemies/umbrella_shield_enforcer.tscn","position":Vector3(4,0,-136)}
+	{"scene":"res://scenes/enemies/compliance_hound.tscn","position":Vector3(-4,0,-130),"role_id":&"melee_pursuer","approach_id":&"land_flank"},
+	{"scene":"res://scenes/enemies/umbrella_shield_enforcer.tscn","position":Vector3(4,0,-136),"role_id":&"shield_anchor","approach_id":&"water_flank"}
 ]}, {
 "delay_seconds": 2.5,
 "spawns": [
-	{"scene":"res://scenes/enemies/compliance_gull.tscn","position":Vector3(1,4,-146)},
-	{"scene":"res://scenes/enemies/leash_enforcement_drone.tscn","position":Vector3(-4,2,-148)}
+	{"scene":"res://scenes/enemies/compliance_gull.tscn","position":Vector3(1,4,-146),"role_id":&"dive_support","approach_id":&"land_flank"},
+	{"scene":"res://scenes/enemies/leash_enforcement_drone.tscn","position":Vector3(-4,2,-148),"role_id":&"dive_support","approach_id":&"crane_upper","optional_reinforcement_id":&"terminal_secret_cancelled_reinforcement"}
 ]}, {
 "delay_seconds": 2.5,
 "spawns": [
-	{"scene":"res://scenes/enemies/mutant_groundskeeper.tscn","position":Vector3(0,0,-158)},
-	{"scene":"res://scenes/enemies/umbrella_shield_enforcer.tscn","position":Vector3(2,0,-156)}
+	{"scene":"res://scenes/enemies/mutant_groundskeeper.tscn","position":Vector3(0,0,-158),"role_id":&"space_denial","approach_id":&"water_flank"},
+	{"scene":"res://scenes/enemies/umbrella_shield_enforcer.tscn","position":Vector3(2,0,-156),"role_id":&"shield_anchor","approach_id":&"land_flank"}
 ]}, {
 "delay_seconds": 2.0,
 "spawns": [
-	{"scene":"res://scenes/enemies/compliance_gull.tscn","position":Vector3(-7,4,-165)},
-	{"scene":"res://scenes/enemies/compliance_hound.tscn","position":Vector3(7,0,-169)}
+	{"scene":"res://scenes/enemies/compliance_gull.tscn","position":Vector3(-7,4,-165),"role_id":&"dive_support","approach_id":&"crane_upper"},
+	{"scene":"res://scenes/enemies/compliance_hound.tscn","position":Vector3(7,0,-169),"role_id":&"aerial_harrier","approach_id":&"water_flank"}
 ]}])
 enemy_budget = 8
-maximum_simultaneous_attackers = 4
+maximum_simultaneous_attackers = 3
 music_intensity = 0.9
 reward_policy = &"authored"
 wave_progression = 1

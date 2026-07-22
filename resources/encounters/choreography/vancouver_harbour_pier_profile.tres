@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="EncounterChoreographyProfile" load_steps=2 format=3]
+[ext_resource type="Script" path="res://scripts/gameplay/encounter_choreography_profile.gd" id="1"]
+[resource]
+script = ExtResource("1")
+id = &"vancouver_harbour_pier_profile"
+intent = "Harbour pier convoy support and bounded reinforcement pacing"
+role_ids = [&"melee_pursuer", &"shield_anchor", &"dive_support", &"aerial_harrier", &"space_denial"]
+approach_ids = [&"land_flank", &"water_flank", &"crane_upper"]
+recovery_position = Vector3(0,0,-150)
+environment_choice_ids = [&"pier_crane_flank"]
+wave_transition_ids = [&"convoy_intercept", &"waterfront_reinforcement", &"pier_space_denial", &"final_crossfire"]
+counterplay_ids = [&"preserve_module_route", &"clear_support_first", &"use_secret_cancellation"]
