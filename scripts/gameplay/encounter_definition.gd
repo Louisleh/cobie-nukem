@@ -37,6 +37,8 @@ func validate() -> PackedStringArray:
 	var errors := PackedStringArray()
 	if id == &"": errors.append("encounter id is empty")
 	if zone_id == &"": errors.append("encounter %s has no zone_id" % id)
+	if schema_version < 1 or schema_version > 3:
+		errors.append("encounter %s uses unsupported schema_version %d" % [id, schema_version])
 	if wave_progression < WaveProgression.AUTO or wave_progression > WaveProgression.EXTERNAL:
 		errors.append("encounter %s has invalid wave progression" % id)
 	var all_waves: Array[Dictionary] = effective_waves()

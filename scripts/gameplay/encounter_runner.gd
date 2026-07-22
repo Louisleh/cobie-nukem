@@ -90,6 +90,8 @@ func _spawn_wave(definition: EncounterDefinition, wave_index: int, expected_gene
 			"encounter_transition_id": &"",
 			"encounter_recovery_position": Vector3.ZERO,
 			"encounter_environment_choice_ids": [],
+			"encounter_counterplay_ids": [],
+			"encounter_counterplay_id": &"",
 		}
 	state.choreography_context = choreography_context
 	wave_started.emit(definition, wave_index)
@@ -109,6 +111,8 @@ func _spawn_wave(definition: EncounterDefinition, wave_index: int, expected_gene
 		actor.set_meta(&"encounter_transition_id", StringName(choreography_context.get("encounter_transition_id", "")))
 		actor.set_meta(&"encounter_recovery_position", choreography_context.get("encounter_recovery_position", Vector3.ZERO))
 		actor.set_meta(&"encounter_environment_choice_ids", _normalize_environment_choice_ids(choreography_context.get("encounter_environment_choice_ids", [])))
+		actor.set_meta(&"encounter_counterplay_ids", _normalize_environment_choice_ids(choreography_context.get("encounter_counterplay_ids", [])))
+		actor.set_meta(&"encounter_counterplay_id", StringName(choreography_context.get("encounter_counterplay_id", "")))
 		actor.set_meta(&"encounter_spawn_slot", "%s:%d:%d" % [definition.id, wave_index, spawn_index])
 		state.actors.append(actor)
 		state.remaining = int(state.remaining) + 1

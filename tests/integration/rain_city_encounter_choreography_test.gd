@@ -197,6 +197,8 @@ func _check_runtime_metadata(actor: Node, definition: EncounterDefinition, runne
 		_expect(transition_id == profile.wave_transition_ids[wave_index], "%s runtime actor carries its authored transition" % definition.zone_id)
 	_expect(actor.get_meta(&"encounter_recovery_position", Vector3.INF) == profile.recovery_position, "%s runtime actor carries its recovery position" % definition.zone_id)
 	_expect(not (actor.get_meta(&"encounter_environment_choice_ids", []) as Array).is_empty(), "%s runtime actor carries an environment choice" % definition.zone_id)
+	_expect(not (actor.get_meta(&"encounter_counterplay_ids", []) as Array).is_empty(), "%s runtime actor carries authored counterplay" % definition.zone_id)
+	_expect(StringName(actor.get_meta(&"encounter_counterplay_id", &"")) in profile.counterplay_ids, "%s runtime actor carries a declared counterplay id" % definition.zone_id)
 
 
 func _zero_delay_pre_boss_definitions() -> Array[EncounterDefinition]:

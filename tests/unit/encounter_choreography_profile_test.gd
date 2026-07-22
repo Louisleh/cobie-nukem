@@ -80,6 +80,10 @@ func _test_definition_schema_compatibility_and_requirements() -> void:
 	(missing_profile.waves[0].get("spawns", [])[0] as Dictionary).erase("role_id")
 	_assert(_contains_error(missing_profile.validate(), "missing or invalid role_id"), "schema v3 still validates spawn role ids when the profile is missing")
 
+	var unsupported_schema := _make_schema_definition(profile, &"unsupported_schema_zone", "res://scenes/enemies/squirrel_trooper.tscn")
+	unsupported_schema.schema_version = 4
+	_assert(_contains_error(unsupported_schema.validate(), "unsupported schema_version 4"), "unknown future schema versions fail closed")
+
 	var undeclared_role := _make_schema_definition(profile, &"undeclared_role_zone", "res://scenes/enemies/squirrel_trooper.tscn")
 	(undeclared_role.waves[0].get("spawns", [])[0] as Dictionary)["role_id"] = &"rogue"
 	_assert(not undeclared_role.validate().is_empty(), "schema v3 rejects role_id not listed on the profile")
@@ -198,6 +202,9 @@ func _expect_actor_metadata(actor: Node, role_id: StringName, approach_id: Strin
 	_assert(actor.get_meta(&"encounter_recovery_position", Vector3.ZERO) == context.get("encounter_recovery_position"), "actor metadata includes encounter_recovery_position")
 	var environment_choices: Array = actor.get_meta(&"encounter_environment_choice_ids", [])
 	_assert(environment_choices == context.get("encounter_environment_choice_ids", []), "actor metadata includes encounter_environment_choice_ids")
+	var counterplay_ids: Array = actor.get_meta(&"encounter_counterplay_ids", [])
+	_assert(counterplay_ids == context.get("encounter_counterplay_ids", []), "actor metadata includes encounter_counterplay_ids")
+	_assert(actor.get_meta(&"encounter_counterplay_id", &"") == context.get("encounter_counterplay_id", &""), "actor metadata includes encounter_counterplay_id")
 
 
 func _contains_error(errors: PackedStringArray, needle: String) -> bool:
