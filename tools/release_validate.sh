@@ -109,6 +109,7 @@ run_godot_test res://tests/integration/umbrella_shield_content_test.gd
 run_godot_test res://tests/integration/vancouver_mission_host_test.gd
 run_godot_test res://tests/integration/rain_city_route_production_test.gd
 run_godot_test res://tests/integration/rain_city_convoy_boss_test.gd
+run_godot_test res://tests/integration/rain_city_towmaster_combat_test.gd
 run_godot_test res://tests/integration/mount_hood_beta_test.gd
 run_godot_test res://tests/integration/moon_mission_contract_test.gd
 run_godot_test res://tests/integration/ventura_mission_contract_test.gd
