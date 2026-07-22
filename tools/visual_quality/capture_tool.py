@@ -5,6 +5,7 @@ import argparse
 import datetime
 import json
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -12,8 +13,18 @@ import tempfile
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-from PIL import Image
 
+_ALLOWED_CAPTURE_DIAGNOSTICS = {
+    "ERROR: 1 shaders of type ParticlesShaderGLES3 were never freed": 1,
+    "ERROR: 1 RID allocations of type 'N5GLES36ShaderE' were leaked at exit.": 1,
+}
+_FATAL_CAPTURE_DIAGNOSTICS = (
+    re.compile(r"^ERROR:"),
+    re.compile(r"^SCRIPT ERROR:"),
+    re.compile(r"ObjectDB instances? (?:(?:was|were) )?leaked at exit"),
+    re.compile(r"resources? still in use at exit"),
+    re.compile(r"\borphan\b", re.IGNORECASE),
+)
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
@@ -119,10 +130,9 @@ def _native_capture_output(
     capture_script = _repo_root() / "tools" / "capture_native_evidence.sh"
     temp_output = output_root / run_id
     temp_output.mkdir(parents=True, exist_ok=True)
-    subprocess.check_call(
-        ["/bin/bash", str(capture_script), str(temp_output)],
-        env={
-            **os.environ,
+    env = _isolated_capture_env(temp_output / "user-data")
+    env.update(
+        {
             "GODOT_BIN": os.environ.get("GODOT_BIN", "/opt/homebrew/bin/godot"),
             "CAPTURE_WIDTH": str(width),
             "CAPTURE_HEIGHT": str(height),
@@ -130,15 +140,57 @@ def _native_capture_output(
             "CAPTURE_PHYSICS_TPS": str(physics_tps),
             "CAPTURE_FORCE_TOUCH": "1" if force_touch else "0",
             "CAPTURE_SEED": str(capture_seed),
-        },
+        }
     )
+    _run_capture_process(["/bin/bash", str(capture_script), str(temp_output)], env)
     return temp_output
+
+
+def _isolated_capture_env(root: Path) -> Dict[str, str]:
+    home = root / "home"
+    env = {
+        **os.environ,
+        "HOME": str(home),
+        "CFFIXED_USER_HOME": str(home),
+        "XDG_DATA_HOME": str(root / "xdg-data"),
+        "XDG_CONFIG_HOME": str(root / "xdg-config"),
+        "XDG_CACHE_HOME": str(root / "xdg-cache"),
+    }
+    for key in ("HOME", "XDG_DATA_HOME", "XDG_CONFIG_HOME", "XDG_CACHE_HOME"):
+        Path(env[key]).mkdir(parents=True, exist_ok=True)
+    return env
+
+
+def _run_capture_process(command: List[str], env: Dict[str, str]) -> None:
+    result = subprocess.run(
+        command,
+        env=env,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        text=True,
+    )
+    if result.stdout:
+        print(result.stdout, end="" if result.stdout.endswith("\n") else "\n")
+    if result.returncode != 0:
+        raise subprocess.CalledProcessError(result.returncode, command, output=result.stdout)
+    allowed_counts = {line: 0 for line in _ALLOWED_CAPTURE_DIAGNOSTICS}
+    unexpected_errors = []
+    for raw_line in result.stdout.splitlines():
+        line = raw_line.strip()
+        if line in allowed_counts:
+            allowed_counts[line] += 1
+            if allowed_counts[line] > _ALLOWED_CAPTURE_DIAGNOSTICS[line]:
+                unexpected_errors.append(line)
+        elif any(pattern.search(line) for pattern in _FATAL_CAPTURE_DIAGNOSTICS):
+            unexpected_errors.append(line)
+    if unexpected_errors:
+        raise RuntimeError("visual capture emitted engine errors:\n" + "\n".join(unexpected_errors))
 
 
 def _direct_scene_capture(
     output_root: Path,
     view: Dict[str, Any],
-    aspect: Dict[str, int],
+    aspect: Dict[str, Any],
     render_fps: int,
     physics_tps: int,
 ) -> Path:
@@ -177,7 +229,7 @@ def _direct_scene_capture(
         f"--capture-seed={int(view.get('seed', 1))}",
         f"--physics-tps={physics_tps}",
     ]
-    subprocess.check_call(command)
+    _run_capture_process(command, _isolated_capture_env(prefix.parent / "user-data"))
     frame_path = prefix.parent / f"capture{frame:08d}.png"
     if not frame_path.is_file():
         raise FileNotFoundError(f"direct scene frame missing: {frame_path}")
@@ -190,6 +242,8 @@ def _copy_capture(
     expected_width: int,
     expected_height: int,
 ) -> None:
+    from PIL import Image
+
     with Image.open(source_file) as source:
         if source.size != (expected_width, expected_height):
             raise ValueError(

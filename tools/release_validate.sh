@@ -11,6 +11,7 @@ if [[ -z "$GODOT_BIN" || ! -x "$GODOT_BIN" ]]; then
   echo "ERROR: Godot 4.7 executable not found. Set GODOT_BIN."
   exit 1
 fi
+
 if [[ "$($GODOT_BIN --version)" != 4.7.* ]]; then
   echo "ERROR: release validation requires Godot 4.7 stable."
   "$GODOT_BIN" --version
@@ -62,6 +63,8 @@ echo "==> import/parser validation"
 GODOT_BIN="$GODOT_BIN" bash "$SAFE_GODOT_RUNNER" --timeout "${GODOT_IMPORT_TIMEOUT_SECONDS:-600}" -- \
   --headless --path . --editor --quit
 bash tools/tests/run_godot_safe_test.sh
+echo "==> visual capture user-data isolation"
+python3 tools/visual_quality/test_capture_tool.py
 run_godot_test res://tests/run_tests.gd
 run_godot_test res://tests/unit/input_system_test.gd
 run_godot_test res://tests/unit/combat_test_runner.gd
@@ -71,6 +74,7 @@ run_godot_test res://tests/unit/enemy_presentation_profile_test.gd
 run_godot_test res://tests/unit/navigation_contract_test.gd
 run_godot_test res://tests/unit/ui_scene_test.gd
 run_godot_test res://tests/unit/asset_contract_test.gd
+run_godot_test res://tests/unit/visual_capture_manifest_test.gd
 run_godot_test res://tests/unit/gameplay_foundation_test.gd
 run_godot_test res://tests/unit/world_interaction_test.gd
 run_godot_test res://tests/unit/interaction_catalog_test.gd

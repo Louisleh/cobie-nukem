@@ -11,6 +11,13 @@ const RAIN_CITY_TOWMASTER_ACTOR_POSITION := Vector3(0.0, 0.0, -151.0)
 const RAIN_CITY_TOWMASTER_PHASE_INDEX := 3
 const RAIN_CITY_TOWMASTER_VIEW_ATTACK_ID := &"tow_sweep"
 const RAIN_CITY_TOWMASTER_VIEW_BARRAGE_ID := &"citation_barrage"
+const RAIN_CITY_ROUTE_STAGES := {
+	"rain_city_downtown": [Vector3(2.0, 1.1, 5.0), Vector3(6.0, 1.8, -12.0), &"downtown_alley", "DOWNTOWN SERVICE ALLEY", "REACH THE WATERFRONT SEAWALL"],
+	"rain_city_slice": [Vector3(2.5, 1.1, -37.0), Vector3(-4.3, 3.35, -37.0), &"ruse_block", "RAIN CITY SLICE", "REACH THE WATERFRONT SEAWALL"],
+	"waterfront_seawall": [Vector3(0.0, 1.1, -73.0), Vector3(0.0, 1.8, -92.0), &"waterfront_seawall", "WATERFRONT SEAWALL", "OVERRIDE THE TERMINAL LOCKDOWN"],
+	"rain_city_terminal": [Vector3(0.0, 1.1, -104.0), Vector3(0.0, 1.8, -123.0), &"terminal_service", "TERMINAL SERVICE", "OVERRIDE THE TERMINAL LOCKDOWN"],
+	"rain_city_harbour": [Vector3(0.0, 1.1, -127.5), Vector3(0.0, 1.8, -151.0), &"harbour_pier", "HARBOUR PIER", "STOP THE CITATION CONVOY"],
+}
 const PRODUCTION_CITATION_CONVOY_SCENE: PackedScene = preload("res://scenes/set_pieces/citation_convoy.tscn")
 
 
@@ -62,6 +69,8 @@ func _process(_delta: float) -> void:
 		get_tree().paused = false
 	_suppress_focus_pause()
 	_stage_target_when_ready()
+	if _staged and is_instance_valid(_target) and RAIN_CITY_ROUTE_STAGES.has(_staging_id):
+		_clear_non_player_actors()
 	if _frame == _cleanup_frame and is_instance_valid(_target):
 		_stop_target_audio()
 		_target.queue_free()
@@ -93,29 +102,51 @@ func _stage_target_when_ready() -> void:
 	var player := _target.get("player") as Node3D
 	if player == null:
 		return
-	match _staging_id:
-		"waterfront_seawall":
-			_stage_waterfront_seawall(player)
-		"rain_city_towmaster":
-			if _stage_rain_city_towmaster(player):
-				_staged = true
-			else:
-				get_tree().quit(1)
-		_:
-			pass
+	if RAIN_CITY_ROUTE_STAGES.has(_staging_id):
+		_stage_rain_city_route(player, RAIN_CITY_ROUTE_STAGES[_staging_id])
+	elif _staging_id == "rain_city_towmaster":
+		if _stage_rain_city_towmaster(player):
+			_staged = true
+		else:
+			get_tree().quit(1)
 
 
-func _stage_waterfront_seawall(player: Node3D) -> void:
-	player.global_position = Vector3(0.0, 1.1, -73.0)
+func _stage_rain_city_route(player: Node3D, stage: Array) -> void:
+	_target.set_process(false)
+	_target.set_physics_process(false)
+	player.global_position = stage[0]
 	player.set("velocity", Vector3.ZERO)
-	player.rotation = Vector3.ZERO
+	if player is CollisionObject3D:
+		(player as CollisionObject3D).collision_layer = 0
+		(player as CollisionObject3D).collision_mask = 0
+	player.set_process(false)
+	player.set_physics_process(false)
+	player.look_at(stage[1], Vector3.UP)
 	var head := player.get_node_or_null("Head") as Node3D
 	if head != null:
 		head.rotation = Vector3.ZERO
 	player.reset_physics_interpolation()
-	if _target.has_method("_submit_route_position"):
-		_target.call("_submit_route_position", player.global_position)
+	var presentations := _target.find_children("*", "MissionPresentation", true, false)
+	if not presentations.is_empty():
+		(presentations[0] as MissionPresentation).on_zone_entered(stage[2], stage[3])
+	var hud_nodes := _target.find_children("*", "GameHUD", true, false)
+	if not hud_nodes.is_empty():
+		var hud := hud_nodes[0] as GameHUD
+		hud.clear_captions()
+		hud.show_objective(stage[4])
 	_staged = true
+
+
+func _clear_non_player_actors() -> void:
+	var player := _target.get("player") as Node
+	var actors := _target.get_node_or_null(RAIN_CITY_TOWMASTER_ACTOR_PARENT_PATH)
+	if actors == null:
+		return
+	if actors is Node3D:
+		(actors as Node3D).visible = false
+	for actor: Node in actors.get_children():
+		if actor != player and not actor.is_queued_for_deletion():
+			actor.queue_free()
 
 
 func _stage_rain_city_towmaster(player: Node3D) -> bool:

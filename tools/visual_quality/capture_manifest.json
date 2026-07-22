@@ -209,6 +209,70 @@
       }
     },
     {
+      "id": "rain_city_downtown",
+      "scene_path": "res://scenes/levels/episode_1_vancouver_waterfront.tscn",
+      "staging_id": "rain_city_downtown",
+      "capture_support": "supported",
+      "adapter": "direct_scene_capture",
+      "seed": 2026072210,
+      "frame": 80,
+      "capture": {"quit_after": 90},
+      "filenames": {
+        "1280x720": "rain_city_downtown_1280x720.png",
+        "1680x1050": "rain_city_downtown_1680x1050.png",
+        "1024x768": "rain_city_downtown_1024x768.png",
+        "3440x1440": "rain_city_downtown_3440x1440.png"
+      }
+    },
+    {
+      "id": "rain_city_slice",
+      "scene_path": "res://scenes/levels/episode_1_vancouver_waterfront.tscn",
+      "staging_id": "rain_city_slice",
+      "capture_support": "supported",
+      "adapter": "direct_scene_capture",
+      "seed": 2026072211,
+      "frame": 80,
+      "capture": {"quit_after": 90},
+      "filenames": {
+        "1280x720": "rain_city_slice_1280x720.png",
+        "1680x1050": "rain_city_slice_1680x1050.png",
+        "1024x768": "rain_city_slice_1024x768.png",
+        "3440x1440": "rain_city_slice_3440x1440.png"
+      }
+    },
+    {
+      "id": "rain_city_terminal",
+      "scene_path": "res://scenes/levels/episode_1_vancouver_waterfront.tscn",
+      "staging_id": "rain_city_terminal",
+      "capture_support": "supported",
+      "adapter": "direct_scene_capture",
+      "seed": 2026072212,
+      "frame": 80,
+      "capture": {"quit_after": 90},
+      "filenames": {
+        "1280x720": "rain_city_terminal_1280x720.png",
+        "1680x1050": "rain_city_terminal_1680x1050.png",
+        "1024x768": "rain_city_terminal_1024x768.png",
+        "3440x1440": "rain_city_terminal_3440x1440.png"
+      }
+    },
+    {
+      "id": "rain_city_harbour",
+      "scene_path": "res://scenes/levels/episode_1_vancouver_waterfront.tscn",
+      "staging_id": "rain_city_harbour",
+      "capture_support": "supported",
+      "adapter": "direct_scene_capture",
+      "seed": 2026072213,
+      "frame": 80,
+      "capture": {"quit_after": 90},
+      "filenames": {
+        "1280x720": "rain_city_harbour_1280x720.png",
+        "1680x1050": "rain_city_harbour_1680x1050.png",
+        "1024x768": "rain_city_harbour_1024x768.png",
+        "3440x1440": "rain_city_harbour_3440x1440.png"
+      }
+    },
+    {
       "id": "vancouver_waterfront",
       "scene_path": "res://scenes/levels/episode_1_vancouver_waterfront.tscn",
       "staging_id": "waterfront_seawall",

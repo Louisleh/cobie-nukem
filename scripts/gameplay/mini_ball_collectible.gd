@@ -46,6 +46,5 @@ func _build_visual() -> void:
 func _on_body_entered(body: Node) -> void:
 	if _claimed or body is not CobiePlayer: return
 	_claimed = true
-	monitoring = false
 	collected.emit(collectible_id)
 	queue_free()

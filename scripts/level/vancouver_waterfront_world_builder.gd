@@ -148,7 +148,7 @@ func _build_landmarks() -> void:
 		_prop_box("DowntownTower", Vector3(-7.8, 4.0, z), Vector3(4.5, 8.0, 5.0), Color("263b46"), true)
 		_prop_box("DowntownTower", Vector3(7.8, 3.0, z - 3.0), Vector3(4.5, 6.0, 5.0), Color("314753"), true)
 	_prop_box("RainCitySliceShop", Vector3(-8.5, 2.0, -37.0), Vector3(6.0, 4.0, 14.0), Color("7c3f38"), true)
-	_sign(&"slice_storefront", "RAIN CITY SLICE\nHOT PIZZA • COLD COMPLIANCE", Vector3(-5.35, 2.6, -33.0), Vector3(0.0, 1.5, -33.0), Color("ffc65a"))
+	_sign(&"slice_storefront", "RAIN CITY SLICE\nHOT PIZZA • COLD COMPLIANCE", Vector3(-4.3, 3.35, -37.0), Vector3(0.0, 1.5, -37.0), Color("ffc65a"))
 	_sign(&"slice_patio_notice", "SORRY — PATIO CLOSED\nDUE TO EXCESSIVE JOY", Vector3(5.8, 1.4, -43.0), Vector3(0.0, 1.4, -43.0), Color("e5f0df"))
 	# Harbour, bridge, mountain, ferry, and crane silhouettes are deliberately fictionalized.
 	_prop_box("HarbourWater", Vector3(27.0, -0.72, -103.0), Vector3(16.0, 0.25, 120.0), Color("174755"), false, true)

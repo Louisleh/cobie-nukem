@@ -13,6 +13,10 @@ const CANONICAL_VIEWS := [
 	"salmon_tunnel",
 	"salmon_walker_arena",
 	"salmon_walker_defeat",
+	"rain_city_downtown",
+	"rain_city_slice",
+	"rain_city_terminal",
+	"rain_city_harbour",
 	"vancouver_waterfront",
 	"mount_hood_foundry",
 	"moon_landing_pad",
@@ -20,7 +24,13 @@ const CANONICAL_VIEWS := [
 	"rain_city_towmaster",
 	"touch_hud_4_3",
 ]
-const CANONICAL_COUNT := 16
+const CANONICAL_COUNT := 20
+const RAIN_CITY_ROUTE_VIEWS := {
+	"rain_city_downtown": 2026072210,
+	"rain_city_slice": 2026072211,
+	"rain_city_terminal": 2026072212,
+	"rain_city_harbour": 2026072213,
+}
 
 var failures: Array[String] = []
 var safe_filename_pattern: RegEx = RegEx.new()
@@ -158,6 +168,13 @@ func _validate_views(manifest: Dictionary) -> void:
 				failures.append("rain_city_towmaster must use its direct staging adapter")
 			if int(seed) != 2026072107 or int(frame) != 80:
 				failures.append("rain_city_towmaster seed/frame contract drifted")
+		if RAIN_CITY_ROUTE_VIEWS.has(view_id):
+			if scene_path != "res://scenes/levels/episode_1_vancouver_waterfront.tscn":
+				failures.append("%s must use the production Rain City scene" % view_id)
+			if staging_id != view_id or adapter != "direct_scene_capture":
+				failures.append("%s must use its direct route staging adapter" % view_id)
+			if int(seed) != int(RAIN_CITY_ROUTE_VIEWS[view_id]) or int(frame) != 80:
+				failures.append("%s seed/frame contract drifted" % view_id)
 		if not (support == "supported" or support == "unsupported"):
 			failures.append("Invalid capture_support for view %s: %s" % [view_id, support])
 		elif safe_support_states.has(support) == false:

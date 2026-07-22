@@ -134,6 +134,7 @@ func _test_world_builder_navigation_contract() -> void:
 	_expect(connector_count == 4, "Rain City keeps four non-coplanar route connectors")
 	var signs := owner.get_tree().get_nodes_in_group(&"authored_world_signs")
 	var sign_ids: Dictionary = {}
+	var slice_storefront_sign: AuthoredWorldSign
 	_expect(signs.size() == 12, "Rain City registers all twelve authored route signs")
 	for raw_sign in signs:
 		var sign := raw_sign as AuthoredWorldSign
@@ -141,8 +142,17 @@ func _test_world_builder_navigation_contract() -> void:
 		if sign == null: continue
 		_expect(not sign_ids.has(sign.placement_id), "Rain City sign id %s is unique" % sign.placement_id)
 		sign_ids[sign.placement_id] = true
+		if sign.placement_id == &"slice_storefront":
+			slice_storefront_sign = sign
 		for error in sign.validate_authored():
 			failures.append("Rain City sign: " + error)
+	var slice_awnings := owner.find_children("SliceAwning", "StaticBody3D", true, false)
+	_expect(slice_storefront_sign != null and slice_awnings.size() == 1, "Rain City Slice exposes one storefront sign and awning")
+	if slice_storefront_sign != null and slice_awnings.size() == 1:
+		var slice_awning := slice_awnings[0] as StaticBody3D
+		var awning_mesh := slice_awning.get_child(0) as MeshInstance3D
+		var awning_box := awning_mesh.mesh as BoxMesh if awning_mesh != null else null
+		_expect(awning_box != null and slice_storefront_sign.global_position.x >= slice_awning.global_position.x + awning_box.size.x * 0.5 + slice_storefront_sign.minimum_wall_clearance and is_equal_approx(slice_storefront_sign.global_position.z, slice_awning.global_position.z), "Rain City Slice hero sign is centered on and clears the awning face instead of depth-clipping into it")
 	var bake_finished := await _wait_for_navigation_bake(builder)
 	_expect(bake_finished, "Vancouver navigation bake completes within the bounded timeout")
 	var post_bake_status := builder.navigation_bake_status()
