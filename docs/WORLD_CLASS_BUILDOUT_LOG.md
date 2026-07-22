@@ -7,9 +7,9 @@ This is the durable continuation ledger for the Cobie Nukem 3/6/9 quality progra
 - **Program branch:** `hermes/world-class-369-buildout`
 - **Baseline source:** `4dbbe2e8571efec290ed863415a78f09bc970ca9`
 - **Public baseline declared by roadmap:** `0.11.0-alpha.1-rc1`, gameplay/runtime `3c2de29`
-- **Current packet:** WCB-006 — authored encounter choreography
-- **Last verified packet:** WCB-005 focused route/state/navigation/catalog matrix, reconstructed multi-aspect comparison, and packaged Web/macOS validation pass
-- **Next dependency-safe packet:** WCB-006 only — encounter-owned Rain City resources/tests
+- **Current packet:** WCB-007 — Municipal Towmaster production boss
+- **Last verified packet:** WCB-006 schema/content/runtime/reset/navigation matrix and packaged Web/macOS validation pass
+- **Next dependency-safe packet:** WCB-007 only — boss-owned Towmaster resources/scripts/tests plus the bounded presentation seam declared in the implementation plan
 - **Toolchain state:** Godot 4.7.1 and matching export templates are installed; automated import, tests, and export validation pass. Optional Blender/MCP production-art tooling remains unavailable and is recorded below.
 - **Human-only gates:** target-Mac feel/playthrough, physical iPad, flight stick, art taste, pacing, mix, fairness, humor, motion comfort, photosensitivity
 
@@ -23,9 +23,9 @@ This is the durable continuation ledger for the Cobie Nukem 3/6/9 quality progra
 | WCB-003 Checkpoint invariants | COMPLETE | Save/mission runtime | `23a657d`, `f8a78e5` | Real controller order + boss write policy + progression + packaged exports pass | Manual continues remain open |
 | WCB-004 Settings/allocation | COMPLETE | UI + combat | `5ce5501`, `5b8ad45`, `502535a`, `f8a78e5` | Runtime reset, shared effects, reuse contamination, performance + packaged exports pass | Headless timing is not rendered GPU evidence |
 | WCB-005 Rain City spatial slice | COMPLETE | Level | `8a5a807` | Route/state/navigation/catalog/core + multi-aspect comparison + packaged exports pass | Human pacing, meaningfulness, and landmark readability remain open |
-| WCB-006 Encounters | IN PROGRESS | Enemy/encounter + bounded integration transfer | — | Cards/schema audits complete; implementation verification pending | Human pacing/fairness open |
-| WCB-007 Towmaster | BLOCKED by WCB-006 | Boss/presentation | — | — | Human spectacle/fairness open |
-| WCB-008 Art/audio identity | BLOCKED by WCB-006/007 | Visual Foundry/audio | — | — | Human art/mix/humor open |
+| WCB-006 Encounters | COMPLETE | Enemy/encounter + bounded integration transfer | `e61b73c` | Schema-v3 content/runtime/reset/navigation + 100-cycle soak + packaged exports pass | Human pacing/fairness open |
+| WCB-007 Towmaster | READY | Boss/presentation | — | — | Human spectacle/fairness open |
+| WCB-008 Art/audio identity | BLOCKED by WCB-007 | Visual Foundry/audio | — | — | Human art/mix/humor open |
 | WCB-009 RC evidence/selection | BLOCKED by WCB-005–008 | Integration/release | — | — | Human/device gates required |
 | WCB-010 Second-mission replication | BLOCKED by WCB-009 | Assigned after selection | — | — | Mission-specific human gates required |
 | WCB-011 Release identity/roadmap | BLOCKED by WCB-010 | Integration/release | — | — | Publish only an honest candidate |
@@ -206,13 +206,16 @@ Copy this section for every packet before marking it complete.
 ## 2026-07-21 — WCB-006 Rain City encounter choreography
 
 - Source commit: `0d8a0b0321bd6aa5af8c10611c0933813ecbec12`.
-- Owner / writers: GPT-5.6 architecture, encounter cards, review, integration, and evidence; four explicitly pinned GPT-5.3-Codex-Spark read-only audits; one isolated Spark schema writer under root review.
+- Owner / writers: GPT-5.6 architecture, encounter cards, review, correction, integration, and evidence; four explicitly pinned GPT-5.3-Codex-Spark read-only audits; one isolated schema writer; two non-overlapping encounter-content writers; two final read-only Spark reviewers.
 - Acceptance condition: each of the four pre-boss fights declares and runs at least three existing roles, two approach directions, a recovery lane, one environment-dependent choice, and an authored reveal/ambush/reposition/reinforcement transition; the existing six-role, 26-enemy mission budget, attacker caps, navigation recovery, checkpoint semantics, optional-secret reduction, and four-wave external harbour boundary remain deterministic through 100 complete pre-boss route/reset cycles.
 - Owned paths: Vancouver encounter resources, new Rain City choreography-profile resources, focused encounter tests, `docs/design/rain-city-encounters.md`, and encounter contract/ledger files. Integration temporarily owns the additive shared seam in `scripts/gameplay/encounter_choreography_profile.gd`, `encounter_definition.gd`, and `encounter_runner.gd`, plus the exact-ID secret-reduction seam in `scripts/level/rain_city_secret_policy.gd`. No `scripts/ai/`, boss, presentation, route-geometry, project, export, or release ownership is transferred.
-- Current evidence: Spark setup → `SPARK SETUP: PASS (6 profiles pinned to gpt-5.3-codex-spark)` using Python 3.11; Godot editor import → exit `0`; `game_dev_health.sh` still reports only the four recorded optional Blender/MCP failures and confirms no live source bridge. Four bounded audits completed; root rejected a role-count overstatement and synthetic all-external soak design, retained the conservative external-wave checkpoint policy for WCB-007, and froze harbour composition/order.
+- Files changed: typed choreography profile/schema/runner metadata; five Rain City choreography resources and five schema-v3 encounter definitions; exact-ID terminal-secret reduction and tests; 100-cycle production-resource soak; route-foundation schema assertion; encounter cards, design index/contract, implementation plan, and this ledger. Enemy AI, boss behavior, presentation, route geometry, project/export configuration, and release ownership were unchanged.
+- Commands and exact results: Godot editor import → exit `0`; choreography profile unit → `ENCOUNTER CHOREOGRAPHY PROFILE TEST: PASS`; production-resource soak → `RAIN CITY ENCOUNTER CHOREOGRAPHY TEST: PASS (5 profiles, 6 roles, 26 actors, 100 pre-boss route/reset cycles)`; content contract → `VANCOUVER CONTENT CONTRACT TEST: PASS`; exact-ID secret policy → exit `0` and `RAIN CITY SECRET POLICY TEST: PASS` with intentional error logs for malformed negative fixtures; external wave → `EXTERNAL WAVE ENCOUNTER TEST: PASS`; moving-set-piece coordinator → `MOVING SET PIECE ENCOUNTER COORDINATOR TEST: PASS`; mission runtime → `MISSION RUNTIME CONTRACT TEST: PASS`; route foundation → `Vancouver route foundation test PASS`; mission host → `VANCOUVER MISSION HOST TEST: PASS`; route production → `VANCOUVER ROUTE PRODUCTION TEST: PASS`; checkpoint state → `RAIN CITY CHECKPOINT STATE TEST: PASS`; production navigation → PASS with 112 polygons, 41-point cross-zone path, and all three bounded recovery reasons; enemy contracts → PASS; core → `PASS: core contract checks`; docs → `WORLD-CLASS DOCS: PASS`; `QA_EXPORTS=1 bash tools/release_validate.sh` → exit `0`, `Automated release validation passed` after the full scripted matrix, scans, performance smoke, Web export, and macOS ZIP export.
+- Evidence and class: automated schema/resource, functional runtime, reset/timer, route-graph, navigation-recovery, soak, performance-smoke, content/IP/architecture, and packaged export evidence. Headless timing is not rendered GPU evidence; no manual playthrough or device approval is claimed.
+- Review findings: root corrected four role/approach labels, replaced positional `pop_back()` secret behavior with exact-ID fail-closed reduction, reconciled reduced-profile roles/approaches without mutating source resources, and updated the stale route schema-v2 assertion. The final content reviewer reported `NO BLOCKERS`. The final schema reviewer raised two pre-existing checkpoint temporal-continuity findings that remain intentionally owned by WCB-007's phase serialization policy; root accepted and closed its two additive findings by rejecting unsupported schema versions and propagating authored counterplay metadata to actors. Its low malformed-runtime-spawn and isolated-fixture concerns are covered by definition validation plus real-resource tests and did not require runtime hot-reload scope.
 - Human-only/open claims: pacing, fairness, practical recovery-lane usability, role readability under final presentation, environment-choice meaningfulness, 15–22 minute route timing, and physical-device feel remain open.
-- Integrated commit: pending.
-- Next dependency-safe packet: finish WCB-006 schema/content/tests and evidence before WCB-007.
+- Integrated commits: `e680bc5`, `e9c5257`, `baffeb2`, `f7fa600`, `44242d1`, `15b5870`, and `e61b73c`, pushed to `origin/hermes/world-class-369-buildout`.
+- Next dependency-safe packet: WCB-007 Municipal Towmaster production boss only.
 
 ## Resume protocol
 
