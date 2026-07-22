@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="EncounterChoreographyProfile" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/gameplay/encounter_choreography_profile.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = &"vancouver_ruse_block_profile"
+intent = "establish storefront crossfire, then reveal a delayed patio reinforcement after the opening trio clears."
+role_ids = Array[StringName]([&"skirmisher", &"aerial_harrier", &"shield_anchor"])
+approach_ids = Array[StringName]([&"storefront_left", &"plaza_right", &"patio_rear"])
+recovery_position = Vector3(0, 0, -38)
+environment_choice_ids = Array[StringName]([&"slice_plaza_flank"])
+wave_transition_ids = Array[StringName]([&"storefront_watch_reveal", &"patio_reinforcement"])
+counterplay_ids = Array[StringName]([&"wide_shield_flank", &"break_upper_angle", &"protect_recovery_lane"])

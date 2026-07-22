@@ -1,17 +1,20 @@
-[gd_resource type="Resource" script_class="EncounterDefinition" load_steps=2 format=3]
+[gd_resource type="Resource" script_class="EncounterDefinition" load_steps=3 format=3]
 [ext_resource type="Script" path="res://scripts/gameplay/encounter_definition.gd" id="1"]
+[ext_resource type="Resource" path="res://resources/encounters/choreography/vancouver_downtown_alley_profile.tres" id="2"]
+
 [resource]
 script = ExtResource("1")
 id = &"vancouver_alley_patrol"
 zone_id = &"downtown_alley"
 display_name = "ALLEY PATROL"
-schema_version = 2
+schema_version = 3
+choreography_profile = ExtResource("2")
 spawns = []
 waves = Array[Dictionary]([{
 "spawns": [
-	{"scene":"res://scenes/enemies/squirrel_trooper.tscn","position":Vector3(-3,0,-6)},
-	{"scene":"res://scenes/enemies/squirrel_trooper.tscn","position":Vector3(3,0,-9)},
-	{"scene":"res://scenes/enemies/leash_enforcement_drone.tscn","position":Vector3(6,2,-15)}
+	{"scene":"res://scenes/enemies/squirrel_trooper.tscn","position":Vector3(-4,0,-4),"role_id":"skirmisher","approach_id":"alley_left"},
+	{"scene":"res://scenes/enemies/compliance_hound.tscn","position":Vector3(4,0,-12),"role_id":"melee_pursuer","approach_id":"alley_right"},
+	{"scene":"res://scenes/enemies/leash_enforcement_drone.tscn","position":Vector3(6,2,-15),"role_id":"aerial_harrier","approach_id":"alley_overhead"}
 ]}])
 enemy_budget = 3
 maximum_simultaneous_attackers = 4

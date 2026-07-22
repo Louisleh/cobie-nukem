@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="EncounterChoreographyProfile" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/gameplay/encounter_choreography_profile.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = &"vancouver_terminal_service_profile"
+intent = "lock the cargo floor with melee/shield/skirmisher pressure, then reposition aerial actors around the control loop."
+role_ids = Array[StringName]([&"melee_pursuer", &"shield_anchor", &"skirmisher", &"dive_support", &"aerial_harrier"])
+approach_ids = Array[StringName]([&"cargo_left", &"cargo_right", &"control_upper"])
+recovery_position = Vector3(-9, 0, -104)
+environment_choice_ids = Array[StringName]([&"terminal_control"])
+wave_transition_ids = Array[StringName]([&"cargo_lockdown_ambush", &"control_booth_reposition"])
+counterplay_ids = Array[StringName]([&"split_hound_from_shield", &"break_gull_mark", &"contest_upper_pair"])

@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="EncounterChoreographyProfile" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/gameplay/encounter_choreography_profile.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = &"vancouver_waterfront_seawall_profile"
+intent = "warn with elevated Gull pressure, anchor the lower promenade, then reinforce from opposite seawall ends."
+role_ids = Array[StringName]([&"dive_support", &"shield_anchor", &"skirmisher", &"aerial_harrier"])
+approach_ids = Array[StringName]([&"harbour_side", &"city_side", &"overlook"])
+recovery_position = Vector3(0, 0, -78)
+environment_choice_ids = Array[StringName]([&"seawall_overlook"])
+wave_transition_ids = Array[StringName]([&"searchlight_warning", &"overlook_reinforcement"])
+counterplay_ids = Array[StringName]([&"break_searchlight", &"flank_via_stairs", &"avoid_delayed_pinch"])

@@ -1,22 +1,25 @@
-[gd_resource type="Resource" script_class="EncounterDefinition" load_steps=2 format=3]
+[gd_resource type="Resource" script_class="EncounterDefinition" load_steps=3 format=3]
 [ext_resource type="Script" path="res://scripts/gameplay/encounter_definition.gd" id="1"]
+[ext_resource type="Resource" path="res://resources/encounters/choreography/vancouver_terminal_service_profile.tres" id="2"]
+
 [resource]
 script = ExtResource("1")
 id = &"vancouver_terminal_lockdown"
 zone_id = &"terminal_service"
 display_name = "TERMINAL LOCKDOWN"
-schema_version = 2
+schema_version = 3
+choreography_profile = ExtResource("2")
 spawns = []
 waves = Array[Dictionary]([{
 "spawns": [
-	{"scene":"res://scenes/enemies/compliance_hound.tscn","position":Vector3(-2,0,-96)},
-	{"scene":"res://scenes/enemies/umbrella_shield_enforcer.tscn","position":Vector3(2,0,-102)},
-	{"scene":"res://scenes/enemies/squirrel_trooper.tscn","position":Vector3(7,0,-108)}
+	{"scene":"res://scenes/enemies/compliance_hound.tscn","position":Vector3(-2,0,-96),"role_id":"melee_pursuer","approach_id":"cargo_left"},
+	{"scene":"res://scenes/enemies/umbrella_shield_enforcer.tscn","position":Vector3(2,0,-102),"role_id":"shield_anchor","approach_id":"cargo_right"},
+	{"scene":"res://scenes/enemies/squirrel_trooper.tscn","position":Vector3(7,0,-108),"role_id":"skirmisher","approach_id":"control_upper"}
 ]}, {
 "delay_seconds": 2.0,
 "spawns": [
-	{"scene":"res://scenes/enemies/compliance_gull.tscn","position":Vector3(-7,4,-116)},
-	{"scene":"res://scenes/enemies/leash_enforcement_drone.tscn","position":Vector3(6,3,-122)}
+	{"scene":"res://scenes/enemies/compliance_gull.tscn","position":Vector3(-7,4,-116),"role_id":"dive_support","approach_id":"control_upper"},
+	{"scene":"res://scenes/enemies/leash_enforcement_drone.tscn","position":Vector3(6,3,-122),"role_id":"aerial_harrier","approach_id":"control_upper"}
 ]}])
 enemy_budget = 5
 maximum_simultaneous_attackers = 4

@@ -1,18 +1,24 @@
-[gd_resource type="Resource" script_class="EncounterDefinition" load_steps=2 format=3]
+[gd_resource type="Resource" script_class="EncounterDefinition" load_steps=3 format=3]
 [ext_resource type="Script" path="res://scripts/gameplay/encounter_definition.gd" id="1"]
+[ext_resource type="Resource" path="res://resources/encounters/choreography/vancouver_ruse_block_profile.tres" id="2"]
+
 [resource]
 script = ExtResource("1")
 id = &"vancouver_ruse_block_watch"
 zone_id = &"ruse_block"
 display_name = "RAIN CITY WATCH"
-schema_version = 2
+schema_version = 3
+choreography_profile = ExtResource("2")
 spawns = []
 waves = Array[Dictionary]([{
 "spawns": [
-	{"scene":"res://scenes/enemies/squirrel_trooper.tscn","position":Vector3(-4,0,-30)},
-	{"scene":"res://scenes/enemies/leash_enforcement_drone.tscn","position":Vector3(4,2,-34)},
-	{"scene":"res://scenes/enemies/squirrel_trooper.tscn","position":Vector3(7,0,-41)},
-	{"scene":"res://scenes/enemies/umbrella_shield_enforcer.tscn","position":Vector3(-2,0,-45)}
+	{"scene":"res://scenes/enemies/squirrel_trooper.tscn","position":Vector3(-7,0,-34),"role_id":"skirmisher","approach_id":"storefront_left"},
+	{"scene":"res://scenes/enemies/leash_enforcement_drone.tscn","position":Vector3(0,2.8,-40),"role_id":"aerial_harrier","approach_id":"patio_rear"},
+	{"scene":"res://scenes/enemies/umbrella_shield_enforcer.tscn","position":Vector3(5,0,-45),"role_id":"shield_anchor","approach_id":"plaza_right"}
+]}, {
+"delay_seconds": 1.2,
+"spawns": [
+	{"scene":"res://scenes/enemies/squirrel_trooper.tscn","position":Vector3(7,0,-46),"role_id":"skirmisher","approach_id":"patio_rear"}
 ]}])
 enemy_budget = 4
 maximum_simultaneous_attackers = 4

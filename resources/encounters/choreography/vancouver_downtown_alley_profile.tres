@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="EncounterChoreographyProfile" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/gameplay/encounter_choreography_profile.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = &"vancouver_downtown_alley_profile"
+intent = "reveal pressure from both street edges while preserving the opening-center retreat."
+role_ids = Array[StringName]([&"skirmisher", &"melee_pursuer", &"aerial_harrier"])
+approach_ids = Array[StringName]([&"alley_left", &"alley_right", &"alley_overhead"])
+recovery_position = Vector3(0, 0, 2)
+environment_choice_ids = Array[StringName]([&"dumpster_chokepoint"])
+wave_transition_ids = Array[StringName]([&"crossing_reveal"])
+counterplay_ids = Array[StringName]([&"remove_air_angle", &"kite_center", &"isolate_skirmisher"])
