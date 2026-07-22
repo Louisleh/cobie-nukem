@@ -79,6 +79,27 @@ def cylinder_between(target, name, start, end, radius, mat, vertices=10):
     return obj
 
 
+def ridgeline(target, name, z, depth, profile, mat):
+    """Build one opaque, lightly extruded mountain profile in Godot space."""
+    front_z = z + depth * 0.5
+    back_z = z - depth * 0.5
+    outline = [(profile[0][0], 0.0), (profile[-1][0], 0.0), *reversed(profile)]
+    front = [gp(x, y, front_z) for x, y in outline]
+    back = [gp(x, y, back_z) for x, y in outline]
+    edge_count = len(outline)
+    faces = [tuple(range(edge_count)), tuple(reversed(range(edge_count, edge_count * 2)))]
+    for index in range(edge_count):
+        following = (index + 1) % edge_count
+        faces.append((index, following, following + edge_count, index + edge_count))
+    mesh = bpy.data.meshes.new(f"{name}Mesh")
+    mesh.from_pydata(front + back, [], faces)
+    mesh.materials.append(mat)
+    mesh.update()
+    obj = bpy.data.objects.new(name, mesh)
+    target.objects.link(obj)
+    return obj
+
+
 def facade(target, name, pos, size, wall, glass, warm, floors=4, columns=4):
     box(target, f"{name}_Mass", pos, size, wall, 0.10)
     front_x = pos[0] + (size[0] * 0.5 + 0.03 if pos[0] < 0 else -(size[0] * 0.5 + 0.03))
@@ -155,14 +176,54 @@ def build_pier(target, m):
         bpy.context.object.data.materials.append(m["yellow"])
     box(target, "DepartureControlShell", (0.0, 1.7, -174.0), (3.5, 3.4, 1.6), m["charcoal"], 0.16)
     box(target, "DepartureControlScreen", (0.0, 1.9, -173.16), (2.2, 1.2, 0.08), m["cyan"], 0.03)
-    # Layered original skyline silhouettes make the finale feel located without
-    # reproducing any real bridge, building, or map geometry.
-    for index, x in enumerate(range(-24, 25, 6)):
-        height = 5.0 + (index % 4) * 2.0
-        box(target, f"SkylineTower{index}", (x, height * 0.5, -205.0 - (index % 3) * 3.0), (4.0, height, 3.0), m["skyline"], 0.08)
-    for index, x in enumerate((-18.0, -8.0, 3.0, 15.0)):
-        bpy.ops.mesh.primitive_cone_add(vertices=7, radius1=8.0, radius2=0.0, depth=8.0 + index, location=gp(x, 4.0 + index * 0.5, -224.0))
-        bpy.context.object.data.materials.append(m["mountain"])
+
+
+def build_harbour_backdrop(target, m):
+    """Author a broad original harbour skyline and north-shore silhouette."""
+    # The old shallow strip disappeared into the sky gradient from the seawall.
+    # This low-poly layer stays presentation-only and reuses existing batches.
+    skyline = (
+        (-54.0, 18.0, 6.0, -218.0),
+        (-44.0, 27.0, 5.0, -214.0),
+        (-34.0, 21.0, 7.0, -220.0),
+        (-23.0, 34.0, 5.0, -211.0),
+        (-12.0, 24.0, 7.0, -216.0),
+        (0.0, 31.0, 6.0, -212.0),
+        (12.0, 20.0, 6.0, -219.0),
+        (23.0, 29.0, 6.0, -214.0),
+        (35.0, 19.0, 8.0, -220.0),
+        (47.0, 26.0, 6.0, -215.0),
+        (56.0, 16.0, 6.0, -219.0),
+    )
+    for index, (x, height, width, z) in enumerate(skyline):
+        box(target, f"SkylineTower{index}", (x, height * 0.5, z), (width, height, 3.5), m["skyline"], 0.08)
+        for floor in range(2, int(height), 5):
+            light = m["warm"] if (index + floor) % 3 == 0 else m["cyan"]
+            box(target, f"SkylineLight{index}_{floor}", (x, float(floor), z + 1.8), (width * 0.46, 0.34, 0.08), light, 0.01)
+
+    # A fictional rain-line beacon gives the waterfront one readable vertical
+    # punctuation mark without reproducing a real building or city logo.
+    cylinder_between(target, "RainlineBeaconMast", (-23.0, 0.0, -208.0), (-23.0, 43.0, -208.0), 0.48, m["skyline"], 10)
+    cylinder_between(target, "RainlineBeaconLight", (-23.0, 31.0, -208.0), (-23.0, 40.5, -208.0), 0.78, m["cyan"], 10)
+    bpy.ops.mesh.primitive_cone_add(vertices=8, radius1=2.4, radius2=0.35, depth=4.5, location=gp(-23.0, 45.25, -208.0))
+    bpy.context.object.name = "RainlineBeaconCrown"
+    bpy.context.object.data.materials.append(m["yellow"])
+
+    far_ridge = (
+        (-170.0, 0.0), (-150.0, 24.0), (-132.0, 38.0), (-112.0, 29.0),
+        (-94.0, 54.0), (-76.0, 42.0), (-58.0, 69.0), (-37.0, 47.0),
+        (-16.0, 62.0), (4.0, 43.0), (24.0, 76.0), (45.0, 55.0),
+        (66.0, 70.0), (88.0, 39.0), (108.0, 57.0), (132.0, 31.0),
+        (154.0, 20.0), (174.0, 0.0),
+    )
+    near_ridge = (
+        (-150.0, 0.0), (-128.0, 18.0), (-108.0, 35.0), (-88.0, 23.0),
+        (-66.0, 46.0), (-42.0, 31.0), (-20.0, 49.0), (2.0, 28.0),
+        (24.0, 51.0), (48.0, 34.0), (72.0, 45.0), (96.0, 26.0),
+        (122.0, 38.0), (150.0, 0.0),
+    )
+    ridgeline(target, "NorthShoreFarSilhouette", -278.0, 16.0, far_ridge, m["mountain"])
+    ridgeline(target, "NorthShoreNearSilhouette", -248.0, 12.0, near_ridge, m["mountain"])
 
 
 def consolidate_by_material(target: bpy.types.Collection) -> int:
@@ -208,6 +269,7 @@ def main() -> None:
     build_seawall(target, mats)
     build_terminal(target, mats)
     build_pier(target, mats)
+    build_harbour_backdrop(target, mats)
     source_parts = len([obj for obj in target.objects if obj.type == "MESH"])
     batches = consolidate_by_material(target)
     bpy.context.scene["cobie_asset_id"] = "rain_city_run_foundry"

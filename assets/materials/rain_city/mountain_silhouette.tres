@@ -1,0 +1,8 @@
+[gd_resource type="StandardMaterial3D" format=3]
+
+[resource]
+resource_name = "rain_city_mountain_silhouette"
+albedo_color = Color(0.075, 0.13, 0.16, 1)
+metallic = 0.0
+roughness = 1.0
+texture_filter = 1

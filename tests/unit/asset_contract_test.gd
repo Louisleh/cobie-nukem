@@ -138,6 +138,20 @@ func _test_rain_city_runtime_materials() -> void:
 			if override != null and override.albedo_texture != null and override.normal_texture != null:
 				textured_surfaces += 1
 	_expect(textured_surfaces >= 7, "Rain City presentation applies manifested albedo/normal material families at runtime")
+	var mountain_batch := instance.find_child("*RC_Mountain*", true, false) as MeshInstance3D
+	var skyline_batch := instance.find_child("*RC_Skyline*", true, false) as MeshInstance3D
+	_expect(mountain_batch != null, "Rain City foundry retains its authored north-shore silhouette batch")
+	_expect(skyline_batch != null, "Rain City foundry retains its authored harbour skyline batch")
+	if mountain_batch != null:
+		var mountain_bounds := mountain_batch.get_aabb()
+		_expect(mountain_bounds.size.x >= 300.0 and mountain_bounds.size.y >= 70.0, "Rain City north-shore silhouette spans the waterfront horizon at production scale")
+		var mountain_material := mountain_batch.get_surface_override_material(0) as StandardMaterial3D
+		_expect(mountain_material != null and mountain_material.resource_name == "rain_city_mountain_silhouette", "Rain City mountain backdrop uses its restrained silhouette material")
+	if skyline_batch != null:
+		var skyline_bounds := skyline_batch.get_aabb()
+		_expect(skyline_bounds.size.x >= 100.0 and skyline_bounds.size.y >= 40.0, "Rain City harbour skyline and beacon read above the terminal roofline")
+		var skyline_material := skyline_batch.get_surface_override_material(0) as StandardMaterial3D
+		_expect(skyline_material != null and skyline_material.resource_name == "rain_city_skyline_silhouette", "Rain City skyline uses its dedicated distance-readable material")
 	_expect(instance.find_children("*", "CollisionObject3D", true, false).is_empty(), "Rain City production presentation remains independent from gameplay collision")
 	instance.queue_free()
 	await process_frame

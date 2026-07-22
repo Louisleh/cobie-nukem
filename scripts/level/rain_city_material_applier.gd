@@ -15,8 +15,8 @@ const MATERIALS := {
 	"RC_ComplianceYellow": preload("res://assets/materials/rain_city/slice_tile.tres"),
 	"RC_Rubber": preload("res://assets/materials/rain_city/wet_wood.tres"),
 	"RC_WayfindingCyan": preload("res://assets/materials/rain_city/glass_panels.tres"),
-	"RC_Skyline": preload("res://assets/materials/rain_city/glass_panels.tres"),
-	"RC_Mountain": preload("res://assets/materials/rain_city/seawall_concrete.tres"),
+	"RC_Skyline": preload("res://assets/materials/rain_city/skyline_silhouette.tres"),
+	"RC_Mountain": preload("res://assets/materials/rain_city/mountain_silhouette.tres"),
 }
 
 
