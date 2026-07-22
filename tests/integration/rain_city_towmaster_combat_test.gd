@@ -152,6 +152,16 @@ func _validate_static_contract() -> void:
 
 	var impound_ring := actor.get_node_or_null("ArenaStates/ImpoundField/ImpoundRing")
 	_expect(impound_ring is MeshInstance3D, "scene exposes impound field mesh")
+	if impound_ring is MeshInstance3D:
+		var impound_material := (impound_ring as MeshInstance3D).mesh.material as StandardMaterial3D
+		_expect(impound_material != null and impound_material.emission_enabled, "impound field uses emissive warning material")
+		_expect(impound_material != null and impound_material.albedo_color.a >= 0.35, "impound field retains readable warning opacity")
+
+	var core_beacon := actor.get_node_or_null("CitationCore/CoreBeacon") as MeshInstance3D
+	_expect(core_beacon != null, "scene exposes final citation-core beacon")
+	if core_beacon != null:
+		var core_material := core_beacon.mesh.material as StandardMaterial3D
+		_expect(core_material != null and core_material.emission_enabled, "citation-core beacon remains emissive")
 
 	var warning_parent := actor.get_node_or_null("WarningLights")
 	var warning_light_count := 0

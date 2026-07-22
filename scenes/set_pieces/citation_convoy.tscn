@@ -16,6 +16,9 @@ emission = Color(0.55, 0.16, 0.01, 1)
 albedo_color = Color(0.82, 0.07, 0.07, 1)
 metallic = 0.45
 roughness = 0.25
+emission_enabled = true
+emission = Color(1, 0.035, 0.015, 1)
+emission_energy_multiplier = 2.4
 
 [sub_resource type="BoxMesh" id="CitationMesh"]
 material = SubResource("CitationMaterial")
@@ -36,7 +39,10 @@ height = 0.58
 [sub_resource type="StandardMaterial3D" id="CitationLaneMaterial"]
 shading_mode = 0
 transparency = 1
-albedo_color = Color(1, 1, 0.65, 0.25)
+albedo_color = Color(1, 0.84, 0.16, 0.34)
+emission_enabled = true
+emission = Color(1, 0.42, 0.03, 1)
+emission_energy_multiplier = 1.35
 
 [sub_resource type="BoxMesh" id="CitationLaneMesh"]
 material = SubResource("CitationLaneMaterial")
@@ -45,7 +51,10 @@ size = Vector3(2.4, 0.03, 16)
 [sub_resource type="StandardMaterial3D" id="ImpoundFieldMaterial"]
 shading_mode = 0
 transparency = 1
-albedo_color = Color(0.9, 0.2, 0.2, 0.2)
+albedo_color = Color(1, 0.08, 0.025, 0.38)
+emission_enabled = true
+emission = Color(1, 0.025, 0.01, 1)
+emission_energy_multiplier = 1.6
 
 [sub_resource type="CylinderMesh" id="ImpoundFieldMesh"]
 material = SubResource("ImpoundFieldMaterial")
@@ -203,6 +212,11 @@ position = Vector3(0, 1.0, -3.2)
 collision_layer = 1
 script = ExtResource("2")
 definition = SubResource("CoreModuleDefinition")
+
+[node name="CoreBeacon" type="MeshInstance3D" parent="CitationCore"]
+rotation = Vector3(1.5708, 0, 0)
+mesh = SubResource("CoreCoreMesh")
+cast_shadow = 0
 
 [node name="ArenaStates" type="Node3D" parent="."]
 
