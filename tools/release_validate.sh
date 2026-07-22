@@ -84,6 +84,7 @@ run_godot_test res://tests/unit/secondary_fire_touch_hud_test.gd
 run_godot_test res://tests/unit/imported_audio_contract_test.gd
 run_godot_test res://tests/unit/mission_audio_director_test.gd
 run_godot_test res://tests/unit/mission_presentation_test.gd
+run_godot_test res://tests/unit/rain_city_audio_event_contract_test.gd
 run_godot_test res://tests/unit/mission_route_runtime_test.gd
 run_godot_test res://tests/unit/mission_spawn_registry_test.gd
 run_godot_test res://tests/unit/moving_set_piece_runtime_test.gd
