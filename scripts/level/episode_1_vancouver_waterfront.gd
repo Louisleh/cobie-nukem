@@ -201,6 +201,8 @@ func _spawn_player() -> void:
 		_apply_active_mission_upgrades(cobie)
 	if _mission_presentation != null:
 		_mission_presentation.set_player(player)
+	if _convoy_presentation != null:
+		_convoy_presentation.set_target(player)
 	if player.has_signal("died"):
 		player.died.connect(_on_player_died)
 	if player.has_signal("restart_requested"):
