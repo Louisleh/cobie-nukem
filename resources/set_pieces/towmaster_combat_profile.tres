@@ -1,0 +1,103 @@
+[gd_resource type="Resource" script_class="TowmasterCombatProfile" load_steps=11 format=3]
+
+[ext_resource type="Script" path="res://scripts/level/towmaster_combat_profile.gd" id="1"]
+[ext_resource type="Script" path="res://scripts/level/towmaster_attack_definition.gd" id="2"]
+[ext_resource type="Script" path="res://scripts/level/towmaster_phase_combat_definition.gd" id="3"]
+
+[sub_resource type="Resource" id="CitationBarrage"]
+script = ExtResource("2")
+schema_version = 1
+id = &"citation_barrage"
+shape = 0
+telegraph_seconds = 0.85
+cooldown_seconds = 2.4
+base_damage = 14.0
+radius = 2.2
+length = 0.0
+width = 0.0
+visual_color = Color(1, 0.478431, 0.121569, 1)
+
+[sub_resource type="Resource" id="TowSweep"]
+script = ExtResource("2")
+schema_version = 1
+id = &"tow_sweep"
+shape = 1
+telegraph_seconds = 1.0
+cooldown_seconds = 3.2
+base_damage = 20.0
+radius = 0.0
+length = 16.0
+width = 2.4
+visual_color = Color(0.941176, 0.690196, 0.188235, 1)
+
+[sub_resource type="Resource" id="ImpoundPulse"]
+script = ExtResource("2")
+schema_version = 1
+id = &"impound_pulse"
+shape = 2
+telegraph_seconds = 1.2
+cooldown_seconds = 4.0
+base_damage = 25.0
+radius = 7.5
+length = 0.0
+width = 0.0
+visual_color = Color(0.945098, 0.294118, 0.294118, 1)
+
+[sub_resource type="Resource" id="AppealFiled"]
+script = ExtResource("3")
+schema_version = 1
+phase_id = &"appeal_filed"
+attack_ids = Array[StringName]([&"citation_barrage"])
+arena_state_id = &"open_dock"
+cooldown_scale = 1.0
+telegraph_scale = 1.0
+damage_scale = 1.0
+warning_color = Color(1, 0.556863, 0.290196, 1)
+warning_energy = 1.0
+
+[sub_resource type="Resource" id="AppealDenied"]
+script = ExtResource("3")
+schema_version = 1
+phase_id = &"appeal_denied"
+attack_ids = Array[StringName]([&"citation_barrage", &"tow_sweep"])
+arena_state_id = &"citation_lanes"
+cooldown_scale = 0.92
+telegraph_scale = 1.0
+damage_scale = 1.05
+warning_color = Color(1, 0.498039, 0.137255, 1)
+warning_energy = 1.2
+
+[sub_resource type="Resource" id="FinalNotice"]
+script = ExtResource("3")
+schema_version = 1
+phase_id = &"final_notice"
+attack_ids = Array[StringName]([&"tow_sweep", &"impound_pulse"])
+arena_state_id = &"impound_field"
+cooldown_scale = 0.82
+telegraph_scale = 0.95
+damage_scale = 1.1
+warning_color = Color(1, 0.364706, 0.117647, 1)
+warning_energy = 1.45
+
+[sub_resource type="Resource" id="CaseClosed"]
+script = ExtResource("3")
+schema_version = 1
+phase_id = &"case_closed"
+attack_ids = Array[StringName]([&"citation_barrage", &"tow_sweep", &"impound_pulse"])
+arena_state_id = &"impound_field"
+cooldown_scale = 0.68
+telegraph_scale = 0.85
+damage_scale = 1.2
+warning_color = Color(1, 0.176471, 0.094118, 1)
+warning_energy = 1.75
+
+[resource]
+script = ExtResource("1")
+schema_version = 1
+id = &"towmaster"
+attacks = Array[TowmasterAttackDefinition]([SubResource("CitationBarrage"), SubResource("TowSweep"), SubResource("ImpoundPulse")])
+phases = Array[TowmasterPhaseCombatDefinition]([SubResource("AppealFiled"), SubResource("AppealDenied"), SubResource("FinalNotice"), SubResource("CaseClosed")])
+max_temp_visuals = 6
+max_defeat_particles = 46
+defeat_duration = 10.2
+defeat_milestones = [{ "id": &"shutdown", "time": 0.0 }, { "id": &"tickets", "time": 2.2 }, { "id": &"tow_arm", "time": 4.8 }, { "id": &"core_discharge", "time": 7.2 }, { "id": &"final_settle", "time": 10.2 }]
