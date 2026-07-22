@@ -18,6 +18,9 @@ const EXPECTED_CHECKPOINT_IDS: Array[StringName] = [
 const MANIFEST := preload("res://resources/content/vancouver_waterfront_manifest.tres") as ContentManifest
 const MISSION_AUDIO_LIBRARY := preload("res://resources/audio/mission_audio_library.tres") as AudioCueLibrary
 const LEVEL_CARD := preload("res://resources/level/rain_city_card.tres") as LevelCardData
+const COMPLIANCE_GULL_SCENE := preload("res://scenes/enemies/compliance_gull.tscn")
+const UMBRELLA_ENFORCER_SCENE := preload("res://scenes/enemies/umbrella_shield_enforcer.tscn")
+const MAX_READABLE_FOG_DENSITY := 0.018
 
 var failures: Array[String] = []
 
@@ -25,8 +28,10 @@ var failures: Array[String] = []
 func _initialize() -> void:
 	_test_public_beta_contract()
 	_test_manifest_and_stable_identity()
+	_test_presentation_readability_contract()
 	_test_route_geometry_contract()
 	_test_encounter_spawn_contract()
+	_test_hero_enemy_identity_contract()
 	_test_audio_reference_contract()
 	_finish()
 
@@ -59,6 +64,17 @@ func _test_manifest_and_stable_identity() -> void:
 	_expect(slice_zone != null, "Stable ruse_block zone id remains resolvable")
 	if slice_zone != null:
 		_expect(slice_zone.zone_title == "RAIN CITY SLICE", "Stable ruse_block id presents fictionalized Rain City Slice copy")
+
+
+func _test_presentation_readability_contract() -> void:
+	if MANIFEST == null:
+		return
+	_expect(MANIFEST.zone_presentations.size() == EXPECTED_ZONE_IDS.size(), "Every Rain City route zone owns one presentation profile")
+	for profile: ZonePresentationProfile in MANIFEST.zone_presentations:
+		_expect(profile != null, "Rain City presentation profile is non-null")
+		if profile == null:
+			continue
+		_expect(profile.fog_density <= MAX_READABLE_FOG_DENSITY, "%s fog remains restrained enough to preserve route and landmark value separation" % profile.zone_id)
 
 
 func _test_route_geometry_contract() -> void:
@@ -120,6 +136,30 @@ func _test_encounter_spawn_contract() -> void:
 		for wave: Dictionary in encounter.effective_waves():
 			authored_total += (wave.get("spawns", []) as Array).size()
 	_expect(authored_total == 26, "Rain City authors the approved 26-enemy mission budget")
+
+
+func _test_hero_enemy_identity_contract() -> void:
+	var mission_scene_paths: Dictionary = {}
+	for encounter: EncounterDefinition in MANIFEST.encounters:
+		for wave: Dictionary in encounter.effective_waves():
+			for spawn: Dictionary in wave.get("spawns", []):
+				mission_scene_paths[String(spawn.get("scene", ""))] = true
+	_expect(mission_scene_paths.has("res://scenes/enemies/compliance_gull.tscn"), "Rain City encounter roster includes the authored Compliance Gull")
+	_expect(mission_scene_paths.has("res://scenes/enemies/umbrella_shield_enforcer.tscn"), "Rain City encounter roster includes the authored Umbrella Shield Enforcer")
+
+	var gull := COMPLIANCE_GULL_SCENE.instantiate() as ComplianceGull
+	var enforcer := UMBRELLA_ENFORCER_SCENE.instantiate() as UmbrellaShieldEnforcer
+	_expect(gull != null and gull.get_script() != EnemyAgent, "Compliance Gull is a dedicated behavior class, not a renamed base enemy")
+	_expect(gull != null and gull.has_signal("target_marked") and gull.has_signal("dive_started") and gull.has_node("Visual/Searchlight"), "Compliance Gull owns a mark/dive/searchlight silhouette contract")
+	_expect(gull != null and gull.has_node("Visual/WingLeft") and gull.has_node("Visual/WingRight"), "Compliance Gull owns a distinct aerial silhouette")
+	_expect(enforcer != null and enforcer.get_script() != EnemyAgent, "Umbrella Shield Enforcer is a dedicated behavior class, not a renamed base enemy")
+	_expect(enforcer != null and enforcer.has_signal("guard_state_changed") and enforcer.has_node("DirectionalShieldComponent"), "Umbrella Shield Enforcer owns a directional guard/break contract")
+	var detailed_sprite := enforcer.get_node_or_null("Visual/DetailedSprite") as Sprite3D if enforcer != null else null
+	_expect(detailed_sprite != null and detailed_sprite.texture != null, "Umbrella Shield Enforcer owns a production directional atlas")
+	if gull != null:
+		gull.free()
+	if enforcer != null:
+		enforcer.free()
 
 
 func _test_audio_reference_contract() -> void:

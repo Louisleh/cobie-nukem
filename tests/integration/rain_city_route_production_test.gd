@@ -113,6 +113,10 @@ func _test_world_builder_navigation_contract() -> void:
 	var pre_bake_status := builder.navigation_bake_status()
 	_expect(bool(pre_bake_status.get("requested", false)), "Production route explicitly requests navigation baking")
 	_expect(not bool(pre_bake_status.get("finished", false)), "Production route does not report a deferred bake as complete before it runs")
+	var route_presentation := PRESENTATION_SCENE.instantiate() as RainCityMaterialApplier
+	owner.add_child(route_presentation)
+	route_presentation.apply_route_gate_presentation(owner)
+	_test_route_gate_presentation_contract(owner, route_presentation)
 	await physics_frame
 	await _test_spatial_route_geometry(owner, builder)
 
@@ -180,6 +184,25 @@ func _test_world_builder_navigation_contract() -> void:
 	builder.queue_free()
 	await process_frame
 	await process_frame
+
+
+func _test_route_gate_presentation_contract(owner: Node3D, route_presentation: RainCityMaterialApplier) -> void:
+	var gates: Array[Node] = []
+	for group_id in [&"rain_city_encounter_gates", &"rain_city_route_state_gates"]:
+		for candidate in owner.get_tree().get_nodes_in_group(group_id):
+			if owner.is_ancestor_of(candidate):
+				gates.append(candidate)
+	_expect(gates.size() == 5, "Rain City dresses four encounter gates and one route-state gate")
+	for raw_gate in gates:
+		var gate := raw_gate as StaticBody3D
+		var collision := gate.get_child(1) as CollisionShape3D if gate != null and gate.get_child_count() > 1 else null
+		var original_mesh := gate.get_child(0) as MeshInstance3D if gate != null and gate.get_child_count() > 0 else null
+		var presentation := gate.get_node_or_null("WCB008Presentation") as Node3D if gate != null else null
+		_expect(collision != null and collision.shape is BoxShape3D and not collision.disabled, "%s retains its authoritative closed collision shape" % gate.name)
+		_expect(original_mesh != null and not original_mesh.visible, "%s hides the collision-debug slab" % gate.name)
+		_expect(presentation != null and bool(presentation.get_meta(&"render_only", false)), "%s owns explicit render-only authored barrier dressing" % gate.name)
+		_expect(presentation != null and presentation.find_children("*", "CollisionObject3D", true, false).is_empty(), "%s barrier dressing adds no collision ownership" % gate.name)
+	_expect(route_presentation.apply_route_gate_presentation(owner) == 0, "Rain City barrier dressing is idempotent")
 
 
 func _test_spatial_route_geometry(owner: Node3D, builder: VancouverWaterfrontWorldBuilder) -> void:
