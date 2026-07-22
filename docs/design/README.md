@@ -7,6 +7,7 @@ These short records are the durable contract map for autonomous and human work:
 - `checkpoints.md` — mission bootstrap and restore-order invariants.
 - `rain-city-route.md` — definitive Rain City topology, route-state, sightline, and human-review boundaries.
 - `rain-city-encounters.md` — Rain City role compositions, approach directions, transitions, recovery lanes, environment choices, counters, and human-review boundaries.
+- `rain-city-towmaster.md` — WCB-007 Towmaster art/combat brief, attack and arena-state vocabulary, reset/defeat contract, budgets, provenance boundary, and evidence plan.
 - `enemies-and-encounters.md` — pressure, persistence, and actor recovery.
 - `performance-accessibility.md` — platform tiers and information-preserving assists.
 - `agentic-toolchain.md` — privileged local tools, evidence loop, and export safety.

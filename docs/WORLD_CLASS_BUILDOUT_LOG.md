@@ -24,7 +24,7 @@ This is the durable continuation ledger for the Cobie Nukem 3/6/9 quality progra
 | WCB-004 Settings/allocation | COMPLETE | UI + combat | `5ce5501`, `5b8ad45`, `502535a`, `f8a78e5` | Runtime reset, shared effects, reuse contamination, performance + packaged exports pass | Headless timing is not rendered GPU evidence |
 | WCB-005 Rain City spatial slice | COMPLETE | Level | `8a5a807` | Route/state/navigation/catalog/core + multi-aspect comparison + packaged exports pass | Human pacing, meaningfulness, and landmark readability remain open |
 | WCB-006 Encounters | COMPLETE | Enemy/encounter + bounded integration transfer | `e61b73c` | Schema-v3 content/runtime/reset/navigation + 100-cycle soak + packaged exports pass | Human pacing/fairness open |
-| WCB-007 Towmaster | READY | Boss/presentation | — | — | Human spectacle/fairness open |
+| WCB-007 Towmaster | IN PROGRESS | Boss/presentation | — | Art/combat brief frozen; implementation/evidence pending | Human spectacle/fairness open |
 | WCB-008 Art/audio identity | BLOCKED by WCB-007 | Visual Foundry/audio | — | — | Human art/mix/humor open |
 | WCB-009 RC evidence/selection | BLOCKED by WCB-005–008 | Integration/release | — | — | Human/device gates required |
 | WCB-010 Second-mission replication | BLOCKED by WCB-009 | Assigned after selection | — | — | Mission-specific human gates required |
@@ -216,6 +216,17 @@ Copy this section for every packet before marking it complete.
 - Human-only/open claims: pacing, fairness, practical recovery-lane usability, role readability under final presentation, environment-choice meaningfulness, 15–22 minute route timing, and physical-device feel remain open.
 - Integrated commits: `e680bc5`, `e9c5257`, `baffeb2`, `f7fa600`, `44242d1`, `15b5870`, and `e61b73c`, pushed to `origin/hermes/world-class-369-buildout`.
 - Next dependency-safe packet: WCB-007 Municipal Towmaster production boss only.
+
+## 2026-07-21 — WCB-007 Municipal Towmaster production boss
+
+- Source commit: `cf8c5d5906d7431d0be674dae794122ea3c697de`.
+- Owner / writers: GPT-5.6 architecture, art direction, integration, review, evidence, and final claims; bounded non-overlapping GPT-5.3-Codex-Spark workers may implement/test Godot-only packets after this brief is frozen.
+- Acceptance condition: preserve the existing project-original Towmaster GLB/source provenance and transactional four-module/four-wave/1,000-HP boss contract while adding three geometrically distinct telegraphed attacks, four escalating readable phases, two explicit arena threat states, bounded reduced-flash/motion-aware VFX, deterministic reset/cleanup, and a 10–11 second ordered defeat payoff; 100 boss/reset cycles and native 16:9/4:3 capture validity must pass while fairness, spectacle, readability, mix, and photosensitivity remain human gates.
+- Owned paths: `scenes/set_pieces/citation_convoy.tscn`, `scripts/level/citation_convoy_actor.gd`, `scripts/level/rain_city_convoy_presentation.gd`, new `scripts/level/towmaster_*`, `resources/set_pieces/vancouver_citation_convoy.tres`, `resources/set_pieces/vancouver_convoy_phases/`, new `resources/set_pieces/towmaster_*`, `tests/integration/rain_city_convoy_boss_test.gd`, the bounded visual capture manifest/adapter/test seam, `docs/design/rain-city-towmaster.md`, this plan, and this ledger. Enemy AI, encounter resources, route geometry/navigation, new audio assets, project/export settings, progression, and release identity are excluded.
+- Start-gate evidence: Godot `4.7.1` and Material Maker `1.7` detected; clean repository/no live bridge confirmed. Visual Foundry verifier and `game_dev_health.sh` fail only on the recorded optional Blender/MCP/Chrome capability stack. Existing `assets/source/blender/municipal_towmaster.blend` and `assets/models/set_pieces/municipal_towmaster.glb` remain manifested project-original assets; no new Blender authoring/export or live-MCP evidence will be claimed.
+- Human-only/open claims: silhouette dominance at intended combat distance, attack/phase readability, fairness, recovery-lane usability, perceived weight, ten-second spectacle, humor, mix, motion comfort, photosensitivity, target-Mac feel, and physical-iPad behavior.
+- Integrated commit: pending.
+- Next dependency-safe packet: finish WCB-007 only before WCB-008.
 
 ## Resume protocol
 

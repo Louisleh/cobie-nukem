@@ -165,9 +165,9 @@ bash tools/run_godot_safe.sh --timeout 300 -- --headless --path . --script res:/
 
 ### WCB-007 — Municipal Towmaster production boss
 
-**Status:** Ready — WCB-006 encounter choreography integrated and verified
+**Status:** In progress — art/combat brief frozen; existing manifested GLB retained; Godot combat/profile/capture work pending
 **Owner:** Enemy/boss + presentation integration
-**Paths:** `scenes/set_pieces/citation_convoy.tscn`, `scripts/gameplay/citation_convoy_actor.gd`, `scripts/level/rain_city_convoy_presentation.gd`, `resources/set_pieces/vancouver_citation_convoy.tres`, `resources/set_pieces/vancouver_convoy_phases/`, `assets/models/set_pieces/municipal_towmaster.glb`, `assets/source/blender/municipal_towmaster.blend`, `tests/integration/rain_city_convoy_boss_test.gd`. Additional paths require an integration-owner transfer recorded before editing.
+**Paths:** `scenes/set_pieces/citation_convoy.tscn`, `scripts/level/citation_convoy_actor.gd`, `scripts/level/rain_city_convoy_presentation.gd`, `resources/set_pieces/vancouver_citation_convoy.tres`, `resources/set_pieces/vancouver_convoy_phases/`, `assets/models/set_pieces/municipal_towmaster.glb`, `assets/source/blender/municipal_towmaster.blend`, `tests/integration/rain_city_convoy_boss_test.gd`. Additional paths require an integration-owner transfer recorded before editing.
 
 **Deliverables**
 
