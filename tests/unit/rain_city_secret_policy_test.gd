@@ -57,22 +57,16 @@ func _test_reduction_removes_tagged_reinforcement_any_slot() -> void:
 			var tagged_source := _load_definition_with_tag_at(wave_index, spawn_index)
 			var tagged_before := tagged_source.duplicate(true)
 			var reduced := SECRET_POLICY.reduced_harbour_definition(tagged_source)
-			var should_validate := _reduction_should_validate(tagged_source, wave_index, spawn_index)
-			if should_validate:
-				_assert(reduced != null, "slot (%d, %d) with reinforcement reduces successfully" % [wave_index, spawn_index])
-				if reduced == null:
-					continue
-				var reduced_definition := reduced
-				_assert(_definitions_match_geometry(tagged_before, tagged_source), "slot (%d, %d) reduction does not mutate source" % [wave_index, spawn_index])
-				_assert(_total_spawns(tagged_source) == 8, "slot (%d, %d) source actor count unchanged before reduction" % [wave_index, spawn_index])
-				_assert(_total_spawns(reduced_definition) == 7, "slot (%d, %d) reduced definition actor count is 7" % [wave_index, spawn_index])
-				_assert(reduced_definition.enemy_budget == tagged_source.enemy_budget - 1, "slot (%d, %d) budget decrements by one" % [wave_index, spawn_index])
-				_assert(_contains_reduction_tag(reduced_definition) == 0, "slot (%d, %d) removes tagged spawn" % [wave_index, spawn_index])
-				_assert(reduced_definition.validate().is_empty(), "slot (%d, %d) reduced definition validates" % [wave_index, spawn_index])
-			else:
-				_assert(reduced == null, "slot (%d, %d) returns null when removal violates validation" % [wave_index, spawn_index])
-				_assert(_definitions_match_geometry(tagged_before, tagged_source), "slot (%d, %d) source actor count remains unchanged on rejection" % [wave_index, spawn_index])
-				_assert(_contains_reduction_tag(tagged_source) == 1, "slot (%d, %d) tagged source keeps one tag" % [wave_index, spawn_index])
+			_assert(reduced != null, "slot (%d, %d) with reinforcement reduces successfully" % [wave_index, spawn_index])
+			if reduced == null:
+				continue
+			var reduced_definition := reduced
+			_assert(_definitions_match_geometry(tagged_before, tagged_source), "slot (%d, %d) reduction does not mutate source" % [wave_index, spawn_index])
+			_assert(_total_spawns(tagged_source) == 8, "slot (%d, %d) source actor count unchanged before reduction" % [wave_index, spawn_index])
+			_assert(_total_spawns(reduced_definition) == 7, "slot (%d, %d) reduced definition actor count is 7" % [wave_index, spawn_index])
+			_assert(reduced_definition.enemy_budget == tagged_source.enemy_budget - 1, "slot (%d, %d) budget decrements by one" % [wave_index, spawn_index])
+			_assert(_contains_reduction_tag(reduced_definition) == 0, "slot (%d, %d) removes tagged spawn" % [wave_index, spawn_index])
+			_assert(reduced_definition.validate().is_empty(), "slot (%d, %d) reduced definition validates" % [wave_index, spawn_index])
 
 
 func _test_reduction_rejects_invalid_tag_multiplicity() -> void:
@@ -184,23 +178,6 @@ func _total_spawns(definition: Resource) -> int:
 		var spawns := wave.get("spawns", []) as Array
 		count += spawns.size()
 	return count
-
-
-func _reduction_should_validate(definition: Resource, wave_index: int, spawn_index: int) -> bool:
-	var expected := definition.duplicate(true)
-	var waves := expected.waves as Array
-	if wave_index < 0 or wave_index >= waves.size():
-		return false
-	var wave := waves[wave_index] as Dictionary
-	var spawns := (wave.get("spawns", []) as Array).duplicate(true)
-	if spawn_index < 0 or spawn_index >= spawns.size():
-		return false
-	spawns.remove_at(spawn_index)
-	wave["spawns"] = spawns
-	waves[wave_index] = wave
-	expected.waves = waves
-	expected.enemy_budget = expected.enemy_budget - 1
-	return expected.validate().is_empty()
 
 
 func _definitions_match_geometry(left: Resource, right: Resource) -> bool:

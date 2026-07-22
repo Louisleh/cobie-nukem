@@ -13,7 +13,7 @@ spawns = []
 waves = Array[Dictionary]([{
 "spawns": [
 	{"scene":"res://scenes/enemies/compliance_gull.tscn","position":Vector3(-6,4,-62),"role_id":"dive_support","approach_id":"harbour_side"},
-	{"scene":"res://scenes/enemies/compliance_gull.tscn","position":Vector3(6,4,-68),"role_id":"aerial_harrier","approach_id":"city_side"},
+	{"scene":"res://scenes/enemies/compliance_gull.tscn","position":Vector3(6,4,-68),"role_id":"dive_support","approach_id":"city_side"},
 	{"scene":"res://scenes/enemies/umbrella_shield_enforcer.tscn","position":Vector3(0,0,-72),"role_id":"shield_anchor","approach_id":"overlook"}
 ]}, {
 "delay_seconds": 1.8,

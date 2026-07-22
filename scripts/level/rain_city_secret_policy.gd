@@ -82,8 +82,39 @@ static func reduced_harbour_definition(source: EncounterDefinition) -> Encounter
 
 	reduced.waves = waves
 	reduced.enemy_budget = reduced.enemy_budget - 1
+	_reconcile_choreography_profile(reduced)
 	var reduced_errors := reduced.validate()
 	if not reduced_errors.is_empty():
 		push_error("RainCitySecretPolicy.reduced_harbour_definition produced invalid reduced definition: %s" % reduced_errors)
 		return null
 	return reduced
+
+
+static func _reconcile_choreography_profile(definition: EncounterDefinition) -> void:
+	if definition.choreography_profile == null:
+		return
+	var used_roles: Dictionary = {}
+	var used_approaches: Dictionary = {}
+	for wave in definition.waves:
+		for spawn_value in wave.get("spawns", []):
+			if spawn_value is not Dictionary:
+				continue
+			var spawn := spawn_value as Dictionary
+			var role_id := StringName(spawn.get("role_id", &""))
+			var approach_id := StringName(spawn.get("approach_id", &""))
+			if role_id != &"":
+				used_roles[role_id] = true
+			if approach_id != &"":
+				used_approaches[approach_id] = true
+	var profile := definition.choreography_profile.duplicate(true) as EncounterChoreographyProfile
+	var roles: Array[StringName] = []
+	for role_id in profile.role_ids:
+		if used_roles.has(role_id):
+			roles.append(role_id)
+	var approaches: Array[StringName] = []
+	for approach_id in profile.approach_ids:
+		if used_approaches.has(approach_id):
+			approaches.append(approach_id)
+	profile.role_ids = roles
+	profile.approach_ids = approaches
+	definition.choreography_profile = profile

@@ -146,8 +146,8 @@ func _check_encounter_alignment(manifest: ContentManifest, route: MissionRouteDe
 			report_failure("Duplicate encounter id: %s" % encounter.id)
 		seen_ids[encounter.id] = true
 		assert_true(encounter.zone_id != &"", "Encounter %s has zone id" % encounter.id)
-		assert_true(encounter.schema_version == 2, "Encounter %s is schema_version 2" % encounter.id)
-		assert_true(encounter.spawns.is_empty(), "Encounter %s uses schema-v2 waves and no legacy spawns" % encounter.id)
+		assert_true(encounter.schema_version == 3, "Encounter %s is schema_version 3" % encounter.id)
+		assert_true(encounter.spawns.is_empty(), "Encounter %s uses schema-v3 waves and no legacy spawns" % encounter.id)
 		assert_true(not encounter.waves.is_empty(), "Encounter %s has at least one wave" % encounter.id)
 		assert_true(route_zone_ids.has(encounter.zone_id), "Encounter %s zone %s is in route" % [encounter.id, encounter.zone_id])
 		for wave in encounter.waves:

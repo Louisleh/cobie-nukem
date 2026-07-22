@@ -17,7 +17,7 @@ waves = Array[Dictionary]([{
 "delay_seconds": 2.5,
 "spawns": [
 	{"scene":"res://scenes/enemies/compliance_gull.tscn","position":Vector3(1,4,-146),"role_id":&"dive_support","approach_id":&"land_flank"},
-	{"scene":"res://scenes/enemies/leash_enforcement_drone.tscn","position":Vector3(-4,2,-148),"role_id":&"dive_support","approach_id":&"crane_upper","optional_reinforcement_id":&"terminal_secret_cancelled_reinforcement"}
+	{"scene":"res://scenes/enemies/leash_enforcement_drone.tscn","position":Vector3(-4,2,-148),"role_id":&"aerial_harrier","approach_id":&"crane_upper","optional_reinforcement_id":&"terminal_secret_cancelled_reinforcement"}
 ]}, {
 "delay_seconds": 2.5,
 "spawns": [
@@ -27,7 +27,7 @@ waves = Array[Dictionary]([{
 "delay_seconds": 2.0,
 "spawns": [
 	{"scene":"res://scenes/enemies/compliance_gull.tscn","position":Vector3(-7,4,-165),"role_id":&"dive_support","approach_id":&"crane_upper"},
-	{"scene":"res://scenes/enemies/compliance_hound.tscn","position":Vector3(7,0,-169),"role_id":&"aerial_harrier","approach_id":&"water_flank"}
+	{"scene":"res://scenes/enemies/compliance_hound.tscn","position":Vector3(7,0,-169),"role_id":&"melee_pursuer","approach_id":&"water_flank"}
 ]}])
 enemy_budget = 8
 maximum_simultaneous_attackers = 3
