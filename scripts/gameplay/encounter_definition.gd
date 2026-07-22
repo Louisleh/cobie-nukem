@@ -102,9 +102,6 @@ func validate() -> PackedStringArray:
 
 func _validate_choreography_spawn(spawn: Dictionary, wave_index: int, index: int, used_roles: Dictionary, used_approaches: Dictionary) -> PackedStringArray:
 	var errors := PackedStringArray()
-	if choreography_profile == null:
-		return errors
-
 	var role_value: Variant = spawn.get("role_id", null)
 	if not (role_value is String or role_value is StringName):
 		errors.append("encounter %s wave %d spawn %d missing or invalid role_id" % [id, wave_index, index])
@@ -114,7 +111,7 @@ func _validate_choreography_spawn(spawn: Dictionary, wave_index: int, index: int
 			errors.append("encounter %s wave %d spawn %d has empty role_id" % [id, wave_index, index])
 		else:
 			used_roles[role_id] = true
-			if not choreography_profile.role_ids.has(role_id):
+			if choreography_profile != null and not choreography_profile.role_ids.has(role_id):
 				errors.append("encounter %s wave %d spawn %d uses undeclared role_id %s" % [id, wave_index, index, role_id])
 
 	var approach_value: Variant = spawn.get("approach_id", null)
@@ -126,7 +123,7 @@ func _validate_choreography_spawn(spawn: Dictionary, wave_index: int, index: int
 			errors.append("encounter %s wave %d spawn %d has empty approach_id" % [id, wave_index, index])
 		else:
 			used_approaches[approach_id] = true
-			if not choreography_profile.approach_ids.has(approach_id):
+			if choreography_profile != null and not choreography_profile.approach_ids.has(approach_id):
 				errors.append("encounter %s wave %d spawn %d uses undeclared approach_id %s" % [id, wave_index, index, approach_id])
 	return errors
 

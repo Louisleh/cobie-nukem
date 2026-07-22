@@ -38,6 +38,9 @@ func validate(wave_count: int) -> PackedStringArray:
 
 	if wave_count < 0 or wave_transition_ids.size() != wave_count:
 		errors.append("encounter choreography profile %s has transition count %d but requires %d to match wave_count" % [id, wave_transition_ids.size(), wave_count])
+	for transition_id in wave_transition_ids:
+		if transition_id == &"":
+			errors.append("encounter choreography profile %s has an empty wave transition id" % id)
 
 	return errors
 

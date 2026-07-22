@@ -58,6 +58,8 @@ func _test_profile_validation() -> void:
 	_assert(_contains_error(errors, "invalid non-finite recovery_position"), "invalid profile rejects non-finite recovery_position")
 	_assert(_contains_error(errors, "no nonempty environment_choice_ids"), "invalid profile rejects empty environment choices")
 	_assert(_contains_error(errors, "no nonempty counterplay_ids"), "invalid profile rejects empty counterplay ids")
+	invalid_profile.wave_transition_ids = [&"", &"phase_shift"]
+	_assert(_contains_error(invalid_profile.validate(2), "empty wave transition id"), "invalid profile rejects empty wave transition ids")
 
 
 func _test_definition_schema_compatibility_and_requirements() -> void:
@@ -75,6 +77,8 @@ func _test_definition_schema_compatibility_and_requirements() -> void:
 	var missing_profile := _make_schema_definition(profile, &"missing_profile_zone", "res://scenes/enemies/squirrel_trooper.tscn")
 	missing_profile.choreography_profile = null
 	_assert(not missing_profile.validate().is_empty(), "schema v3 requires a non-null choreography profile")
+	(missing_profile.waves[0].get("spawns", [])[0] as Dictionary).erase("role_id")
+	_assert(_contains_error(missing_profile.validate(), "missing or invalid role_id"), "schema v3 still validates spawn role ids when the profile is missing")
 
 	var undeclared_role := _make_schema_definition(profile, &"undeclared_role_zone", "res://scenes/enemies/squirrel_trooper.tscn")
 	(undeclared_role.waves[0].get("spawns", [])[0] as Dictionary)["role_id"] = &"rogue"
