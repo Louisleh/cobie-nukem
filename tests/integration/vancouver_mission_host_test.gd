@@ -119,6 +119,8 @@ func _test_harbour_checkpoint_rehydration() -> void:
 	await process_frame
 	_expect(mission.current_zone == &"harbour_pier", "harbour Continue restores controller zone truth")
 	_expect(mission._set_piece_runtime != null and bool(mission._set_piece_runtime.current_state().get("has_actor", false)), "harbour Continue rehydrates the citation convoy")
+	var restored_convoy := _find_convoy(mission._world_builder.actors)
+	_expect(restored_convoy != null and not restored_convoy.is_combat_enabled(), "harbour Continue keeps combat disabled while the convoy restarts its path")
 	_expect(not mission._world_builder.departure_switch.enabled, "restored departure remains locked until convoy objective completes")
 	_expect(mission._world_builder.is_route_gate_open(&"rainline_return"), "restored terminal objective reopens the Rain Line return")
 	mission.queue_free()
@@ -279,9 +281,11 @@ func _exercise_convoy(mission: EpisodeOneVancouverWaterfront) -> void:
 	_expect(convoy != null, "convoy actor remains available through all boss phases")
 	if convoy == null:
 		return
+	_expect(not convoy.is_combat_enabled(), "convoy combat stays disabled while moving toward the first stop")
 	var module_ids: Array[StringName] = [&"citation_drive_left", &"citation_signal_dish", &"citation_drive_right", &"citation_core"]
 	for wave_index in 4:
 		mission._set_piece_runtime._physics_process(100.0)
+		_expect(convoy.is_combat_enabled(), "convoy combat enables at authored stop %d" % wave_index)
 		var coordinator_state := mission._convoy_coordinator.current_state()
 		_expect(int(coordinator_state.get("active_wave_index", -1)) == wave_index, "convoy stop %d starts wave %d" % [wave_index, wave_index])
 		if wave_index > 0:
@@ -295,6 +299,7 @@ func _exercise_convoy(mission: EpisodeOneVancouverWaterfront) -> void:
 			module.apply_damage(9999.0)
 		await process_frame
 		_expect(convoy.destroyed_module_count() == wave_index + 1, "convoy phase %d records one module destruction" % wave_index)
+		_expect(not convoy.is_combat_enabled(), "convoy combat disables after phase %d resumes movement or defeat" % wave_index)
 	mission._set_piece_runtime._physics_process(100.0)
 	await process_frame
 	var final_state := mission._set_piece_runtime.current_state()

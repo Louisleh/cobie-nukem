@@ -264,6 +264,10 @@ func active_temp_visual_count() -> int:
 	return _temp_visuals.size()
 
 
+func is_combat_enabled() -> bool:
+	return _combat_enabled
+
+
 func defeat_elapsed() -> float:
 	return _defeat_elapsed
 
