@@ -372,10 +372,10 @@ func _resolve_attack(phase: TowmasterPhaseCombatDefinition) -> void:
 	_attack_in_telegraph = false
 	_telegraph_elapsed = 0.0
 	_telegraph_duration = 0.0
-	var hit := _attack_hits_target()
+	var hit := TowmasterCombatGeometry.attack_hits_target(_active_attack, _target.global_position, _locked_origin, _locked_target, _attack_direction) if _target_valid() else false
 	var damage := 0.0
 	if hit:
-		damage = _combat_profile_damage(_active_attack.base_damage * phase.damage_scale)
+		damage = TowmasterCombatGeometry.scaled_damage(_active_attack.base_damage * phase.damage_scale, get_node_or_null("/root/GameState"))
 		if _target.has_method("apply_damage"):
 			_target.call("apply_damage", damage, self, _target.global_position)
 	attack_resolved.emit(_active_attack_id, _combat_phase_index, hit, damage)
@@ -386,37 +386,6 @@ func _resolve_attack(phase: TowmasterPhaseCombatDefinition) -> void:
 	_attack_cooldown = _active_attack.cooldown_seconds * phase.cooldown_scale
 	_active_attack = null
 	_active_attack_id = StringName()
-
-
-func _attack_hits_target() -> bool:
-	if _active_attack == null or not _target_valid():
-		return false
-	var target_position := _target.global_position
-	match _active_attack.shape:
-		TowmasterAttackDefinition.AttackShape.TARGET_ZONE:
-			if _active_attack.radius <= 0.0 or not is_finite(_active_attack.radius):
-				return false
-			var delta := Vector2(target_position.x - _locked_target.x, target_position.z - _locked_target.z)
-			return delta.length() <= _active_attack.radius
-		TowmasterAttackDefinition.AttackShape.LANE:
-			if _active_attack.length <= 0.0 or _active_attack.width <= 0.0:
-				return false
-			if not is_finite(_active_attack.length) or not is_finite(_active_attack.width):
-				return false
-			var lane := Vector3(target_position.x - _locked_origin.x, 0.0, target_position.z - _locked_origin.z)
-			var projection := lane.dot(_attack_direction)
-			if projection < 0.0 or projection > _active_attack.length:
-				return false
-			return (lane - _attack_direction * projection).length() <= _active_attack.width * 0.5
-		TowmasterAttackDefinition.AttackShape.RING:
-			if _active_attack.radius <= 0.0 or not is_finite(_active_attack.radius):
-				return false
-			var origin_delta := Vector2(target_position.x - _locked_origin.x, target_position.z - _locked_origin.z)
-			return origin_delta.length() <= _active_attack.radius
-		_:
-			return false
-
-
 func _spawn_attack_visual(attack: TowmasterAttackDefinition) -> void:
 	if attack == null:
 		return
@@ -444,17 +413,10 @@ func _apply_arena_pulse(phase: TowmasterPhaseCombatDefinition, delta: float) -> 
 	if _arena_pulse_timer > 0.0:
 		_arena_pulse_timer = maxf(0.0, _arena_pulse_timer - delta)
 		return
-	var hit := false
-	if _arena_state_id == PHASE_CITATION_LANES:
-		var local := to_local(_target.global_position)
-		var ax := absf(local.x)
-		hit = ax >= 2.3 and ax <= 4.7 and absf(local.z) <= 8.0
-	elif _arena_state_id == PHASE_IMPOUND_FIELD:
-		var local := to_local(_target.global_position)
-		hit = local.x * local.x + local.z * local.z <= 4.5 * 4.5
+	var hit := TowmasterCombatGeometry.arena_hits_target(_arena_state_id, to_local(_target.global_position))
 	var damage := 0.0
 	if hit:
-		damage = _combat_profile_damage(BASE_ARENA_DAMAGE * phase.damage_scale)
+		damage = TowmasterCombatGeometry.scaled_damage(BASE_ARENA_DAMAGE * phase.damage_scale, get_node_or_null("/root/GameState"))
 		if _target.has_method("apply_damage"):
 			_target.call("apply_damage", damage, self, _target.global_position)
 	arena_hazard_pulsed.emit(_arena_state_id, hit, damage)
@@ -465,37 +427,15 @@ func _configure_defeat_particles() -> void:
 	var max_particles := FALLBACK_MAX_DEFEAT_PARTICLES
 	if _combat_profile_valid():
 		max_particles = clampi(combat_profile.max_defeat_particles, 0, FALLBACK_MAX_DEFEAT_PARTICLES)
-	var density := _particle_density()
-	var tickets := maxi(0, roundi(float(FALLBACK_TICKET_PARTICLES) * density))
-	var sparks := maxi(0, roundi(float(FALLBACK_SPARK_PARTICLES) * density))
-	var total := tickets + sparks
-	if total > max_particles:
-		var ratio := float(max_particles) / float(maxi(total, 1))
-		tickets = maxi(0, roundi(float(tickets) * ratio))
-		sparks = maxi(0, roundi(float(sparks) * ratio))
-		if tickets + sparks > max_particles:
-			sparks = max(0, max_particles - tickets)
-	_defeat_ticket_particles = clampi(tickets, 0, max_particles)
-	_defeat_spark_particles = clampi(sparks, 0, max(0, max_particles - _defeat_ticket_particles))
+	var counts := TowmasterCombatGeometry.particle_counts(max_particles, _particle_density(), FALLBACK_TICKET_PARTICLES, FALLBACK_SPARK_PARTICLES)
+	_defeat_ticket_particles = counts.x
+	_defeat_spark_particles = counts.y
 
 
 func max_temp_visuals() -> int:
 	if not _combat_profile_valid():
 		return 0
 	return clampi(combat_profile.max_temp_visuals, 1, 6)
-
-
-func _combat_profile_damage(value: float) -> float:
-	var base := value if is_finite(value) else 0.0
-	var game_state := get_node_or_null("/root/GameState")
-	if game_state == null or not game_state.has_method("get_difficulty_profile"):
-		return base
-	var profile: DifficultyProfile = game_state.get_difficulty_profile() as DifficultyProfile
-	if profile == null or not (profile is DifficultyProfile):
-		return base
-	return profile.scaled_enemy_damage(base)
-
-
 func _clear_temp_visuals() -> void:
 	for visual in _temp_visuals:
 		if is_instance_valid(visual):
