@@ -335,7 +335,7 @@ Decision and remaining gate:
 
 ### WCB-008G route-evidence integrity and fail-closed QA packet — COMPLETE (WCB-008 remains open)
 
-- **Source commit:** `5650453`
+- **Source commit:** `f91975e`
 - **Implementation commit:** `eb4539fb64171e63713c458d6164cc52fef1caa9`
 - **Writer/integration owner:** GPT-5.6-sol/Hermes
 - **Read-only reviewers:** one GPT-5.3-Codex-Spark capture audit, three focused GPT-5.6-sol/high adversarial passes, and one GPT-5.3-Codex-Spark test-harness review. No worker wrote, merged, pushed, or claimed human/device evidence.
