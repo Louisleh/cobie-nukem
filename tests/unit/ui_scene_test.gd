@@ -28,6 +28,7 @@ func _initialize() -> void:
 	await _check_responsive_title_contract()
 	_check_responsive_main_menu_contract()
 	_check_cobie_portrait_contract()
+	await _check_hud_safe_area_contract()
 	await _check_death_screen_contract()
 	await _check_pause_restart_contract()
 	await _check_caption_contracts()
@@ -310,6 +311,97 @@ func _check_cobie_portrait_contract() -> void:
 		if runtime_portrait == null or minf(runtime_portrait.size.x, runtime_portrait.size.y) < 100.0:
 			failures.append("Cobie portrait must retain at least a 100px logical edge for 4:3 iPad readability")
 		hud.free()
+
+
+func _check_hud_safe_area_contract() -> void:
+	var packed := load("res://scenes/ui/hud.tscn") as PackedScene
+	if packed == null:
+		failures.append("HUD scene must load for safe-area contracts")
+		return
+	var logical_sizes := [
+		Vector2(640.0, 360.0),
+		Vector2(576.0, 360.0),
+		Vector2(480.0, 360.0),
+		Vector2(619.0, 360.0),
+		Vector2(620.0, 360.0),
+		Vector2(629.0, 360.0),
+		Vector2(630.0, 360.0),
+		Vector2(860.0, 360.0),
+	]
+	var test_viewport := SubViewport.new()
+	test_viewport.size = Vector2i(logical_sizes[0])
+	root.add_child(test_viewport)
+	var hud := packed.instantiate() as GameHUD
+	test_viewport.add_child(hud)
+	await process_frame
+	if not hud.has_method("_bottom_bar_layout_for") or not hud.has_method("_apply_bottom_bar_layout"):
+		failures.append("HUD must expose one responsive bottom-bar layout contract")
+		test_viewport.queue_free()
+		await process_frame
+		return
+	var nodes := {
+		&"access": hud.get_node_or_null("Root/BottomBar/AccessLabel") as Label,
+		&"weapon": hud.get_node_or_null("Root/BottomBar/WeaponLabel") as Label,
+		&"ammo": hud.get_node_or_null("Root/BottomBar/AmmoLabel") as Label,
+		&"reload": hud.get_node_or_null("Root/BottomBar/ReloadHint") as Label,
+	}
+	var missing_node := false
+	for key in nodes:
+		if nodes[key] == null:
+			missing_node = true
+			failures.append("HUD safe-area contract is missing %s" % key)
+	if missing_node:
+		test_viewport.queue_free()
+		await process_frame
+		return
+	(nodes[&"access"] as Label).text = "NO ACCESS COLLAR"
+	(nodes[&"weapon"] as Label).text = "FETCH LAUNCHER"
+	(nodes[&"ammo"] as Label).text = "99 / 99"
+	(nodes[&"reload"] as Label).text = "RELOADING..."
+	hud.call("_on_setting_changed", &"accessibility", &"text_scale", 1.5)
+	var maximum_font_sizes := {}
+	for key in nodes:
+		maximum_font_sizes[key] = (nodes[key] as Label).get_theme_font_size("font_size")
+	hud.call("_on_setting_changed", &"accessibility", &"text_scale", 2.0)
+	for key in nodes:
+		if (nodes[key] as Label).get_theme_font_size("font_size") != maximum_font_sizes[key]:
+			failures.append("HUD %s font must clamp at the 1.5 accessibility maximum" % key)
+	for index in logical_sizes.size():
+		var logical_size: Vector2 = logical_sizes[index]
+		if index > 0:
+			test_viewport.size = Vector2i(logical_size)
+			await process_frame
+		var layout: Dictionary = hud.call("_bottom_bar_layout_for", logical_size)
+		var viewport_safe_rect := Rect2(Vector2(8.0, 0.0), Vector2(logical_size.x - 20.0, logical_size.y))
+		for key in nodes:
+			var expected: Variant = layout.get(key)
+			var node := nodes[key] as Control
+			if typeof(expected) != TYPE_RECT2:
+				failures.append("HUD safe-area layout is missing %s at %s" % [key, logical_size])
+				continue
+			var expected_rect: Rect2 = expected
+			var actual_rect := Rect2(node.position, node.size)
+			if not viewport_safe_rect.encloses(node.get_global_rect()):
+				failures.append("HUD %s leaves the viewport safe area at %s: %s" % [key, logical_size, node.get_global_rect()])
+			if not actual_rect.is_equal_approx(expected_rect):
+				failures.append("HUD %s did not apply its responsive layout at %s: %s != %s" % [key, logical_size, actual_rect, expected_rect])
+			var minimum_size := node.get_combined_minimum_size()
+			if minimum_size.x > expected_rect.size.x + 0.01 or minimum_size.y > expected_rect.size.y + 0.01:
+				failures.append("HUD %s text clips at %s: minimum %s > bounds %s" % [key, logical_size, minimum_size, expected_rect.size])
+		var access_rect: Rect2 = layout[&"access"]
+		var weapon_rect: Rect2 = layout[&"weapon"]
+		var ammo_rect: Rect2 = layout[&"ammo"]
+		var reload_rect: Rect2 = layout[&"reload"]
+		if logical_size.x < 630.0:
+			var compact_rects := [access_rect, weapon_rect, ammo_rect, reload_rect]
+			for first_index in compact_rects.size():
+				for second_index in range(first_index + 1, compact_rects.size()):
+					if compact_rects[first_index].intersects(compact_rects[second_index]):
+						failures.append("HUD compact controls overlap at %s: %s and %s" % [logical_size, compact_rects[first_index], compact_rects[second_index]])
+		elif access_rect.intersects(weapon_rect) or access_rect.intersects(ammo_rect) or access_rect.intersects(reload_rect):
+			failures.append("HUD access status overlaps the lower-right weapon cluster at %s" % logical_size)
+	test_viewport.queue_free()
+	await process_frame
 
 
 func _check_boss_hud_contract() -> void:

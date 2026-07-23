@@ -49,6 +49,8 @@ const CATEGORY_PRIORITY: Dictionary = {
 }
 const CAPTION_QUEUE_LIMIT := 4
 const CAPTION_DEFAULT_SECONDS := 1.15
+const BOTTOM_BAR_COMPACT_WIDTH := 630.0
+const BOTTOM_BAR_SAFE_MARGIN := 12.0
 
 func _ready() -> void:
 	_apply_progression_cosmetics()
@@ -327,8 +329,44 @@ func _apply_caption_layout() -> void:
 	caption.offset_bottom = caption.offset_top + 36.0
 
 func _update_caption_layout() -> void:
+	var viewport_size := _caption_viewport.get_visible_rect().size if _caption_viewport != null else get_viewport().get_visible_rect().size
 	_apply_caption_layout()
+	_apply_bottom_bar_layout(viewport_size)
 	_update_boss_layout()
+
+
+func _bottom_bar_layout_for(viewport_size: Vector2) -> Dictionary:
+	var viewport_width := maxf(320.0, viewport_size.x)
+	if viewport_width < BOTTOM_BAR_COMPACT_WIDTH:
+		var cluster_right := viewport_width - BOTTOM_BAR_SAFE_MARGIN
+		var cluster_width := clampf(viewport_width * 0.18, 95.0, 148.0)
+		var cluster_left := cluster_right - cluster_width
+		return {
+			&"access": Rect2(276.0, 0.0, cluster_right - 276.0, 16.0),
+			&"weapon": Rect2(276.0, 18.0, cluster_left - 277.0, 16.0),
+			&"ammo": Rect2(cluster_left, 18.0, cluster_width, 37.0),
+			&"reload": Rect2(276.0, 36.0, cluster_left - 277.0, 16.0),
+		}
+	return {
+		&"access": Rect2(276.0, 20.0, 128.0, 30.0),
+		&"weapon": Rect2(viewport_width - 226.0, 6.0, 142.0, 20.0),
+		&"ammo": Rect2(viewport_width - 164.0, 18.0, 148.0, 44.0),
+		&"reload": Rect2(viewport_width - 220.0, 42.0, 200.0, 16.0),
+	}
+
+
+func _apply_bottom_bar_layout(viewport_size: Vector2) -> void:
+	var layout := _bottom_bar_layout_for(viewport_size)
+	_apply_control_rect(%AccessLabel, layout[&"access"])
+	_apply_control_rect(weapon_label, layout[&"weapon"])
+	_apply_control_rect(ammo_label, layout[&"ammo"])
+	_apply_control_rect(reload_hint, layout[&"reload"])
+
+
+func _apply_control_rect(control: Control, rect: Rect2) -> void:
+	control.position = rect.position
+	control.size = rect.size
+
 
 func _update_boss_layout() -> void:
 	var viewport_size := _caption_viewport.get_visible_rect().size if _caption_viewport != null else get_viewport().get_visible_rect().size
