@@ -28,6 +28,7 @@ _FATAL_CAPTURE_DIAGNOSTICS = (
     re.compile(r"resources? still in use at exit"),
     re.compile(r"\borphan\b", re.IGNORECASE),
 )
+_DIRECT_CAPTURE_BOOTSTRAP_RESOLUTION = "1280x720"
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
@@ -205,10 +206,22 @@ def _finite_vector3(value: Any, label: str) -> Tuple[float, float, float]:
     return vector[0], vector[1], vector[2]
 
 
+def _positive_size2(value: Any, label: str) -> Tuple[int, int]:
+    if (
+        not isinstance(value, list)
+        or len(value) != 2
+        or any(isinstance(component, bool) or not isinstance(component, int) for component in value)
+        or any(component <= 0 for component in value)
+    ):
+        raise RuntimeError(f"{label} must be a two-positive-integer array")
+    return int(value[0]), int(value[1])
+
+
 def _camera_pose_receipt(
     output: str,
     view: Dict[str, Any],
     receipt_image_path: Optional[Path] = None,
+    expected_image_size: Optional[Tuple[int, int]] = None,
 ) -> Optional[Dict[str, Any]]:
     requires_receipt = bool(view.get("require_camera_pose_receipt", False))
     prefix = "CAPTURE_CAMERA_POSE "
@@ -231,6 +244,9 @@ def _camera_pose_receipt(
         "capture_frame",
         "script_frame",
         "capture_seed",
+        "capture_window_size",
+        "receipt_image_size",
+        "capture_window_borderless",
         "player_origin",
         "camera_origin",
         "camera_forward",
@@ -315,6 +331,30 @@ def _camera_pose_receipt(
         )
     if receipt_image_path is None or not receipt_image_path.is_file():
         raise RuntimeError(f"camera pose receipt image is missing for {view_id}")
+    if expected_image_size is None:
+        raise RuntimeError(f"camera pose receipt expected image size is missing for {view_id}")
+    capture_window_size = _positive_size2(
+        receipt.get("capture_window_size"), f"{view_id} capture window size"
+    )
+    receipt_image_size = _positive_size2(
+        receipt.get("receipt_image_size"), f"{view_id} receipt image size"
+    )
+    if receipt.get("capture_window_borderless") is not True:
+        raise RuntimeError(f"camera pose receipt window was not borderless for {view_id}")
+    from PIL import Image
+
+    with Image.open(receipt_image_path) as receipt_image:
+        actual_image_size = receipt_image.size
+    if (
+        capture_window_size != expected_image_size
+        or receipt_image_size != expected_image_size
+        or actual_image_size != expected_image_size
+    ):
+        raise RuntimeError(
+            f"camera pose receipt dimensions mismatch for {view_id}: "
+            f"expected={expected_image_size}, window={capture_window_size}, "
+            f"receipt={receipt_image_size}, actual={actual_image_size}"
+        )
     receipt_image_sha256 = str(receipt.get("receipt_image_sha256", ""))
     actual_image_sha256 = hashlib.sha256(receipt_image_path.read_bytes()).hexdigest()
     if receipt_image_sha256 != actual_image_sha256:
@@ -359,7 +399,11 @@ def _direct_scene_capture(
     command = [
         os.environ.get("GODOT_BIN", "/opt/homebrew/bin/godot"),
         "--path", str(capture_project),
-        "--resolution", f"{aspect['width']}x{aspect['height']}",
+        # Boot at a desktop-safe size. On macOS an oversized decorated startup
+        # window becomes maximized and remains clamped even after going
+        # borderless; the capture host switches to borderless before applying
+        # the exact target dimensions and instantiating the production scene.
+        "--resolution", _DIRECT_CAPTURE_BOOTSTRAP_RESOLUTION,
         "--write-movie", str(prefix),
         "--fixed-fps", str(render_fps),
         "res://scenes/debug/visual_direct_capture.tscn",
@@ -374,7 +418,12 @@ def _direct_scene_capture(
         f"--physics-tps={physics_tps}",
     ]
     output = _run_capture_process(command, _isolated_capture_env(prefix.parent / "user-data")) or ""
-    receipt = _camera_pose_receipt(output, view, receipt_image_path)
+    receipt = _camera_pose_receipt(
+        output,
+        view,
+        receipt_image_path,
+        (int(aspect["width"]), int(aspect["height"])),
+    )
     frame_path = prefix.parent / f"capture{frame:08d}.png"
     if not frame_path.is_file():
         raise FileNotFoundError(f"direct scene frame missing: {frame_path}")

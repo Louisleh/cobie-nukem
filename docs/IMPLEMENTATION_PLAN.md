@@ -180,7 +180,7 @@ bash tools/run_godot_safe.sh --timeout 300 -- --headless --path . --script res:/
 
 ### WCB-008 — Mission-specific visual and audio identity
 
-**Status:** In progress — readability/gate, authored harbour-backdrop, and runtime audio-event evidence are implemented. WCB-008G established post-draw hash/pose-bound route evidence. WCB-008H repaired and regression-tested the 4:3 HUD safe area, then recaptured all five route views at supported 16:9 and 4:3; the current macOS workspace cannot emit exact native 1680×1050 or 3440×1440 receipts, so the declared four-aspect group and human visual/audio identity acceptance remain open
+**Status:** In progress — readability/gate, authored harbour-backdrop, runtime audio-event evidence, post-draw hash/pose-bound route evidence, and compact HUD safety are implemented. WCB-008I now produces the declared exact 1280×720, 1680×1050, 1024×768, and 3440×1440 five-route set on the current macOS host through a fail-closed borderless capture path; automated capture/package prerequisites pass, while named human visual/audio/humor/accessibility acceptance remains open
 **Owner:** Visual Foundry/audio
 **Paths:** `assets/models/environment/rain_city_*`, `assets/source/blender/rain_city_run_foundry.blend`, `assets/source/material_maker/rain_city_*.ptex`, `assets/textures/materials/rain_city/`, `resources/presentation/vancouver_*.tres`, `resources/audio/vancouver_mission_audio.tres`, `assets/audio/**/vancouver_*.wav`, `scenes/levels/vancouver/rain_city_presentation.tscn`, `scripts/level/rain_city_material_applier.gd`, `docs/ART_BIBLE.md`, `docs/ASSET_MANIFEST.md`, and canonical non-boss captures. WCB-007 boss paths are explicitly excluded.
 

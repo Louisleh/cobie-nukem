@@ -8,9 +8,9 @@ This is the durable continuation ledger for the Cobie Nukem 3/6/9 quality progra
 - **Baseline source:** `4dbbe2e8571efec290ed863415a78f09bc970ca9`
 - **Public baseline declared by roadmap:** `0.11.0-alpha.1-rc1`, gameplay/runtime `3c2de29`
 - **Current packet:** WCB-008 — Mission-specific visual and audio identity
-- **Last verified packet:** WCB-008H compact HUD safe-area repair, fail-closed responsive regression, supported 16:9/4:3 capture review, and standalone Web/macOS package validation
-- **Next dependency-safe packet:** WCB-008 continuation only — produce exact native 1680×1050 and 3440×1440 hash-bound receipts on a capable display/isolated capture path without weakening WCB-008G dimension checks, then prepare the human visual/audio/humor/accessibility review; WCB-007 boss paths remain frozen
-- **Toolchain state:** Godot 4.7.1, Blender 5.2.0 LTS, Material Maker 1.7, and matching Godot export templates are installed; import, functional tests, IP/architecture/content gates, and standalone macOS/Web exports pass. The full release wrapper currently stops at its unchanged headless performance budget on this host. Optional Codex/Godot/Blender MCP production-art integrations remain unavailable and are recorded below.
+- **Last verified packet:** WCB-008I exact four-aspect borderless route capture, independent dimension/pose/hash binding, twenty-image rendered review, and full release-wrapper/Web/macOS validation
+- **Next dependency-safe packet:** WCB-008 continuation only — prepare the named human visual/audio/humor/accessibility review from the exact four-aspect image set and bounded audio evidence; WCB-007 boss paths remain frozen and WCB-009 remains blocked until the declared human prerequisite is recorded
+- **Toolchain state:** Godot 4.7.1, Blender 5.2.0 LTS, Material Maker 1.7, and matching Godot export templates are installed; import, functional tests, IP/architecture/content gates, native Compatibility performance, the full release wrapper, and macOS/Web exports pass. Optional Codex/Godot/Blender MCP production-art integrations remain unavailable and are recorded below.
 - **Human-only gates:** target-Mac feel/playthrough, physical iPad, flight stick, art taste, pacing, mix, fairness, humor, motion comfort, photosensitivity
 
 ## Milestone dashboard
@@ -25,7 +25,7 @@ This is the durable continuation ledger for the Cobie Nukem 3/6/9 quality progra
 | WCB-005 Rain City spatial slice | COMPLETE | Level | `8a5a807` | Route/state/navigation/catalog/core + multi-aspect comparison + packaged exports pass | Human pacing, meaningfulness, and landmark readability remain open |
 | WCB-006 Encounters | COMPLETE | Enemy/encounter + bounded integration transfer | `e61b73c` | Schema-v3 content/runtime/reset/navigation + 100-cycle soak + packaged exports pass | Human pacing/fairness open |
 | WCB-007 Towmaster | COMPLETE | Boss/presentation + bounded integration transfer | `45bf41a` | Three attacks/four phases/two arena states + 100-cycle combat/reset + native comparison + packaged exports pass | Human spectacle/fairness/readability open |
-| WCB-008 Art/audio identity | IN PROGRESS | Visual Foundry/audio + QA evidence integrity | `5650453`, `eb4539f`, `a506b27` | Fog/readability, authored barriers, harbour backdrop, explicit audio events, camera/hash-bound distinct route evidence, and compact HUD safety at supported 16:9 + 4:3 pass mechanically; standalone Web/macOS exports pass | Exact native 16:10/ultrawide receipt set, headless performance gate, and human art/mix/humor approval remain open |
+| WCB-008 Art/audio identity | IN PROGRESS | Visual Foundry/audio + QA evidence integrity | `5650453`, `eb4539f`, `a506b27`, pending WCB-008I | Fog/readability, authored barriers, harbour backdrop, explicit audio events, camera/hash-bound exact four-aspect route evidence, compact HUD safety, native performance, and full Web/macOS release validation pass mechanically | Human art/mix/humor/accessibility approval remains open |
 | WCB-009 RC evidence/selection | BLOCKED by WCB-008 | Integration/release | — | WCB-005–007 verified | Human/device gates required |
 | WCB-010 Second-mission replication | BLOCKED by WCB-009 | Assigned after selection | — | — | Mission-specific human gates required |
 | WCB-011 Release identity/roadmap | BLOCKED by WCB-010 | Integration/release | — | — | Publish only an honest candidate |
@@ -404,6 +404,37 @@ Decision and remaining gate:
 - **Review disposition:** the first high review rejected boundary overlap at `620–629`, a direct-call false green, missing height checks, and untested compact pairs. All were fixed. Final GPT-5.6-sol/high review returned **APPROVE — no actionable findings**, with only the recorded four-aspect/source-binding/maximum-scale-rendered residual risks.
 - **Evidence classes:** mechanical parser/tests/contracts/capture receipts/metrics/IP/content/architecture/exports; rendered automated contact sheets; **no** human taste, route-feel, mix, humor, accessibility-comfort, photosensitivity, browser-playthrough, target-Mac, iPad, or physical-controller evidence.
 - **Remaining gates / next packet:** WCB-008 remains **IN PROGRESS** and WCB-009 remains blocked. Next, produce exact native 1680×1050 and 3440×1440 receipts through a capable display or isolated capture path without weakening receipt validation, then prepare the named human visual/audio/humor/accessibility review. The unchanged headless performance budget remains separately open.
+
+### WCB-008I exact four-aspect borderless route evidence packet — COMPLETE (WCB-008 remains open)
+
+- **Source commit:** `05019241d08721c5ee73f371d198f081c0f24245`
+- **Implementation commit:** pending integration
+- **Writer/integration owner:** GPT-5.6-sol/Hermes
+- **Read-only reviewers:** two GPT-5.3-Codex-Spark audits (root cause/test integrity and final evidence consistency) plus one GPT-5.6-sol/high adversarial diff review. Reviewers did not write, merge, push, or claim human/device evidence.
+- **Acceptance condition:** on the current 1920×1080 macOS host, a desktop-safe 1280×720 decorated bootstrap must transition to a borderless exact target before production-scene instantiation and produce post-draw, pose/hash-bound five-route receipts at 1280×720, 1680×1050, 1024×768, and 3440×1440. Requested/window/viewport/decoded-PNG dimensions must agree exactly; unsupported behavior fails closed.
+- **Owned/changed paths:** `scripts/debug/visual_direct_capture.gd`; `tools/visual_quality/capture_tool.py`; `tools/visual_quality/test_capture_tool.py`; `docs/IMPLEMENTATION_PLAN.md`; `docs/VERTICAL_SLICE_SCORECARD.md`; this ledger. No gameplay, collision, navigation, mission, art, audio, WCB-007 boss, production HUD, or baseline image path changed.
+- **Implementation:**
+  - direct capture boots at a desktop-safe 1280×720 instead of the requested oversized decorated resolution, then switches borderless and applies the requested target before production-scene instantiation;
+  - the capture host records and fails on requested/window/viewport dimension drift or loss of borderless state;
+  - the Python tool independently verifies receipt sizes, borderless state, decoded PNG dimensions, camera pose, active camera ancestry, and SHA-256 before copying any evidence;
+  - tests distinguish bootstrap from target size and reject both forged receipt dimensions and a correctly declared/hash-bound receipt backed by a wrongly sized PNG.
+- **Mechanical verification:**
+  1. `env -u PYTHONPATH -u VIRTUAL_ENV python3 tools/visual_quality/test_capture_tool.py` — **PASS**, 11 tests.
+  2. `bash tools/run_godot_safe.sh --timeout 600 -- --headless --path . --editor --quit`; `res://tests/unit/visual_capture_manifest_test.gd`; `res://tests/unit/ui_scene_test.gd`; `res://tests/run_tests.gd` — **PASS**, clean import plus `VISUAL CAPTURE MANIFEST TEST: PASS`, `UI SCENE TESTS: PASS`, and `PASS: core contract checks`.
+  3. `git diff --check`; `bash tools/architecture_check.sh`; `python3 tools/validate_world_class_docs.py`; `bash tools/asset_ip_scan.sh`; `res://tools/validate_content.gd` — **PASS**, including five manifested asset families.
+  4. `env -u PYTHONPATH -u VIRTUAL_ENV bash tools/visual_quality/capture.sh --candidate /tmp/cobie-wcb008-candidate --run-id wcb008i-final-four-aspect --view rain_city_downtown --view rain_city_slice --view vancouver_waterfront --view rain_city_terminal --view rain_city_harbour --aspect 1280x720 --aspect 1680x1050 --aspect 1024x768 --aspect 3440x1440` — **PASS**, twenty exact images, twenty independent receipts, zero failures, `rain_city_non_boss_routes.complete = true`, no baseline approval. Edge IoU maximum `0.463343`; low-frequency MAE minimum `0.061401`.
+  5. `env -u PYTHONPATH -u VIRTUAL_ENV bash tools/visual_quality/compare.sh --baseline /tmp/cobie-wcb008-candidate/wcb008h-final-supported --candidate /tmp/cobie-wcb008-candidate/wcb008i-final-four-aspect --out /tmp/cobie-wcb008i-supported-comparison ... --aspect 1280x720 --aspect 1024x768` — **PASS**; supported-aspect perceptual MAE `0.000001`–`0.000090`, with exact matching dimensions.
+  6. `QA_EXPORTS=1 bash tools/release_validate.sh` — **PASS**, complete import/test/performance/export matrix and `Automated release validation passed`. Fresh Web hashes: `index.html` `d3dbb20e...2d06ef`, `index.js` `68586d6d...c42c`, `index.pck` `1a524440...95b`, `index.wasm` `35116f68...e2d`; macOS ZIP `115792291` bytes, SHA-256 `e98f8534bc877007d99ccc7b2ae5f23a9ca26dd43090b9085732d01d15f61b0a`, ZIP integrity pass.
+  7. `/opt/homebrew/bin/godot --path . --resolution 1920x1080 --script res://tests/smoke/zone_performance_profile.gd` — **PASS**, Rain City average `16.655`–`17.083 ms`, p95 `17.422`–`23.346 ms`, zero stalls above `100 ms`. The known exact one-shader/one-RID GLES3 teardown diagnostics remained visible.
+  8. Sanitized GPT capacity at 2026-07-23 00:06 PDT: Main GPT/Codex `46%` remaining; GPT-5.3-Codex-Spark `28%` remaining; no limit hit.
+- **Rendered automated evidence:**
+  - report: `/tmp/cobie-wcb008-candidate/wcb008i-final-four-aspect/capture_report.json`;
+  - contacts: `/tmp/cobie-wcb008i-final-1280x720-contact.png`, `/tmp/cobie-wcb008i-final-1680x1050-contact.png`, `/tmp/cobie-wcb008i-final-1024x768-contact.png`, `/tmp/cobie-wcb008i-final-3440x1440-contact.png`;
+  - comparison: `/tmp/cobie-wcb008i-supported-comparison/comparison.md`.
+  - Pixel inspection of every final image found five nonblank/correct route views at every declared aspect and no mechanical portrait/health/armor/access/weapon/ammo/objective/crosshair/caption clipping or overlap. This is rendered automated evidence, not taste approval.
+- **Review disposition:** GPT-5.6-sol/high returned **APPROVE** with two minor test-integrity gaps; both were fixed by separating bootstrap/target sizes in the launch test and adding a hash-correct but dimension-wrong PNG rejection. The remaining portability risk is intentionally fail-closed on display backends that cannot support borderless exact sizing.
+- **Evidence classes:** mechanical parser/tests/contracts/capture receipts/metrics/IP/content/architecture/performance/exports; rendered automated contact sheets; **no** human taste, route-feel, mix, humor, accessibility-comfort, photosensitivity, browser-playthrough, target-Mac route playthrough, iPad, or physical-controller evidence.
+- **Remaining gates / next packet:** WCB-008 remains **IN PROGRESS** and WCB-009 remains blocked. Next, prepare the named human visual/audio/humor/accessibility review from this exact four-aspect set and existing bounded audio evidence. Do not remove `BETA` or advance WCB-009 solely from this automated packet.
 
 ---
 

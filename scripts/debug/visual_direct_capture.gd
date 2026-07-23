@@ -10,6 +10,7 @@ var _route_pose_receipt_emitted := false
 var _route_capture_requested := false
 var _capture_frame := 0
 var _capture_seed := 0
+var _capture_size := Vector2i.ZERO
 var _receipt_image_path := ""
 const RAIN_CITY_TOWMASTER_ACTOR_PARENT_PATH := "Actors"
 const RAIN_CITY_TOWMASTER_PLAYER_OFFSET := Vector3(6.0, 1.1, -160.0)
@@ -70,6 +71,11 @@ func _apply_capture_size(size_value: String) -> void:
 		push_error("Invalid direct visual capture size: %s" % size_value)
 		return
 	var requested := Vector2i(maxi(320, int(parts[0])), maxi(240, int(parts[1])))
+	_capture_size = requested
+	# macOS constrains decorated windows to the usable desktop. A borderless
+	# capture window may exceed that rectangle while retaining a real native
+	# Compatibility-renderer viewport for exact 16:10 and ultrawide receipts.
+	DisplayServer.window_set_flag(DisplayServer.WINDOW_FLAG_BORDERLESS, true)
 	get_window().size = requested
 	var logical_width := maxi(320, roundi(360.0 * float(requested.x) / float(requested.y)))
 	get_window().content_scale_size = Vector2i(logical_width, 360)
@@ -198,6 +204,16 @@ func _capture_route_frame_receipt(script_frame: int) -> void:
 		push_error("Rain City route capture could not read the rendered viewport")
 		get_tree().quit(1)
 		return
+	var window_size := get_window().size
+	var image_size := image.get_size()
+	var window_borderless := DisplayServer.window_get_flag(DisplayServer.WINDOW_FLAG_BORDERLESS)
+	if _capture_size == Vector2i.ZERO or window_size != _capture_size or image_size != _capture_size or not window_borderless:
+		push_error(
+			"Rain City route capture dimensions drifted (requested=%s window=%s image=%s borderless=%s)"
+			% [_capture_size, window_size, image_size, window_borderless]
+		)
+		get_tree().quit(1)
+		return
 	var save_error := image.save_png(_receipt_image_path)
 	if save_error != OK:
 		push_error("Rain City route capture could not save receipt image: %s" % error_string(save_error))
@@ -232,6 +248,9 @@ func _capture_route_frame_receipt(script_frame: int) -> void:
 		"capture_frame": _capture_frame,
 		"script_frame": script_frame,
 		"capture_seed": _capture_seed,
+		"capture_window_size": [window_size.x, window_size.y],
+		"receipt_image_size": [image_size.x, image_size.y],
+		"capture_window_borderless": window_borderless,
 		"player_origin": [player_transform.origin.x, player_transform.origin.y, player_transform.origin.z],
 		"camera_origin": [camera_transform.origin.x, camera_transform.origin.y, camera_transform.origin.z],
 		"camera_forward": [actual_forward.x, actual_forward.y, actual_forward.z],

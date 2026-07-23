@@ -52,13 +52,15 @@ user_data.mkdir(parents=True, exist_ok=True)
     def test_direct_capture_launch_receives_isolated_env(self) -> None:
         with tempfile.TemporaryDirectory(prefix="direct-capture-env-test-") as temp:
             output_root = Path(temp)
-            capture_project = output_root / "project-1280x720"
+            capture_project = output_root / "project-1680x1050"
             capture_project.mkdir(parents=True)
             (capture_project / "project.godot").write_text("[application]\n", encoding="utf-8")
-            expected_frame = output_root / "route-1280x720/capture00000001.png"
+            expected_frame = output_root / "route-1680x1050/capture00000001.png"
             seen_env = {}
+            seen_command = []
 
             def fake_run(command, env):
+                seen_command.extend(command)
                 seen_env.update(env)
                 expected_frame.parent.mkdir(parents=True, exist_ok=True)
                 expected_frame.touch()
@@ -74,24 +76,31 @@ user_data.mkdir(parents=True, exist_ok=True)
                         "frame": 1,
                         "capture": {"quit_after": 2},
                     },
-                    {"id": "1280x720", "width": 1280, "height": 720},
+                    {"id": "1680x1050", "width": 1680, "height": 1050},
                     30,
                     60,
                 )
 
             self.assertEqual(frame, expected_frame)
             self.assertIsNone(receipt)
-            isolated_home = output_root / "route-1280x720/user-data/home"
+            isolated_home = output_root / "route-1680x1050/user-data/home"
             self.assertEqual(seen_env.get("HOME"), str(isolated_home))
             self.assertEqual(seen_env.get("CFFIXED_USER_HOME"), str(isolated_home))
+            resolution_index = seen_command.index("--resolution")
+            self.assertEqual(
+                seen_command[resolution_index + 1],
+                capture_tool._DIRECT_CAPTURE_BOOTSTRAP_RESOLUTION,
+            )
+            self.assertIn("--capture-size=1680x1050", seen_command)
 
     def test_camera_pose_receipt_is_required_and_validated(self) -> None:
         import hashlib
         import json
+        from PIL import Image
 
         with tempfile.TemporaryDirectory(prefix="capture-pose-receipt-test-") as temp:
             receipt_image = Path(temp) / "receipt.png"
-            receipt_image.write_bytes(b"rendered-frame")
+            Image.new("RGB", (1680, 1050), "#203040").save(receipt_image)
             receipt_sha256 = hashlib.sha256(receipt_image.read_bytes()).hexdigest()
             view = {
                 "id": "rain_city_slice",
@@ -111,6 +120,9 @@ user_data.mkdir(parents=True, exist_ok=True)
                 "capture_frame": 80,
                 "script_frame": 80,
                 "capture_seed": 2026072211,
+                "capture_window_size": [1680, 1050],
+                "receipt_image_size": [1680, 1050],
+                "capture_window_borderless": True,
                 "player_origin": [2.5, 1.1, -37.0],
                 "camera_origin": [2.5, 2.66, -37.0],
                 "camera_forward": [-0.9948912859, 0.1009522080, 0.0],
@@ -126,7 +138,9 @@ user_data.mkdir(parents=True, exist_ok=True)
                 return "CAPTURE_CAMERA_POSE " + json.dumps(data, separators=(",", ":")) + "\n"
 
             valid_output = output_for(receipt_data)
-            receipt = capture_tool._camera_pose_receipt(valid_output, view, receipt_image)
+            receipt = capture_tool._camera_pose_receipt(
+                valid_output, view, receipt_image, (1680, 1050)
+            )
             self.assertIsNotNone(receipt)
             assert receipt is not None
             self.assertEqual(receipt["staging_id"], "rain_city_slice")
@@ -141,6 +155,9 @@ user_data.mkdir(parents=True, exist_ok=True)
                 valid_output.replace('"capture_frame":80', '"capture_frame":79'),
                 valid_output.replace('"script_frame":80', '"script_frame":79'),
                 valid_output.replace('"capture_seed":2026072211', '"capture_seed":1'),
+                valid_output.replace('"capture_window_size":[1680,1050]', '"capture_window_size":[1484,928]'),
+                valid_output.replace('"receipt_image_size":[1680,1050]', '"receipt_image_size":[1484,928]'),
+                valid_output.replace('"capture_window_borderless":true', '"capture_window_borderless":false'),
                 valid_output.replace('"player_origin":[2.5', '"player_origin":[3.5'),
                 valid_output.replace('"camera_origin":[2.5,2.66', '"camera_origin":[2.5,102.66'),
                 valid_output.replace('"camera_forward":[-0.9948912859', '"camera_forward":[0.5'),
@@ -153,10 +170,26 @@ user_data.mkdir(parents=True, exist_ok=True)
             for output in invalid_outputs:
                 with self.subTest(output=output):
                     with self.assertRaises(RuntimeError):
-                        capture_tool._camera_pose_receipt(output, view, receipt_image)
+                        capture_tool._camera_pose_receipt(
+                            output, view, receipt_image, (1680, 1050)
+                        )
 
             with self.assertRaises(RuntimeError):
-                capture_tool._camera_pose_receipt(valid_output, view, Path(temp) / "missing.png")
+                capture_tool._camera_pose_receipt(
+                    valid_output, view, Path(temp) / "missing.png", (1680, 1050)
+                )
+            with self.assertRaises(RuntimeError):
+                capture_tool._camera_pose_receipt(valid_output, view, receipt_image, (3440, 1440))
+            wrong_size_image = Path(temp) / "wrong-size.png"
+            Image.new("RGB", (1484, 928), "#203040").save(wrong_size_image)
+            wrong_size_data = {
+                **receipt_data,
+                "receipt_image_sha256": hashlib.sha256(wrong_size_image.read_bytes()).hexdigest(),
+            }
+            with self.assertRaises(RuntimeError):
+                capture_tool._camera_pose_receipt(
+                    output_for(wrong_size_data), view, wrong_size_image, (1680, 1050)
+                )
 
     def test_scene_edge_iou_rejects_duplicate_captures(self) -> None:
         from PIL import Image, ImageDraw
