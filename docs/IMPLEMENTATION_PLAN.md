@@ -180,7 +180,7 @@ bash tools/run_godot_safe.sh --timeout 300 -- --headless --path . --script res:/
 
 ### WCB-008 — Mission-specific visual and audio identity
 
-**Status:** In progress — readability/gate, authored harbour-backdrop, runtime audio-event evidence, and isolated four-aspect captures for all five non-boss route zones implemented 2026-07-22; human visual/audio identity acceptance remains open
+**Status:** In progress — readability/gate, authored harbour-backdrop, and runtime audio-event evidence are implemented. WCB-008G invalidated the previous four-aspect non-boss route set, established post-draw hash/pose-bound evidence at 16:9 and 4:3, and reopened the mechanical 4:3 safe-area gate after exposing a clipped ammo/weapon cluster; a safe-area fix, fresh complete four-aspect set, and human visual/audio identity acceptance remain open
 **Owner:** Visual Foundry/audio
 **Paths:** `assets/models/environment/rain_city_*`, `assets/source/blender/rain_city_run_foundry.blend`, `assets/source/material_maker/rain_city_*.ptex`, `assets/textures/materials/rain_city/`, `resources/presentation/vancouver_*.tres`, `resources/audio/vancouver_mission_audio.tres`, `assets/audio/**/vancouver_*.wav`, `scenes/levels/vancouver/rain_city_presentation.tscn`, `scripts/level/rain_city_material_applier.gd`, `docs/ART_BIBLE.md`, `docs/ASSET_MANIFEST.md`, and canonical non-boss captures. WCB-007 boss paths are explicitly excluded.
 

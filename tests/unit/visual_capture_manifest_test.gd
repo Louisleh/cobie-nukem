@@ -2,6 +2,8 @@ extends SceneTree
 
 const MANIFEST_PATH := "res://tools/visual_quality/capture_manifest.json"
 const CAPTURE_SCRIPT_PATH := "res://tools/visual_quality/capture.sh"
+const VISUAL_DIRECT_CAPTURE_SCRIPT := preload("res://scripts/debug/visual_direct_capture.gd")
+
 const CANONICAL_VIEWS := [
 	"title",
 	"mission_select",
@@ -26,11 +28,16 @@ const CANONICAL_VIEWS := [
 ]
 const CANONICAL_COUNT := 20
 const RAIN_CITY_ROUTE_VIEWS := {
-	"rain_city_downtown": 2026072210,
-	"rain_city_slice": 2026072211,
-	"rain_city_terminal": 2026072212,
-	"rain_city_harbour": 2026072213,
+	"rain_city_downtown": {"staging_id": "rain_city_downtown", "seed": 2026072210},
+	"rain_city_slice": {"staging_id": "rain_city_slice", "seed": 2026072211},
+	"vancouver_waterfront": {"staging_id": "waterfront_seawall", "seed": 2026071613},
+	"rain_city_terminal": {"staging_id": "rain_city_terminal", "seed": 2026072212},
+	"rain_city_harbour": {"staging_id": "rain_city_harbour", "seed": 2026072213},
 }
+
+class CaptureTarget:
+	extends Node3D
+	var player: Node3D
 
 var failures: Array[String] = []
 var safe_filename_pattern: RegEx = RegEx.new()
@@ -39,6 +46,7 @@ var safe_filename_pattern: RegEx = RegEx.new()
 func _initialize() -> void:
 	safe_filename_pattern.compile("^[a-z0-9_]+_[0-9]+x[0-9]+\\.png$")
 	_validate_manifest_json()
+	_validate_route_actor_cleanup()
 	if failures.is_empty():
 		print("VISUAL CAPTURE MANIFEST TEST: PASS")
 		quit(0)
@@ -169,12 +177,21 @@ func _validate_views(manifest: Dictionary) -> void:
 			if int(seed) != 2026072107 or int(frame) != 80:
 				failures.append("rain_city_towmaster seed/frame contract drifted")
 		if RAIN_CITY_ROUTE_VIEWS.has(view_id):
+			var route_contract: Dictionary = RAIN_CITY_ROUTE_VIEWS[view_id]
 			if scene_path != "res://scenes/levels/episode_1_vancouver_waterfront.tscn":
 				failures.append("%s must use the production Rain City scene" % view_id)
-			if staging_id != view_id or adapter != "direct_scene_capture":
+			if staging_id != String(route_contract["staging_id"]) or adapter != "direct_scene_capture":
 				failures.append("%s must use its direct route staging adapter" % view_id)
-			if int(seed) != int(RAIN_CITY_ROUTE_VIEWS[view_id]) or int(frame) != 80:
+			if int(seed) != int(route_contract["seed"]) or int(frame) != 80:
 				failures.append("%s seed/frame contract drifted" % view_id)
+			if not bool(view.get("require_camera_pose_receipt", false)):
+				failures.append("%s must require a render-time camera pose receipt" % view_id)
+			if String(view.get("distinctness_group", "")) != "rain_city_non_boss_routes" or not is_equal_approx(float(view.get("distinctness_edge_iou_max", 0.0)), 0.80) or not is_equal_approx(float(view.get("distinctness_min_edge_fraction", 0.0)), 0.002) or not is_equal_approx(float(view.get("distinctness_low_frequency_mae_min", 0.0)), 0.055):
+				failures.append("%s must use the Rain City route distinctness guard" % view_id)
+			if not VISUAL_DIRECT_CAPTURE_SCRIPT.supports_rain_city_route_stage(staging_id):
+				failures.append("%s staging id is missing from visual_direct_capture.gd" % view_id)
+			else:
+				_validate_route_pose_contract(view_id, staging_id, view.get("expected_camera_pose"))
 		if not (support == "supported" or support == "unsupported"):
 			failures.append("Invalid capture_support for view %s: %s" % [view_id, support])
 		elif safe_support_states.has(support) == false:
@@ -231,3 +248,66 @@ func _validate_capture_script_policy() -> void:
 		failures.append("capture.sh does not expose approve-based baseline overwrite control")
 	if source.find("policy requires --approve") == -1 and source.find("without --approve") == -1:
 		failures.append("capture.sh does not reveal baseline non-overwrite policy in source")
+
+
+func _validate_route_pose_contract(view_id: String, staging_id: String, expected_pose: Variant) -> void:
+	if typeof(expected_pose) != TYPE_DICTIONARY:
+		failures.append("%s must declare expected_camera_pose" % view_id)
+		return
+	var expected: Dictionary = expected_pose
+	var player_values: Variant = expected.get("player_origin")
+	var camera_values: Variant = expected.get("camera_origin")
+	var look_values: Variant = expected.get("look_target")
+	var fov_value: Variant = expected.get("camera_fov")
+	if typeof(player_values) != TYPE_ARRAY or (player_values as Array).size() != 3:
+		failures.append("%s expected player_origin must contain three values" % view_id)
+		return
+	if typeof(camera_values) != TYPE_ARRAY or (camera_values as Array).size() != 3:
+		failures.append("%s expected camera_origin must contain three values" % view_id)
+		return
+	if typeof(look_values) != TYPE_ARRAY or (look_values as Array).size() != 3:
+		failures.append("%s expected look_target must contain three values" % view_id)
+		return
+	if typeof(fov_value) not in [TYPE_INT, TYPE_FLOAT]:
+		failures.append("%s expected camera_fov must be numeric" % view_id)
+		return
+	var player_array: Array = player_values
+	var camera_array: Array = camera_values
+	var look_array: Array = look_values
+	var expected_player := Vector3(float(player_array[0]), float(player_array[1]), float(player_array[2]))
+	var expected_camera := Vector3(float(camera_array[0]), float(camera_array[1]), float(camera_array[2]))
+	var expected_look := Vector3(float(look_array[0]), float(look_array[1]), float(look_array[2]))
+	var runtime_pose := VISUAL_DIRECT_CAPTURE_SCRIPT.rain_city_route_stage_pose(staging_id)
+	if runtime_pose.is_empty():
+		failures.append("%s route staging pose is missing" % view_id)
+		return
+	var runtime_player: Vector3 = runtime_pose.get("player_origin", Vector3.INF)
+	var runtime_camera: Vector3 = runtime_pose.get("camera_origin", Vector3.INF)
+	var runtime_look: Vector3 = runtime_pose.get("look_target", Vector3.INF)
+	var runtime_fov: float = runtime_pose.get("camera_fov", -1.0)
+	if not expected_player.is_equal_approx(runtime_player) or not expected_camera.is_equal_approx(runtime_camera) or not expected_look.is_equal_approx(runtime_look) or not is_equal_approx(float(fov_value), runtime_fov):
+		failures.append("%s expected camera pose drifted from visual_direct_capture.gd" % view_id)
+
+
+func _validate_route_actor_cleanup() -> void:
+	var target := CaptureTarget.new()
+	var actors := Node3D.new()
+	actors.name = "Actors"
+	target.add_child(actors)
+	var player := Node3D.new()
+	player.name = "Player"
+	actors.add_child(player)
+	target.player = player
+	var non_player_actor := Node3D.new()
+	non_player_actor.name = "Enemy"
+	actors.add_child(non_player_actor)
+	root.add_child(target)
+	var capture := VISUAL_DIRECT_CAPTURE_SCRIPT.new()
+	capture.set("_target", target)
+	capture.call("_clear_non_player_actors")
+	if not actors.visible or not player.is_visible_in_tree():
+		failures.append("Route actor cleanup must preserve the visible player camera hierarchy")
+	if not non_player_actor.is_queued_for_deletion():
+		failures.append("Route actor cleanup must queue non-player actors for deletion")
+	target.queue_free()
+	capture.free()

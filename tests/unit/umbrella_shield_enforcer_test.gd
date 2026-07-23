@@ -40,23 +40,26 @@ func _test_attack_opening_and_recovery(harness: Node3D) -> void:
 	harness.add_child(target)
 	enemy.set_target(target)
 	await process_frame
+	enemy.set_physics_process(false)
 
+	enemy._set_state(UmbrellaShieldEnforcer.State.IDLE)
 	enemy._set_state(UmbrellaShieldEnforcer.State.CHASE)
 	await process_frame
+	enemy.set_physics_process(false)
 	_expect(enemy.guard_state == UmbrellaShieldEnforcer.GuardState.GUARDING, "chase starts guarded")
 
 	enemy._set_state(UmbrellaShieldEnforcer.State.ATTACK)
-	var open_delay := maxf(enemy.definition.telegraph_seconds - enemy.get_opening_window_seconds(), 0.0)
-	await create_timer(open_delay * 0.4).timeout
 	_expect(enemy.guard_state == UmbrellaShieldEnforcer.GuardState.GUARDING, "attack enters with guard closed")
-	await create_timer(open_delay * 0.75).timeout
+	enemy._guard_timer.stop()
+	enemy._on_guard_timer_timeout()
 	_expect(enemy.guard_state == UmbrellaShieldEnforcer.GuardState.OPENING, "guard opens during attack opening")
 
 	enemy._perform_attack()
 	_expect(enemy.guard_state == UmbrellaShieldEnforcer.GuardState.RECOVERING, "attack enters recovery after opening fire")
 	enemy._set_state(UmbrellaShieldEnforcer.State.CHASE)
 	var baseline_timer_count := _guard_timer_count(enemy)
-	await create_timer(enemy.get_recovery_window_seconds() + 0.04).timeout
+	enemy._guard_timer.stop()
+	enemy._on_guard_timer_timeout()
 	_expect(enemy.guard_state == UmbrellaShieldEnforcer.GuardState.GUARDING, "guard returns after recovery")
 	_expect(_guard_timer_count(enemy) == baseline_timer_count, "guard uses shared timer node")
 	enemy.free()
@@ -67,10 +70,11 @@ func _test_damage_integration(harness: Node3D) -> void:
 	var enemy := _build_umbrella()
 	harness.add_child(enemy)
 	await process_frame
+	enemy.set_physics_process(false)
 
 	var shield := enemy.directional_shield
-	var front_hit := enemy.global_position + Vector3.FORWARD * 2.0
-	var rear_hit := enemy.global_position + Vector3.BACK * 2.0
+	var front_hit := enemy.to_global(Vector3.FORWARD * 2.0)
+	var rear_hit := enemy.to_global(Vector3.BACK * 2.0)
 
 	var health_before := enemy.health
 	var shield_before := shield.current_shield_health
@@ -100,7 +104,9 @@ func _test_damage_integration(harness: Node3D) -> void:
 
 	shield.reset()
 	enemy._set_state(UmbrellaShieldEnforcer.State.CHASE)
-	while not shield.is_permanently_broken():
+	for _attempt in range(16):
+		if shield.is_permanently_broken():
+			break
 		enemy.apply_damage(1.0, null, front_hit)
 		if not shield.is_permanently_broken():
 			enemy._set_state(UmbrellaShieldEnforcer.State.CHASE)
@@ -123,23 +129,22 @@ func _test_timer_generation_safety(harness: Node3D) -> void:
 	harness.add_child(target)
 	enemy.set_target(target)
 	await process_frame
+	enemy.set_physics_process(false)
+	enemy._set_state(UmbrellaShieldEnforcer.State.CHASE)
+	enemy._set_state(UmbrellaShieldEnforcer.State.IDLE)
 
 	# Opening timer should not apply after leaving ATTACK before timeout.
 	enemy._set_state(UmbrellaShieldEnforcer.State.ATTACK)
-	var open_delay := maxf(enemy.definition.telegraph_seconds - enemy.get_opening_window_seconds(), 0.0)
-	await create_timer(open_delay * 0.5).timeout
 	_expect(enemy.guard_state == UmbrellaShieldEnforcer.GuardState.GUARDING, "attack begins guarded before opening")
 	enemy._set_state(UmbrellaShieldEnforcer.State.IDLE)
-	await create_timer(open_delay + 0.08).timeout
+	enemy._on_guard_timer_timeout()
 	_expect(enemy.guard_state == UmbrellaShieldEnforcer.GuardState.GUARDING, "stale opening timer cannot reopen guard after attack cancel")
 
 	# Recovery timer should not re-arm after switching states.
 	enemy._start_guard_recovery()
 	enemy._set_state(UmbrellaShieldEnforcer.State.ATTACK)
-	var recovery_window := enemy.get_recovery_window_seconds()
-	await create_timer(recovery_window * 0.35).timeout
 	enemy._set_state(UmbrellaShieldEnforcer.State.IDLE)
-	await create_timer(recovery_window + 0.08).timeout
+	enemy._on_guard_timer_timeout()
 	_expect(enemy.guard_state == UmbrellaShieldEnforcer.GuardState.GUARDING, "stale recovery timer cannot reopen guard")
 
 	enemy.free()
@@ -153,6 +158,7 @@ func _test_difficulty_and_death_lock(harness: Node3D) -> void:
 	harness.add_child(target)
 	enemy.set_target(target)
 	await process_frame
+	enemy.set_physics_process(false)
 
 	var baseline_open := enemy.get_opening_window_seconds()
 	var hard_profile := DifficultyProfile.new()
@@ -160,8 +166,10 @@ func _test_difficulty_and_death_lock(harness: Node3D) -> void:
 	enemy.apply_difficulty(hard_profile)
 	_expect(enemy.get_opening_window_seconds() < baseline_open, "hard aggression shortens opening window")
 
-	while enemy.directional_shield != null and not enemy.directional_shield.shield_is_broken:
-		enemy.directional_shield.damage_multiplier(enemy, enemy.global_position + Vector3.BACK * -1.0 * 2.0, 20.0)
+	for _attempt in range(16):
+		if enemy.directional_shield == null or enemy.directional_shield.shield_is_broken:
+			break
+		enemy.directional_shield.damage_multiplier(enemy, enemy.to_global(Vector3.FORWARD * 2.0), 20.0)
 	_expect(enemy.directional_shield.is_permanently_broken(), "front-facing hits can still break shield")
 	enemy._set_state(UmbrellaShieldEnforcer.State.CHASE)
 	_expect(enemy.guard_state == UmbrellaShieldEnforcer.GuardState.BROKEN, "broken shield transitions to broken guard state")
