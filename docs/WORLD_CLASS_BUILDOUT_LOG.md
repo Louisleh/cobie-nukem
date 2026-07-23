@@ -9,8 +9,8 @@ This is the durable continuation ledger for the Cobie Nukem 3/6/9 quality progra
 - **Public baseline declared by roadmap:** `0.11.0-alpha.1-rc1`, gameplay/runtime `3c2de29`
 - **Current packet:** WCB-008 — Mission-specific visual and audio identity
 - **Last verified packet:** WCB-007 Towmaster combat/presentation/reset/capture matrix and packaged Web/macOS validation pass
-- **Next dependency-safe packet:** WCB-008 only — Rain City Visual Foundry/audio paths declared in the implementation plan; WCB-007 boss paths remain frozen
-- **Toolchain state:** Godot 4.7.1 and matching export templates are installed; automated import, tests, and export validation pass. Optional Blender/MCP production-art tooling remains unavailable and is recorded below.
+- **Next dependency-safe packet:** WCB-008H only — repair the 4:3 lower-right HUD safe area, rerun the headless performance gate, then recapture all five non-boss route views across all four declared aspects under WCB-008G guards; WCB-007 boss paths remain frozen
+- **Toolchain state:** Godot 4.7.1 and matching export templates are installed; import, functional tests, IP/architecture/content gates, and standalone macOS/Web exports pass. The full release wrapper currently stops at its unchanged headless performance budget on this host. Optional Blender/MCP production-art tooling remains unavailable and is recorded below.
 - **Human-only gates:** target-Mac feel/playthrough, physical iPad, flight stick, art taste, pacing, mix, fairness, humor, motion comfort, photosensitivity
 
 ## Milestone dashboard
@@ -25,7 +25,7 @@ This is the durable continuation ledger for the Cobie Nukem 3/6/9 quality progra
 | WCB-005 Rain City spatial slice | COMPLETE | Level | `8a5a807` | Route/state/navigation/catalog/core + multi-aspect comparison + packaged exports pass | Human pacing, meaningfulness, and landmark readability remain open |
 | WCB-006 Encounters | COMPLETE | Enemy/encounter + bounded integration transfer | `e61b73c` | Schema-v3 content/runtime/reset/navigation + 100-cycle soak + packaged exports pass | Human pacing/fairness open |
 | WCB-007 Towmaster | COMPLETE | Boss/presentation + bounded integration transfer | `45bf41a` | Three attacks/four phases/two arena states + 100-cycle combat/reset + native comparison + packaged exports pass | Human spectacle/fairness/readability open |
-| WCB-008 Art/audio identity | IN PROGRESS | Visual Foundry/audio | `5650453` | Fog/readability, authored barriers, original harbour backdrop, explicit audio events, and isolated four-aspect captures for all five non-boss route zones pass mechanically | District-specific landmark/material differentiation and human art/mix/humor approval remain open |
+| WCB-008 Art/audio identity | IN PROGRESS | Visual Foundry/audio + QA evidence integrity | `5650453`, `eb4539f` | Fog/readability, authored barriers, harbour backdrop, explicit audio events, and camera/hash-bound distinct route evidence at 16:9 + 4:3 pass mechanically; prior fallback-camera evidence was invalidated | 4:3 ammo/weapon safe area, fresh four-aspect set, headless performance gate, and human art/mix/humor approval remain open |
 | WCB-009 RC evidence/selection | BLOCKED by WCB-008 | Integration/release | — | WCB-005–007 verified | Human/device gates required |
 | WCB-010 Second-mission replication | BLOCKED by WCB-009 | Assigned after selection | — | — | Mission-specific human gates required |
 | WCB-011 Release identity/roadmap | BLOCKED by WCB-010 | Integration/release | — | — | Publish only an honest candidate |
@@ -332,6 +332,47 @@ Decision and remaining gate:
 - Canonical Rain City non-boss capture coverage is mechanically complete and trustworthy enough to guide art work; no candidate is promoted to baseline.
 - The captures honestly show that downtown, Slice, terminal, and harbour still repeat too much corridor massing, flat facade treatment, and weak unlabelled landmark hierarchy. WCB-008 remains `IN PROGRESS`; the next dependency-safe packet is district-specific landmark/material composition followed by human visual/audio/humor/accessibility review.
 - WCB-009 remains blocked. No human, physical-device, or public-artifact approval is inferred.
+
+### WCB-008G route-evidence integrity and fail-closed QA packet — COMPLETE (WCB-008 remains open)
+
+- **Source commit:** `5650453`
+- **Implementation commit:** `eb4539fb64171e63713c458d6164cc52fef1caa9`
+- **Writer/integration owner:** GPT-5.6-sol/Hermes
+- **Read-only reviewers:** one GPT-5.3-Codex-Spark capture audit, three focused GPT-5.6-sol/high adversarial passes, and one GPT-5.3-Codex-Spark test-harness review. No worker wrote, merged, pushed, or claimed human/device evidence.
+- **Acceptance condition:** a Rain City district capture is evidence only when the post-draw screenshot is hash-bound to a validated player/camera/look/FOV receipt, all declared route views are geometrically and low-frequency distinct, and baseline promotion is complete and recoverable. Prior fallback-camera evidence must be invalidated rather than defended.
+- **Owned/changed paths:** `scripts/debug/visual_direct_capture.gd`; `tests/unit/visual_capture_manifest_test.gd`; `tools/visual_quality/capture_manifest.json`; `tools/visual_quality/capture_tool.py`; `tools/visual_quality/test_capture_tool.py`; `tests/unit/umbrella_shield_enforcer_test.gd`; `docs/IMPLEMENTATION_PLAN.md`; `docs/VERTICAL_SLICE_SCORECARD.md`; this ledger.
+- **Implementation:**
+  - direct capture now applies declared player/camera/look/FOV staging, verifies the active camera belongs to the staged player, waits for `frame_post_draw`, saves the exact PNG, and emits an image SHA-256 receipt;
+  - the Python runner requires the structured receipt, validates camera and image contracts, rejects blank/hash-mismatched output, compares a HUD-excluding scene ROI with edge IoU plus low-frequency MAE, requires every declared route/aspect before group approval, and promotes complete baselines through a sibling staging/backup transaction with rollback and retained recovery evidence if rollback itself fails;
+  - manifest/Godot/Python tests cover complete-group approval, camera ancestry/pose, exact image binding, weather-noise duplicate rejection, transactional promotion, rollback failure retention, and no-write-on-failure;
+  - a release-matrix hang exposed unrelated nondeterminism in `umbrella_shield_enforcer_test.gd`; the test now uses actor-local hit geometry, bounded fail-closed shield attempts, physics isolation, known starting states, and deterministic shared-timer callback sequencing. Production enemy paths were not changed.
+- **Mechanical verification:**
+  1. `python3 tools/visual_quality/test_capture_tool.py` — **PASS**, 11 tests.
+  2. `bash tools/run_godot_safe.sh --timeout 120 -- --headless --path . --script res://tests/unit/visual_capture_manifest_test.gd` — **PASS**, `VISUAL CAPTURE MANIFEST TEST: PASS`.
+  3. `env -u PYTHONPATH -u VIRTUAL_ENV bash tools/visual_quality/capture.sh --candidate /tmp/cobie-wcb008-candidate --run-id route-evidence-integrity-final --view rain_city_downtown --view rain_city_slice --view vancouver_waterfront --view rain_city_terminal --view rain_city_harbour --aspect 1280x720 --aspect 1024x768` — **PASS**, ten exact post-draw images/receipts; no baseline approval.
+     - 16:9 pairwise edge IoU `0.107397`–`0.436021`, low-frequency MAE `0.063798`–`0.139763`.
+     - 4:3 pairwise edge IoU `0.119314`–`0.463381`, low-frequency MAE `0.061399`–`0.121410`.
+     - report: `/tmp/cobie-wcb008-candidate/route-evidence-integrity-final/capture_report.json`.
+  4. Twenty old route images were remeasured and invalidated: 16:9 edge IoU `0.906449`–`0.992621`; 4:3 `0.908159`–`0.991297`; low-frequency MAE `0.004952`–`0.049008`.
+  5. OS-temp ad-hoc verifier loop after the umbrella-harness fix — **PASS 30/30**; `/tmp/hermes-verify-umbrella` was removed.
+  6. `bash tools/run_godot_safe.sh --timeout 590 -- --headless --path . --editor --quit` and `bash tools/run_godot_safe.sh --timeout 300 -- --headless --path . --script res://tests/run_tests.gd` — **PASS**.
+  7. `bash tools/architecture_check.sh` — **PASS**; `bash tools/asset_ip_scan.sh` — **PASS**; `res://tools/validate_content.gd` — **PASS**, five manifests.
+  8. `QA_EXPORTS=1 bash tools/release_validate.sh` was run three times and remains **BLOCKED**, not green: the first run exposed the now-fixed umbrella test hang; the second emitted an intermittent two-object smoke teardown leak that did not recur in five isolated smoke runs; the third passed the functional/smoke matrix and then failed the unchanged headless performance budget. Representative third-run samples: Rain City average `47.853 ms`, p95 `124.320 ms`; Ventura average `59.892 ms`, p95 `147.960 ms`; existing average/p95 limits are `50 ms`. This packet changes no production scene or performance path.
+  9. Standalone package fallback required by the release docs — **PASS**:
+     - macOS `builds/macos/CobieNukem.zip`, `115791391` bytes, SHA-256 `b0493f2259b59927b9cd4786de96acc9e072149c04d2ba46f4cd3fe6f4dd78bc`;
+     - Web `index.html`, `index.js`, `index.pck`, and `index.wasm` exported; `index.pck` SHA-256 `86f6dbc8760e45b2cf56216b9ab38ed2042958043d30db06a40ad568d6857674`, `index.wasm` `35116f68540ac41acf7d71ea457added91b5e960a9cca3e2acc72918eaf01277`.
+  10. `bash tools/game_dev_health.sh` and the Visual Foundry toolchain verifier remain **environment-blocked only** by the four absent optional Codex MCP tools (`blender-bridge`, `imagegen`, `godot`, `godot-editor`).
+- **Rendered automated evidence:**
+  - prior/suspect contact: `/tmp/cobie-wcb008-old-route-contact.png`;
+  - final 16:9 contact: `/tmp/cobie-wcb008-1280x720-final-contact.png`;
+  - final 4:3 contact: `/tmp/cobie-wcb008-1024x768-final-contact.png`.
+  - Pixel review confirms five nonblank, materially distinct route compositions at both aspects. It also exposes a real 4:3 defect: the lower-right ammo count and weapon label are absent/clipped. This is an open mechanical UX gate, not taste approval.
+- **Review disposition:** the first high review correctly blocked on unenforced pose fields, weak receipt/image binding, weather-sensitive duplicate detection, and non-transactional approval; the second caught failed-rollback backup deletion; all were fixed and regression-tested. Final GPT-5.6-sol/high review and the focused Spark umbrella-harness review returned **APPROVE** with no blocker/major findings.
+- **Evidence classes:** mechanical parser/tests/contracts/capture receipts/metrics/IP/content/architecture/exports; rendered automated contact sheets; **no** human taste, route-feel, mix, accessibility-comfort, photosensitivity, browser-playthrough, target-Mac, iPad, or physical-controller evidence.
+- **Usage checkpoint (2026-07-22 19:14 PT):** Main GPT/Codex `54%` remaining; GPT-5.3-Codex-Spark `31%` remaining; reset credits `100%` remaining.
+- **Remaining gates / next packet:** WCB-008 remains **IN PROGRESS**. WCB-008H owns the 4:3 HUD safe-area repair, headless performance investigation/rerun, and fresh five-view × four-aspect bound capture set. Human visual/mix/humor/accessibility approval remains open; WCB-009 stays blocked.
+
+---
 
 ## Resume protocol
 
