@@ -8,9 +8,9 @@ This is the durable continuation ledger for the Cobie Nukem 3/6/9 quality progra
 - **Baseline source:** `4dbbe2e8571efec290ed863415a78f09bc970ca9`
 - **Public baseline declared by roadmap:** `0.11.0-alpha.1-rc1`, gameplay/runtime `3c2de29`
 - **Current packet:** WCB-008 — Mission-specific visual and audio identity
-- **Last verified packet:** WCB-007 Towmaster combat/presentation/reset/capture matrix and packaged Web/macOS validation pass
-- **Next dependency-safe packet:** WCB-008H only — repair the 4:3 lower-right HUD safe area, rerun the headless performance gate, then recapture all five non-boss route views across all four declared aspects under WCB-008G guards; WCB-007 boss paths remain frozen
-- **Toolchain state:** Godot 4.7.1 and matching export templates are installed; import, functional tests, IP/architecture/content gates, and standalone macOS/Web exports pass. The full release wrapper currently stops at its unchanged headless performance budget on this host. Optional Blender/MCP production-art tooling remains unavailable and is recorded below.
+- **Last verified packet:** WCB-008H compact HUD safe-area repair, fail-closed responsive regression, supported 16:9/4:3 capture review, and standalone Web/macOS package validation
+- **Next dependency-safe packet:** WCB-008 continuation only — produce exact native 1680×1050 and 3440×1440 hash-bound receipts on a capable display/isolated capture path without weakening WCB-008G dimension checks, then prepare the human visual/audio/humor/accessibility review; WCB-007 boss paths remain frozen
+- **Toolchain state:** Godot 4.7.1, Blender 5.2.0 LTS, Material Maker 1.7, and matching Godot export templates are installed; import, functional tests, IP/architecture/content gates, and standalone macOS/Web exports pass. The full release wrapper currently stops at its unchanged headless performance budget on this host. Optional Codex/Godot/Blender MCP production-art integrations remain unavailable and are recorded below.
 - **Human-only gates:** target-Mac feel/playthrough, physical iPad, flight stick, art taste, pacing, mix, fairness, humor, motion comfort, photosensitivity
 
 ## Milestone dashboard
@@ -25,7 +25,7 @@ This is the durable continuation ledger for the Cobie Nukem 3/6/9 quality progra
 | WCB-005 Rain City spatial slice | COMPLETE | Level | `8a5a807` | Route/state/navigation/catalog/core + multi-aspect comparison + packaged exports pass | Human pacing, meaningfulness, and landmark readability remain open |
 | WCB-006 Encounters | COMPLETE | Enemy/encounter + bounded integration transfer | `e61b73c` | Schema-v3 content/runtime/reset/navigation + 100-cycle soak + packaged exports pass | Human pacing/fairness open |
 | WCB-007 Towmaster | COMPLETE | Boss/presentation + bounded integration transfer | `45bf41a` | Three attacks/four phases/two arena states + 100-cycle combat/reset + native comparison + packaged exports pass | Human spectacle/fairness/readability open |
-| WCB-008 Art/audio identity | IN PROGRESS | Visual Foundry/audio + QA evidence integrity | `5650453`, `eb4539f` | Fog/readability, authored barriers, harbour backdrop, explicit audio events, and camera/hash-bound distinct route evidence at 16:9 + 4:3 pass mechanically; prior fallback-camera evidence was invalidated | 4:3 ammo/weapon safe area, fresh four-aspect set, headless performance gate, and human art/mix/humor approval remain open |
+| WCB-008 Art/audio identity | IN PROGRESS | Visual Foundry/audio + QA evidence integrity | `5650453`, `eb4539f`, `a506b27` | Fog/readability, authored barriers, harbour backdrop, explicit audio events, camera/hash-bound distinct route evidence, and compact HUD safety at supported 16:9 + 4:3 pass mechanically; standalone Web/macOS exports pass | Exact native 16:10/ultrawide receipt set, headless performance gate, and human art/mix/humor approval remain open |
 | WCB-009 RC evidence/selection | BLOCKED by WCB-008 | Integration/release | — | WCB-005–007 verified | Human/device gates required |
 | WCB-010 Second-mission replication | BLOCKED by WCB-009 | Assigned after selection | — | — | Mission-specific human gates required |
 | WCB-011 Release identity/roadmap | BLOCKED by WCB-010 | Integration/release | — | — | Publish only an honest candidate |
@@ -371,6 +371,39 @@ Decision and remaining gate:
 - **Evidence classes:** mechanical parser/tests/contracts/capture receipts/metrics/IP/content/architecture/exports; rendered automated contact sheets; **no** human taste, route-feel, mix, accessibility-comfort, photosensitivity, browser-playthrough, target-Mac, iPad, or physical-controller evidence.
 - **Usage checkpoint (2026-07-22 19:14 PT):** Main GPT/Codex `54%` remaining; GPT-5.3-Codex-Spark `31%` remaining; reset credits `100%` remaining.
 - **Remaining gates / next packet:** WCB-008 remains **IN PROGRESS**. WCB-008H owns the 4:3 HUD safe-area repair, headless performance investigation/rerun, and fresh five-view × four-aspect bound capture set. Human visual/mix/humor/accessibility approval remains open; WCB-009 stays blocked.
+
+### WCB-008H compact HUD safe-area and supported-aspect evidence packet — COMPLETE (WCB-008 remains open)
+
+- **Source commit:** `bb0b9a8`
+- **Implementation commit:** `a506b27694a295eb453170f12b2baf5e4c7440b4`
+- **Writer/integration owner:** GPT-5.6-sol/Hermes
+- **Read-only reviewers:** one GPT-5.3-Codex-Spark HUD audit, one GPT-5.3-Codex-Spark test-integrity audit, and two GPT-5.6-sol/high adversarial reviews. Reviewers did not write, merge, push, or claim human/device evidence.
+- **Acceptance condition:** the lower-right HUD remains inside the supported compact 4:3 safe area under real viewport-resize lifecycle events, representative maximum-scale text cannot clip, and all compact access/weapon/ammo/reload regions remain disjoint. Fresh bound 16:9/4:3 captures and release packages must verify the repair; unsupported native receipt dimensions and unchanged performance failures stay open rather than being normalized.
+- **Owned/changed paths:** `scripts/ui/hud.gd`; `tests/unit/ui_scene_test.gd`; `docs/IMPLEMENTATION_PLAN.md`; `docs/VERTICAL_SLICE_SCORECARD.md`; this ledger. WCB-007 boss, collision, navigation, mission, art, and audio paths were not changed.
+- **Implementation:**
+  - `GameHUD` now reads the live viewport during the existing caption/boss resize callback and reapplies one responsive bottom-bar contract;
+  - logical widths below `630` receive a compact two-column layout with a `12`-pixel right margin: access on the top row, weapon/reload in the lower-left subcolumn, and ammo in the lower-right subcolumn; desktop coordinates remain unchanged at `630+`;
+  - the UI regression instantiates the production HUD in a `SubViewport`, drives the actual `Viewport.size_changed` signal through logical widths `480`, `576`, `619`, `620`, `629`, `630`, `640`, and `860`, stresses `NO ACCESS COLLAR`, `FETCH LAUNCHER`, `99 / 99`, and `RELOADING...` at the clamped `1.5×` accessibility scale, and checks live applied rectangles, global safe area, minimum width/height, font-scale clamping, and all six compact rectangle pairs.
+- **Mechanical verification:**
+  1. `bash tools/run_godot_safe.sh --timeout 300 -- --headless --path . --script res://tests/unit/ui_scene_test.gd` — **PASS**, `UI SCENE TESTS: PASS`.
+  2. `bash tools/run_godot_safe.sh --timeout 600 -- --headless --path . --editor --quit` followed by `bash tools/run_godot_safe.sh --timeout 300 -- --headless --path . --script res://tests/run_tests.gd` — **PASS**, clean import/class registration and `PASS: core contract checks`.
+  3. `git diff --check`; `bash tools/architecture_check.sh`; `python3 tools/validate_world_class_docs.py` — **PASS**. Final sizes before ledger closeout: `scripts/ui/hud.gd` `500` lines; `tests/unit/ui_scene_test.gd` `560` lines.
+  4. `bash tools/asset_ip_scan.sh` — **PASS**; `res://tools/validate_content.gd` — **PASS**, five manifests.
+  5. `env -u PYTHONPATH -u VIRTUAL_ENV bash tools/visual_quality/capture.sh --candidate /tmp/cobie-wcb008-candidate --run-id wcb008h-final-supported --view rain_city_downtown --view rain_city_slice --view vancouver_waterfront --view rain_city_terminal --view rain_city_harbour --aspect 1280x720 --aspect 1024x768` — **PASS**, ten exact post-draw hash-bound images, zero capture failures, no baseline approval. Pairwise low-frequency MAE minimum `0.061397`; edge IoU maximum `0.463361`.
+  6. `QA_EXPORTS=1 bash tools/release_validate.sh` — **BLOCKED**, not green: import, visual-isolation tests, the complete unit/integration/smoke matrix, and HUD regression passed; the wrapper then stopped before exports at the unchanged headless performance gate. Samples: Rain City `46.874 ms` average / `123.820 ms` p95; Vancouver `45.605 / 123.614`; Mount Hood `55.830 / 147.291`; Moon `59.134 / 148.003`; Ventura `56.238 / 147.050`, against `50 ms` average/p95 limits. A detached `45bf41a` control also failed similarly (`46.420 / 124.969` Rain City; `59.521 / 147.734` Ventura), so no HUD-caused performance regression is claimed.
+  7. Standalone fallback exports required after the wrapper stopped — **PASS**:
+     - Web `index.html` `6605` bytes SHA-256 `d3dbb20e89bea4a94d949419130416d03df5c4270303612370a5813fee2d06ef`; `index.js` `279815` bytes SHA-256 `68586d6daafc93c6e697b3fb258976874aa7459b8931165ebb1dc3c9614cc42c`; `index.pck` `69796692` bytes SHA-256 `1a52444074a725fbf3610345c8ade99a36676a01bcf915198baf1261076b395b`; `index.wasm` `39513091` bytes SHA-256 `35116f68540ac41acf7d71ea457added91b5e960a9cca3e2acc72918eaf01277`;
+     - macOS `builds/macos/CobieNukem.zip`, `115792291` bytes, SHA-256 `771407d45d930fbcd5c0debfece1a5cffafc88740b855c431162b9cd41055871`; ZIP integrity and forbidden-marker pack scans passed.
+  8. `bash tools/game_dev_health.sh` and the Visual Foundry verifier remain **environment-blocked only**: Godot, Blender 5.2.0 LTS, Material Maker, and source-project bridge hygiene pass, while the optional Godot/Blender/Chrome/context MCP integrations are missing or not privacy-hardened.
+- **Rendered automated evidence:**
+  - report: `/tmp/cobie-wcb008-candidate/wcb008h-final-supported/capture_report.json`;
+  - final 16:9 contact: `/tmp/cobie-wcb008h-final-supported-1280x720-contact.png`;
+  - final 4:3 contact: `/tmp/cobie-wcb008h-final-supported-1024x768-contact.png`.
+  - Pixel inspection of every final image found five nonblank/correct route views at each aspect and no mechanical portrait/health/armor/access/weapon/ammo/objective/crosshair/caption clipping or overlap. This is rendered automated evidence, not taste approval.
+- **Four-aspect blocker:** the current `1920×1080` macOS workspace clamps requested native `1680×1050` captures to `1484×928` and `3440×1440` captures to `1800×753`; WCB-008G correctly rejects both dimension-mismatched receipts. The logical 16:10 (`576`) and ultrawide (`860`) branches pass the maximum-scale lifecycle regression, but automation is not substituted for missing native rendered receipts. The report therefore honestly marks `rain_city_non_boss_routes.complete = false`.
+- **Review disposition:** the first high review rejected boundary overlap at `620–629`, a direct-call false green, missing height checks, and untested compact pairs. All were fixed. Final GPT-5.6-sol/high review returned **APPROVE — no actionable findings**, with only the recorded four-aspect/source-binding/maximum-scale-rendered residual risks.
+- **Evidence classes:** mechanical parser/tests/contracts/capture receipts/metrics/IP/content/architecture/exports; rendered automated contact sheets; **no** human taste, route-feel, mix, humor, accessibility-comfort, photosensitivity, browser-playthrough, target-Mac, iPad, or physical-controller evidence.
+- **Remaining gates / next packet:** WCB-008 remains **IN PROGRESS** and WCB-009 remains blocked. Next, produce exact native 1680×1050 and 3440×1440 receipts through a capable display or isolated capture path without weakening receipt validation, then prepare the named human visual/audio/humor/accessibility review. The unchanged headless performance budget remains separately open.
 
 ---
 
