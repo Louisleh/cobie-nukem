@@ -25,7 +25,7 @@ This is the durable continuation ledger for the Cobie Nukem 3/6/9 quality progra
 | WCB-005 Rain City spatial slice | COMPLETE | Level | `8a5a807` | Route/state/navigation/catalog/core + multi-aspect comparison + packaged exports pass | Human pacing, meaningfulness, and landmark readability remain open |
 | WCB-006 Encounters | COMPLETE | Enemy/encounter + bounded integration transfer | `e61b73c` | Schema-v3 content/runtime/reset/navigation + 100-cycle soak + packaged exports pass | Human pacing/fairness open |
 | WCB-007 Towmaster | COMPLETE | Boss/presentation + bounded integration transfer | `45bf41a` | Three attacks/four phases/two arena states + 100-cycle combat/reset + native comparison + packaged exports pass | Human spectacle/fairness/readability open |
-| WCB-008 Art/audio identity | IN PROGRESS | Visual Foundry/audio + QA evidence integrity | `5650453`, `eb4539f`, `a506b27`, pending WCB-008I | Fog/readability, authored barriers, harbour backdrop, explicit audio events, camera/hash-bound exact four-aspect route evidence, compact HUD safety, native performance, and full Web/macOS release validation pass mechanically | Human art/mix/humor/accessibility approval remains open |
+| WCB-008 Art/audio identity | IN PROGRESS | Visual Foundry/audio + QA evidence integrity | `5650453`, `eb4539f`, `a506b27`, `827e6c8` | Fog/readability, authored barriers, harbour backdrop, explicit audio events, camera/hash-bound exact four-aspect route evidence, compact HUD safety, native performance, and full Web/macOS release validation pass mechanically | Human art/mix/humor/accessibility approval remains open |
 | WCB-009 RC evidence/selection | BLOCKED by WCB-008 | Integration/release | — | WCB-005–007 verified | Human/device gates required |
 | WCB-010 Second-mission replication | BLOCKED by WCB-009 | Assigned after selection | — | — | Mission-specific human gates required |
 | WCB-011 Release identity/roadmap | BLOCKED by WCB-010 | Integration/release | — | — | Publish only an honest candidate |
@@ -408,7 +408,7 @@ Decision and remaining gate:
 ### WCB-008I exact four-aspect borderless route evidence packet — COMPLETE (WCB-008 remains open)
 
 - **Source commit:** `05019241d08721c5ee73f371d198f081c0f24245`
-- **Implementation commit:** pending integration
+- **Implementation commit:** `827e6c8ab71c96639936309a97ed069f8fa7df56`
 - **Writer/integration owner:** GPT-5.6-sol/Hermes
 - **Read-only reviewers:** two GPT-5.3-Codex-Spark audits (root cause/test integrity and final evidence consistency) plus one GPT-5.6-sol/high adversarial diff review. Reviewers did not write, merge, push, or claim human/device evidence.
 - **Acceptance condition:** on the current 1920×1080 macOS host, a desktop-safe 1280×720 decorated bootstrap must transition to a borderless exact target before production-scene instantiation and produce post-draw, pose/hash-bound five-route receipts at 1280×720, 1680×1050, 1024×768, and 3440×1440. Requested/window/viewport/decoded-PNG dimensions must agree exactly; unsupported behavior fails closed.
