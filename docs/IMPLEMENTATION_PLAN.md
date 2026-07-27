@@ -204,14 +204,14 @@ The 2026-07-27 owner direction makes the startup screen plus Levels 1–2 the op
 
 **WCB-008J — startup title first-impression pilot**
 
-- **Status:** Ready; first writer selected.
+- **Status:** Integrated candidate at `c461441`; automated mechanics, four-aspect rendered evidence, and scoped performance parity pass. Human visual/accessibility review remains open.
 - **Owner:** UI/presentation only.
 - **Owned paths:** `scenes/menus/title_screen.tscn`, `scripts/ui/title_screen.gd`, the title-specific seam in `tests/unit/ui_scene_test.gd`, and title capture evidence. `main_menu`, level select, `scripts/core/`, campaign, and level paths remain frozen unless a later packet explicitly transfers them.
 - **Acceptance:** the real warmup/readiness/input transaction remains deterministic; the title presents one clear Cobie/Golden-Ball/action hierarchy at 16:9, 16:10, 4:3, and ultrawide without clipping, dead space, false readiness, or loss of build identity. Human visual/accessibility review remains open.
 
 **WCB-008K — Salmon Creek first-30-second pilot**
 
-- **Status:** Pending WCB-008J integration and evidence.
+- **Status:** In progress; hardened Gauntlet frozen in `docs/work_packets/wcb008k/GAUNTLET.md` from source `1015f6b`.
 - **Owner:** Level-1 pacing/presentation; collision/navigation/boss architecture frozen unless a defect is independently proven.
 - **Owned paths:** exact Salmon Creek pacing/presentation resources, first-30-second test/capture adapters, and their focused tests, frozen in the buildout log before a writer starts.
 - **Acceptance:** one reproducible 0–30 second run exposes the hero, immediate weapon affordance, the rule-break joke, first enemy contact, and the equipment-shed route cue while preserving mission identity, enemy/weapon breadth, route topology, save/progression semantics, and native/Web budgets. Human learning, humor, combat, and art judgment remain open.

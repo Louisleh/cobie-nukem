@@ -7,9 +7,9 @@ This is the durable continuation ledger for the Cobie Nukem 3/6/9 quality progra
 - **Program branch:** `hermes/world-class-369-buildout`
 - **Baseline source:** `4dbbe2e8571efec290ed863415a78f09bc970ca9`
 - **Public baseline declared by roadmap:** `0.11.0-alpha.1-rc1`, gameplay/runtime `3c2de29`
-- **Current packet:** WCB-008J — Startup title first-impression pilot inside WCB-008 opening-quality continuation
-- **Last verified packet:** WCB-008I exact four-aspect borderless route capture, independent dimension/pose/hash binding, twenty-image rendered review, and full release-wrapper/Web/macOS validation
-- **Next dependency-safe packet:** one isolated WCB-008J UI/presentation writer from the frozen 2026-07-27 brief, then independent title evidence/review. WCB-008K Salmon Creek and WCB-008L Rain City follow sequentially; WCB-007 boss paths remain frozen and WCB-009 remains blocked until the declared human prerequisite is recorded.
+- **Current packet:** WCB-008K — Salmon Creek first-30-second hardened Gauntlet inside WCB-008 opening-quality continuation
+- **Last verified packet:** WCB-008J title first-impression integrated candidate with four-aspect rendered evidence and scoped performance parity; human visual/accessibility approval remains open
+- **Next dependency-safe packet:** freeze and execute the bounded WCB-008K baseline → parallel read-only audits → one isolated Spark writer → matched evidence → fresh critic loop declared in `docs/work_packets/wcb008k/GAUNTLET.md`. WCB-008L Rain City follows sequentially; WCB-007 boss paths remain frozen and WCB-009 remains blocked until the declared human prerequisite is recorded.
 - **Toolchain state:** Godot 4.7.1, Blender 5.2.0 LTS, Material Maker 1.7, and matching Godot export templates are installed; import, functional tests, IP/architecture/content gates, native Compatibility performance, the full release wrapper, and macOS/Web exports pass. Optional Codex/Godot/Blender MCP production-art integrations remain unavailable and are recorded below.
 - **Human-only gates:** target-Mac feel/playthrough, physical iPad, flight stick, art taste, pacing, mix, fairness, humor, motion comfort, photosensitivity
 
