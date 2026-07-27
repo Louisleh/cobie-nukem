@@ -244,6 +244,8 @@ func _check_responsive_title_contract() -> void:
 	if packed == null:
 		return
 	var instance := packed.instantiate()
+	var root: Window = self.root
+	var original_root_size: Vector2i = root.size
 	instance.minimum_warmup_seconds = 0.0
 	instance.play_intro_audio = false
 	instance.runtime_warmup_enabled = false
@@ -255,7 +257,30 @@ func _check_responsive_title_contract() -> void:
 	elif cover.stretch_mode != TextureRect.STRETCH_KEEP_ASPECT_CENTERED:
 		failures.append("Title art must preserve the complete Cobie composition")
 	root.add_child(instance)
-	if instance.can_accept_input() or not instance.get_node("BrandPanel/Margin/VBox/Prompt").text.begins_with("PREPARING COBIE"):
+	var title_prompt := instance.get_node_or_null("BrandPanel/Margin/VBox/Prompt") as Label
+	var loading_bar := instance.get_node_or_null("BrandPanel/Margin/VBox/LoadingBar") as ProgressBar
+	var build_label := instance.get_node_or_null("BrandPanel/Margin/VBox/BuildLabel") as Label
+	var dossier_critical_nodes: Array[Control] = []
+	var dossier_minimum_tolerance := 0.5
+	var dossier_paths := [
+		"BrandPanel/Margin/VBox/Eyebrow",
+		"BrandPanel/Margin/VBox/Title",
+		"BrandPanel/Margin/VBox/MissionLine",
+		"BrandPanel/Margin/VBox/Thesis",
+		"BrandPanel/Margin/VBox/Objective",
+		"BrandPanel/Margin/VBox/Prompt",
+		"BrandPanel/Margin/VBox/LoadingBar",
+		"BrandPanel/Margin/VBox/BuildLabel",
+	]
+	for path in dossier_paths:
+		var required_node := instance.get_node_or_null(path) as Control
+		if required_node == null:
+			failures.append("Dossier must include required node: " + path)
+		else:
+			dossier_critical_nodes.append(required_node)
+	if title_prompt == null or loading_bar == null or build_label == null:
+		failures.append("Title requires Prompt, LoadingBar, and BuildLabel nodes for live identity")
+	if title_prompt == null or not title_prompt.text.begins_with("PREPARING COBIE"):
 		failures.append("Title must show an honest loading state before accepting input")
 	# Threaded resource completion is scheduler-dependent. Poll the product state
 	# with a strict bound instead of assuming Linux and macOS finish in six frames.
@@ -265,9 +290,55 @@ func _check_responsive_title_contract() -> void:
 		await process_frame
 	if not instance.can_accept_input():
 		failures.append("Title must become input-ready after menu preload completes")
-	elif "PRESS" not in instance.get_node("BrandPanel/Margin/VBox/Prompt").text:
+	elif title_prompt != null and "PRESS" not in title_prompt.text:
 		failures.append("Title may show the continue prompt only after readiness")
+
+	for logical_size in [
+		Vector2i(640, 480),
+		Vector2i(1280, 720),
+		Vector2i(1680, 1050),
+		Vector2i(1024, 768),
+		Vector2i(3440, 1440),
+	]:
+		root.size = logical_size
+		instance.size = logical_size
+		instance._resized()
+		await process_frame
+		var viewport := Rect2(Vector2.ZERO, logical_size)
+		var art_rect := art.get_global_rect()
+		var brand_rect := brand.get_global_rect()
+		if not viewport.encloses(art_rect):
+			failures.append("ArtColumn must remain fully in viewport at %dx%d" % [int(logical_size.x), int(logical_size.y)])
+		if not viewport.encloses(brand_rect):
+			failures.append("BrandPanel must remain fully in viewport at %dx%d" % [int(logical_size.x), int(logical_size.y)])
+		var left_margin := brand_rect.position.x - viewport.position.x
+		var right_margin := viewport.end.x - brand_rect.end.x
+		var top_margin := brand_rect.position.y - viewport.position.y
+		var bottom_margin := viewport.end.y - brand_rect.end.y
+		var safe_margin := minf(minf(left_margin, right_margin), minf(top_margin, bottom_margin))
+		if safe_margin <= 0.0:
+			failures.append("BrandPanel should keep nonzero safe margins at %dx%d" % [int(logical_size.x), int(logical_size.y)])
+		if cover.stretch_mode != TextureRect.STRETCH_KEEP_ASPECT_CENTERED:
+			failures.append("Cover must remain complete-composition-safe at %dx%d" % [int(logical_size.x), int(logical_size.y)])
+		var brand_minimum := brand.get_combined_minimum_size()
+		if brand_minimum.x > brand_rect.size.x + dossier_minimum_tolerance or brand_minimum.y > brand_rect.size.y + dossier_minimum_tolerance:
+			failures.append("BrandPanel minimum content must fit inside panel at %dx%d: min=%s bounds=%s" % [int(logical_size.x), int(logical_size.y), brand_minimum, brand_rect.size])
+		if title_prompt != null and (title_prompt.size.x <= 0.0 or title_prompt.size.y <= 0.0):
+			failures.append("Prompt must have positive size at %dx%d" % [int(logical_size.x), int(logical_size.y)])
+		if loading_bar != null and (loading_bar.size.x <= 0.0 or loading_bar.size.y <= 0.0):
+			failures.append("LoadingBar must have positive size at %dx%d" % [int(logical_size.x), int(logical_size.y)])
+		if build_label != null and (build_label.size.x <= 0.0 or build_label.size.y <= 0.0):
+			failures.append("BuildLabel must have positive size at %dx%d" % [int(logical_size.x), int(logical_size.y)])
+		for node in dossier_critical_nodes:
+			var node_rect := node.get_global_rect()
+			if not brand_rect.encloses(node_rect):
+				failures.append("Dossier critical text must stay inside BrandPanel at %dx%d: %s" % [int(logical_size.x), int(logical_size.y), node.name])
+			if node.size.x <= 0.0 or node.size.y <= 0.0:
+				failures.append("Dossier critical node has no size at %dx%d: %s" % [int(logical_size.x), int(logical_size.y), node.name])
+			if not viewport.encloses(node_rect):
+				failures.append("Dossier critical node must remain inside viewport at %dx%d: %s" % [int(logical_size.x), int(logical_size.y), node.name])
 	instance.free()
+	root.size = original_root_size
 	await process_frame
 
 func _check_responsive_main_menu_contract() -> void:
