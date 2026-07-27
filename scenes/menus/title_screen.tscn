@@ -36,24 +36,6 @@ anchor_bottom = 1.0
 color = Color(0.004, 0.009, 0.010, 1)
 mouse_filter = 2
 
-[node name="BackdropCover" type="TextureRect" parent="."]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-texture = ExtResource("3")
-expand_mode = 1
-stretch_mode = 6
-mouse_filter = 2
-
-[node name="BackdropWash" type="ColorRect" parent="."]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-color = Color(0.007, 0.16, 0.13, 0.24)
-mouse_filter = 2
-
 [node name="ArtColumn" type="Control" parent="."]
 unique_name_in_owner = true
 layout_mode = 1
@@ -64,14 +46,6 @@ anchor_right = 0.56
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-mouse_filter = 2
-
-[node name="ArtMatte" type="ColorRect" parent="ArtColumn"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-color = Color(0.008, 0.080, 0.080, 1)
 mouse_filter = 2
 
 [node name="Cover" type="TextureRect" parent="ArtColumn"]
@@ -120,7 +94,7 @@ alignment = 0
 [node name="Eyebrow" type="Label" parent="BrandPanel/Margin/VBox"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.62, 0.74, 0.68, 1)
-theme_override_font_sizes/font_size = 12
+theme_override_font_sizes/font_size = 10
 text = "FIELD DEPLOYMENT // EPISODE 01"
 horizontal_alignment = 0
 
@@ -130,34 +104,14 @@ text = "COBIE NUKEM"
 theme_override_colors/font_color = Color(1, 0.76, 0.19, 1)
 theme_override_colors/font_outline_color = Color(0.07, 0.035, 0.01, 1)
 theme_override_constants/outline_size = 4
-theme_override_font_sizes/font_size = 30
+theme_override_font_sizes/font_size = 26
 horizontal_alignment = 0
 
-[node name="MissionLine" type="Label" parent="BrandPanel/Margin/VBox"]
+[node name="MissionBrief" type="Label" parent="BrandPanel/Margin/VBox"]
 layout_mode = 2
-text = "SALMON CREEK // STORM ACTIVE"
+text = "SALMON CREEK // STORM ACTIVE\nBREAK THE RULES. FETCH THE BALL."
 theme_override_colors/font_color = Color(0.96, 0.95, 0.82, 1)
-theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
-theme_override_constants/outline_size = 2
-theme_override_font_sizes/font_size = 12
-horizontal_alignment = 0
-
-[node name="Thesis" type="Label" parent="BrandPanel/Margin/VBox"]
-layout_mode = 2
-text = "BREAK THE RULES. FETCH THE BALL."
-theme_override_colors/font_color = Color(0.95, 0.79, 0.16, 1)
-theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
-theme_override_constants/outline_size = 2
-theme_override_font_sizes/font_size = 13
-horizontal_alignment = 0
-
-[node name="Objective" type="Label" parent="BrandPanel/Margin/VBox"]
-layout_mode = 2
-text = "RECOVER THE GOLDEN TENNIS BALL"
-theme_override_colors/font_color = Color(0.95, 0.95, 0.86, 1)
-theme_override_colors/font_outline_color = Color(0.03, 0.11, 0.1, 0.7)
-theme_override_constants/outline_size = 1
-theme_override_font_sizes/font_size = 11
+theme_override_font_sizes/font_size = 10
 horizontal_alignment = 0
 
 [node name="Spacer" type="Control" parent="BrandPanel/Margin/VBox"]
@@ -170,7 +124,7 @@ layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.83, 0.28, 1)
 theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
 theme_override_constants/outline_size = 2
-theme_override_font_sizes/font_size = 14
+theme_override_font_sizes/font_size = 12
 text = "PREPARING COBIE… 0%"
 autowrap_mode = 2
 horizontal_alignment = 0
@@ -186,7 +140,7 @@ unique_name_in_owner = true
 layout_mode = 2
 text = "BUILD"
 theme_override_colors/font_color = Color(0.47, 0.57, 0.52, 0.95)
-theme_override_font_sizes/font_size = 8
+theme_override_font_sizes/font_size = 6
 horizontal_alignment = 0
 
 [node name="ProceduralAudio" type="Node" parent="."]

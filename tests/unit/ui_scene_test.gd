@@ -265,9 +265,7 @@ func _check_responsive_title_contract() -> void:
 	var dossier_paths := [
 		"BrandPanel/Margin/VBox/Eyebrow",
 		"BrandPanel/Margin/VBox/Title",
-		"BrandPanel/Margin/VBox/MissionLine",
-		"BrandPanel/Margin/VBox/Thesis",
-		"BrandPanel/Margin/VBox/Objective",
+		"BrandPanel/Margin/VBox/MissionBrief",
 		"BrandPanel/Margin/VBox/Prompt",
 		"BrandPanel/Margin/VBox/LoadingBar",
 		"BrandPanel/Margin/VBox/BuildLabel",

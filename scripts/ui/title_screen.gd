@@ -3,7 +3,7 @@ extends Control
 const PipelinePrewarmer := preload("res://scripts/core/runtime_pipeline_prewarmer.gd")
 
 const _WIDE_ASPECT_RATIO := 1.55
-const _NON_WIDE_FONT_SCALE_MIN := 0.56
+const _NON_WIDE_FONT_SCALE_MIN := 0.75
 const _NON_WIDE_FONT_SCALE_MAX := 1.0
 const _NON_WIDE_FONT_BASE_WIDTH := 1120.0
 const _NON_WIDE_FONT_BASE_HEIGHT := 760.0
@@ -15,13 +15,11 @@ const _NON_WIDE_BRAND_OVERLAP := 0.03
 const _TITLE_BAR_HEIGHT_WIDE := 10.0
 const _TITLE_BAR_HEIGHT_COMPACT := 7.0
 const _TITLE_FONT_SIZES_WIDE := {
-	&"eyebrow": 12,
-	&"title": 30,
-	&"mission_line": 12,
-	&"thesis": 13,
-	&"objective": 11,
-	&"prompt": 14,
-	&"build": 8,
+	&"eyebrow": 10,
+	&"title": 26,
+	&"mission_brief": 10,
+	&"prompt": 12,
+	&"build": 6,
 }
 
 enum Readiness { WARMING, READY, FAILED, TRANSITIONING }
@@ -41,13 +39,11 @@ var _layout_frames_remaining := 2
 var _pipeline_warmup_started := false
 var _pipeline_prewarmer: Node
 @onready var _art_cover: TextureRect = %ArtColumn.get_node("Cover") as TextureRect
-@onready var _backdrop_cover: TextureRect = $BackdropCover
 
 
 func _ready() -> void:
 	modulate.a = 0.0
 	%BuildLabel.text = BuildInfo.label()
-	_backdrop_cover.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
 	_art_cover.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 	if play_intro_audio:
@@ -220,9 +216,7 @@ func _apply_dossier_typography(wide: bool) -> void:
 	var scale := _NON_WIDE_FONT_SCALE_MAX if wide else _non_wide_font_scale()
 	var eyebrow := get_node_or_null("BrandPanel/Margin/VBox/Eyebrow") as Label
 	var title := get_node_or_null("BrandPanel/Margin/VBox/Title") as Label
-	var mission_line := get_node_or_null("BrandPanel/Margin/VBox/MissionLine") as Label
-	var thesis := get_node_or_null("BrandPanel/Margin/VBox/Thesis") as Label
-	var objective := get_node_or_null("BrandPanel/Margin/VBox/Objective") as Label
+	var mission_brief := get_node_or_null("BrandPanel/Margin/VBox/MissionBrief") as Label
 	var prompt := get_node_or_null("BrandPanel/Margin/VBox/Prompt") as Label
 	var loading_bar := get_node_or_null("BrandPanel/Margin/VBox/LoadingBar") as ProgressBar
 	var build_label := get_node_or_null("BrandPanel/Margin/VBox/BuildLabel") as Label
@@ -231,12 +225,8 @@ func _apply_dossier_typography(wide: bool) -> void:
 		_set_node_font_size(eyebrow, _TITLE_FONT_SIZES_WIDE[&"eyebrow"], scale)
 	if title != null:
 		_set_node_font_size(title, _TITLE_FONT_SIZES_WIDE[&"title"], scale)
-	if mission_line != null:
-		_set_node_font_size(mission_line, _TITLE_FONT_SIZES_WIDE[&"mission_line"], scale)
-	if thesis != null:
-		_set_node_font_size(thesis, _TITLE_FONT_SIZES_WIDE[&"thesis"], scale)
-	if objective != null:
-		_set_node_font_size(objective, _TITLE_FONT_SIZES_WIDE[&"objective"], scale)
+	if mission_brief != null:
+		_set_node_font_size(mission_brief, _TITLE_FONT_SIZES_WIDE[&"mission_brief"], scale)
 	if prompt != null:
 		_set_node_font_size(prompt, _TITLE_FONT_SIZES_WIDE[&"prompt"], scale)
 	if build_label != null:
