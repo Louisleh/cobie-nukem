@@ -165,6 +165,8 @@ The week numbers define sequencing and ambition, not a claim that autonomous com
 
 **Six-week exit:** Rain City passes every automated vertical-slice gate and has a complete human review packet. The `BETA` badge remains until humans approve the named subjective/device gates.
 
+The first-player experience is part of this quality tranche, not a competing campaign expansion. While Rain City remains the definitive slice, bounded child packets may improve the title/startup presentation and Salmon Creek's first 30 seconds when they preserve route, collision, navigation, progression, weapon, and enemy ownership. Those packets require deterministic title/mission-entry evidence and independent human review; they do not close Rain City's gates or authorize a `BETA` removal.
+
 #### Weeks 7–9 — prove replication and release discipline
 
 1. Apply the accepted Rain City pipeline to exactly one additional mission selected by measured cost and quality.
@@ -184,6 +186,7 @@ The week numbers define sequencing and ambition, not a claim that autonomous com
 - Every milestone updates the buildout log, runs root verification, and lands as a focused commit before the next dependent packet starts.
 - New sessions resume from repository files and Git state, not conversational memory.
 - If validation is blocked, the packet remains blocked with the exact command/error recorded. Documentation or generated output is never counted as gameplay completion.
+- Ambitious quality loops use separate authors, harsh critics, and matched blind comparisons where practical. An aspirational reference is a direction, not an acceptance oracle: finite packets still stop on frozen ownership, objective budgets, reproducible evidence, and named human gates. Agents may not chase an unreachable score by expanding scope or weakening evidence.
 
 ---
 
