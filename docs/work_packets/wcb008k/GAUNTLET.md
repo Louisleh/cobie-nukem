@@ -58,6 +58,7 @@ A candidate is compared only against matched captures from this commit and the s
 ### Candidate writer may own
 
 - `scripts/level/salmon_creek_environment_kit.gd`
+- `scripts/level/salmon_creek_world_builder.gd`, limited to the existing `no_animals` sign transform/size; its text, interaction/secret semantics, node count, and route/collision ownership remain frozen
 - `resources/encounters/salmon_forbidden_field.tres`
 - one new focused test under `tests/integration/` whose filename begins `salmon_creek_opening_`
 - the smallest opening-evidence seam in:

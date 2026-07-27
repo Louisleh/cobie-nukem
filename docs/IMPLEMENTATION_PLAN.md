@@ -211,7 +211,7 @@ The 2026-07-27 owner direction makes the startup screen plus Levels 1–2 the op
 
 **WCB-008K — Salmon Creek first-30-second pilot**
 
-- **Status:** In progress; hardened Gauntlet frozen in `docs/work_packets/wcb008k/GAUNTLET.md` from source `1015f6b`.
+- **Status:** Integrated-candidate ready; the bounded sign/shed presentation pass, focused contracts, 12 matched four-aspect captures, and fresh Spark/high 80/100 artifact acceptance pass. The staged capture is only 7.3 seconds, so the declared continuous 0–30 second browser/target-Mac run remains open and WCB-008K is not baseline-approved.
 - **Owner:** Level-1 pacing/presentation; collision/navigation/boss architecture frozen unless a defect is independently proven.
 - **Owned paths:** exact Salmon Creek pacing/presentation resources, first-30-second test/capture adapters, and their focused tests, frozen in the buildout log before a writer starts.
 - **Acceptance:** one reproducible 0–30 second run exposes the hero, immediate weapon affordance, the rule-break joke, first enemy contact, and the equipment-shed route cue while preserving mission identity, enemy/weapon breadth, route topology, save/progression semantics, and native/Web budgets. Human learning, humor, combat, and art judgment remain open.
