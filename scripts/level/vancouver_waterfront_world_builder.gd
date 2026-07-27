@@ -81,9 +81,17 @@ func build(owner: Node3D) -> bool:
 func _build_environment() -> void:
 	var world_environment := WorldEnvironment.new()
 	world_environment.name = "WorldEnvironment"
+	# Rain City atmosphere ratios. Overcast still has a direction: the previous
+	# values put a bright sky ambient (0.55) almost level with the key (1.05), so
+	# adjacent faces at different orientations resolved to nearly the same value
+	# and the frame flattened into one dark slate band with the sky as its
+	# brightest region. These are ratio changes only — no additional lights,
+	# nodes, particles, or draw calls — so rendering cost is unchanged by
+	# construction while form, depth, and route legibility are restored.
 	var sky_material := ProceduralSkyMaterial.new()
 	sky_material.sky_top_color = Color("18283a")
-	sky_material.sky_horizon_color = Color("6e8795")
+	# Lower horizon value so the sky stops out-competing the combat plane.
+	sky_material.sky_horizon_color = Color("5d7583")
 	sky_material.ground_bottom_color = Color("17252c")
 	sky_material.ground_horizon_color = Color("536c72")
 	var sky := Sky.new()
@@ -92,20 +100,24 @@ func _build_environment() -> void:
 	environment.background_mode = Environment.BG_SKY
 	environment.sky = sky
 	environment.ambient_light_source = Environment.AMBIENT_SOURCE_SKY
-	environment.ambient_light_color = Color("a5b9bd")
-	environment.ambient_light_energy = 0.55
+	# Cooler, darker fill reads as slate shade instead of acting as a second key.
+	environment.ambient_light_color = Color("7f97a4")
+	environment.ambient_light_energy = 0.32
 	environment.fog_enabled = true
-	environment.fog_light_color = Color("708992")
+	# Darker, cooler distance so background recedes rather than glowing forward.
+	environment.fog_light_color = Color("5c7482")
 	environment.fog_density = 0.009
-	environment.fog_aerial_perspective = 0.72
+	environment.fog_aerial_perspective = 0.55
 	world_environment.environment = environment
 	_owner.add_child(world_environment)
 
 	var key_light := DirectionalLight3D.new()
 	key_light.name = "RainCityKeyLight"
 	key_light.rotation_degrees = Vector3(-52.0, -28.0, 0.0)
-	key_light.light_color = Color("c5d7d6")
-	key_light.light_energy = 1.05
+	# Slightly warmer than the cool fill so lit faces separate from shadowed ones
+	# without turning an overcast rain city into a sunny one.
+	key_light.light_color = Color("dfe4d8")
+	key_light.light_energy = 1.85
 	key_light.shadow_enabled = true
 	_owner.add_child(key_light)
 
