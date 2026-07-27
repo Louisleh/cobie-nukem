@@ -171,3 +171,68 @@ I will not substitute plausible numbers for missing evidence. Two safe options:
 4. Is the atmosphere comfortable — motion, photosensitivity, and tablet glare?
 5. Is the humour/environmental-story density improved or merely lit differently?
 6. Should F6 (weapon rim separation) join this pilot or stay a separate feel pass?
+
+---
+
+## 7. Phase 3 — implemented candidate (Option A) and results
+
+**Decision taken:** Option A, the constrained parameter-and-material change class. Only the
+lighting/atmosphere half (F1 + F2) was implemented in this pass. F3 (wetness/material) was
+deliberately **not** started, honouring "do not accumulate several unverified art passes."
+
+**Changed file (1):** `scripts/level/vancouver_waterfront_world_builder.gd::_build_environment()`
+— ratio parameters only. **Zero node-creating lines added** (verified against the diff), so no
+new lights, nodes, particles, meshes, or draw calls exist. Light *direction*, fog *density*,
+geometry, collision, navigation, route, objectives, encounters, checkpoints and boss paths are
+untouched.
+
+| Parameter | Before | After | Intent |
+| --- | --- | --- | --- |
+| `ambient_light_energy` | 0.55 | **0.32** | stop fill acting as a second key |
+| `ambient_light_color` | `#a5b9bd` | **`#7f97a4`** | fill reads as slate shade |
+| `key_light.light_energy` | 1.05 | **1.85** | restore directional modelling |
+| `key_light.light_color` | `#c5d7d6` | **`#dfe4d8`** | lit/shadow separation, still overcast |
+| `sky_horizon_color` | `#6e8795` | **`#5d7583`** | sky stops out-competing the combat plane |
+| `fog_light_color` | `#708992` | **`#5c7482`** | distance recedes instead of glowing |
+| `fog_aerial_perspective` | 0.72 | **0.55** | midground reads again |
+
+### 7.1 Measured result — identical staging (same seed, `position_error 0.0`)
+
+| Metric | Downtown before → after | Waterfront before → after |
+| --- | --- | --- |
+| Scene contrast (std) | 24.58 → **29.92** (+22%) | 31.40 → **43.93** (+40%) |
+| Dynamic range (p5–p95) | 26.1–95.5 → 26.1–**114.4** | 31.1–133.0 → 30.8–**172.7** |
+| Clipped black | 0.12% → **0.12%** | 0.12% → **0.12%** |
+| Blown white | 0.00% → **0.00%** | 0.00% → **0.00%** |
+| Route plane vs sky | +3.15 → **+2.22** | −32.97 → **−54.35** (route leads) |
+
+Clipping did not regress, so the added contrast comes from **restored modelling**, not crushed
+shadows or blown highlights.
+
+### 7.2 Direct pixel inspection (not inferred)
+Downtown: the right building now shows a real lit-vs-recessed face break; brick decals separate
+as warm terracotta/teal instead of dull patches; the left mass reads as a confident foreground
+silhouette; distant peaks recede. Waterfront: the canopy reads as a silhouette with a lit top
+edge, the promenade reads as a distinct combat plane, a water/sky horizon now exists, and
+benches/planters show form. HUD contrast is unchanged and remains the strongest element.
+
+### 7.3 Verification
+- `QA_EXPORTS=0 bash tools/release_validate.sh` → **exit 0**, 61 PASS lines, no failures.
+- Aspect evidence captured at **1280×720, 1024×768 (4:3 tablet), 3440×1440 (ultrawide)** — HUD
+  intact, no safe-area regression observed.
+- Pre-existing-failure proof: the 5 `test_capture_tool.py` errors are
+  `ModuleNotFoundError: No module named 'PIL'` and were **reproduced identically on the
+  unmodified baseline** (change stashed) before being resolved environmentally. Not caused by
+  this pass.
+
+### 7.4 Honest residuals
+- **Performance remains unevidenced** (no GPU). The change adds no rendering work by
+  construction, but that is a structural argument, **not a measurement**. Confirm on the
+  owner's Mac.
+- **F3 is now more visible, not less:** brighter, better-modelled ground makes the dry matte
+  surface read as more obviously un-wet. This strengthens the case for the material pass next.
+- F4 (flat slabs / brick-as-pasted-rectangles) remains **Blender-blocked** and untouched.
+- Reduced-motion / reduced-flash variants were not separately captured this pass.
+
+**Nothing was pushed, no baseline approved, no BETA removed.** Commits are local only:
+`58dcafc` (packet) and `a1e51c2` (candidate).
