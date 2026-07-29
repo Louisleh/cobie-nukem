@@ -112,7 +112,7 @@ Objectives, encounters, difficulty profiles, and each mission's content inventor
 - Imported audio samples become the production path through `AudioCueSet`; synthesized audio remains an explicit fallback until manifested samples exist.
 - Local playtest metrics contain gameplay/performance counters only, are written only on explicit local export, and have no network transport or identity fields.
 
-## D-013 — Physical collectible pipeline
+## D-020 — Physical collectible pipeline
 
 **Status:** accepted for the figurine V1 sprint, 2026-07-29.
 

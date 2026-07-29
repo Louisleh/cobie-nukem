@@ -1,8 +1,9 @@
 # Cobie Nukem physical collectible — handoff
 
-**Written:** 2026-07-29
-**Branch:** `claude/cobie-nukem-phase12-pass-igt54i`
-**PR:** [Louisleh/cobie-nukem#65](https://github.com/Louisleh/cobie-nukem/pull/65) (draft)
+**Written:** 2026-07-29; updated after the first Codex modelling pass
+**Working branch:** `codex/cobie-collectible-model`, based on
+`claude/cobie-nukem-phase12-pass-igt54i`
+**Upstream PR:** [Louisleh/cobie-nukem#65](https://github.com/Louisleh/cobie-nukem/pull/65) (draft)
 **Repo:** `Louisleh/cobie-nukem`
 **Audience:** Codex, or any agent picking this up cold.
 
@@ -39,21 +40,28 @@ is validated.
 |---|---|---|
 | 0 Character freeze | **Written, awaiting owner approval + photos** | `references/character-brief/cobie_figurine_v1.yaml` |
 | 1 Turnaround | **Tooling done, no images yet** | `scripts/validate_turnaround.py`, `references/turnaround-prompts.md` |
-| 2 Mesh bakeoff | **Tooling done and proven, no candidates yet** | `scripts/bakeoff_render.py` |
-| 3 Digital V1 | **Tooling done, runs green on a proxy** | `scripts/build_figurine.py`, `scripts/print_check.py` |
+| 2 Mesh bakeoff | **Tooling implemented and locally tested; no real candidates or retained bakeoff packet** | `scripts/bakeoff_render.py` |
+| Pre-gate engineering prototype | **Built; local print and slicer checks green** | `validation-renders/prototype-v1/`, `exports/print_check_report.json`, `slicer-tests/prusaslicer_import_report.json` |
+| 3 Digital V1 | **Not started; Phases 0–2 have not cleared** | No selected identity mesh, clean production `.blend`, quotes, or Phase 3 exit |
 | 4 Resin prototype | Not started | — |
 | 5 Finished collectible | Not started | — |
 
 **Nothing has been printed. No image-to-3D generation has been run. No
-photographs exist yet.** What exists is the full software pipeline, proven
-end-to-end against a proxy and against stand-in meshes.
+photographs exist yet.** The new script-authored model is a provisional
+silhouette/assembly prototype, not an identity-approved Digital V1. It advances
+pose, print engineering, game-art fidelity, and review evidence without
+pretending to satisfy the still-open owner and photo gates.
 
 ### The two hard blockers, both owner-side
 
-1. **Photographs of the real Cobie.** 18–24 frames. Shot list is in the brief
+1. **Approve or amend the character freeze.** Pose, expression, head ratio,
+   clothing, aviators, collar/tag, hero prop, base treatment, palette, realism,
+   and exaggeration must stop moving before identity generation.
+2. **Photographs of the real Cobie.** 18–24 frames. Shot list is in the brief
    under `photo_shot_list`. Nothing in Phase 1 can start without them.
-2. **Turnaround generation.** Needs an image-gen subscription. Prompts are
-   written verbatim in `references/turnaround-prompts.md`.
+
+Turnaround generation is the first downstream action after those owner gates.
+The prompts are ready in `references/turnaround-prompts.md`.
 
 ---
 
@@ -68,7 +76,9 @@ cobie-collectible/
 │
 ├── references/
 │   ├── character-brief/
-│   │   └── cobie_figurine_v1.yaml  THE FREEZE. Identity, pose, print rules, photo shot list.
+│   │   ├── cobie_figurine_v1.yaml  THE FREEZE. Identity, pose, print rules, photo shot list.
+│   │   └── cobie_figurine_v1_digital_prototype.yaml
+│   │                                  explicit provisional scope and open human gates
 │   ├── turnaround-prompts.md       verbatim ImageGen prompts for the 5 views
 │   ├── photos/                     (empty, gitignored) owner's photo pack goes here
 │   └── game-art/                   (empty) optional local copies of hero refs
@@ -79,24 +89,29 @@ cobie-collectible/
 │   ├── validate_turnaround.py      PHASE 1 GATE
 │   ├── bakeoff_render.py           PHASE 2: clay renders + distinctness
 │   ├── build_figurine.py           PHASE 3: geometry, parts, base, STL export
-│   └── print_check.py              PHASE 3 GATE: manifold/thickness/balance
+│   ├── print_check.py              PHASE 3 GATE: manifold/thickness/balance
+│   ├── slicer_import_check.py      independent PrusaSlicer import gate
+│   ├── render_figurine.py          deterministic five-view review packet
+│   └── compare_figurine_renders.py before/candidate/difference evidence
 │
 ├── tests/
-│   └── test_collectible.py         16 tests, ~2s, no bpy import
+│   └── test_collectible.py         43 tests, ~2s, no bpy import
 │
 ├── tools/
-│   └── pyproject.toml              pinned deps, requires-python >=3.13
+│   ├── pyproject.toml              pinned deps, requires-python >=3.13
+│   └── uv.lock                     authoritative cross-platform dependency lock
 │
-├── blender/                        (gitignored) cobie_figurine_v1.blend
+├── blender/                        (gitignored) build blend + supervised review blend
 ├── generated-meshes/               (gitignored) downloaded candidate GLBs
-├── exports/                        (gitignored STLs) + print_check_report.json (committed)
+├── exports/                        build_report.json + print report + gitignored STLs
 ├── concepts/turnaround/            (gitignored) the 5 generated views
-├── validation-renders/             small committed review sheets
-├── slicer-tests/  print-quotes/    empty, for phase 4
+├── validation-renders/             small review evidence; currently untracked in this working tree
+├── slicer-tests/                   PrusaSlicer evidence; currently untracked in this working tree
+└── print-quotes/                   empty; valid quotes are a Phase 3 exit gate
 ```
 
 Also changed outside this directory:
-- `docs/DECISIONS.md` — added **D-013** recording the four binding decisions.
+- `docs/DECISIONS.md` — added **D-020** recording the four binding decisions.
 - `.github/workflows/ci.yml` — added a Pillow/numpy install step (see §7).
 
 ---
@@ -108,15 +123,16 @@ possible here. I measured each one.
 
 | Capability | Result |
 |---|---|
+| Native Blender 5.2.0 LTS | ✅ `/Applications/Blender.app`, matches the locked `bpy` runtime |
 | `bpy` 5.2.0 LTS headless | ✅ **requires CPython 3.13** — cp313 wheels only |
 | Mesh ops, voxel remesh, STL export | ✅ |
 | EEVEE render | ✅ **only after** installing GL libs (below) |
-| trimesh / pymeshlab / scipy / rtree | ✅ |
+| trimesh / Manifold3D / pymeshlab / scipy / rtree | ✅ |
 | **Cycles** | ❌ absent from the pip wheel — EEVEE only |
 | **Blender 3D Print Toolbox** | ❌ absent — reimplemented in `print_check.py` |
 | **3MF export** | ❌ absent — STL only |
-| GPU | ❌ none. Mesa llvmpipe software GL. |
-| Render cost | ⚠️ ~26 s at 512 px, ~117 s at 1024 px |
+| PrusaSlicer 2.9.6 independent import | ✅ all five canonical STLs |
+| Apple Silicon render | ✅ five 640 px views plus sheet in ~8 s |
 
 Required system packages on Linux (not needed on macOS):
 
@@ -128,24 +144,23 @@ Without `libegl1`, every render dies with `Couldn't open libEGL.so.1`.
 Without `libopengl0`, pymeshlab silently loads **zero** format plugins and then
 reports the misleading `Unknown format for load: stl`.
 
-Setup:
+Setup from the authoritative lock:
 
 ```bash
-uv venv --python 3.13 cobie-collectible/tools/.venv
-uv pip install --python cobie-collectible/tools/.venv/bin/python \
-  bpy==5.2.0 trimesh==4.12.2 pymeshlab==2025.7.post1 \
-  numpy==2.5.1 pillow==12.3.0 scipy==1.16.3 rtree==1.4.1
+uv sync --project cobie-collectible/tools --python 3.13 --locked
+brew install --cask prusaslicer
 ```
 
 Run anything as:
 
 ```bash
-uv run --project cobie-collectible/tools python cobie-collectible/scripts/<script>.py
+uv run --project cobie-collectible/tools --locked \
+  python cobie-collectible/scripts/<script>.py
 ```
 
 ---
 
-## 5. Binding decisions (docs/DECISIONS.md D-013)
+## 5. Binding decisions (docs/DECISIONS.md D-020)
 
 **Change these only deliberately — code depends on each.**
 
@@ -169,8 +184,14 @@ uv run --project cobie-collectible/tools python cobie-collectible/scripts/<scrip
 ### `validate_turnaround.py` — the gate that decides the project
 
 Checks the five view images for **framing geometry**: subject height spread
-across the four cardinals, vertical alignment of top and bottom edges, horizontal
-centring, foreground coverage, background uniformity, and palette drift.
+across all five geometry inputs, vertical alignment of top and bottom edges,
+horizontal centring, foreground coverage, background uniformity, and palette
+drift. The neutral three-quarter `hero.png` is mandatory, not a loose mood
+image.
+
+Every canonical view is prop-free and uses the same neutral A-pose. The final
+two-hand launcher composition is generated separately as a Blender posing
+reference and never fed into the identity-mesh multi-view set.
 
 It is explicit that it **cannot judge identity**, and prints a human checklist
 instead of pretending a heuristic is a feature detector. Do not "improve" it by
@@ -207,13 +228,23 @@ share a front silhouette.
 
 ### `build_figurine.py` — Phase 3
 
-Two modes. With `generated-meshes/selected.glb` it imports, normalises to 140 mm
-and splits parts. Without it, it builds a **proportioned proxy from primitives**
-following the brief.
+Two fail-safe modes. With `generated-meshes/selected.glb` it imports and
+normalises the shell into `blender/cobie_figurine_v1_reviewed.blend` and exits
+**FAIL** until Body, Head, Sunglasses, Fetch Launcher, and Base have genuinely
+been separated, posed, and keyed. Existing STLs are retained for recovery, but
+the non-PASS build receipt makes every downstream gate reject them. A reviewed
+five-part rerun stages all exports, marks the receipt BUILDING before touching
+the source or published set, and rolls the old set back if publication fails.
+Without a selected mesh, the script builds the game-art-grounded **provisional
+digital prototype** now shown in `validation-renders/prototype-v1/`.
 
-The proxy is **not the deliverable and will not be printed.** It exists so the
-print rules, base keying, balance maths, export and validation are exercised
-before any generated mesh arrives.
+The prototype is **not identity-approved and will not be printed yet.** It
+exists to advance silhouette and assembly engineering while the owner/photo
+gates remain open. Compared with the inherited block proxy it adds the
+continuous curled ear/crown mass, differentiated muzzle and beard, aviators,
+open-jacket/chest-ruff silhouette, COBIE tag relief, planted paws, tail,
+two-hand launcher pose, asymmetric base keys, dual head keys, and separate
+glasses/launcher pins.
 
 Non-obvious: `join_and_solidify()` applies transforms on every primitive
 *before* joining. Skipping that bakes the others into the active object's
@@ -226,9 +257,12 @@ reporting zero holes.
 
 Replaces the absent 3D Print Toolbox: watertight, winding, degenerate faces,
 floating shells, triangle count, wall thickness, base diameter/thickness, and a
-**centre-of-mass-over-footprint balance test** for FR-4 "stands unaided".
+**centre-of-mass-over-footprint balance test** for FR-4 "stands unaided". It
+also measures complete angular rings through the declared engagement band of
+all nine keyed interfaces, gates their p05–p95 exported clearances, and queries
+exact Manifold boolean intersections across all ten unordered part pairs.
 
-Two things to understand before touching it:
+Five things to understand before touching it:
 
 - **`plate_thickness()` exists because the bounding box lies.** The keying peg
   protrudes above the plate, so bbox height reported 10.5 mm for a 5 mm plate.
@@ -245,13 +279,36 @@ Two things to understand before touching it:
 - **`measure_thickness` deliberately does not catch exceptions.** An earlier
   version did, returned empty, and `print_check` reported PASS on a check that
   never ran. Do not re-add the try/except.
+- **Apple Silicon PyMeshLab plugin loading is explicit.** The 2025.7 wheel can
+  import while loading zero plugins. `_ensure_pymeshlab_plugins()` loads the
+  wheel-bundled STL and meshing plugins, then fails loudly if the required
+  decimator is still unavailable.
+- **Assembly overlap is an exact all-pairs boolean.** The earlier 1,200-point
+  surface sampler could miss a 0.4 mm corner intrusion. The gate now AABB-culls
+  obvious misses, checks every remaining pair with pinned Manifold3D, and fails
+  loudly if a closed-volume intersection cannot be measured.
+
+### `slicer_import_check.py` — independent Phase 3 parser gate
+
+Runs PrusaSlicer's own `--info` parser against exactly the five canonical
+exports and records its version, STL hashes, dimensions, facets, manifold
+status, and connected-part count. It does not claim vendor-specific supports,
+hollowing, drain placement, or a successful physical print.
+
+`build_figurine.py`, `print_check.py`, `slicer_import_check.py`, and
+`render_figurine.py` share one fail-closed receipt chain. A successful build
+receipt binds the current Blender source and exact five STL hashes. Validators
+atomically replace their reports with an incomplete marker before doing work,
+then publish PASS only after all current hashes and checks agree.
 
 ---
 
 ## 7. CI status — read this before debugging
 
-**PR #65 CI is currently RED, and the failure is pre-existing and unrelated to
-this work.**
+**The upstream PR #65 commit is green as of this update.** That does not cover
+the uncommitted Codex working tree described here; the current v3 changes have
+been validated locally. The earlier upstream failure was pre-existing and
+unrelated to the collectible:
 
 ```
 ModuleNotFoundError: No module named 'PIL'
@@ -265,11 +322,11 @@ Proof it is not from this change:
   test has never had Pillow available on CI.
 - `tools/release_validate.sh:67` invokes it with bare `python3`.
 
-**Fix applied on this branch:** a step in `ci.yml` installing
+**Fix applied on the upstream branch:** a step in `ci.yml` installing
 `pillow==10.4.0` and `numpy==2.1.2` (versions matched to
 `tools/visual_quality/pyproject.toml`) before validation, plus a recorded
-version stamp. This should turn #65 green. **If CI is still red after that,
-re-verify before assuming it is the collectible code.**
+version stamp. If a future run is red, re-verify the failing subject before
+assuming it is the collectible code.
 
 Separately, there is a known **non-deterministic ObjectDB leak** in
 `tests/unit/mission_presentation_test.gd`. It predates this work and was
@@ -283,31 +340,46 @@ there, re-run before investigating.
 Everything below was run, not assumed.
 
 ```bash
-# 16 tests, ~2s, no bpy
-uv run --project cobie-collectible/tools python cobie-collectible/tests/test_collectible.py
+# 43 tests, ~2s, no bpy
+uv run --project cobie-collectible/tools --locked \
+  python cobie-collectible/tests/test_collectible.py
 
-# builds proxy, exports 5 STLs
-uv run --project cobie-collectible/tools python cobie-collectible/scripts/build_figurine.py
+# builds provisional prototype, exports 5 canonical STLs
+uv run --project cobie-collectible/tools --locked \
+  python cobie-collectible/scripts/build_figurine.py
 # -> COBIE_FIGURINE_BUILD: PASS
 
-# validates them, ~24s
-uv run --project cobie-collectible/tools python cobie-collectible/scripts/print_check.py
+# executes manifold, topology, thickness, inventory and balance gates
+uv run --project cobie-collectible/tools --locked \
+  python cobie-collectible/scripts/print_check.py
 # -> COBIE_FIGURINE_PRINT_CHECK: PASS
 
-# repo gates, all green and unchanged
-bash tools/asset_ip_scan.sh
-bash tools/architecture_check.sh
-python3 tools/validate_world_class_docs.py
-bash tools/run_godot_safe.sh --timeout 600 -- --headless --path . --editor --quit
+# independent third-party parser gate
+uv run --project cobie-collectible/tools --locked \
+  python cobie-collectible/scripts/slicer_import_check.py
+# -> COBIE_FIGURINE_SLICER_IMPORT: PASS
+
+# five-view neutral-resin packet and before/candidate/difference review
+COBIE_RENDER_ID=prototype-v1 uv run --project cobie-collectible/tools --locked \
+  python cobie-collectible/scripts/render_figurine.py
+uv run --project cobie-collectible/tools --locked \
+  python cobie-collectible/scripts/compare_figurine_renders.py
 ```
 
-**Proxy results:** 140.9 mm tall, 70 mm base, 5.0 mm plate, centre of mass 7.2%
-off centre against a 35% limit, all five parts watertight and single-body.
+**Provisional prototype results:** 140.541 mm tall, 69.94 mm base, 5.008 mm
+plate, centre of mass 5.98% off centre against a 35% limit. All five parts are
+watertight single bodies, executed thickness checks pass, and PrusaSlicer
+reports each as one manifold part. The nine exported mating interfaces have
+100% measured ring coverage, zero sampled collision, and p05–p95 gaps spanning
+0.225–0.346 mm against the 0.20–0.35 mm contract. Exact Manifold boolean
+intersections are 0 mm³ across all ten unordered part pairs. These are
+engineering results only; they do not clear Phase 3 while identity, generation,
+supervised sculpting, quoting, physical fit, and human recognition remain open.
 
-**Bakeoff proven** on three stand-in GLBs (two weapon viewmodels plus a
-deliberate duplicate): 15 renders, every receipt verified, and the duplicate
-caught at IoU 1.0000 while the two genuinely different meshes passed. Those
-stand-ins were removed afterwards.
+An exploratory three-stand-in bakeoff exercised the render-receipt and
+distinctness paths, but its output was intentionally removed and is **not
+retained evidence**. Do not cite it as a current Phase 2 PASS. The real
+three-candidate bakeoff and its capture report remain open.
 
 Three real defects were caught by these checks *in their own subject* and
 fixed — the sunglasses splitting into 5 bodies, the boolean leaving the body
@@ -322,21 +394,33 @@ peg. See §6.
    +12% head scale, and the Fetch Launcher choice.
 2. **Owner: shoot the 18–24 photo pack** into `references/photos/`.
 3. Generate the five turnaround views into `concepts/turnaround/` using the
-   verbatim prompts. **Check `rear.png` first** — if sunglasses are visible,
-   regenerate.
+   verbatim prompts. All five must use the same neutral empty-paw A-pose.
+   **Check `rear.png` first** — if sunglasses are visible, regenerate.
 4. Run `validate_turnaround.py` until PASS, then work the printed human
    checklist honestly.
-5. Generate ≥3 candidates in a browser — Hunyuan3D 2.1 multi-view (primary),
+5. Generate the separate Fetch Launcher pose reference outside the turnaround
+   directory. Use it only for later supervised Blender posing.
+6. Use `validation-renders/prototype-v1/` to confirm or amend the broad
+   silhouette/pose before spending generation credits. Do not treat it as
+   identity approval.
+7. Generate ≥3 candidates in a browser — Hunyuan3D 2.1 multi-view (primary),
    TRELLIS, Stable Fast 3D. Consider one **Hunyuan3D-Part / PartCrafter** run;
    part-aware decomposition maps directly onto FR-5 and the print split, and
    postdates the PRD.
-6. Drop GLBs in `generated-meshes/`, run `bakeoff_render.py`, fill in
-   `scorecard.md`, pick a winner, copy it to `selected.glb`.
-7. Run `build_figurine.py` then `print_check.py`. **Part separation of a
-   generated mesh is a supervised step** — the script says so and does not
-   pretend to automate it.
-8. Quote across Craftcloud / JLC3DP / PCBWay. Order the variant with the lowest
+8. Drop GLBs in `generated-meshes/`, run `bakeoff_render.py`, fill in
+   `scorecard.md`, and pick a winner.
+9. Before copying the winner to `selected.glb`, enable Git LFS or make a
+   verified external archive for the selected GLB and future reviewed blend.
+   Both critical paths are intentionally visible to Git; do not begin
+   irreplaceable manual sculpting with the only copy in an ignored workspace.
+10. Supervise the selected mesh's separation and keying; `build_figurine.py`
+   intentionally fails closed before export while it remains one shell. Then
+   run `print_check.py` and `slicer_import_check.py`.
+11. Quote across Craftcloud / JLC3DP / PCBWay. Phase 3 does not exit until
+   valid quotes exist. Choose the variant with the lowest
    **learning** risk, not the lowest price. Do not buy a printer for V1.
+12. Perform a physical fit/clearance coupon or low-cost prototype before the
+   finished order; the digital clearance contract is not a tactile fit test.
 
 ---
 
@@ -359,10 +443,11 @@ to change now and expensive later:
 
 - **Never remove `.gdignore`.** Godot scans the project root; it would import
   and pack this tree.
-- **No Git LFS, `.git` is ~97 MB.** The 3.5 MB `.blend`, 12 MB of STLs and the
-  1.4 GB venv are gitignored and tracked by SHA-256. **When the `.blend` gains
-  manual sculpting it stops being reproducible and must be committed — at that
-  point this repo needs LFS.** Plan for it.
+- **No Git LFS.** Build blends, STLs, and the local environment are gitignored
+  and tracked by SHA-256. The supervised review blend stops being reproducible
+  as soon as manual sculpting begins; enable LFS and back it up before doing
+  irreplaceable review work. Do not rely on an ignored local file as the only
+  source of truth.
 - **Do not add collectible tests to `release_validate.sh`** (bare `python3`).
 - **Do not reference not-yet-existing `docs/`, `tools/` or `.agents/` paths**
   from authority docs — `tools/validate_world_class_docs.py` fails on

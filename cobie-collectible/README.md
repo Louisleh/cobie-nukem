@@ -9,28 +9,29 @@ Character freeze: `references/character-brief/cobie_figurine_v1.yaml`.
 ## Source-of-truth hierarchy
 
 ```
-blender/cobie_figurine_v1.blend    <- authoritative once it contains sculpting
+blender/cobie_figurine_v1_reviewed.blend <- supervised selected-mesh source, once created
+blender/cobie_figurine_v1.blend          <- source for the last successful build
   ^ built by
-scripts/*.py                       <- version controlled, reviewable, deterministic
+scripts/*.py                             <- version controlled, reviewable, deterministic
   v produces
-validation renders + print reports <- evidence
+exports/build_report.json                <- binds workflow mode, selected source, blend + five exports
+validation renders + print reports       <- downstream, hash-matched evidence
   v derived
-exports/*.stl                      <- disposable, regenerable
-MCP conversation                   <- exploration only, never the sole record
+exports/*.stl                            <- disposable, regenerable
+MCP conversation                         <- exploration only, never the sole record
 ```
 
 ## Setup
 
 ```bash
-uv venv --python 3.13 cobie-collectible/tools/.venv
-uv pip install --python cobie-collectible/tools/.venv/bin/python \
-  bpy==5.2.0 trimesh==4.12.2 pymeshlab==2025.7.post1 \
-  numpy==2.5.1 pillow==12.3.0 scipy==1.16.3 rtree==1.4.1
+uv sync --project cobie-collectible/tools --python 3.13 --locked
 ```
 
 Python **3.13** is required: `bpy` 5.2.0 publishes cp313 wheels only. This is
 the one place in the repo that needs a newer interpreter than
-`tools/visual_quality` (>=3.11).
+`tools/visual_quality` (>=3.11). `tools/uv.lock` is authoritative;
+`--locked` fails instead of silently changing it when the declared dependencies
+and lockfile disagree.
 
 On Linux, Blender and pymeshlab additionally need system GL libraries that are
 not installed by default:
@@ -50,14 +51,15 @@ load: stl". On macOS neither is needed.
 | 0 Character freeze | — | `references/character-brief/cobie_figurine_v1.yaml` approved, photo pack shot |
 | 1 Turnaround | `scripts/validate_turnaround.py` | `COBIE_TURNAROUND_VALIDATE: PASS` |
 | 2 Mesh bakeoff | `scripts/bakeoff_render.py` | `COBIE_BAKEOFF_RENDER: PASS` + scored scorecard |
-| 3 Digital V1 | `scripts/build_figurine.py` then `scripts/print_check.py` | `COBIE_FIGURINE_PRINT_CHECK: PASS` + slicer import |
+| 3 Digital V1 | `scripts/build_figurine.py`, `scripts/print_check.py`, `scripts/slicer_import_check.py` | successful build receipt, print and slicer gates PASS, and valid vendor quotes received |
 | 4 Prototype | outsourced resin print | defects localised, not "restart the character" |
 | 5 Finished | prime, paint, clear coat | PRD 11.3 acceptance criteria |
 
 All commands run as:
 
 ```bash
-uv run --project cobie-collectible/tools python cobie-collectible/scripts/<script>.py
+uv run --project cobie-collectible/tools --locked \
+  python cobie-collectible/scripts/<script>.py
 ```
 
 Image-to-3D generation happens in a **browser**, not here — Hunyuan3D 2.1
@@ -69,42 +71,72 @@ intact.
 ## Tests
 
 ```bash
-uv run --project cobie-collectible/tools python cobie-collectible/tests/test_collectible.py
+uv run --project cobie-collectible/tools --locked \
+  python cobie-collectible/tests/test_collectible.py
 ```
 
-16 tests, about two seconds; they do not import `bpy`. They are **not** wired
+43 tests, about two seconds; they do not import `bpy`. They are **not** wired
 into `tools/release_validate.sh`, which invokes its Python tests with bare
 `python3` — these need numpy, trimesh and scipy, so adding them there would
 break CI for reasons unrelated to the figurine.
 
 ## What is and is not committed
 
-The repository has no Git LFS and `.git` is already ~97 MB, so large or
-regenerable artefacts are tracked by SHA-256 rather than by content. See
-`.gitignore` for the reasoning per path.
+The repository has no Git LFS, so large or regenerable artefacts are tracked by
+SHA-256 rather than by content. See `.gitignore` for the reasoning per path.
 
 One consequence to plan for: the proxy `.blend` is excluded because it is
 reproducible from `scripts/build_figurine.py`. **A hand-sculpted `.blend` is
 not reproducible and must be committed** — at that point this repository will
 need Git LFS.
 
-## Proxy mode
+## Provisional digital prototype
 
 With no `generated-meshes/selected.glb`, `build_figurine.py` builds a
-proportioned **proxy** from primitives following the frozen brief. The proxy is
-not the deliverable and will not be printed. It exists so the print rules, base
-keying, balance maths, export and validation are exercised and testable before
-any generated mesh arrives, rather than discovering the pipeline is broken at
-the moment a real candidate lands.
+script-authored **provisional digital prototype** grounded in the project's
+game art and current character brief. It now carries the recognisable curl/ear mass,
+aviators, muzzle, open jacket, chest ruff and tag, two-hand Fetch Launcher pose,
+tail, rounded paws, and asymmetric assembly keys. It is still not approved for
+manufacture: the owner identity approval, photo pack, turnaround, candidate
+bakeoff, and physical fit test remain open.
 
-Current proxy results: 140.9 mm tall, 70 mm base, 5.0 mm plate, centre of mass
-7.2% off the base centre (limit 35%), all five parts watertight and single-body.
+If `selected.glb` exists, the script imports it into the review `.blend` but
+fails closed before STL export. A generated shell must be separated, posed, and
+keyed under supervision. The last published STLs are retained for recovery, but
+the build receipt becomes non-PASS immediately, so print, render, comparison,
+and slicer validation reject them as stale. A later run publishes the exact
+five reviewed parts transactionally.
+
+Current provisional results: 140.541 mm tall, 69.94 mm base, 5.008 mm plate,
+centre of mass 5.98% off the base centre (limit 35%). All five canonical parts
+are watertight single solids, pass executed thickness checks, and independently
+import in PrusaSlicer 2.9.6 as one manifold part each. Nine exported mating
+interfaces have complete radial engagement coverage, no sampled collision, and
+p05–p95 gaps of 0.225–0.346 mm against the 0.20–0.35 mm contract. Exact
+Manifold boolean intersections across all ten unordered part pairs are
+0 mm³. This is digital engineering evidence, not a physical fit claim.
+
+Review evidence lives in `validation-renders/prototype-v1/`; the inherited
+block proxy is preserved in `validation-renders/proxy-baseline/` for the
+before/candidate/difference packet.
 
 ## Notes on the checks
 
 `print_check.py` replaces Blender's 3D Print Toolbox, which is not shipped in
 the `bpy` PyPI wheel. That turned out better: these checks run headless, fail
 with specific numbers, and are unit-tested against controls.
+
+Every downstream gate first verifies `exports/build_report.json`: it must be a
+PASS from the current pipeline version, name exactly five canonical STLs, and
+match every export plus the Blender source by SHA-256. Its mode and selected
+candidate hash must also match whether `generated-meshes/selected.glb` is
+present. Each report is first invalidated as incomplete, so an exception or
+interrupted rerun cannot leave old green evidence looking current.
+
+PyMeshLab 2025.7 can import on Apple Silicon while auto-loading zero plugins.
+The validator explicitly loads its bundled STL and meshing plugins when needed,
+then fails loudly if decimation is still unavailable. It never converts a
+missing measurement into a pass.
 
 Thickness deserves a note. The raw inscribed-sphere measurement is dominated by
 sharp convex edges, where the sphere is genuinely tiny even though there is
