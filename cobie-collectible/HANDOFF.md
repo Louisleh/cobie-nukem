@@ -1,15 +1,72 @@
 # Cobie Nukem physical collectible — handoff
 
-**Written:** 2026-07-29; updated after the first Codex modelling pass
-**Working branch:** `codex/cobie-collectible-model`, based on
-`claude/cobie-nukem-phase12-pass-igt54i`
-**Upstream PR:** [Louisleh/cobie-nukem#65](https://github.com/Louisleh/cobie-nukem/pull/65) (draft)
+**Written:** 2026-07-29; updated after the cover-refinement loop
+**Working branch:** `codex/cobie-cover-refinement`, stacked on the baseline
+checkpoint from `claude/cobie-nukem-phase12-pass-igt54i`
+**Working PR:** [Louisleh/cobie-nukem#66](https://github.com/Louisleh/cobie-nukem/pull/66) (draft)
+**Upstream baseline PR:** [Louisleh/cobie-nukem#65](https://github.com/Louisleh/cobie-nukem/pull/65) (draft)
 **Repo:** `Louisleh/cobie-nukem`
 **Audience:** Codex, or any agent picking this up cold.
 
 Read this file, then `README.md`, then
 `references/character-brief/cobie_figurine_v1.yaml`. That is enough to continue
 without re-deriving anything.
+
+---
+
+## 2026-07-29 cover-refinement checkpoint
+
+The cover-driven pre-gate refinement is complete at iteration **I06**. Its
+reviewer-authored visual ratings produce **85/100**, with every category at
+least 4/5; the scorer machine-validates their provenance, completeness, and
+math. The accepted figure now has the primary cover's wide asymmetric stance and closed
+expression, printable layered fur, constructed black leather jacket, warm-
+metal aviators, collar tag, and one black/gold/cyan Fetch Launcher with a
+visible tennis-ball chamber.
+
+The canonical master is
+`blender/cobie_figurine_v2_master.blend`, committed through Git LFS and
+rebuildable from `scripts/build_figurine_v2.py`. Its exact top-level
+collections are `REFERENCE`, `SCULPT_SOURCE`, `LOOKDEV`, `PRINT_EXPORT`, and
+`REVIEW_RIG`. `PRINT_EXPORT` contains exactly the five canonical removable
+parts. The master validator rejects collection drift, embedded image
+datablocks, unapproved flags, missing semantic material zones, and stale
+provenance.
+
+Accepted evidence:
+
+- `validation-renders/cover-v2/I06-neutral/` — five neutral views rendered
+  only from `PRINT_EXPORT`, plus comparison evidence.
+- `validation-renders/cover-v2/I06-lookdev/` — locked-colour views,
+  silhouettes, material ID, close-ups, portrait, palette, and review board.
+- `refinement/cover-v2/ratings/I06_report.json` — scorecard and target gate.
+- `exports/print_check_report.json` and
+  `slicer-tests/prusaslicer_import_report.json` — current geometry and
+  independent parser gates.
+
+Current engineering evidence: 139.747 mm overall height, 69.945 mm base,
+5.000 mm base plate, 7.70% balance-margin ratio, complete coverage with no
+sampled collision at all nine joint probes, 0.232–0.336 mm p05–p95 interface
+gaps, and 0 mm³ exact intersection across all ten unordered part pairs. All
+five STLs are watertight single solids and PrusaSlicer 2.9.6 reports one
+manifold part for each.
+
+Reproduce the accepted iteration with:
+
+```bash
+COBIE_ITERATION_ID=I06 COBIE_V2_STAGE=final \
+  bash cobie-collectible/scripts/run_refinement_iteration.sh
+
+COBIE_ITERATION_ID=I06 \
+  uv run --project cobie-collectible/tools --locked \
+  python cobie-collectible/scripts/score_refinement.py
+```
+
+This checkpoint does **not** clear the human or physical gates:
+`identity_approved`, `physical_validation_complete`, and manufacture approval
+remain false. No image-to-3D identity generation has been run and nothing has
+been printed. The real-Cobie photo pack and owner identity approval are still
+required before this can become Digital V1.
 
 ---
 
@@ -42,15 +99,17 @@ is validated.
 | 1 Turnaround | **Tooling done, no images yet** | `scripts/validate_turnaround.py`, `references/turnaround-prompts.md` |
 | 2 Mesh bakeoff | **Tooling implemented and locally tested; no real candidates or retained bakeoff packet** | `scripts/bakeoff_render.py` |
 | Pre-gate engineering prototype | **Built; local print and slicer checks green** | `validation-renders/prototype-v1/`, `exports/print_check_report.json`, `slicer-tests/prusaslicer_import_report.json` |
+| Cover-driven pre-gate refinement | **I06 accepted at 85/100; all refinement engineering/evidence gates green** | `validation-renders/cover-v2/I06-neutral/`, `validation-renders/cover-v2/I06-lookdev/`, `refinement/cover-v2/ratings/I06_report.json` |
 | 3 Digital V1 | **Not started; Phases 0–2 have not cleared** | No selected identity mesh, clean production `.blend`, quotes, or Phase 3 exit |
 | 4 Resin prototype | Not started | — |
 | 5 Finished collectible | Not started | — |
 
-**Nothing has been printed. No image-to-3D generation has been run. No
-photographs exist yet.** The new script-authored model is a provisional
-silhouette/assembly prototype, not an identity-approved Digital V1. It advances
-pose, print engineering, game-art fidelity, and review evidence without
-pretending to satisfy the still-open owner and photo gates.
+**Nothing has been printed. No image-to-3D identity generation has been run.
+No photographs exist yet.** The script-authored V2 model is an accepted
+cover-fidelity and assembly prototype, not an identity-approved Digital V1. It
+advances pose, print engineering, material hierarchy, game-art fidelity, and
+review evidence without pretending to satisfy the still-open owner and photo
+gates.
 
 ### The two hard blockers, both owner-side
 
@@ -81,7 +140,7 @@ cobie-collectible/
 │   │                                  explicit provisional scope and open human gates
 │   ├── turnaround-prompts.md       verbatim ImageGen prompts for the 5 views
 │   ├── photos/                     (empty, gitignored) owner's photo pack goes here
-│   └── game-art/                   (empty) optional local copies of hero refs
+│   └── game-art/                   secondary cover reference + provenance README
 │
 ├── scripts/
 │   ├── _common.py                  paths, print constants, scale contract, seeds, Failure/report
@@ -89,24 +148,33 @@ cobie-collectible/
 │   ├── validate_turnaround.py      PHASE 1 GATE
 │   ├── bakeoff_render.py           PHASE 2: clay renders + distinctness
 │   ├── build_figurine.py           PHASE 3: geometry, parts, base, STL export
+│   ├── build_figurine_v2.py        cumulative cover-refinement geometry stages
 │   ├── print_check.py              PHASE 3 GATE: manifold/thickness/balance
 │   ├── slicer_import_check.py      independent PrusaSlicer import gate
 │   ├── render_figurine.py          deterministic five-view review packet
+│   ├── render_figurine_lookdev.py  deterministic colour/material evidence
+│   ├── run_refinement_iteration.sh complete per-iteration gate runner
+│   ├── score_refinement.py         scorecard, provenance and target gate
+│   ├── validate_refinement_master.py
+│   │                                  V2 collection/part/material/flag contract
 │   └── compare_figurine_renders.py before/candidate/difference evidence
 │
 ├── tests/
-│   └── test_collectible.py         43 tests, ~2s, no bpy import
+│   └── test_collectible.py         49 tests, ~2s, no bpy import
 │
 ├── tools/
 │   ├── pyproject.toml              pinned deps, requires-python >=3.13
 │   └── uv.lock                     authoritative cross-platform dependency lock
 │
-├── blender/                        (gitignored) build blend + supervised review blend
-├── generated-meshes/               (gitignored) downloaded candidate GLBs
+├── blender/
+│   └── cobie_figurine_v2_master.blend
+│                                      Git-LFS cover-refinement master
+├── generated-meshes/               downloaded candidates; selected.glb uses LFS
 ├── exports/                        build_report.json + print report + gitignored STLs
 ├── concepts/turnaround/            (gitignored) the 5 generated views
-├── validation-renders/             small review evidence; currently untracked in this working tree
-├── slicer-tests/                   PrusaSlicer evidence; currently untracked in this working tree
+├── refinement/cover-v2/            art brief, scorecard, ratings, iteration log
+├── validation-renders/             committed neutral + lookdev review evidence
+├── slicer-tests/                   committed PrusaSlicer evidence
 └── print-quotes/                   empty; valid quotes are a Phase 3 exit gate
 ```
 
@@ -305,10 +373,10 @@ then publish PASS only after all current hashes and checks agree.
 
 ## 7. CI status — read this before debugging
 
-**The upstream PR #65 commit is green as of this update.** That does not cover
-the uncommitted Codex working tree described here; the current v3 changes have
-been validated locally. The earlier upstream failure was pre-existing and
-unrelated to the collectible:
+**The upstream PR #65 baseline is green as of this update.** PR #66 contains
+the V2 refinement and must be green at its final pushed commit before this
+handoff is treated as published. The earlier upstream failure was pre-existing
+and unrelated to the collectible:
 
 ```
 ModuleNotFoundError: No module named 'PIL'
@@ -340,7 +408,7 @@ there, re-run before investigating.
 Everything below was run, not assumed.
 
 ```bash
-# 43 tests, ~2s, no bpy
+# 49 tests, ~2s, no bpy
 uv run --project cobie-collectible/tools --locked \
   python cobie-collectible/tests/test_collectible.py
 
@@ -364,6 +432,17 @@ COBIE_RENDER_ID=prototype-v1 uv run --project cobie-collectible/tools --locked \
   python cobie-collectible/scripts/render_figurine.py
 uv run --project cobie-collectible/tools --locked \
   python cobie-collectible/scripts/compare_figurine_renders.py
+
+# complete accepted cover-refinement rebuild and evidence loop
+COBIE_ITERATION_ID=I06 COBIE_V2_STAGE=final \
+  bash cobie-collectible/scripts/run_refinement_iteration.sh
+
+# verifies the master independently and scores its bound evidence
+/Applications/Blender.app/Contents/MacOS/Blender --background \
+  --python cobie-collectible/scripts/validate_refinement_master.py
+COBIE_ITERATION_ID=I06 \
+  uv run --project cobie-collectible/tools --locked \
+  python cobie-collectible/scripts/score_refinement.py
 ```
 
 **Provisional prototype results:** 140.541 mm tall, 69.94 mm base, 5.008 mm
@@ -390,8 +469,12 @@ peg. See §6.
 
 ## 9. Next actions, in order
 
-1. **Owner: approve or amend `cobie_figurine_v1.yaml`.** Especially pose,
-   +12% head scale, and the Fetch Launcher choice.
+The cover-fidelity loop itself is complete; do not keep changing the accepted
+I06 merely to raise an ungrounded score. Continue from these remaining gates:
+
+1. **Owner: approve or amend `cobie_figurine_v1.yaml` and the I06 broad
+   design.** Especially the closed expression, wide stance, +12% head scale,
+   leather jacket, aviators, and single Fetch Launcher.
 2. **Owner: shoot the 18–24 photo pack** into `references/photos/`.
 3. Generate the five turnaround views into `concepts/turnaround/` using the
    verbatim prompts. All five must use the same neutral empty-paw A-pose.
@@ -400,19 +483,20 @@ peg. See §6.
    checklist honestly.
 5. Generate the separate Fetch Launcher pose reference outside the turnaround
    directory. Use it only for later supervised Blender posing.
-6. Use `validation-renders/prototype-v1/` to confirm or amend the broad
-   silhouette/pose before spending generation credits. Do not treat it as
-   identity approval.
+6. Use `validation-renders/cover-v2/I06-lookdev/` and
+   `validation-renders/cover-v2/I06-neutral/` to confirm or amend the broad
+   silhouette, pose, jacket, aviators, launcher, and palette before spending
+   generation credits. Do not treat them as identity approval.
 7. Generate ≥3 candidates in a browser — Hunyuan3D 2.1 multi-view (primary),
    TRELLIS, Stable Fast 3D. Consider one **Hunyuan3D-Part / PartCrafter** run;
    part-aware decomposition maps directly onto FR-5 and the print split, and
    postdates the PRD.
 8. Drop GLBs in `generated-meshes/`, run `bakeoff_render.py`, fill in
    `scorecard.md`, and pick a winner.
-9. Before copying the winner to `selected.glb`, enable Git LFS or make a
-   verified external archive for the selected GLB and future reviewed blend.
-   Both critical paths are intentionally visible to Git; do not begin
-   irreplaceable manual sculpting with the only copy in an ignored workspace.
+9. Copy the winner to `selected.glb` only after confirming Git LFS is active
+   and the pointer/object round-trip succeeds. `.gitattributes` already tracks
+   that path and all collectible `.blend` files. Do not begin irreplaceable
+   manual sculpting with the only copy outside versioned storage.
 10. Supervise the selected mesh's separation and keying; `build_figurine.py`
    intentionally fails closed before export while it remains one shell. Then
    run `print_check.py` and `slicer_import_check.py`.
@@ -443,11 +527,11 @@ to change now and expensive later:
 
 - **Never remove `.gdignore`.** Godot scans the project root; it would import
   and pack this tree.
-- **No Git LFS.** Build blends, STLs, and the local environment are gitignored
-  and tracked by SHA-256. The supervised review blend stops being reproducible
-  as soon as manual sculpting begins; enable LFS and back it up before doing
-  irreplaceable review work. Do not rely on an ignored local file as the only
-  source of truth.
+- **Git LFS is required.** The V2 master is already tracked, and
+  `.gitattributes` covers collectible `.blend` files plus
+  `generated-meshes/selected.glb`. Verify `git lfs pull` from a fresh clone
+  before treating an irreplaceable manual sculpt or selected identity mesh as
+  archived. Derived STLs remain gitignored and receipt-bound.
 - **Do not add collectible tests to `release_validate.sh`** (bare `python3`).
 - **Do not reference not-yet-existing `docs/`, `tools/` or `.agents/` paths**
   from authority docs — `tools/validate_world_class_docs.py` fails on

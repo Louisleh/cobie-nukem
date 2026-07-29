@@ -9,15 +9,17 @@ Character freeze: `references/character-brief/cobie_figurine_v1.yaml`.
 ## Source-of-truth hierarchy
 
 ```
-blender/cobie_figurine_v1_reviewed.blend <- supervised selected-mesh source, once created
-blender/cobie_figurine_v1.blend          <- source for the last successful build
+blender/cobie_figurine_v2_master.blend  <- current cover-refinement master (Git LFS)
   ^ built by
-scripts/*.py                             <- version controlled, reviewable, deterministic
+scripts/build_figurine_v2.py            <- deterministic authored geometry and stage contract
   v produces
-exports/build_report.json                <- binds workflow mode, selected source, blend + five exports
-validation renders + print reports       <- downstream, hash-matched evidence
+exports/build_report.json               <- binds generator, master, stage + five exports
+validation renders + print reports      <- downstream, hash-matched evidence
   v derived
-exports/*.stl                            <- disposable, regenerable
+exports/*.stl                           <- disposable, regenerable
+
+blender/cobie_figurine_v1_reviewed.blend <- future supervised identity source, once created
+blender/cobie_figurine_v1.blend          <- local/regenerable pre-gate prototype
 MCP conversation                         <- exploration only, never the sole record
 ```
 
@@ -75,20 +77,67 @@ uv run --project cobie-collectible/tools --locked \
   python cobie-collectible/tests/test_collectible.py
 ```
 
-43 tests, about two seconds; they do not import `bpy`. They are **not** wired
+49 tests, about two seconds; they do not import `bpy`. They are **not** wired
 into `tools/release_validate.sh`, which invokes its Python tests with bare
 `python3` — these need numpy, trimesh and scipy, so adding them there would
 break CI for reasons unrelated to the figurine.
 
 ## What is and is not committed
 
-The repository has no Git LFS, so large or regenerable artefacts are tracked by
-SHA-256 rather than by content. See `.gitignore` for the reasoning per path.
+Git LFS is enabled for `cobie-collectible/blender/*.blend` and
+`cobie-collectible/generated-meshes/selected.glb`. The V2 master is committed
+through LFS; derived STLs remain gitignored and are bound to their generator
+and master by SHA-256 in the build receipt. The selected identity GLB and
+future supervised review blend must also be committed through LFS before
+irreplaceable manual work begins.
 
-One consequence to plan for: the proxy `.blend` is excluded because it is
-reproducible from `scripts/build_figurine.py`. **A hand-sculpted `.blend` is
-not reproducible and must be committed** — at that point this repository will
-need Git LFS.
+## Cover-driven V2 refinement
+
+The current branch contains a six-iteration, checkpointed refinement of the
+pre-gate figure toward the selected game-cover direction. The primary
+geometry/pose reference is `assets/brand/cobie_nukem_cover.png`; the dual-
+blaster cover in `references/game-art/` is secondary material and hard-surface
+reference only. Its second blaster, open mouth/tongue, and background are
+explicitly excluded.
+
+The cumulative Blender stages are `silhouette`, `head`, `costume`, `launcher`,
+and `final`. Each run rebuilds the master, validates its collection and
+five-part contracts, exports and checks the print geometry, imports it through
+PrusaSlicer, renders neutral and colour evidence, and scores an explicit
+rating packet:
+
+```bash
+COBIE_ITERATION_ID=I06 COBIE_V2_STAGE=final \
+  bash cobie-collectible/scripts/run_refinement_iteration.sh
+
+COBIE_ITERATION_ID=I06 \
+  uv run --project cobie-collectible/tools --locked \
+  python cobie-collectible/scripts/score_refinement.py
+```
+
+Set `BLENDER_BIN` when Blender is neither the standard macOS app bundle nor
+available as `blender` on `PATH`.
+
+Iteration I06 meets the digital target at **85/100**, with every scorecard
+category at least 4/5. It adds the wide asymmetric stance, closed confident
+head treatment, layered printable fur masses, constructed black leather
+jacket, warm-metal aviators, collar tag, and single black/gold/cyan Fetch
+Launcher with a visible tennis-ball chamber. The neutral packet is rendered
+from `PRINT_EXPORT`; the colour packet is rendered from `LOOKDEV`.
+
+Current I06 engineering results: 139.747 mm tall, 69.945 mm base, 5.000 mm
+plate, and centre of mass 7.70% off the base centre (limit 35%). All five
+canonical parts are watertight single solids and pass the executed thickness
+checks. All nine mating-interface probes have complete radial engagement and
+no sampled collision; their p05–p95 gaps span 0.232–0.336 mm. Exact Manifold
+boolean intersections are 0 mm³ across all ten unordered part pairs, and
+PrusaSlicer 2.9.6 reports every STL as one manifold part.
+
+The accepted evidence is in `validation-renders/cover-v2/I06-neutral/` and
+`validation-renders/cover-v2/I06-lookdev/`; the score and full iteration trail
+are in `refinement/cover-v2/`. These are digital geometry and look-development
+results. Identity approval, the real-Cobie photo pack, a physical prototype,
+and manufacture approval all remain false.
 
 ## Provisional digital prototype
 
