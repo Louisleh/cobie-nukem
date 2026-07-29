@@ -37,7 +37,7 @@ from PIL import Image
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from _common import CARDINAL_VIEWS, CONCEPTS, Failure, TURNAROUND_VIEWS, report, sha256_file, write_json
+from _common import CONCEPTS, Failure, TURNAROUND_VIEWS, report, sha256_file, write_json
 
 TURNAROUND_DIR = CONCEPTS / "turnaround"
 
@@ -167,17 +167,32 @@ def validate(metrics: dict[str, dict]) -> list[Failure]:
             )
 
     usable = {view: data for view, data in metrics.items() if not data.get("empty")}
-    cardinals = {view: data for view, data in usable.items() if view in CARDINAL_VIEWS}
-    if len(cardinals) < len(CARDINAL_VIEWS):
-        missing = sorted(set(CARDINAL_VIEWS) - set(cardinals))
+    required_views = set(TURNAROUND_VIEWS)
+    if len(usable) < len(required_views) or set(usable) != required_views:
+        missing = sorted(required_views - set(usable))
         failures.append(
-            Failure("missing_views", ",".join(missing), "all four cardinal views are required for multi-view generation")
+            Failure(
+                "missing_views",
+                ",".join(missing),
+                "front, left, rear, right and neutral three-quarter hero are all required for multi-view generation",
+            )
         )
         return failures
 
-    # Cross-view consistency. This is the part that actually matters: the four
-    # cardinals must read as the same object photographed from four angles.
-    heights = {view: data["subject_height"] for view, data in cardinals.items()}
+    # Cross-view consistency. This is the part that actually matters: all five
+    # generator inputs must read as one object photographed from five angles.
+    sizes = {view: tuple(data["image_size"]) for view, data in usable.items()}
+    if len(set(sizes.values())) != 1:
+        failures.append(
+            Failure(
+                "image_dimensions",
+                "turnaround",
+                "all geometry inputs must use identical pixel dimensions; "
+                + ", ".join(f"{view}={size[0]}x{size[1]}" for view, size in sorted(sizes.items())),
+            )
+        )
+
+    heights = {view: data["subject_height"] for view, data in usable.items()}
     spread = max(heights.values()) - min(heights.values())
     if spread > MAX_HEIGHT_SPREAD:
         tallest = max(heights, key=heights.get)
@@ -192,7 +207,7 @@ def validate(metrics: dict[str, dict]) -> list[Failure]:
         )
 
     for edge in ("top", "bottom"):
-        values = {view: data[edge] for view, data in cardinals.items()}
+        values = {view: data[edge] for view, data in usable.items()}
         offset = max(values.values()) - min(values.values())
         if offset > MAX_VERTICAL_OFFSET:
             failures.append(
@@ -205,7 +220,7 @@ def validate(metrics: dict[str, dict]) -> list[Failure]:
             )
 
     for name in PALETTE:
-        values = {view: data["palette"][name] for view, data in cardinals.items()}
+        values = {view: data["palette"][name] for view, data in usable.items()}
         drift = max(values.values()) - min(values.values())
         if drift > MAX_PALETTE_DRIFT:
             failures.append(
@@ -224,8 +239,10 @@ def validate(metrics: dict[str, dict]) -> list[Failure]:
 HUMAN_CHECKLIST = """
 Automated checks cannot judge identity. Before proceeding to Phase 2, confirm
 by eye on every view:
-  [ ] Aviator sunglasses present, same shape, same gold/brass frame.
-  [ ] COBIE dog tag visible at the sternum (the one unambiguous identifier).
+  [ ] All five views show the identical neutral A-pose with empty paws.
+  [ ] No turnaround view contains the Fetch Launcher or another handheld prop.
+  [ ] Aviators have the same shape and gold/brass frame wherever visible.
+  [ ] COBIE tag placement is consistent; front/hero show it at the sternum.
   [ ] Black leather jacket, open, same lapel geometry, chest ruff showing.
   [ ] Apricot curly coat, floppy ears reading as one continuous curled mass.
   [ ] Black nose, short blunt muzzle.

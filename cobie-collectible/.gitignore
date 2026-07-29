@@ -1,31 +1,34 @@
-# This repository has no Git LFS and .git is already ~97 MB. The existing
-# committed .blend files are 110-290 KB. Everything below is either large or
-# regenerable, so it stays out of history and is tracked by SHA-256 instead.
+# This repository has no Git LFS. Large regenerable build artifacts stay out of
+# history; identity inputs need a deliberate archive/LFS step before selection.
 
 # Python environment for the collectible tools.
 .venv/
 __pycache__/
 
 # Downloaded image-to-3D candidates. Provenance is recorded in the bakeoff
-# capture_report.json; the files themselves are re-downloadable.
+# capture report, but hosted outputs are not assumed to remain downloadable.
+# Archive the winner before selection; the critical selected path is unignored
+# so it cannot disappear silently from `git status`.
 generated-meshes/*.glb
 generated-meshes/*.ply
 generated-meshes/*.obj
+!generated-meshes/selected.glb
 
-# Derived exports. Regenerate with scripts/build_figurine.py; hashes live in
-# exports/print_check_report.json.
+# Derived exports. Regenerate with scripts/build_figurine.py; authoritative
+# source/export hashes live in exports/build_report.json.
 exports/*.stl
 exports/*.3mf
 
-# The PROXY blend is fully regenerable from scripts/build_figurine.py and is
-# 3.5 MB, so it is not committed.
+# The scripted prototype blend is fully regenerable from build_figurine.py.
 #
 # IMPORTANT: this exemption ends the moment the file contains manual sculpting.
 # A hand-sculpted .blend is the source of truth per the PRD and is NOT
-# reproducible from a script -- it must be committed, and at that point this
-# repository will need Git LFS.
+# reproducible from a script. Enable Git LFS and back up the supervised review
+# blend before doing irreplaceable manual work. The critical reviewed path is
+# unignored so it cannot disappear silently from `git status`.
 blender/*.blend
 blender/*.blend1
+!blender/cobie_figurine_v1_reviewed.blend
 
 # Personal photographs of Cobie. Identity input, not project source.
 references/photos/*

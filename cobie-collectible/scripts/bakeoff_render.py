@@ -43,6 +43,7 @@ from _common import (
     ROOT,
     TURNAROUND_VIEWS,
     UNIT_SCALE_LENGTH,
+    candidate_count_failures,
     report,
     sha256_file,
     view_seed,
@@ -192,7 +193,15 @@ def render_candidate(path: Path, camera: bpy.types.Object, material, out_dir: Pa
             root=ROOT,
         )
         # Verify immediately, against the same contract a reader would apply.
-        failures.extend(receipt_module.verify(entry, distance=CAMERA_DISTANCE, height=CAMERA_HEIGHT, root=ROOT))
+        failures.extend(
+            receipt_module.verify(
+                entry,
+                distance=CAMERA_DISTANCE,
+                height=CAMERA_HEIGHT,
+                ortho_scale=ORTHO_SCALE,
+                root=ROOT,
+            )
+        )
         receipts.append(entry)
 
     for obj in imported:
@@ -287,14 +296,14 @@ def main() -> int:
         print("COBIE_BAKEOFF_RENDER: FAIL (no candidates)")
         return 1
 
-    if len(candidates) < 3:
-        print(f"  WARNING: only {len(candidates)} candidate(s); the PRD asks for at least three")
+    failures = candidate_count_failures(len(candidates))
+    if failures:
+        print(f"  FAIL: only {len(candidates)} candidate(s); at least three are required")
 
     reset_scene()
     camera, material = setup_world()
 
     receipts: list[dict] = []
-    failures: list[Failure] = []
     for path in candidates:
         print(f"  rendering {path.name}")
         entries, candidate_failures = render_candidate(path, camera, material, out_dir)

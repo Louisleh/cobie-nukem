@@ -70,7 +70,14 @@ def expected_camera_origin(yaw_degrees: float, distance: float, height: float) -
     )
 
 
-def verify(receipt: dict, *, distance: float, height: float, root: Path) -> list[Failure]:
+def verify(
+    receipt: dict,
+    *,
+    distance: float,
+    height: float,
+    ortho_scale: float,
+    root: Path,
+) -> list[Failure]:
     """Re-derive every claim in a receipt. Returns failures, empty means clean."""
     failures: list[Failure] = []
     subject = f"{receipt.get('candidate_id', '?')}/{receipt.get('view', '?')}"
@@ -112,6 +119,19 @@ def verify(receipt: dict, *, distance: float, height: float, root: Path) -> list
                 "camera_type",
                 subject,
                 f"expected ORTHO for comparable candidate renders, got {receipt['camera_type']}",
+            )
+        )
+
+    try:
+        scale_error = abs(float(receipt["ortho_scale"]) - ortho_scale)
+    except (TypeError, ValueError):
+        scale_error = float("inf")
+    if scale_error > MAX_ORTHO_SCALE_ERROR:
+        failures.append(
+            Failure(
+                "ortho_scale",
+                subject,
+                f"reported {receipt['ortho_scale']!r}, expected {ortho_scale:.4f}",
             )
         )
 
