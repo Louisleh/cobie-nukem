@@ -31,3 +31,47 @@ iterations:
       - owner photo pack
       - real-Cobie identity approval
       - physical print and fit review
+  - id: I01
+    stage: silhouette_and_pose
+    status: accepted
+    focus: widen the stance, enlarge the head and ears, and establish the single diagonal Fetch Launcher read
+    score_before: 35
+    score_after: 50
+    geometry_changed: true
+    refinement_stage: silhouette
+    hard_gate_regressions: []
+    digital_evidence:
+      master_structure: pass
+      collectible_tests: 47_pass
+      print_check: pass
+      prusaslicer_import: pass
+      neutral_render: cobie-collectible/validation-renders/cover-v2/I01-neutral/contact_sheet.png
+      lookdev_review: cobie-collectible/validation-renders/cover-v2/I01-lookdev/review_board.png
+      score_report: cobie-collectible/refinement/cover-v2/ratings/I01_report.json
+    next_highest_impact_gap: head and fur identity
+    open_human_gates:
+      - owner photo pack
+      - real-Cobie identity approval
+      - physical print and fit review
+  - id: I02
+    stage: head_and_fur
+    status: accepted
+    focus: establish the closed-mouth muzzle, cheek and jaw hierarchy, and directional crown and ear fur locks
+    score_before: 50
+    score_after: 54
+    geometry_changed: true
+    refinement_stage: head
+    hard_gate_regressions: []
+    digital_evidence:
+      master_structure: pass
+      collectible_tests: 47_pass
+      print_check: pass
+      prusaslicer_import: pass
+      neutral_render: cobie-collectible/validation-renders/cover-v2/I02-neutral/contact_sheet.png
+      lookdev_review: cobie-collectible/validation-renders/cover-v2/I02-lookdev/review_board.png
+      score_report: cobie-collectible/refinement/cover-v2/ratings/I02_report.json
+    next_highest_impact_gap: leather jacket construction
+    open_human_gates:
+      - owner photo pack
+      - real-Cobie identity approval
+      - physical print and fit review

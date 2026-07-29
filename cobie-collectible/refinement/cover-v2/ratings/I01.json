@@ -1,0 +1,29 @@
+{
+  "iteration_id": "I01",
+  "stage": "silhouette",
+  "reviewer": "GPT-5.6 visual review",
+  "score_before": 35,
+  "ratings": {
+    "silhouette": 3,
+    "head_and_fur_identity": 3,
+    "pose_and_weight": 3,
+    "jacket_construction": 1,
+    "fetch_launcher": 1,
+    "aviators": 3,
+    "neutral_geometry_evidence": 5,
+    "material_and_color_cohesion": 3
+  },
+  "evidence": {
+    "neutral_render_id": "cover-v2/I01-neutral",
+    "lookdev_report": "cobie-collectible/validation-renders/cover-v2/I01-lookdev/lookdev_report.json"
+  },
+  "judgment": {
+    "accepted": true,
+    "summary": "The wider stance, diagonal single-launcher read, larger layered head, drop ears, and front-facing aviators materially improve the cover silhouette while all digital print gates remain green.",
+    "next_highest_impact_gap": "Refine the muzzle, cheek, jaw, ear, and fur-lock hierarchy so the head reads as Cobie rather than a generic mascot."
+  },
+  "human_gates": {
+    "identity_approved": false,
+    "physical_prototype_approved": false
+  }
+}

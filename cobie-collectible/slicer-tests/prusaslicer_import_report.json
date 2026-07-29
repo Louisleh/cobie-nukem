@@ -1,9 +1,9 @@
 {
   "build_receipt": {
     "path": "cobie-collectible/exports/build_report.json",
-    "pipeline_version": 3,
-    "sha256": "345c00a8140eaf94fd0b299ea715354a38e93949415a51eeb65da4a56a5717ba",
-    "source_blend_sha256": "f3048d42cb0b3c8dbd69521937cf63dd37f2328279b8e31fba01364f0479474d",
+    "pipeline_version": 4,
+    "sha256": "877b01686555514998498519e4274c4163afe312993134f6b8ed9f5411766da4",
+    "source_blend_sha256": "2a0784cdbb36bf86d291cd965a42dc2dafdbfc09375eedb45f87235f7d33bee2",
     "status": "PASS"
   },
   "environment": {
@@ -19,11 +19,11 @@
     "Cobie_Sunglasses.stl"
   ],
   "export_hashes": {
-    "Base_Keyed.stl": "5637c73bcd7a52370eb34edd65247af7389d6785e9a7551cd3472ef4915d0130",
-    "Cobie_Body.stl": "cb06edb4cf8d73e7ee951314696d6558f850c8c698460065dd515e6c85081ff6",
-    "Cobie_Head.stl": "a10e24910c9a555735602d8f906c80d5614c66b1b6efcbfabcc533765636c9c4",
-    "Cobie_Prop_FetchLauncher.stl": "9af76e2048ea1cfc0974485a3746d1f378f7589c0e76c30ff8add733025c6706",
-    "Cobie_Sunglasses.stl": "d991aaf59c9f6efbc0be049cf1267ebb59a6357d0eaadef38bf9c4c8ab8a5ec6"
+    "Base_Keyed.stl": "1bf84f82b27139affbb4b694496f539c94d8f41e8c6c7198412acff152541bdf",
+    "Cobie_Body.stl": "8f217fbbd17344a1efb50c4f28547f70ed86c3b16c3f10bd002f241df349d095",
+    "Cobie_Head.stl": "413a4c87f1ca234bbe6a3f0084fa634939e97a7bfdb57ff6a70ec44b88ff6046",
+    "Cobie_Prop_FetchLauncher.stl": "9ef4f39a80adfad788bdcfb6b0c2397ada77edcb7ba495270a28568c7d311d05",
+    "Cobie_Sunglasses.stl": "e329a55c8fce3067a989c3c71a55a4658e7ad81375fdca515d41e2e38e3d349f"
   },
   "failures": [],
   "observed_stl_files": [
@@ -36,78 +36,78 @@
   "parts": {
     "Base_Keyed.stl": {
       "manifold": "yes",
-      "max_x": "34.970131",
-      "max_y": "34.970131",
+      "max_x": "34.972607",
+      "max_y": "34.972607",
       "max_z": "10.550000",
-      "min_x": "-34.970131",
-      "min_y": "-34.970131",
+      "min_x": "-34.972607",
+      "min_y": "-34.972607",
       "min_z": "-0.000000",
-      "number_of_facets": "52860",
+      "number_of_facets": "63036",
       "number_of_parts": "1",
-      "size_x": "69.940262",
-      "size_y": "69.940262",
+      "size_x": "69.945213",
+      "size_y": "69.945213",
       "size_z": "10.550000",
-      "volume": "19700.923828"
+      "volume": "19703.244141"
     },
     "Cobie_Body.stl": {
       "manifold": "yes",
-      "max_x": "26.306202",
-      "max_y": "19.700626",
-      "max_z": "115.000000",
-      "min_x": "-26.306980",
-      "min_y": "-24.449841",
-      "min_z": "5.802201",
-      "number_of_facets": "111162",
+      "max_x": "28.879822",
+      "max_y": "18.889107",
+      "max_z": "115.000008",
+      "min_x": "-26.957218",
+      "min_y": "-23.697433",
+      "min_z": "5.500000",
+      "number_of_facets": "139610",
       "number_of_parts": "1",
-      "size_x": "52.613182",
-      "size_y": "44.150467",
-      "size_z": "109.197799",
-      "volume": "62573.382812"
+      "size_x": "55.837040",
+      "size_y": "42.586540",
+      "size_z": "109.500008",
+      "volume": "68169.328125"
     },
     "Cobie_Head.stl": {
       "manifold": "yes",
-      "max_x": "24.740036",
-      "max_y": "17.223581",
-      "max_z": "140.541473",
-      "min_x": "-24.740028",
-      "min_y": "-24.810549",
-      "min_z": "97.252457",
-      "number_of_facets": "227838",
+      "max_x": "25.167004",
+      "max_y": "16.731594",
+      "max_z": "139.732193",
+      "min_x": "-25.167004",
+      "min_y": "-25.419376",
+      "min_z": "97.544159",
+      "number_of_facets": "238054",
       "number_of_parts": "1",
-      "size_x": "49.480064",
-      "size_y": "42.034130",
-      "size_z": "43.289017",
-      "volume": "30117.949219"
+      "size_x": "50.334007",
+      "size_y": "42.150970",
+      "size_z": "42.188034",
+      "volume": "30722.878906"
     },
     "Cobie_Prop_FetchLauncher.stl": {
       "manifold": "yes",
-      "max_x": "32.500000",
+      "max_x": "35.426563",
       "max_y": "-8.000000",
-      "max_z": "79.280121",
-      "min_x": "-16.960129",
-      "min_y": "-30.160366",
-      "min_z": "50.031975",
-      "number_of_facets": "56892",
+      "max_z": "80.049225",
+      "min_x": "-17.308529",
+      "min_y": "-27.180756",
+      "min_z": "49.942791",
+      "number_of_facets": "52608",
       "number_of_parts": "1",
-      "size_x": "49.460129",
-      "size_y": "22.160366",
-      "size_z": "29.248146",
-      "volume": "7943.702148"
+      "size_x": "52.735092",
+      "size_y": "19.180756",
+      "size_z": "30.106434",
+      "volume": "8841.169922"
     },
     "Cobie_Sunglasses.stl": {
       "manifold": "yes",
-      "max_x": "15.568831",
+      "max_x": "15.315012",
       "max_y": "-3.500000",
-      "max_z": "124.300003",
-      "min_x": "-15.568831",
-      "min_y": "-21.000000",
-      "min_z": "114.041962",
-      "number_of_facets": "24240",
+      "max_z": "124.900002",
+      "min_x": "-15.315012",
+      "min_y": "-21.699999",
+      "min_z": "114.848534",
+      "number_of_facets": "24212",
       "number_of_parts": "1",
-      "size_x": "31.137663",
-      "size_y": "17.500000",
-      "size_z": "10.258041",
-      "volume": "668.264893"
+      "size_x": "30.630024",
+      "size_y": "18.199999",
+      "size_z": "10.051468",
+      "volume": "652.724670"
     }
   }
 }
