@@ -118,7 +118,7 @@ GLASSES_ENVELOPE_CLEARANCE_MM = 0.27
 PROP_BULK_CLEARANCE_MM = 0.55
 PROP_SOCKET_CLEARANCES_MM = (0.31, 0.30)
 
-PROP_ROLL_RADIANS = math.radians(12.0)
+PROP_ROLL_RADIANS = math.radians(15.0)
 
 
 @dataclass(frozen=True)
@@ -189,6 +189,16 @@ def stage_at_least(stage: str) -> bool:
     return STAGES.index(ACTIVE_STAGE) >= STAGES.index(stage)
 
 
+def smooth_all(obj: bpy.types.Object) -> None:
+    for polygon in obj.data.polygons:
+        polygon.use_smooth = True
+
+
+def smooth_cylinder_sides(obj: bpy.types.Object) -> None:
+    for polygon in obj.data.polygons:
+        polygon.use_smooth = len(polygon.vertices) == 4
+
+
 def sphere(
     name: str,
     radius: float,
@@ -203,11 +213,12 @@ def sphere(
     bpy.ops.mesh.primitive_uv_sphere_add(
         radius=radius,
         location=location,
-        segments=24,
-        ring_count=12,
+        segments=32,
+        ring_count=16,
     )
     obj = new_mesh_object(name, COLLECTIONS[collection_name])
     obj.scale = scale
+    smooth_all(obj)
     return component(obj, zone, role=role, stage=stage)
 
 
@@ -231,6 +242,7 @@ def cylinder(
         vertices=32,
     )
     obj = new_mesh_object(name, COLLECTIONS[collection_name])
+    smooth_cylinder_sides(obj)
     return component(obj, zone, role=role, stage=stage)
 
 
@@ -272,10 +284,11 @@ def torus(
         minor_radius=minor,
         location=location,
         rotation=rotation,
-        major_segments=24,
-        minor_segments=10,
+        major_segments=32,
+        minor_segments=12,
     )
     obj = new_mesh_object(name, COLLECTIONS[collection_name])
+    smooth_all(obj)
     return component(obj, zone, role=role, stage=stage)
 
 
@@ -340,10 +353,11 @@ def capsule(
         radius=radius,
         depth=direction.length,
         location=middle,
-        vertices=24,
+        vertices=32,
     )
     shaft = new_mesh_object(f"{name}_shaft", COLLECTIONS[collection_name])
     shaft.rotation_euler = direction.to_track_quat("Z", "Y").to_euler()
+    smooth_cylinder_sides(shaft)
     return [
         component(shaft, zone, role=role, stage=stage),
         sphere(
@@ -457,9 +471,10 @@ def fur_lock(
     radius: float,
     *,
     scale=(1.0, 0.78, 1.0),
+    zone="fur_tip",
     stage="final",
 ) -> list[Component]:
-    pieces = capsule(name, radius, start, end, zone="fur", stage=stage)
+    pieces = capsule(name, radius, start, end, zone=zone, stage=stage)
     pieces[-1].obj.scale = scale
     return pieces
 
@@ -674,33 +689,50 @@ def build_base_source() -> list[Component]:
 def build_body_source() -> list[Component]:
     pieces: list[Component] = []
 
+    # The cover's strength comes from a broad, uneven fighting stance rather
+    # than parallel mannequin legs.  The forward left paw reaches out and the
+    # rear right paw carries the torso, with two angled lower-leg segments
+    # making the weight transfer readable from both front and three-quarter.
     leg_specs = (
-        (-1, -12.0, -2.0, -8.0, 52.5),
-        (1, 13.0, 2.5, -2.0, 53.5),
+        (-1, -15.0, -10.0, -2.5, -9.0, 52.0),
+        (1, 15.0, 11.5, 4.0, 1.0, 54.5),
     )
-    for side, x, knee_y, paw_y, thigh_z in leg_specs:
+    for side, x, knee_x, knee_y, paw_y, thigh_z in leg_specs:
+        middle = (
+            x * 0.88,
+            (knee_y + paw_y) * 0.5,
+            31.5 if side < 0 else 33.0,
+        )
         pieces.append(
             sphere(
                 f"SRC__haunch_{side}",
-                11.0,
-                (x * 0.78, 2.0, thigh_z),
-                scale=(1.05, 0.88, 1.0),
+                11.5,
+                (knee_x * 0.90 + 1.0, 2.5, thigh_z),
+                scale=(1.10, 0.90, 1.0),
             )
         )
         pieces.extend(
             capsule(
-                f"SRC__shin_{side}",
-                6.2,
-                (x * 0.88, knee_y, 45.5),
+                f"SRC__upper_shin_{side}",
+                6.6,
+                (knee_x, knee_y, 46.0 if side < 0 else 47.0),
+                middle,
+            )
+        )
+        pieces.extend(
+            capsule(
+                f"SRC__lower_shin_{side}",
+                6.3,
+                middle,
                 (x, paw_y, 19.0),
             )
         )
         pieces.append(
             sphere(
                 f"SRC__calf_lock_{side}",
-                6.4,
-                (x, paw_y + 1.5, 30.0),
-                scale=(1.06, 0.92, 1.2),
+                6.7,
+                (x * 0.92, paw_y + 1.5, 29.5),
+                scale=(1.12, 0.95, 1.12),
             )
         )
         pieces.append(
@@ -708,23 +740,31 @@ def build_body_source() -> list[Component]:
                 f"SRC__paw_{side}",
                 7.8,
                 (x, paw_y - 1.0, 11.4),
-                scale=(1.2, 1.45, 0.75),
+                scale=(1.35, 1.55, 0.78),
             )
         )
         for toe in (-1, 0, 1):
             pieces.append(
                 sphere(
                     f"SRC__paw_toe_{side}_{toe}",
-                    2.5,
-                    (x + toe * 3.2, paw_y - 9.5, 8.7),
-                    scale=(1.05, 1.15, 0.72),
+                    2.6,
+                    (x + toe * 3.6, paw_y - 10.2, 8.7),
+                    scale=(1.10, 1.20, 0.72),
                 )
             )
         pieces.extend(
             fur_lock(
-                f"SRC__leg_fur_{side}",
-                (x - side * 2.0, paw_y - 4.0, 37.0),
-                (x + side * 1.5, paw_y - 5.0, 31.0),
+                f"SRC__leg_fur_upper_{side}",
+                (knee_x - side * 1.5, knee_y - 3.0, 42.0),
+                (middle[0] + side * 1.5, middle[1] - 3.5, middle[2] + 1.0),
+                2.2,
+            )
+        )
+        pieces.extend(
+            fur_lock(
+                f"SRC__leg_fur_lower_{side}",
+                (middle[0] - side * 1.0, middle[1] - 4.0, middle[2]),
+                (x + side * 1.7, paw_y - 5.0, 24.5),
                 2.1,
             )
         )
@@ -739,15 +779,26 @@ def build_body_source() -> list[Component]:
                 radius + 3.8,
                 8.0,
                 (x, y, 9.5),
-                zone="fur",
+                zone="fur_root",
+                role="internal",
             )
         )
 
     pieces.append(
         sphere(
+            "SRC__pelvis_root_mass",
+            18.0,
+            (2.6, 2.0, 59.0),
+            scale=(1.05, 0.80, 0.62),
+            zone="fur_root",
+            stage="final",
+        )
+    )
+    pieces.append(
+        sphere(
             "SRC__torso",
             20.0,
-            (1.2, 1.5, 75.5),
+            (2.4, 1.5, 75.5),
             scale=(1.03, 0.78, 1.20),
         )
     )
@@ -755,7 +806,7 @@ def build_body_source() -> list[Component]:
         sphere(
             "SRC__jacket_core",
             19.0,
-            (1.0, 2.5, 79.0),
+            (1.8, 2.5, 79.0),
             scale=(1.22, 0.82, 1.05),
             zone="leather",
         )
@@ -764,7 +815,7 @@ def build_body_source() -> list[Component]:
         sphere(
             "SRC__chest_ruff",
             12.0,
-            (0.0, -12.5, 84.0),
+            (0.6, -12.5, 84.0),
             scale=(1.05, 0.68, 1.12),
         )
     )
@@ -785,12 +836,13 @@ def build_body_source() -> list[Component]:
             )
         )
 
+    shoulder_heights = {-1: 88.8, 1: 87.0}
     for side in (-1, 1):
         pieces.append(
             sphere(
                 f"SRC__shoulder_{side}",
                 10.5,
-                (side * 17.0 + 1.0, 0.0, 88.5),
+                (side * 17.0 + 1.0, 0.0, shoulder_heights[side]),
                 scale=(1.05, 0.82, 0.76),
                 zone="leather",
             )
@@ -840,6 +892,25 @@ def build_body_source() -> list[Component]:
             ),
         ]
     )
+    # Raised leather piping survives neutral resin while the semantic edge zone
+    # gives the black jacket a readable construction language in colour.
+    leather_edges = (
+        ((-18.0, -18.0, 93.5), (-8.0, -18.1, 94.2)),
+        ((-8.0, -18.1, 94.2), (-1.5, -18.1, 82.0)),
+        ((18.0, -17.8, 93.5), (8.0, -17.9, 94.2)),
+        ((8.0, -17.9, 94.2), (1.5, -18.0, 82.0)),
+    )
+    for index, (start, end) in enumerate(leather_edges):
+        pieces.extend(
+            capsule(
+                f"SRC__leather_edge_{index}",
+                1.2,
+                start,
+                end,
+                zone="leather_edge",
+                stage="final",
+            )
+        )
     pieces.extend(
         capsule(
             "SRC__asymmetric_zip",
@@ -864,8 +935,8 @@ def build_body_source() -> list[Component]:
             )
 
     arm_paths = {
-        -1: ((-17.0, -2.0, 87.5), (-20.0, -10.0, 77.0), (-8.0, -18.2, 73.5)),
-        1: ((18.0, -1.0, 87.0), (21.0, -9.0, 75.0), (11.0, -18.0, 63.0)),
+        -1: ((-16.0, -2.0, 89.5), (-20.5, -10.0, 79.0), (-8.0, -18.2, 74.0)),
+        1: ((18.0, -1.0, 86.5), (22.0, -8.0, 72.0), (11.5, -18.0, 62.0)),
     }
     for side, (shoulder, elbow, hand) in arm_paths.items():
         pieces.extend(
@@ -1152,6 +1223,16 @@ def build_head_source() -> list[Component]:
                 )
             )
         pieces.extend(
+            capsule(
+                f"SRC__ear_root_{side}",
+                1.8,
+                (side * 16.5, -7.0, 121.0),
+                (side * 18.5, -7.0, 108.0),
+                zone="fur_root",
+                stage="final",
+            )
+        )
+        pieces.extend(
             fur_lock(
                 f"SRC__ear_lock_upper_{side}",
                 (side * 18.0, -7.0, 122.0),
@@ -1267,6 +1348,7 @@ def launcher_components(
 ) -> list[Component]:
     c = clearance
     angle = PROP_ROLL_RADIANS
+    axis_z = lambda x: 68.0 - math.tan(angle) * (x - 2.0)
     pieces: list[Component] = [
         cube(
             f"{prefix}__receiver_core",
@@ -1307,15 +1389,15 @@ def launcher_components(
             f"{prefix}__barrel",
             5.5 + c,
             (2.0, -20.0, 68.0),
-            (30.0, -20.0, 61.8),
+            (30.0, -20.0, axis_z(30.0)),
             zone="dark_metal",
             collection_name=collection_name,
         ),
         cylinder_between(
             f"{prefix}__underbarrel",
             2.7 + c,
-            (7.0, -19.8, 61.5),
-            (24.0, -19.8, 57.7),
+            (7.0, -19.8, axis_z(7.0) - 5.8),
+            (24.0, -19.8, axis_z(24.0) - 5.8),
             zone="gunmetal",
             stage="launcher",
             collection_name=collection_name,
@@ -1323,21 +1405,21 @@ def launcher_components(
         cylinder_between(
             f"{prefix}__muzzle",
             7.2 + c,
-            (28.5, -20.0, 62.2),
-            (34.0, -20.0, 61.0),
+            (28.5, -20.0, axis_z(28.5)),
+            (34.0, -20.0, axis_z(34.0)),
             zone="gunmetal",
             collection_name=collection_name,
         ),
     ]
 
     direction = (1.0, 0.0, -math.tan(angle))
-    for index, (x, z) in enumerate(((5.0, 67.3), (13.0, 65.5), (21.0, 63.8))):
+    for index, x in enumerate((5.0, 13.0, 21.0)):
         pieces.append(
             oriented_torus(
                 f"{prefix}__cage_{index}",
                 6.6,
                 1.35 + c,
-                (x, -20.0, z),
+                (x, -20.0, axis_z(x)),
                 direction,
                 zone="gunmetal",
                 stage="launcher",
@@ -1349,7 +1431,7 @@ def launcher_components(
             f"{prefix}__charge_ring",
             7.0,
             1.55 + c,
-            (27.0, -20.0, 62.5),
+            (27.0, -20.0, axis_z(27.0)),
             direction,
             zone="cyan",
             stage="launcher",
@@ -1361,7 +1443,7 @@ def launcher_components(
             f"{prefix}__carry_handle",
             2.5 + c,
             (-13.0, -20.0, 80.5),
-            (2.0, -20.0, 77.2),
+            (2.0, -20.0, 76.8),
             zone="gunmetal",
             stage="launcher",
             collection_name=collection_name,
@@ -1381,8 +1463,8 @@ def launcher_components(
         capsule(
             f"{prefix}__spine",
             3.2 + c,
-            (-12.0, -20.0, 70.5),
-            (31.0, -20.0, 61.0),
+            (-12.0, -20.0, axis_z(-12.0)),
+            (31.0, -20.0, axis_z(31.0)),
             zone="gunmetal",
             collection_name=collection_name,
         )
@@ -1429,6 +1511,18 @@ def launcher_components(
                 collection_name=collection_name,
             ),
         ]
+    )
+    pieces.append(
+        torus(
+            f"{prefix}__tennis_seam",
+            5.1,
+            0.75 + c,
+            (-7.0, -27.0, 73.5),
+            rotation=(math.pi / 2.0, 0.0, math.radians(18.0)),
+            zone="tennis_seam",
+            stage="final",
+            collection_name=collection_name,
+        )
     )
     for index, (x, z) in enumerate(((-9.2, 72.2), (-8.0, 73.0), (-6.7, 72.8), (-5.6, 71.6))):
         pieces.append(
@@ -1493,7 +1587,10 @@ def create_materials() -> None:
     MATERIALS.update(
         {
             "fur": material("Cobie_Fur_GoldenHoney", (0.57, 0.25, 0.07, 1.0), 0.72),
+            "fur_root": material("Cobie_Fur_WarmRoot", (0.30, 0.105, 0.025, 1.0), 0.80),
+            "fur_tip": material("Cobie_Fur_HoneyTip", (0.82, 0.46, 0.14, 1.0), 0.70),
             "leather": material("Cobie_Leather_NearBlack", (0.018, 0.022, 0.027, 1.0), 0.30),
+            "leather_edge": material("Cobie_Leather_Edge", (0.070, 0.080, 0.095, 1.0), 0.40),
             "silver": material("Cobie_Hardware_AgedSilver", (0.38, 0.42, 0.46, 1.0), 0.30, 0.75),
             "tag_text": material("Cobie_Tag_Recess", (0.055, 0.060, 0.065, 1.0), 0.48, 0.35),
             "nose": material("Cobie_Nose_GlossBlack", (0.006, 0.008, 0.010, 1.0), 0.16),
@@ -1504,6 +1601,7 @@ def create_materials() -> None:
             "dark_metal": material("FetchLauncher_BlackSteel", (0.018, 0.024, 0.032, 1.0), 0.31, 0.58),
             "hazard": material("FetchLauncher_HazardGold", (0.70, 0.30, 0.015, 1.0), 0.38, 0.30),
             "tennis": material("FetchLauncher_TennisBall", (0.48, 0.68, 0.035, 1.0), 0.76),
+            "tennis_seam": material("FetchLauncher_TennisSeam", (0.72, 0.76, 0.54, 1.0), 0.70),
             "cyan": material("FetchLauncher_ChargeCyan", (0.00, 0.42, 0.60, 1.0), 0.23, 0.20),
             "base": material("Cobie_Base_Charcoal", (0.035, 0.045, 0.055, 1.0), 0.82),
         }
@@ -1512,8 +1610,11 @@ def create_materials() -> None:
 
 def build_lookdev() -> None:
     for part_name in PART_NAMES:
+        visible_semantics = [
+            item for item in SOURCE_PARTS[part_name] if item.role != "internal"
+        ]
         clones = clone_components(
-            SOURCE_PARTS[part_name],
+            visible_semantics,
             "LOOKDEV",
             f"LOOK__{part_name}__",
             materials=True,

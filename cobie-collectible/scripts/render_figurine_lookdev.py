@@ -37,6 +37,7 @@ from _common import (
 )
 
 MASTER_BLEND = ROOT / "cobie-collectible" / "blender" / "cobie_figurine_v2_master.blend"
+RENDERER_PATH = Path(__file__).resolve()
 LOOKDEV_ID = os.environ.get("COBIE_LOOKDEV_ID", "cover-v2/lookdev")
 OUTPUT_DIR = VALIDATION_RENDERS / LOOKDEV_ID
 REPORT_PATH = OUTPUT_DIR / "lookdev_report.json"
@@ -81,28 +82,28 @@ def _linear_rgba(value: str, alpha: float = 1.0) -> tuple[float, float, float, f
 PALETTE: dict[str, dict] = {
     "MAT_FUR_APRICOT": {
         "hex": "#B96B2F",
-        "variation_hex": "#E5A867",
+        "variation_hex": "#D99152",
         "metallic": 0.0,
         "roughness": 0.75,
         "procedural": "fur_colour_variation",
     },
     "MAT_FUR_ROOT": {
-        "hex": "#633318",
-        "variation_hex": "#8A4C25",
+        "hex": "#7A421F",
+        "variation_hex": "#9A5A31",
         "metallic": 0.0,
         "roughness": 0.82,
         "procedural": "fur_colour_variation",
     },
     "MAT_FUR_TIP": {
-        "hex": "#E5A867",
-        "variation_hex": "#F2C48B",
+        "hex": "#D99A59",
+        "variation_hex": "#E8B374",
         "metallic": 0.0,
         "roughness": 0.72,
         "procedural": "fur_colour_variation",
     },
     "MAT_LEATHER_BLACK": {
         "hex": "#090A0C",
-        "variation_hex": "#20242A",
+        "variation_hex": "#15191E",
         "metallic": 0.0,
         "roughness": 0.32,
         "coat_weight": 0.28,
@@ -143,8 +144,8 @@ PALETTE: dict[str, dict] = {
         "roughness": 0.34,
     },
     "MAT_LAUNCHER_GUNMETAL": {
-        "hex": "#20252A",
-        "variation_hex": "#384149",
+        "hex": "#252C33",
+        "variation_hex": "#3A444D",
         "metallic": 0.82,
         "roughness": 0.32,
         "procedural": "metal_roughness_variation",
@@ -197,15 +198,22 @@ PALETTE: dict[str, dict] = {
 
 REQUIRED_MATERIAL_IDS = {
     "MAT_FUR_APRICOT",
+    "MAT_FUR_ROOT",
+    "MAT_FUR_TIP",
     "MAT_LEATHER_BLACK",
+    "MAT_LEATHER_EDGE",
     "MAT_NOSE_GLOSS",
     "MAT_LENS_SMOKE",
     "MAT_FRAME_WARM_METAL",
     "MAT_METAL_AGED_SILVER",
     "MAT_LAUNCHER_GUNMETAL",
+    "MAT_LAUNCHER_BLACK",
     "MAT_HAZARD_GOLD",
     "MAT_TENNIS_GREEN",
+    "MAT_TENNIS_SEAM",
+    "MAT_CHARGE_CYAN",
     "MAT_BASE_DARK",
+    "MAT_TEXT_DARK",
 }
 REQUIRED_MATERIAL_IDS_BY_STAGE = {
     "silhouette": {
@@ -233,7 +241,21 @@ REQUIRED_MATERIAL_IDS_BY_STAGE = {
         "MAT_LAUNCHER_GUNMETAL",
         "MAT_BASE_DARK",
     },
-    "launcher": REQUIRED_MATERIAL_IDS,
+    "launcher": {
+        "MAT_FUR_APRICOT",
+        "MAT_LEATHER_BLACK",
+        "MAT_NOSE_GLOSS",
+        "MAT_LENS_SMOKE",
+        "MAT_FRAME_WARM_METAL",
+        "MAT_METAL_AGED_SILVER",
+        "MAT_LAUNCHER_GUNMETAL",
+        "MAT_LAUNCHER_BLACK",
+        "MAT_HAZARD_GOLD",
+        "MAT_TENNIS_GREEN",
+        "MAT_CHARGE_CYAN",
+        "MAT_BASE_DARK",
+        "MAT_TEXT_DARK",
+    },
     "final": REQUIRED_MATERIAL_IDS,
 }
 
@@ -343,11 +365,26 @@ def _procedural_material(material_id: str, spec: dict) -> bpy.types.Material:
     procedural = spec.get("procedural")
     if procedural:
         texture_coordinates = nodes.new("ShaderNodeTexCoord")
+        texture_anchor = bpy.data.objects.get("__Lookdev_Texture_Coordinates")
+        if texture_anchor is None:
+            texture_anchor = bpy.data.objects.new(
+                "__Lookdev_Texture_Coordinates",
+                None,
+            )
+            bpy.data.collections["__LOOKDEV_RENDER_RIG"].objects.link(
+                texture_anchor
+            )
+        texture_coordinates.object = texture_anchor
         noise = nodes.new("ShaderNodeTexNoise")
-        noise.inputs["Scale"].default_value = 5.0 if "fur" in procedural else 8.0
+        if "fur" in procedural:
+            noise.inputs["Scale"].default_value = 0.12
+        elif "leather" in procedural:
+            noise.inputs["Scale"].default_value = 0.07
+        else:
+            noise.inputs["Scale"].default_value = 0.06
         noise.inputs["Detail"].default_value = 3.0
         noise.inputs["Roughness"].default_value = 0.65
-        links.new(texture_coordinates.outputs["Generated"], noise.inputs["Vector"])
+        links.new(texture_coordinates.outputs["Object"], noise.inputs["Vector"])
 
         variation = spec.get("variation_hex", spec["hex"])
         colour_ramp = nodes.new("ShaderNodeValToRGB")
@@ -417,14 +454,9 @@ def _material_id_from_value(value: object) -> str | None:
 
 
 def _object_material_ids(obj: bpy.types.Object) -> list[str]:
-    existing = [
-        _material_id_from_value(slot.material.name)
-        for slot in obj.material_slots
-        if slot.material is not None
-    ]
-    if existing and all(material_id is not None for material_id in existing):
-        return [material_id for material_id in existing if material_id is not None]
-
+    # Semantic zones are authoritative. Source material names such as
+    # ``FetchLauncher_HazardGold`` contain the generic word "launcher" and
+    # would otherwise collapse special zones back to gunmetal.
     for property_name in (
         "lookdev_material_id",
         "material_id",
@@ -436,6 +468,14 @@ def _object_material_ids(obj: bpy.types.Object) -> list[str]:
         material_id = _material_id_from_value(obj.get(property_name))
         if material_id is not None:
             return [material_id]
+
+    existing = [
+        _material_id_from_value(slot.material.name)
+        for slot in obj.material_slots
+        if slot.material is not None
+    ]
+    if existing and all(material_id is not None for material_id in existing):
+        return [material_id for material_id in existing if material_id is not None]
 
     material_id = _material_id_from_value(obj.name)
     return [material_id] if material_id is not None else []
@@ -756,7 +796,7 @@ def _make_contact_sheet(paths: dict[str, Path], path: Path) -> None:
     y = tile_height + label_height
     draw.multiline_text(
         (x + 34, y + 70),
-        "COVER REFINEMENT V2 — LOOKDEV\n"
+        "COVER REFINEMENT V2 - LOOKDEV\n"
         "Colour/material review, not print proof\n"
         "Identity approval: FALSE\n"
         "Physical prototype approval: FALSE",
@@ -781,7 +821,7 @@ def _make_review_board(paths: dict[str, Path], path: Path) -> None:
     panels = (
         ("PRIMARY COVER REFERENCE", PRIMARY_COVER),
         ("PRESENTATION PORTRAIT", paths["presentation"]),
-        ("LOCKED HERO COLOUR", paths["hero"]),
+        ("LOCKED HERO COLOUR", paths["colour_hero"]),
         ("BLACK SILHOUETTE", paths["silhouette_hero"]),
         ("HEAD / GLASSES", paths["closeup_head"]),
         ("JACKET / LAUNCHER", paths["closeup_jacket"]),
@@ -1024,9 +1064,8 @@ def _run() -> int:
     )
 
     board_sources = {
-        **colour_paths,
         **closeup_paths,
-        **silhouette_paths,
+        "colour_hero": colour_paths["hero"],
         "presentation": presentation_path,
         "silhouette_hero": silhouette_paths["hero"],
     }
@@ -1055,10 +1094,15 @@ def _run() -> int:
         "status": "PASS" if not failures else "FAIL",
         "packet_type": "lookdev_colour_evidence",
         "render_id": LOOKDEV_ID,
+        "refinement_stage": refinement_stage,
         "source_master": str(MASTER_BLEND.relative_to(ROOT)),
         "source_sha256_before": source_hash_before,
         "source_sha256_after": source_hash_after,
         "source_unchanged": source_hash_before == source_hash_after,
+        "renderer": {
+            "path": RENDERER_PATH.relative_to(ROOT).as_posix(),
+            "sha256": sha256_file(RENDERER_PATH),
+        },
         "environment": {
             "blender": bpy.app.version_string,
             "render_engine": ENGINE,

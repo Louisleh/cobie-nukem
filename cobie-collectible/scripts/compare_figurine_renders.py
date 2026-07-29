@@ -44,6 +44,32 @@ def label(draw: ImageDraw.ImageDraw, x: int, y: int, text: str, colour: tuple[in
     draw.text((x, y), text, fill=colour, font=ImageFont.load_default(size=20))
 
 
+def git_history_contains_file_hash(relative_path: str, expected_sha256: str) -> bool:
+    """Accept an older committed generator/renderer after the live file moves on."""
+    try:
+        revisions = subprocess.run(
+            ["git", "log", "--all", "--format=%H", "--", relative_path],
+            cwd=ROOT,
+            check=True,
+            capture_output=True,
+            text=True,
+            timeout=10,
+        ).stdout.splitlines()
+        for revision in revisions:
+            content = subprocess.run(
+                ["git", "show", f"{revision}:{relative_path}"],
+                cwd=ROOT,
+                check=True,
+                capture_output=True,
+                timeout=10,
+            ).stdout
+            if hashlib.sha256(content).hexdigest() == expected_sha256:
+                return True
+    except (OSError, subprocess.SubprocessError):
+        return False
+    return False
+
+
 def validate_historical_source(payload: dict, subject: str) -> list[Failure]:
     """Require an immutable file or an exact Git revision for a baseline."""
     provenance = payload.get("source_provenance")
@@ -106,15 +132,31 @@ def validate_historical_source(payload: dict, subject: str) -> list[Failure]:
             relative = Path(raw_path) if isinstance(raw_path, str) else Path("..")
             source_path = (ROOT / relative).resolve()
             root = ROOT.resolve()
+            expected_hash = provenance.get(hash_key)
+            safe_path = (
+                isinstance(raw_path, str)
+                and not relative.is_absolute()
+                and ".." not in relative.parts
+                and source_path != root
+                and root in source_path.parents
+            )
+            live_matches = (
+                safe_path
+                and not source_path.is_symlink()
+                and source_path.is_file()
+                and isinstance(expected_hash, str)
+                and SHA256_RE.fullmatch(expected_hash) is not None
+                and expected_hash == sha256_file(source_path)
+            )
+            history_matches = (
+                safe_path
+                and isinstance(expected_hash, str)
+                and SHA256_RE.fullmatch(expected_hash) is not None
+                and git_history_contains_file_hash(raw_path, expected_hash)
+            )
             if (
-                not isinstance(raw_path, str)
-                or relative.is_absolute()
-                or ".." in relative.parts
-                or source_path == root
-                or root not in source_path.parents
-                or source_path.is_symlink()
-                or not source_path.is_file()
-                or provenance.get(hash_key) != sha256_file(source_path)
+                not safe_path
+                or not (live_matches or history_matches)
             ):
                 failures.append(
                     Failure(
@@ -225,7 +267,10 @@ def validate_historical_source(payload: dict, subject: str) -> list[Failure]:
                 f"cannot resolve historical Git source {object_spec}: {exc}",
             )
         ]
-    if observed_blob != blob_oid or hashlib.sha256(script_content).hexdigest() != script_hash:
+    if (
+        observed_blob != blob_oid
+        or hashlib.sha256(script_content.encode()).hexdigest() != script_hash
+    ):
         return [
             Failure(
                 "render_source_provenance",

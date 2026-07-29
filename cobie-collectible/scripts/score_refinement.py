@@ -52,6 +52,24 @@ RATING_PATH = RATING_DIR / f"{ITERATION_ID}.json"
 REPORT_PATH = RATING_DIR / f"{ITERATION_ID}_report.json"
 PRINT_REPORT = EXPORTS / "print_check_report.json"
 SLICER_REPORT = SLICER_TESTS / "prusaslicer_import_report.json"
+LOOKDEV_RENDERER = COLLECTIBLE / "scripts" / "render_figurine_lookdev.py"
+LOOKDEV_IMAGE_INVENTORY = {
+    "front",
+    "left",
+    "rear",
+    "right",
+    "hero",
+    "closeup_head",
+    "closeup_jacket",
+    "closeup_launcher",
+    "silhouette_front",
+    "silhouette_hero",
+    "presentation",
+    "material_id",
+    "palette_strip",
+    "colour_contact_sheet",
+    "review_board",
+}
 
 
 def weighted_score(ratings: dict[str, int]) -> float:
@@ -115,6 +133,23 @@ def _run() -> int:
             )
         )
     rating = _load_object(RATING_PATH, check="rating_packet", failures=failures)
+    if rating.get("iteration_id") != ITERATION_ID:
+        failures.append(
+            Failure(
+                "rating_iteration",
+                str(RATING_PATH),
+                f"packet identifies {rating.get('iteration_id')!r}, expected {ITERATION_ID!r}",
+            )
+        )
+    rating_stage = rating.get("stage")
+    if rating_stage not in {"silhouette", "head", "costume", "launcher", "final"}:
+        failures.append(
+            Failure(
+                "rating_stage",
+                str(RATING_PATH),
+                f"invalid refinement stage {rating_stage!r}",
+            )
+        )
     ratings = rating.get("ratings")
     if not isinstance(ratings, dict) or set(ratings) != set(CATEGORIES):
         observed = sorted(ratings) if isinstance(ratings, dict) else []
@@ -170,11 +205,20 @@ def _run() -> int:
         failures.append(Failure("evidence", str(RATING_PATH), "evidence must be an object"))
         evidence = {}
     neutral_id = evidence.get("neutral_render_id")
-    neutral_path = (
-        VALIDATION_RENDERS / neutral_id / "render_report.json"
-        if isinstance(neutral_id, str)
-        else Path("__missing_neutral_report__")
-    )
+    neutral_root = VALIDATION_RENDERS.resolve()
+    neutral_path = Path("__missing_neutral_report__")
+    if isinstance(neutral_id, str):
+        candidate = (VALIDATION_RENDERS / neutral_id / "render_report.json").resolve()
+        if candidate != neutral_root and neutral_root in candidate.parents:
+            neutral_path = candidate
+        else:
+            failures.append(
+                Failure(
+                    "neutral_render",
+                    neutral_id,
+                    "neutral render path escapes validation-renders",
+                )
+            )
     neutral = _load_object(neutral_path, check="neutral_render", failures=failures)
     if neutral.get("failures") != []:
         failures.append(Failure("neutral_render", str(neutral_path), "neutral packet did not pass"))
@@ -194,10 +238,73 @@ def _run() -> int:
             )
         else:
             lookdev = _load_object(lookdev_path, check="lookdev_render", failures=failures)
-            if lookdev.get("failures") != []:
+            expected_lookdev_id = f"cover-v2/{ITERATION_ID}-lookdev"
+            if (
+                lookdev.get("status") != "PASS"
+                or lookdev.get("packet_type") != "lookdev_colour_evidence"
+                or lookdev.get("render_id") != expected_lookdev_id
+                or lookdev.get("refinement_stage") != rating_stage
+                or lookdev.get("failures") != []
+            ):
                 failures.append(
-                    Failure("lookdev_render", lookdev_relative, "lookdev packet did not pass")
+                    Failure(
+                        "lookdev_render",
+                        lookdev_relative,
+                        "lookdev packet status, type, ID, stage, or failures drifted",
+                    )
                 )
+            renderer = lookdev.get("renderer")
+            if (
+                not isinstance(renderer, dict)
+                or set(renderer) != {"path", "sha256"}
+                or renderer.get("path")
+                != LOOKDEV_RENDERER.relative_to(ROOT).as_posix()
+                or LOOKDEV_RENDERER.is_symlink()
+                or not LOOKDEV_RENDERER.is_file()
+                or renderer.get("sha256") != sha256_file(LOOKDEV_RENDERER)
+            ):
+                failures.append(
+                    Failure(
+                        "lookdev_renderer",
+                        lookdev_relative,
+                        "lookdev packet is not bound to the current renderer",
+                    )
+                )
+            images = lookdev.get("images")
+            if not isinstance(images, dict) or set(images) != LOOKDEV_IMAGE_INVENTORY:
+                observed = sorted(images) if isinstance(images, dict) else []
+                failures.append(
+                    Failure(
+                        "lookdev_images",
+                        lookdev_relative,
+                        f"expected={sorted(LOOKDEV_IMAGE_INVENTORY)} observed={observed}",
+                    )
+                )
+                images = {}
+            for image_name, entry in images.items():
+                raw_path = entry.get("path") if isinstance(entry, dict) else None
+                image_path = (
+                    (ROOT / raw_path).resolve()
+                    if isinstance(raw_path, str)
+                    else ROOT
+                )
+                root = ROOT.resolve()
+                if (
+                    not isinstance(entry, dict)
+                    or not isinstance(raw_path, str)
+                    or image_path == root
+                    or root not in image_path.parents
+                    or image_path.is_symlink()
+                    or not image_path.is_file()
+                    or entry.get("sha256") != sha256_file(image_path)
+                ):
+                    failures.append(
+                        Failure(
+                            "lookdev_image",
+                            f"{lookdev_relative}:{image_name}",
+                            "image path/hash is unsafe, missing, or stale",
+                        )
+                    )
             source_path = build_receipt.get("source_blend")
             expected_source_hash = build_receipt.get("source_blend_sha256")
             if (
