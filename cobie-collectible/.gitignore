@@ -1,0 +1,35 @@
+# This repository has no Git LFS and .git is already ~97 MB. The existing
+# committed .blend files are 110-290 KB. Everything below is either large or
+# regenerable, so it stays out of history and is tracked by SHA-256 instead.
+
+# Python environment for the collectible tools.
+.venv/
+__pycache__/
+
+# Downloaded image-to-3D candidates. Provenance is recorded in the bakeoff
+# capture_report.json; the files themselves are re-downloadable.
+generated-meshes/*.glb
+generated-meshes/*.ply
+generated-meshes/*.obj
+
+# Derived exports. Regenerate with scripts/build_figurine.py; hashes live in
+# exports/print_check_report.json.
+exports/*.stl
+exports/*.3mf
+
+# The PROXY blend is fully regenerable from scripts/build_figurine.py and is
+# 3.5 MB, so it is not committed.
+#
+# IMPORTANT: this exemption ends the moment the file contains manual sculpting.
+# A hand-sculpted .blend is the source of truth per the PRD and is NOT
+# reproducible from a script -- it must be committed, and at that point this
+# repository will need Git LFS.
+blender/*.blend
+blender/*.blend1
+
+# Personal photographs of Cobie. Identity input, not project source.
+references/photos/*
+!references/photos/.gitkeep
+
+# Generated turnaround images; regenerate from references/turnaround-prompts.md.
+concepts/turnaround/*.png

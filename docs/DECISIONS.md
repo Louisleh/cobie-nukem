@@ -111,3 +111,32 @@ Objectives, encounters, difficulty profiles, and each mission's content inventor
 - Web/mobile and native quality budgets are typed Resources selected automatically, with manual override reserved in settings.
 - Imported audio samples become the production path through `AudioCueSet`; synthesized audio remains an explicit fallback until manifested samples exist.
 - Local playtest metrics contain gameplay/performance counters only, are written only on explicit local export, and have no network transport or identity fields.
+
+## D-013 — Physical collectible pipeline
+
+**Status:** accepted for the figurine V1 sprint, 2026-07-29.
+
+A new `cobie-collectible/` sub-project produces a 140 mm static resin display
+figurine of Cobie via image-to-3D, Blender consolidation, and outsourced resin
+printing. It is deliberately isolated from the game runtime: it carries a
+`.gdignore`, contains no Godot resources, and is not referenced by any packed
+scene.
+
+- **Millimetre scale contract.** The figurine authors at 1 Blender unit = 1 mm,
+  departing from the game's 1 unit = 1 m. STL carries no units and every print
+  service reads a unit as one millimetre, so authoring in millimetres makes the
+  exported number literally correct. The deviation is stamped into the `.blend`
+  as a scene custom property.
+- **Generation never goes through an MCP.** Image-to-3D runs as hosted browser
+  demos and arrives as files. This preserves `docs/design/agentic-toolchain.md`'s
+  rule that external asset services (Poly Haven, Sketchfab, Hyper3D, Hunyuan)
+  stay disabled in the Blender MCP. BlenderMCP remains optional, local, and
+  scoped to `cobie-collectible/`; scripts stay authoritative.
+- **Python 3.13 for this sub-project only.** `bpy` 5.2.0 publishes cp313 wheels
+  only. `tools/visual_quality` stays on >=3.11.
+- **Print checks are reimplemented, not delegated.** Blender's 3D Print Toolbox
+  is absent from the `bpy` PyPI wheel, so manifold, thickness, floating-shell
+  and balance checks are implemented on trimesh and pymeshlab. They run
+  headless, fail with specific numbers, and are unit-tested against controls.
+- **Collectible tests are not in `tools/release_validate.sh`.** That script runs
+  its Python tests under bare `python3`; these require numpy, trimesh and scipy.

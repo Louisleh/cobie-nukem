@@ -1,0 +1,54 @@
+{
+  "failures": [],
+  "metrics": {
+    "assembly_height_mm": 140.942,
+    "balance_margin_ratio": 0.0716,
+    "balance_offset_mm": 2.505,
+    "base_diameter_mm": 70.0,
+    "base_thickness_mm": 5.0,
+    "clearance_contract_mm": [
+      0.2,
+      0.35
+    ],
+    "export_hashes": {
+      "Base_Keyed.stl": "5d294e5a455916703be8a6426ed6c7c6a3a44068c329f6a2e7676e4383d32012",
+      "Cobie_Body.stl": "94be98699f818a9b23ed35da4b7390ef763e956de3dc700d15ac988f93b95289",
+      "Cobie_Head.stl": "f9a4c6082ecc92654c8aec7f0520b3c4e357eadffc56800c648ddf60cee6edbb",
+      "Cobie_Prop_FetchLauncher.stl": "184ccd2356bc1fbcefc61331543edf9aeb320de7130ef6f20cb029fdfd46027d",
+      "Cobie_Sunglasses.stl": "1aff0c516b2b79d53fc948543085587c2c3a530533d3c88d61633dc8296d4db8"
+    },
+    "part_count": 5,
+    "parts": {
+      "Base_Keyed": {
+        "bodies": 1,
+        "triangles": 38700,
+        "volume_mm3": 19692.221,
+        "watertight": true
+      },
+      "Cobie_Body": {
+        "bodies": 1,
+        "triangles": 85072,
+        "volume_mm3": 72919.138,
+        "watertight": true
+      },
+      "Cobie_Head": {
+        "bodies": 1,
+        "triangles": 37608,
+        "volume_mm3": 35509.509,
+        "watertight": true
+      },
+      "Cobie_Prop_FetchLauncher": {
+        "bodies": 1,
+        "triangles": 66110,
+        "volume_mm3": 7352.567,
+        "watertight": true
+      },
+      "Cobie_Sunglasses": {
+        "bodies": 1,
+        "triangles": 20700,
+        "volume_mm3": 714.799,
+        "watertight": true
+      }
+    }
+  }
+}
