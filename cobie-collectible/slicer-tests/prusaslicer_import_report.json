@@ -1,0 +1,113 @@
+{
+  "build_receipt": {
+    "path": "cobie-collectible/exports/build_report.json",
+    "pipeline_version": 3,
+    "sha256": "345c00a8140eaf94fd0b299ea715354a38e93949415a51eeb65da4a56a5717ba",
+    "source_blend_sha256": "f3048d42cb0b3c8dbd69521937cf63dd37f2328279b8e31fba01364f0479474d",
+    "status": "PASS"
+  },
+  "environment": {
+    "platform": "macOS-26.5.2-arm64-arm-64bit-Mach-O",
+    "slicer_executable": "PrusaSlicer.app/Contents/MacOS/PrusaSlicer",
+    "slicer_version": "PrusaSlicer-2.9.6 based on Slic3r (with GUI support)"
+  },
+  "expected_stl_files": [
+    "Base_Keyed.stl",
+    "Cobie_Body.stl",
+    "Cobie_Head.stl",
+    "Cobie_Prop_FetchLauncher.stl",
+    "Cobie_Sunglasses.stl"
+  ],
+  "export_hashes": {
+    "Base_Keyed.stl": "5637c73bcd7a52370eb34edd65247af7389d6785e9a7551cd3472ef4915d0130",
+    "Cobie_Body.stl": "cb06edb4cf8d73e7ee951314696d6558f850c8c698460065dd515e6c85081ff6",
+    "Cobie_Head.stl": "a10e24910c9a555735602d8f906c80d5614c66b1b6efcbfabcc533765636c9c4",
+    "Cobie_Prop_FetchLauncher.stl": "9af76e2048ea1cfc0974485a3746d1f378f7589c0e76c30ff8add733025c6706",
+    "Cobie_Sunglasses.stl": "d991aaf59c9f6efbc0be049cf1267ebb59a6357d0eaadef38bf9c4c8ab8a5ec6"
+  },
+  "failures": [],
+  "observed_stl_files": [
+    "Base_Keyed.stl",
+    "Cobie_Body.stl",
+    "Cobie_Head.stl",
+    "Cobie_Prop_FetchLauncher.stl",
+    "Cobie_Sunglasses.stl"
+  ],
+  "parts": {
+    "Base_Keyed.stl": {
+      "manifold": "yes",
+      "max_x": "34.970131",
+      "max_y": "34.970131",
+      "max_z": "10.550000",
+      "min_x": "-34.970131",
+      "min_y": "-34.970131",
+      "min_z": "-0.000000",
+      "number_of_facets": "52860",
+      "number_of_parts": "1",
+      "size_x": "69.940262",
+      "size_y": "69.940262",
+      "size_z": "10.550000",
+      "volume": "19700.923828"
+    },
+    "Cobie_Body.stl": {
+      "manifold": "yes",
+      "max_x": "26.306202",
+      "max_y": "19.700626",
+      "max_z": "115.000000",
+      "min_x": "-26.306980",
+      "min_y": "-24.449841",
+      "min_z": "5.802201",
+      "number_of_facets": "111162",
+      "number_of_parts": "1",
+      "size_x": "52.613182",
+      "size_y": "44.150467",
+      "size_z": "109.197799",
+      "volume": "62573.382812"
+    },
+    "Cobie_Head.stl": {
+      "manifold": "yes",
+      "max_x": "24.740036",
+      "max_y": "17.223581",
+      "max_z": "140.541473",
+      "min_x": "-24.740028",
+      "min_y": "-24.810549",
+      "min_z": "97.252457",
+      "number_of_facets": "227838",
+      "number_of_parts": "1",
+      "size_x": "49.480064",
+      "size_y": "42.034130",
+      "size_z": "43.289017",
+      "volume": "30117.949219"
+    },
+    "Cobie_Prop_FetchLauncher.stl": {
+      "manifold": "yes",
+      "max_x": "32.500000",
+      "max_y": "-8.000000",
+      "max_z": "79.280121",
+      "min_x": "-16.960129",
+      "min_y": "-30.160366",
+      "min_z": "50.031975",
+      "number_of_facets": "56892",
+      "number_of_parts": "1",
+      "size_x": "49.460129",
+      "size_y": "22.160366",
+      "size_z": "29.248146",
+      "volume": "7943.702148"
+    },
+    "Cobie_Sunglasses.stl": {
+      "manifold": "yes",
+      "max_x": "15.568831",
+      "max_y": "-3.500000",
+      "max_z": "124.300003",
+      "min_x": "-15.568831",
+      "min_y": "-21.000000",
+      "min_z": "114.041962",
+      "number_of_facets": "24240",
+      "number_of_parts": "1",
+      "size_x": "31.137663",
+      "size_y": "17.500000",
+      "size_z": "10.258041",
+      "volume": "668.264893"
+    }
+  }
+}

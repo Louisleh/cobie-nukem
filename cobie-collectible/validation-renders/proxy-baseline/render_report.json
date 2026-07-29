@@ -1,0 +1,179 @@
+{
+  "contact_sheet": {
+    "path": "cobie-collectible/validation-renders/proxy-baseline/contact_sheet.png",
+    "sha256": "3acbb6e26fc7b7b4e3fa5eed5dff3abb48b67e1042ac60d3e190763040eaa4bd"
+  },
+  "environment": {
+    "blender": "5.2.0 LTS",
+    "machine": "arm64",
+    "platform": "macOS-26.5.2-arm64-arm-64bit-Mach-O",
+    "python": "3.13.2",
+    "render_engine": "BLENDER_EEVEE"
+  },
+  "failures": [],
+  "ortho_scale_mm": 166.0,
+  "protocol": {
+    "camera": {
+      "orbit_radius_mm": 360.0,
+      "ortho_scale_mm": 166.0,
+      "projection": "ORTHO",
+      "target_mm": [
+        0.0,
+        0.0,
+        70.0
+      ],
+      "z_mm": 82.0
+    },
+    "floor": {
+      "location_mm": [
+        0.0,
+        0.0,
+        -0.25
+      ],
+      "material": {
+        "metallic": 0.0,
+        "rgba": [
+          0.1,
+          0.12,
+          0.15,
+          1.0
+        ],
+        "roughness": 0.9
+      },
+      "size_mm": 260.0
+    },
+    "lights": [
+      {
+        "angle_radians": 0.16,
+        "energy": 3.8,
+        "location_mm": [
+          -105.0,
+          -145.0,
+          205.0
+        ],
+        "name": "Review_Key",
+        "type": "SUN"
+      },
+      {
+        "angle_radians": 0.32,
+        "energy": 1.45,
+        "location_mm": [
+          130.0,
+          -95.0,
+          120.0
+        ],
+        "name": "Review_Fill",
+        "type": "SUN"
+      },
+      {
+        "angle_radians": 0.22,
+        "energy": 2.35,
+        "location_mm": [
+          40.0,
+          130.0,
+          185.0
+        ],
+        "name": "Review_Rim",
+        "type": "SUN"
+      }
+    ],
+    "materials": {
+      "base": {
+        "metallic": 0.0,
+        "rgba": [
+          0.26,
+          0.28,
+          0.31,
+          1.0
+        ],
+        "roughness": 0.82
+      },
+      "figure": {
+        "metallic": 0.0,
+        "rgba": [
+          0.48,
+          0.5,
+          0.52,
+          1.0
+        ],
+        "roughness": 0.78
+      },
+      "smooth_shading": {
+        "Base_Keyed": false,
+        "other_parts": true
+      }
+    },
+    "render": {
+      "color_depth_bits": 8,
+      "color_mode": "RGB",
+      "engine": "BLENDER_EEVEE",
+      "file_format": "PNG",
+      "film_transparent": false,
+      "resolution_percentage": 100,
+      "resolution_px": [
+        640,
+        640
+      ],
+      "use_compositing": false,
+      "use_sequencer": false,
+      "view_look": "AgX - Medium High Contrast"
+    },
+    "version": 1,
+    "views_yaw_degrees": {
+      "front": 0.0,
+      "hero": 35.0,
+      "left": 90.0,
+      "rear": 180.0,
+      "right": 270.0
+    },
+    "world": {
+      "background_rgba": [
+        0.055,
+        0.065,
+        0.08,
+        1.0
+      ],
+      "strength": 0.32
+    }
+  },
+  "render_id": "proxy-baseline",
+  "resolution": [
+    640,
+    640
+  ],
+  "source_provenance": {
+    "historical_blend_sha256": "7582c28f9d08654bc217f6f0e0b1023bd7bfc1b6ac89cc80eccd32d6f458183d",
+    "kind": "git_revision_geometry_source",
+    "repository_revision": "526998212a4d3de28e0dda6948bef8e8e38d55bd",
+    "script_blob_oid": "ddd7f2513db90ec3be55c5b50d8ccf966ac37bab",
+    "script_path": "cobie-collectible/scripts/build_figurine.py",
+    "script_sha256": "7572d7edbbb26c9aaa0f138078a0045844c81d7c79b833104c5eb339d45bf42c"
+  },
+  "views": {
+    "front": {
+      "path": "cobie-collectible/validation-renders/proxy-baseline/front.png",
+      "sha256": "912a5bcc868ec5081a118ff9e4f60458cc640bf1d4fe35b312e149317a060801",
+      "yaw_degrees": 0.0
+    },
+    "hero": {
+      "path": "cobie-collectible/validation-renders/proxy-baseline/hero.png",
+      "sha256": "93cecf6ba65a416e78505095eacd43da5de486e1c6afb2045bdfbdb0f4645532",
+      "yaw_degrees": 35.0
+    },
+    "left": {
+      "path": "cobie-collectible/validation-renders/proxy-baseline/left.png",
+      "sha256": "5dc1fa9fdb8393d36d38963a88b6c213f573bc846e7462c41a2acc6e94a2bf87",
+      "yaw_degrees": 90.0
+    },
+    "rear": {
+      "path": "cobie-collectible/validation-renders/proxy-baseline/rear.png",
+      "sha256": "5ea3147985907725bfc5d8af2ef3c89a68b5769262d1e08c3dd9019c92f97e0b",
+      "yaw_degrees": 180.0
+    },
+    "right": {
+      "path": "cobie-collectible/validation-renders/proxy-baseline/right.png",
+      "sha256": "1900717262f1244836a3126b10a4a5b1462b389f82a7c8ddf106e4c2d51a07f0",
+      "yaw_degrees": 270.0
+    }
+  }
+}

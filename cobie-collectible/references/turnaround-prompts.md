@@ -16,6 +16,11 @@ framed slightly larger than the side view, the model reads it as a shape change
 rather than a scale change, and the result is a subtly wrong character that no
 amount of Blender cleanup recovers — you would be sculpting, not cleaning.
 
+The five files in `concepts/turnaround/` are all geometry inputs, including
+`hero.png`. They therefore show the same prop-free neutral pose. The final
+two-hand Fetch Launcher pose is authored later in Blender from the separate pose
+reference at the end of this document.
+
 So the prompts below over-specify framing and under-specify mood. That is
 deliberate. This is a technical input, not concept art. The concept work is
 already done and frozen in `character-brief/cobie_figurine_v1.yaml`.
@@ -26,8 +31,9 @@ Paste this before every view prompt, unchanged:
 
 > Character reference sheet for a collectible figurine. Full body, standing
 > upright on two legs. Neutral A-pose, arms slightly away from the body, weight
-> even. Plain flat mid-grey background, no scenery, no props on the ground, no
-> shadow on the background. Flat even studio lighting from the front, no
+> even, paws open and empty. No handheld prop or weapon in any turnaround view.
+> Plain flat mid-grey background, no scenery, no props on the ground, no shadow
+> on the background. Flat even studio lighting from the front, no
 > dramatic rim light, no colour cast, no lens flare. Orthographic-looking, no
 > perspective distortion, camera at chest height. The character fills the same
 > vertical space in frame with clear margin above the head and below the feet.
@@ -70,11 +76,27 @@ Append exactly one of these to the preamble.
 > the front view.
 
 **hero.png**
-> View: three-quarter, rotated about 35 degrees from the front. Holding a
-> chunky sci-fi tennis-ball launcher across the body with both paws — gold drum
-> magazine with a bright yellow-green tennis ball visible in it, caged barrel,
-> cyan glowing charge ring near the muzzle. Same height and same framing as the
-> front view.
+> View: three-quarter, rotated about 35 degrees from the front. Identical neutral
+> A-pose, empty paws, clothing and accessories as the four cardinal views. No
+> handheld prop or weapon. Same height and same framing as the front view.
+
+## Separate final-pose reference — never feed this to multi-view generation
+
+Generate this only after the five canonical views are accepted. Save it outside
+`concepts/turnaround/`, for example as
+`concepts/pose-reference/fetch_launcher_hero.png`. It guides supervised Blender
+posing and launcher placement; it is not a sixth identity-mesh input.
+
+Use the same subject description from the shared preamble, then append:
+
+> Dynamic three-quarter pose reference for a 140 mm static display figurine.
+> Planted wide hero stance with slight contrapposto, weight on the back paw,
+> chin subtly raised. Both paws hold a chunky sci-fi tennis-ball launcher
+> across the body: gold drum magazine with a bright yellow-green tennis ball,
+> caged barrel, cyan charge ring near the muzzle, and carry handle. Preserve the
+> same head ratio, face, ears, aviators, jacket, collar and COBIE tag as the
+> approved neutral turnaround. Plain grey studio background. This image is for
+> Blender posing only, not image-to-3D multi-view generation.
 
 ## The rear view is where this fails
 

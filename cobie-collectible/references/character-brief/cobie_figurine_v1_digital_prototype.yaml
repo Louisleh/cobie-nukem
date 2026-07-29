@@ -1,0 +1,83 @@
+schema_version: 1
+work_id: cobie_figurine_v1_digital_prototype
+target: provisional_game_art_grounded_engineering_prototype
+status: provisional_owner_identity_review_open
+working_tree_base_revision: 526998212a4d3de28e0dda6948bef8e8e38d55bd
+evidence_source_state: uncommitted_codex_working_tree
+
+canonical_views: [front, left, rear, right, hero]
+gameplay_readability: >
+  This is a physical hero asset rather than a gameplay scene. At shelf distance,
+  the first read must be Cobie's ear/head mass and aviators, then the planted
+  jacket silhouette and Fetch Launcher, then the COBIE tag and surface detail.
+silhouette_goal: >
+  Read as the same leather-jacketed labradoodle action hero as the project-owned
+  cover art from approximately six feet, even as unpainted neutral resin.
+visual_story: >
+  Cobie is planted and calm under pressure, holding the established Fetch
+  Launcher across the body instead of posing with generic military hardware.
+palette:
+  review: neutral grey resin only
+  paint_reference: [apricot_fur, leather_black, brass_frames, gunmetal, hazard_gold, charge_cyan]
+value_hierarchy:
+  - head, aviators, and muzzle
+  - launcher and jacket shoulders
+  - chest ruff and dog tag
+  - curls, seams, and secondary weapon detail
+materials:
+  review: rough neutral resin with a darker neutral base
+  production: high-detail resin; hand-painted after the first approved physical prototype
+lighting_and_fog: >
+  Fixed broad three-point studio lighting, orthographic camera, dark neutral
+  background, no fog, no texture, and no dramatic effects that conceal geometry.
+animation_or_state_vocabulary: static planted contrapposto only
+platform_budgets:
+  total_height_mm: 140
+  min_feature_mm: 1.2
+  preferred_feature_mm: 1.5
+  base_diameter_mm: 70
+source_and_license:
+  source: project-owned cover, HUD portraits, level previews, and Fetch Launcher GLB
+  license: project-original
+  real_cobie_photos: required_for_identity_approval_but_not_yet_supplied
+owned_paths:
+  - cobie-collectible/scripts/build_figurine.py
+  - cobie-collectible/scripts/render_figurine.py
+  - cobie-collectible/scripts/print_check.py
+  - cobie-collectible/scripts/slicer_import_check.py
+  - cobie-collectible/scripts/compare_figurine_renders.py
+  - cobie-collectible/exports/build_report.json
+  - cobie-collectible/exports/print_check_report.json
+  - cobie-collectible/slicer-tests/prusaslicer_import_report.json
+  - cobie-collectible/validation-renders/
+preserved_gameplay_contracts:
+  - no Godot runtime or packed-scene dependency
+  - collectible remains behind cobie-collectible/.gdignore
+  - game assets are read-only references
+acceptance_evidence:
+  current_digital:
+    - deterministic five-view neutral-resin render packet
+    - exact five-part STL manifest bound to the source blend by a PASS receipt
+    - watertight, thickness, base, height, balance, joint, and overlap checks pass
+    - independent PrusaSlicer 2.9.6 parse/import report passes
+  physical_open:
+    - print, support removal, tactile fit, assembly force, and shelf stability
+  human_open:
+    - owner approval of pose, +12 percent head scale, and Fetch Launcher
+    - Louis and Jen identify the sculpt as Cobie without prompting
+    - silhouette reads as Cobie Nukem rather than a generic dog in sunglasses
+  workflow_open:
+    - owner approval of the complete character freeze and the 18-24 photo pack
+    - human review of one consistent five-view neutral turnaround
+    - scorecard selection from at least three identity candidates
+    - durable archive or Git LFS for selected and manually reviewed sources
+    - supervised identity sculpt, valid vendor quotes, and a physical fit prototype
+human_review_questions:
+  - Is this broad head, ear, and body silhouette the right direction before the mandatory photo-driven identity phase?
+  - Is the launcher pose strong and physically plausible?
+  - Which proportions should change before time is spent on a generated/sculpted identity mesh?
+out_of_scope:
+  - identity-approved final sculpt
+  - photoreal fur strands
+  - hollowing, supports, and production orientation
+  - production slicing, vendor-specific supports, or a physical print claim
