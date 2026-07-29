@@ -1,0 +1,1342 @@
+{
+  "cameras": {
+    "closeups": {
+      "closeup_head": {
+        "ortho_scale_mm": 58.0,
+        "target_mm": [
+          0.0,
+          -5.0,
+          118.0
+        ],
+        "yaw_degrees": 0.0
+      },
+      "closeup_jacket": {
+        "ortho_scale_mm": 70.0,
+        "target_mm": [
+          0.0,
+          -4.0,
+          82.0
+        ],
+        "yaw_degrees": 20.0
+      },
+      "closeup_launcher": {
+        "ortho_scale_mm": 78.0,
+        "target_mm": [
+          7.0,
+          -17.0,
+          68.0
+        ],
+        "yaw_degrees": 35.0
+      }
+    },
+    "locked_orthographic": {
+      "orbit_radius_mm": 360.0,
+      "ortho_scale_mm": 166.0,
+      "projection": "ORTHO",
+      "resolution_px": [
+        640,
+        640
+      ],
+      "target_mm": [
+        0.0,
+        0.0,
+        70.0
+      ],
+      "views_yaw_degrees": {
+        "front": 0.0,
+        "hero": 35.0,
+        "left": 90.0,
+        "rear": 180.0,
+        "right": 270.0
+      },
+      "z_mm": 82.0
+    },
+    "presentation": {
+      "distance_mm": 440.0,
+      "lens_mm": 65.0,
+      "projection": "PERSP",
+      "resolution_px": [
+        1024,
+        1536
+      ],
+      "sensor_width_mm": 36.0,
+      "target_mm": [
+        0.0,
+        -2.0,
+        70.0
+      ],
+      "yaw_degrees": 25.0
+    }
+  },
+  "collections": {
+    "excluded": [
+      "REFERENCE",
+      "SCULPT_SOURCE",
+      "PRINT_EXPORT",
+      "REVIEW_RIG"
+    ],
+    "rendered": "LOOKDEV",
+    "required_top_level": [
+      "LOOKDEV",
+      "PRINT_EXPORT",
+      "REFERENCE",
+      "REVIEW_RIG",
+      "SCULPT_SOURCE"
+    ]
+  },
+  "environment": {
+    "blender": "5.2.0 LTS",
+    "render_engine": "BLENDER_EEVEE",
+    "view_look": "AgX - Medium High Contrast"
+  },
+  "failures": [],
+  "identity_approved": false,
+  "images": {
+    "closeup_head": {
+      "path": "cobie-collectible/validation-renders/cover-v2/I06-lookdev/closeup_head.png",
+      "sha256": "9107072c79a6e75773d07304bc9315699845cfdd3c2ee6e2bb89febe36ccce79",
+      "size_px": [
+        640,
+        640
+      ]
+    },
+    "closeup_jacket": {
+      "path": "cobie-collectible/validation-renders/cover-v2/I06-lookdev/closeup_jacket.png",
+      "sha256": "a477b549a0fe183570cd1cc9431b920b5a9e198b1d560ec124a5edd5b419353a",
+      "size_px": [
+        640,
+        640
+      ]
+    },
+    "closeup_launcher": {
+      "path": "cobie-collectible/validation-renders/cover-v2/I06-lookdev/closeup_launcher.png",
+      "sha256": "e133e863f8508273f110c7332c8c6afc2cf641529fc0c16e8c176a9b44eaedc7",
+      "size_px": [
+        640,
+        640
+      ]
+    },
+    "colour_contact_sheet": {
+      "path": "cobie-collectible/validation-renders/cover-v2/I06-lookdev/colour_contact_sheet.png",
+      "sha256": "ab73b512402397e4b1cbf22e6b587ac6d166eb2c295a9e8be01512c9172dd713",
+      "size_px": [
+        1920,
+        1348
+      ]
+    },
+    "front": {
+      "path": "cobie-collectible/validation-renders/cover-v2/I06-lookdev/colour_front.png",
+      "sha256": "eba61a4a295c642c00b32c5f591c553e73ad8dbf3dcb6a120c012fbc4fe83e9c",
+      "size_px": [
+        640,
+        640
+      ]
+    },
+    "hero": {
+      "path": "cobie-collectible/validation-renders/cover-v2/I06-lookdev/colour_hero.png",
+      "sha256": "6274c41dc7c3e0ffff31796bbc20f617e531d218d7caac67732f591ef42fb771",
+      "size_px": [
+        640,
+        640
+      ]
+    },
+    "left": {
+      "path": "cobie-collectible/validation-renders/cover-v2/I06-lookdev/colour_left.png",
+      "sha256": "34ab8efbe9b6ddb68b37ec12b1550fe90696004d79e85fc8ba91b865cfaa30cc",
+      "size_px": [
+        640,
+        640
+      ]
+    },
+    "material_id": {
+      "path": "cobie-collectible/validation-renders/cover-v2/I06-lookdev/material_id.png",
+      "sha256": "5015d3c00558644503ef8f087f7d9f36597fe4c88f767878b01643003cc7cfcf",
+      "size_px": [
+        640,
+        640
+      ]
+    },
+    "palette_strip": {
+      "path": "cobie-collectible/validation-renders/cover-v2/I06-lookdev/palette_strip.png",
+      "sha256": "e46d3985d4e81a94b0e15f48c549b28829f7f1abeeb2d78a682fb2c8d7f2b7ba",
+      "size_px": [
+        1520,
+        1224
+      ]
+    },
+    "presentation": {
+      "path": "cobie-collectible/validation-renders/cover-v2/I06-lookdev/presentation_portrait.png",
+      "sha256": "575c2a2a7c8e4aa9347c0cb08d9d8e706dcc962c897cc837d9ccf7d39432a167",
+      "size_px": [
+        1024,
+        1536
+      ]
+    },
+    "rear": {
+      "path": "cobie-collectible/validation-renders/cover-v2/I06-lookdev/colour_rear.png",
+      "sha256": "ec5ec2e2a12af90c13ca57f426c744a970be1a605c7df9fcab80bcc689ac05cf",
+      "size_px": [
+        640,
+        640
+      ]
+    },
+    "review_board": {
+      "path": "cobie-collectible/validation-renders/cover-v2/I06-lookdev/review_board.png",
+      "sha256": "2219d0db0097753cb6f44580c8697b456a5d2520f0dcbc54f0ea2c1b89c89711",
+      "size_px": [
+        1260,
+        980
+      ]
+    },
+    "right": {
+      "path": "cobie-collectible/validation-renders/cover-v2/I06-lookdev/colour_right.png",
+      "sha256": "afbd01cae15ec394f8883ba92b8df721a5c961c26961abfbb63b94e7663a490f",
+      "size_px": [
+        640,
+        640
+      ]
+    },
+    "silhouette_front": {
+      "path": "cobie-collectible/validation-renders/cover-v2/I06-lookdev/silhouette_front.png",
+      "sha256": "1adfee79577dd7147b1de60845ed51871363b82e3d60cb308e0bb74babf62e5c",
+      "size_px": [
+        640,
+        640
+      ]
+    },
+    "silhouette_hero": {
+      "path": "cobie-collectible/validation-renders/cover-v2/I06-lookdev/silhouette_hero.png",
+      "sha256": "174381a28897d688f8ff292c85b724acaaf880f9a5b9e53170ff110600565220",
+      "size_px": [
+        640,
+        640
+      ]
+    }
+  },
+  "lights": {
+    "colour_proof": [
+      {
+        "angle_radians": 0.16,
+        "colour_hex": "#FFFFFF",
+        "energy": 3.8,
+        "location_mm": [
+          -105.0,
+          -145.0,
+          205.0
+        ],
+        "name": "Lookdev_Proof_Key",
+        "type": "SUN"
+      },
+      {
+        "angle_radians": 0.32,
+        "colour_hex": "#FFFFFF",
+        "energy": 1.45,
+        "location_mm": [
+          130.0,
+          -95.0,
+          120.0
+        ],
+        "name": "Lookdev_Proof_Fill",
+        "type": "SUN"
+      },
+      {
+        "angle_radians": 0.22,
+        "colour_hex": "#FFFFFF",
+        "energy": 2.35,
+        "location_mm": [
+          40.0,
+          130.0,
+          185.0
+        ],
+        "name": "Lookdev_Proof_Rim",
+        "type": "SUN"
+      }
+    ],
+    "presentation": [
+      {
+        "angle_radians": 0.14,
+        "colour_hex": "#FFD2A3",
+        "energy": 4.4,
+        "location_mm": [
+          -110.0,
+          -150.0,
+          205.0
+        ],
+        "name": "Lookdev_Key_Warm",
+        "type": "SUN"
+      },
+      {
+        "angle_radians": 0.3,
+        "colour_hex": "#DCE7F2",
+        "energy": 1.25,
+        "location_mm": [
+          135.0,
+          -90.0,
+          125.0
+        ],
+        "name": "Lookdev_Fill_Neutral",
+        "type": "SUN"
+      },
+      {
+        "angle_radians": 0.18,
+        "colour_hex": "#80A9D6",
+        "energy": 2.75,
+        "location_mm": [
+          50.0,
+          135.0,
+          190.0
+        ],
+        "name": "Lookdev_Rim_Cool",
+        "type": "SUN"
+      }
+    ]
+  },
+  "manufacturing_authorized": false,
+  "materials": {
+    "assignments": {
+      "LOOK__Base_Keyed__000__base__SRC__base_disc": [
+        "MAT_BASE_DARK"
+      ],
+      "LOOK__Base_Keyed__001__base__SRC__base_key_0": [
+        "MAT_BASE_DARK"
+      ],
+      "LOOK__Base_Keyed__002__base__SRC__base_key_1": [
+        "MAT_BASE_DARK"
+      ],
+      "LOOK__Cobie_Body__000__fur__SRC__haunch_-1": [
+        "MAT_FUR_APRICOT"
+      ],
+      "LOOK__Cobie_Body__001__fur__SRC__upper_shin_-1_shaft": [
+        "MAT_FUR_APRICOT"
+      ],
+      "LOOK__Cobie_Body__002__fur__SRC__upper_shin_-1_start": [
+        "MAT_FUR_APRICOT"
+      ],
+      "LOOK__Cobie_Body__003__fur__SRC__upper_shin_-1_end": [
+        "MAT_FUR_APRICOT"
+      ],
+      "LOOK__Cobie_Body__004__fur__SRC__lower_shin_-1_shaft": [
+        "MAT_FUR_APRICOT"
+      ],
+      "LOOK__Cobie_Body__005__fur__SRC__lower_shin_-1_start": [
+        "MAT_FUR_APRICOT"
+      ],
+      "LOOK__Cobie_Body__006__fur__SRC__lower_shin_-1_end": [
+        "MAT_FUR_APRICOT"
+      ],
+      "LOOK__Cobie_Body__007__fur__SRC__calf_lock_-1": [
+        "MAT_FUR_APRICOT"
+      ],
+      "LOOK__Cobie_Body__008__fur__SRC__paw_-1": [
+        "MAT_FUR_APRICOT"
+      ],
+      "LOOK__Cobie_Body__009__fur__SRC__paw_toe_-1_-1": [
+        "MAT_FUR_APRICOT"
+      ],
+      "LOOK__Cobie_Body__010__fur__SRC__paw_toe_-1_0": [
+        "MAT_FUR_APRICOT"
+      ],
+      "LOOK__Cobie_Body__011__fur__SRC__paw_toe_-1_1": [
+        "MAT_FUR_APRICOT"
+      ],
+      "LOOK__Cobie_Body__012__fur_tip__SRC__leg_fur_upper_-1_shaft": [
+        "MAT_FUR_TIP"
+      ],
+      "LOOK__Cobie_Body__013__fur_tip__SRC__leg_fur_upper_-1_start": [
+        "MAT_FUR_TIP"
+      ],
+      "LOOK__Cobie_Body__014__fur_tip__SRC__leg_fur_upper_-1_end": [
+        "MAT_FUR_TIP"
+      ],
+      "LOOK__Cobie_Body__015__fur_tip__SRC__leg_fur_lower_-1_shaft": [
+        "MAT_FUR_TIP"
+      ],
+      "LOOK__Cobie_Body__016__fur_tip__SRC__leg_fur_lower_-1_start": [
+        "MAT_FUR_TIP"
+      ],
+      "LOOK__Cobie_Body__017__fur_tip__SRC__leg_fur_lower_-1_end": [
+        "MAT_FUR_TIP"
+      ],
+      "LOOK__Cobie_Body__018__fur__SRC__haunch_1": [
+        "MAT_FUR_APRICOT"
+      ],
+      "LOOK__Cobie_Body__019__fur__SRC__upper_shin_1_shaft": [
+        "MAT_FUR_APRICOT"
+      ],
+      "LOOK__Cobie_Body__020__fur__SRC__upper_shin_1_start": [
+        "MAT_FUR_APRICOT"
+      ],
+      "LOOK__Cobie_Body__021__fur__SRC__upper_shin_1_end": [
+        "MAT_FUR_APRICOT"
+      ],
+      "LOOK__Cobie_Body__022__fur__SRC__lower_shin_1_shaft": [
+        "MAT_FUR_APRICOT"
+      ],
+      "LOOK__Cobie_Body__023__fur__SRC__lower_shin_1_start": [
+        "MAT_FUR_APRICOT"
+      ],
+      "LOOK__Cobie_Body__024__fur__SRC__lower_shin_1_end": [
+        "MAT_FUR_APRICOT"
+      ],
+      "LOOK__Cobie_Body__025__fur__SRC__calf_lock_1": [
+        "MAT_FUR_APRICOT"
+      ],
+      "LOOK__Cobie_Body__026__fur__SRC__paw_1": [
+        "MAT_FUR_APRICOT"
+      ],
+      "LOOK__Cobie_Body__027__fur__SRC__paw_toe_1_-1": [
+        "MAT_FUR_APRICOT"
+      ],
+      "LOOK__Cobie_Body__028__fur__SRC__paw_toe_1_0": [
+        "MAT_FUR_APRICOT"
+      ],
+      "LOOK__Cobie_Body__029__fur__SRC__paw_toe_1_1": [
+        "MAT_FUR_APRICOT"
+      ],
+      "LOOK__Cobie_Body__030__fur_tip__SRC__leg_fur_upper_1_shaft": [
+        "MAT_FUR_TIP"
+      ],
+      "LOOK__Cobie_Body__031__fur_tip__SRC__leg_fur_upper_1_start": [
+        "MAT_FUR_TIP"
+      ],
+      "LOOK__Cobie_Body__032__fur_tip__SRC__leg_fur_upper_1_end": [
+        "MAT_FUR_TIP"
+      ],
+      "LOOK__Cobie_Body__033__fur_tip__SRC__leg_fur_lower_1_shaft": [
+        "MAT_FUR_TIP"
+      ],
+      "LOOK__Cobie_Body__034__fur_tip__SRC__leg_fur_lower_1_start": [
+        "MAT_FUR_TIP"
+      ],
+      "LOOK__Cobie_Body__035__fur_tip__SRC__leg_fur_lower_1_end": [
+        "MAT_FUR_TIP"
+      ],
+      "LOOK__Cobie_Body__036__fur_root__SRC__pelvis_root_mass": [
+        "MAT_FUR_ROOT"
+      ],
+      "LOOK__Cobie_Body__037__fur__SRC__torso": [
+        "MAT_FUR_APRICOT"
+      ],
+      "LOOK__Cobie_Body__038__leather__SRC__jacket_core": [
+        "MAT_LEATHER_BLACK"
+      ],
+      "LOOK__Cobie_Body__039__fur__SRC__chest_ruff": [
+        "MAT_FUR_APRICOT"
+      ],
+      "LOOK__Cobie_Body__040__fur_tip__SRC__chest_lock_0_shaft": [
+        "MAT_FUR_TIP"
+      ],
+      "LOOK__Cobie_Body__041__fur_tip__SRC__chest_lock_0_start": [
+        "MAT_FUR_TIP"
+      ],
+      "LOOK__Cobie_Body__042__fur_tip__SRC__chest_lock_0_end": [
+        "MAT_FUR_TIP"
+      ],
+      "LOOK__Cobie_Body__043__fur_tip__SRC__chest_lock_1_shaft": [
+        "MAT_FUR_TIP"
+      ],
+      "LOOK__Cobie_Body__044__fur_tip__SRC__chest_lock_1_start": [
+        "MAT_FUR_TIP"
+      ],
+      "LOOK__Cobie_Body__045__fur_tip__SRC__chest_lock_1_end": [
+        "MAT_FUR_TIP"
+      ],
+      "LOOK__Cobie_Body__046__fur_tip__SRC__chest_lock_2_shaft": [
+        "MAT_FUR_TIP"
+      ],
+      "LOOK__Cobie_Body__047__fur_tip__SRC__chest_lock_2_start": [
+        "MAT_FUR_TIP"
+      ],
+      "LOOK__Cobie_Body__048__fur_tip__SRC__chest_lock_2_end": [
+        "MAT_FUR_TIP"
+      ],
+      "LOOK__Cobie_Body__049__fur_tip__SRC__chest_lock_3_shaft": [
+        "MAT_FUR_TIP"
+      ],
+      "LOOK__Cobie_Body__050__fur_tip__SRC__chest_lock_3_start": [
+        "MAT_FUR_TIP"
+      ],
+      "LOOK__Cobie_Body__051__fur_tip__SRC__chest_lock_3_end": [
+        "MAT_FUR_TIP"
+      ],
+      "LOOK__Cobie_Body__052__fur_tip__SRC__chest_lock_4_shaft": [
+        "MAT_FUR_TIP"
+      ],
+      "LOOK__Cobie_Body__053__fur_tip__SRC__chest_lock_4_start": [
+        "MAT_FUR_TIP"
+      ],
+      "LOOK__Cobie_Body__054__fur_tip__SRC__chest_lock_4_end": [
+        "MAT_FUR_TIP"
+      ],
+      "LOOK__Cobie_Body__055__leather__SRC__shoulder_-1": [
+        "MAT_LEATHER_BLACK"
+      ],
+      "LOOK__Cobie_Body__056__leather__SRC__shoulder_1": [
+        "MAT_LEATHER_BLACK"
+      ],
+      "LOOK__Cobie_Body__057__leather__SRC__jacket_panel_left": [
+        "MAT_LEATHER_BLACK"
+      ],
+      "LOOK__Cobie_Body__058__leather__SRC__jacket_panel_right": [
+        "MAT_LEATHER_BLACK"
+      ],
+      "LOOK__Cobie_Body__059__leather__SRC__lapel_left": [
+        "MAT_LEATHER_BLACK"
+      ],
+      "LOOK__Cobie_Body__060__leather__SRC__lapel_right": [
+        "MAT_LEATHER_BLACK"
+      ],
+      "LOOK__Cobie_Body__061__leather__SRC__jacket_back_yoke": [
+        "MAT_LEATHER_BLACK"
+      ],
+      "LOOK__Cobie_Body__062__leather_edge__SRC__leather_edge_0_shaft": [
+        "MAT_LEATHER_EDGE"
+      ],
+      "LOOK__Cobie_Body__063__leather_edge__SRC__leather_edge_0_start": [
+        "MAT_LEATHER_EDGE"
+      ],
+      "LOOK__Cobie_Body__064__leather_edge__SRC__leather_edge_0_end": [
+        "MAT_LEATHER_EDGE"
+      ],
+      "LOOK__Cobie_Body__065__leather_edge__SRC__leather_edge_1_shaft": [
+        "MAT_LEATHER_EDGE"
+      ],
+      "LOOK__Cobie_Body__066__leather_edge__SRC__leather_edge_1_start": [
+        "MAT_LEATHER_EDGE"
+      ],
+      "LOOK__Cobie_Body__067__leather_edge__SRC__leather_edge_1_end": [
+        "MAT_LEATHER_EDGE"
+      ],
+      "LOOK__Cobie_Body__068__leather_edge__SRC__leather_edge_2_shaft": [
+        "MAT_LEATHER_EDGE"
+      ],
+      "LOOK__Cobie_Body__069__leather_edge__SRC__leather_edge_2_start": [
+        "MAT_LEATHER_EDGE"
+      ],
+      "LOOK__Cobie_Body__070__leather_edge__SRC__leather_edge_2_end": [
+        "MAT_LEATHER_EDGE"
+      ],
+      "LOOK__Cobie_Body__071__leather_edge__SRC__leather_edge_3_shaft": [
+        "MAT_LEATHER_EDGE"
+      ],
+      "LOOK__Cobie_Body__072__leather_edge__SRC__leather_edge_3_start": [
+        "MAT_LEATHER_EDGE"
+      ],
+      "LOOK__Cobie_Body__073__leather_edge__SRC__leather_edge_3_end": [
+        "MAT_LEATHER_EDGE"
+      ],
+      "LOOK__Cobie_Body__074__silver__SRC__asymmetric_zip_shaft": [
+        "MAT_METAL_AGED_SILVER"
+      ],
+      "LOOK__Cobie_Body__075__silver__SRC__asymmetric_zip_start": [
+        "MAT_METAL_AGED_SILVER"
+      ],
+      "LOOK__Cobie_Body__076__silver__SRC__asymmetric_zip_end": [
+        "MAT_METAL_AGED_SILVER"
+      ],
+      "LOOK__Cobie_Body__077__silver__SRC__jacket_snap_-1_88.5": [
+        "MAT_METAL_AGED_SILVER"
+      ],
+      "LOOK__Cobie_Body__078__silver__SRC__jacket_snap_-1_81.5": [
+        "MAT_METAL_AGED_SILVER"
+      ],
+      "LOOK__Cobie_Body__079__silver__SRC__jacket_snap_1_88.5": [
+        "MAT_METAL_AGED_SILVER"
+      ],
+      "LOOK__Cobie_Body__080__silver__SRC__jacket_snap_1_81.5": [
+        "MAT_METAL_AGED_SILVER"
+      ],
+      "LOOK__Cobie_Body__081__leather__SRC__upper_arm_-1_shaft": [
+        "MAT_LEATHER_BLACK"
+      ],
+      "LOOK__Cobie_Body__082__leather__SRC__upper_arm_-1_start": [
+        "MAT_LEATHER_BLACK"
+      ],
+      "LOOK__Cobie_Body__083__leather__SRC__upper_arm_-1_end": [
+        "MAT_LEATHER_BLACK"
+      ],
+      "LOOK__Cobie_Body__084__leather__SRC__forearm_-1_shaft": [
+        "MAT_LEATHER_BLACK"
+      ],
+      "LOOK__Cobie_Body__085__leather__SRC__forearm_-1_start": [
+        "MAT_LEATHER_BLACK"
+      ],
+      "LOOK__Cobie_Body__086__leather__SRC__forearm_-1_end": [
+        "MAT_LEATHER_BLACK"
+      ],
+      "LOOK__Cobie_Body__087__leather__SRC__cuff_-1_shaft": [
+        "MAT_LEATHER_BLACK"
+      ],
+      "LOOK__Cobie_Body__088__leather__SRC__cuff_-1_start": [
+        "MAT_LEATHER_BLACK"
+      ],
+      "LOOK__Cobie_Body__089__leather__SRC__cuff_-1_end": [
+        "MAT_LEATHER_BLACK"
+      ],
+      "LOOK__Cobie_Body__090__fur__SRC__grip_paw_-1": [
+        "MAT_FUR_APRICOT"
+      ],
+      "LOOK__Cobie_Body__091__fur__SRC__grip_toe_-1_-1": [
+        "MAT_FUR_APRICOT"
+      ],
+      "LOOK__Cobie_Body__092__fur__SRC__grip_toe_-1_0": [
+        "MAT_FUR_APRICOT"
+      ],
+      "LOOK__Cobie_Body__093__fur__SRC__grip_toe_-1_1": [
+        "MAT_FUR_APRICOT"
+      ],
+      "LOOK__Cobie_Body__094__leather__SRC__upper_arm_1_shaft": [
+        "MAT_LEATHER_BLACK"
+      ],
+      "LOOK__Cobie_Body__095__leather__SRC__upper_arm_1_start": [
+        "MAT_LEATHER_BLACK"
+      ],
+      "LOOK__Cobie_Body__096__leather__SRC__upper_arm_1_end": [
+        "MAT_LEATHER_BLACK"
+      ],
+      "LOOK__Cobie_Body__097__leather__SRC__forearm_1_shaft": [
+        "MAT_LEATHER_BLACK"
+      ],
+      "LOOK__Cobie_Body__098__leather__SRC__forearm_1_start": [
+        "MAT_LEATHER_BLACK"
+      ],
+      "LOOK__Cobie_Body__099__leather__SRC__forearm_1_end": [
+        "MAT_LEATHER_BLACK"
+      ],
+      "LOOK__Cobie_Body__100__leather__SRC__cuff_1_shaft": [
+        "MAT_LEATHER_BLACK"
+      ],
+      "LOOK__Cobie_Body__101__leather__SRC__cuff_1_start": [
+        "MAT_LEATHER_BLACK"
+      ],
+      "LOOK__Cobie_Body__102__leather__SRC__cuff_1_end": [
+        "MAT_LEATHER_BLACK"
+      ],
+      "LOOK__Cobie_Body__103__fur__SRC__grip_paw_1": [
+        "MAT_FUR_APRICOT"
+      ],
+      "LOOK__Cobie_Body__104__fur__SRC__grip_toe_1_-1": [
+        "MAT_FUR_APRICOT"
+      ],
+      "LOOK__Cobie_Body__105__fur__SRC__grip_toe_1_0": [
+        "MAT_FUR_APRICOT"
+      ],
+      "LOOK__Cobie_Body__106__fur__SRC__grip_toe_1_1": [
+        "MAT_FUR_APRICOT"
+      ],
+      "LOOK__Cobie_Body__107__fur__SRC__tail_root_shaft": [
+        "MAT_FUR_APRICOT"
+      ],
+      "LOOK__Cobie_Body__108__fur__SRC__tail_root_start": [
+        "MAT_FUR_APRICOT"
+      ],
+      "LOOK__Cobie_Body__109__fur__SRC__tail_root_end": [
+        "MAT_FUR_APRICOT"
+      ],
+      "LOOK__Cobie_Body__110__fur__SRC__tail_tip_shaft": [
+        "MAT_FUR_APRICOT"
+      ],
+      "LOOK__Cobie_Body__111__fur__SRC__tail_tip_start": [
+        "MAT_FUR_APRICOT"
+      ],
+      "LOOK__Cobie_Body__112__fur__SRC__tail_tip_end": [
+        "MAT_FUR_APRICOT"
+      ],
+      "LOOK__Cobie_Body__113__fur_tip__SRC__tail_lock_shaft": [
+        "MAT_FUR_TIP"
+      ],
+      "LOOK__Cobie_Body__114__fur_tip__SRC__tail_lock_start": [
+        "MAT_FUR_TIP"
+      ],
+      "LOOK__Cobie_Body__115__fur_tip__SRC__tail_lock_end": [
+        "MAT_FUR_TIP"
+      ],
+      "LOOK__Cobie_Body__116__fur__SRC__neck": [
+        "MAT_FUR_APRICOT"
+      ],
+      "LOOK__Cobie_Body__117__fur__SRC__head_key_0": [
+        "MAT_FUR_APRICOT"
+      ],
+      "LOOK__Cobie_Body__118__fur__SRC__head_key_1": [
+        "MAT_FUR_APRICOT"
+      ],
+      "LOOK__Cobie_Body__119__silver__SRC__collar_chain": [
+        "MAT_METAL_AGED_SILVER"
+      ],
+      "LOOK__Cobie_Body__120__silver__SRC__dog_tag": [
+        "MAT_METAL_AGED_SILVER"
+      ],
+      "LOOK__Cobie_Body__121__tag_text__SRC__dog_tag_text": [
+        "MAT_TEXT_DARK"
+      ],
+      "LOOK__Cobie_Head__000__fur__SRC__skull": [
+        "MAT_FUR_APRICOT"
+      ],
+      "LOOK__Cobie_Head__001__fur__SRC__forehead_bridge": [
+        "MAT_FUR_APRICOT"
+      ],
+      "LOOK__Cobie_Head__002__fur__SRC__cheek_left": [
+        "MAT_FUR_APRICOT"
+      ],
+      "LOOK__Cobie_Head__003__fur__SRC__cheek_right": [
+        "MAT_FUR_APRICOT"
+      ],
+      "LOOK__Cobie_Head__004__fur__SRC__muzzle_left": [
+        "MAT_FUR_APRICOT"
+      ],
+      "LOOK__Cobie_Head__005__fur__SRC__muzzle_right": [
+        "MAT_FUR_APRICOT"
+      ],
+      "LOOK__Cobie_Head__006__fur__SRC__lower_jaw": [
+        "MAT_FUR_APRICOT"
+      ],
+      "LOOK__Cobie_Head__007__nose__SRC__nose": [
+        "MAT_NOSE_GLOSS"
+      ],
+      "LOOK__Cobie_Head__008__fur__SRC__head_neck_collar": [
+        "MAT_FUR_APRICOT"
+      ],
+      "LOOK__Cobie_Head__009__fur__SRC__crown_curl_0": [
+        "MAT_FUR_APRICOT"
+      ],
+      "LOOK__Cobie_Head__010__fur__SRC__crown_curl_1": [
+        "MAT_FUR_APRICOT"
+      ],
+      "LOOK__Cobie_Head__011__fur__SRC__crown_curl_2": [
+        "MAT_FUR_APRICOT"
+      ],
+      "LOOK__Cobie_Head__012__fur__SRC__crown_curl_3": [
+        "MAT_FUR_APRICOT"
+      ],
+      "LOOK__Cobie_Head__013__fur__SRC__crown_curl_4": [
+        "MAT_FUR_APRICOT"
+      ],
+      "LOOK__Cobie_Head__014__fur__SRC__crown_curl_5": [
+        "MAT_FUR_APRICOT"
+      ],
+      "LOOK__Cobie_Head__015__fur__SRC__crown_curl_6": [
+        "MAT_FUR_APRICOT"
+      ],
+      "LOOK__Cobie_Head__016__fur__SRC__crown_curl_7": [
+        "MAT_FUR_APRICOT"
+      ],
+      "LOOK__Cobie_Head__017__fur__SRC__crown_curl_8": [
+        "MAT_FUR_APRICOT"
+      ],
+      "LOOK__Cobie_Head__018__fur_tip__SRC__crown_lock_0_shaft": [
+        "MAT_FUR_TIP"
+      ],
+      "LOOK__Cobie_Head__019__fur_tip__SRC__crown_lock_0_start": [
+        "MAT_FUR_TIP"
+      ],
+      "LOOK__Cobie_Head__020__fur_tip__SRC__crown_lock_0_end": [
+        "MAT_FUR_TIP"
+      ],
+      "LOOK__Cobie_Head__021__fur_tip__SRC__crown_lock_1_shaft": [
+        "MAT_FUR_TIP"
+      ],
+      "LOOK__Cobie_Head__022__fur_tip__SRC__crown_lock_1_start": [
+        "MAT_FUR_TIP"
+      ],
+      "LOOK__Cobie_Head__023__fur_tip__SRC__crown_lock_1_end": [
+        "MAT_FUR_TIP"
+      ],
+      "LOOK__Cobie_Head__024__fur_tip__SRC__crown_lock_2_shaft": [
+        "MAT_FUR_TIP"
+      ],
+      "LOOK__Cobie_Head__025__fur_tip__SRC__crown_lock_2_start": [
+        "MAT_FUR_TIP"
+      ],
+      "LOOK__Cobie_Head__026__fur_tip__SRC__crown_lock_2_end": [
+        "MAT_FUR_TIP"
+      ],
+      "LOOK__Cobie_Head__027__fur_tip__SRC__muzzle_lock_0_shaft": [
+        "MAT_FUR_TIP"
+      ],
+      "LOOK__Cobie_Head__028__fur_tip__SRC__muzzle_lock_0_start": [
+        "MAT_FUR_TIP"
+      ],
+      "LOOK__Cobie_Head__029__fur_tip__SRC__muzzle_lock_0_end": [
+        "MAT_FUR_TIP"
+      ],
+      "LOOK__Cobie_Head__030__fur_tip__SRC__muzzle_lock_1_shaft": [
+        "MAT_FUR_TIP"
+      ],
+      "LOOK__Cobie_Head__031__fur_tip__SRC__muzzle_lock_1_start": [
+        "MAT_FUR_TIP"
+      ],
+      "LOOK__Cobie_Head__032__fur_tip__SRC__muzzle_lock_1_end": [
+        "MAT_FUR_TIP"
+      ],
+      "LOOK__Cobie_Head__033__fur_tip__SRC__muzzle_lock_2_shaft": [
+        "MAT_FUR_TIP"
+      ],
+      "LOOK__Cobie_Head__034__fur_tip__SRC__muzzle_lock_2_start": [
+        "MAT_FUR_TIP"
+      ],
+      "LOOK__Cobie_Head__035__fur_tip__SRC__muzzle_lock_2_end": [
+        "MAT_FUR_TIP"
+      ],
+      "LOOK__Cobie_Head__036__fur_tip__SRC__muzzle_lock_3_shaft": [
+        "MAT_FUR_TIP"
+      ],
+      "LOOK__Cobie_Head__037__fur_tip__SRC__muzzle_lock_3_start": [
+        "MAT_FUR_TIP"
+      ],
+      "LOOK__Cobie_Head__038__fur_tip__SRC__muzzle_lock_3_end": [
+        "MAT_FUR_TIP"
+      ],
+      "LOOK__Cobie_Head__039__mouth__SRC__mouth_left_shaft": [
+        "MAT_TEXT_DARK"
+      ],
+      "LOOK__Cobie_Head__040__mouth__SRC__mouth_left_start": [
+        "MAT_TEXT_DARK"
+      ],
+      "LOOK__Cobie_Head__041__mouth__SRC__mouth_left_end": [
+        "MAT_TEXT_DARK"
+      ],
+      "LOOK__Cobie_Head__042__mouth__SRC__mouth_right_shaft": [
+        "MAT_TEXT_DARK"
+      ],
+      "LOOK__Cobie_Head__043__mouth__SRC__mouth_right_start": [
+        "MAT_TEXT_DARK"
+      ],
+      "LOOK__Cobie_Head__044__mouth__SRC__mouth_right_end": [
+        "MAT_TEXT_DARK"
+      ],
+      "LOOK__Cobie_Head__045__fur__SRC__ear_core_-1_shaft": [
+        "MAT_FUR_APRICOT"
+      ],
+      "LOOK__Cobie_Head__046__fur__SRC__ear_core_-1_start": [
+        "MAT_FUR_APRICOT"
+      ],
+      "LOOK__Cobie_Head__047__fur__SRC__ear_core_-1_end": [
+        "MAT_FUR_APRICOT"
+      ],
+      "LOOK__Cobie_Head__048__fur__SRC__ear_lobe_-1_0": [
+        "MAT_FUR_APRICOT"
+      ],
+      "LOOK__Cobie_Head__049__fur__SRC__ear_lobe_-1_1": [
+        "MAT_FUR_APRICOT"
+      ],
+      "LOOK__Cobie_Head__050__fur__SRC__ear_lobe_-1_2": [
+        "MAT_FUR_APRICOT"
+      ],
+      "LOOK__Cobie_Head__051__fur__SRC__ear_lobe_-1_3": [
+        "MAT_FUR_APRICOT"
+      ],
+      "LOOK__Cobie_Head__052__fur_root__SRC__ear_root_-1_shaft": [
+        "MAT_FUR_ROOT"
+      ],
+      "LOOK__Cobie_Head__053__fur_root__SRC__ear_root_-1_start": [
+        "MAT_FUR_ROOT"
+      ],
+      "LOOK__Cobie_Head__054__fur_root__SRC__ear_root_-1_end": [
+        "MAT_FUR_ROOT"
+      ],
+      "LOOK__Cobie_Head__055__fur_tip__SRC__ear_lock_upper_-1_shaft": [
+        "MAT_FUR_TIP"
+      ],
+      "LOOK__Cobie_Head__056__fur_tip__SRC__ear_lock_upper_-1_start": [
+        "MAT_FUR_TIP"
+      ],
+      "LOOK__Cobie_Head__057__fur_tip__SRC__ear_lock_upper_-1_end": [
+        "MAT_FUR_TIP"
+      ],
+      "LOOK__Cobie_Head__058__fur_tip__SRC__ear_lock_lower_-1_shaft": [
+        "MAT_FUR_TIP"
+      ],
+      "LOOK__Cobie_Head__059__fur_tip__SRC__ear_lock_lower_-1_start": [
+        "MAT_FUR_TIP"
+      ],
+      "LOOK__Cobie_Head__060__fur_tip__SRC__ear_lock_lower_-1_end": [
+        "MAT_FUR_TIP"
+      ],
+      "LOOK__Cobie_Head__061__fur__SRC__ear_core_1_shaft": [
+        "MAT_FUR_APRICOT"
+      ],
+      "LOOK__Cobie_Head__062__fur__SRC__ear_core_1_start": [
+        "MAT_FUR_APRICOT"
+      ],
+      "LOOK__Cobie_Head__063__fur__SRC__ear_core_1_end": [
+        "MAT_FUR_APRICOT"
+      ],
+      "LOOK__Cobie_Head__064__fur__SRC__ear_lobe_1_0": [
+        "MAT_FUR_APRICOT"
+      ],
+      "LOOK__Cobie_Head__065__fur__SRC__ear_lobe_1_1": [
+        "MAT_FUR_APRICOT"
+      ],
+      "LOOK__Cobie_Head__066__fur__SRC__ear_lobe_1_2": [
+        "MAT_FUR_APRICOT"
+      ],
+      "LOOK__Cobie_Head__067__fur__SRC__ear_lobe_1_3": [
+        "MAT_FUR_APRICOT"
+      ],
+      "LOOK__Cobie_Head__068__fur_root__SRC__ear_root_1_shaft": [
+        "MAT_FUR_ROOT"
+      ],
+      "LOOK__Cobie_Head__069__fur_root__SRC__ear_root_1_start": [
+        "MAT_FUR_ROOT"
+      ],
+      "LOOK__Cobie_Head__070__fur_root__SRC__ear_root_1_end": [
+        "MAT_FUR_ROOT"
+      ],
+      "LOOK__Cobie_Head__071__fur_tip__SRC__ear_lock_upper_1_shaft": [
+        "MAT_FUR_TIP"
+      ],
+      "LOOK__Cobie_Head__072__fur_tip__SRC__ear_lock_upper_1_start": [
+        "MAT_FUR_TIP"
+      ],
+      "LOOK__Cobie_Head__073__fur_tip__SRC__ear_lock_upper_1_end": [
+        "MAT_FUR_TIP"
+      ],
+      "LOOK__Cobie_Head__074__fur_tip__SRC__ear_lock_lower_1_shaft": [
+        "MAT_FUR_TIP"
+      ],
+      "LOOK__Cobie_Head__075__fur_tip__SRC__ear_lock_lower_1_start": [
+        "MAT_FUR_TIP"
+      ],
+      "LOOK__Cobie_Head__076__fur_tip__SRC__ear_lock_lower_1_end": [
+        "MAT_FUR_TIP"
+      ],
+      "LOOK__Cobie_Prop_FetchLauncher__000__gunmetal__SRC__launcher__receiver_core": [
+        "MAT_LAUNCHER_GUNMETAL"
+      ],
+      "LOOK__Cobie_Prop_FetchLauncher__001__dark_metal__SRC__launcher__receiver_step": [
+        "MAT_LAUNCHER_BLACK"
+      ],
+      "LOOK__Cobie_Prop_FetchLauncher__002__hazard__SRC__launcher__drum": [
+        "MAT_HAZARD_GOLD"
+      ],
+      "LOOK__Cobie_Prop_FetchLauncher__003__tennis__SRC__launcher__loaded_ball": [
+        "MAT_TENNIS_GREEN"
+      ],
+      "LOOK__Cobie_Prop_FetchLauncher__004__dark_metal__SRC__launcher__barrel": [
+        "MAT_LAUNCHER_BLACK"
+      ],
+      "LOOK__Cobie_Prop_FetchLauncher__005__gunmetal__SRC__launcher__underbarrel": [
+        "MAT_LAUNCHER_GUNMETAL"
+      ],
+      "LOOK__Cobie_Prop_FetchLauncher__006__gunmetal__SRC__launcher__muzzle": [
+        "MAT_LAUNCHER_GUNMETAL"
+      ],
+      "LOOK__Cobie_Prop_FetchLauncher__007__gunmetal__SRC__launcher__cage_0": [
+        "MAT_LAUNCHER_GUNMETAL"
+      ],
+      "LOOK__Cobie_Prop_FetchLauncher__008__gunmetal__SRC__launcher__cage_1": [
+        "MAT_LAUNCHER_GUNMETAL"
+      ],
+      "LOOK__Cobie_Prop_FetchLauncher__009__gunmetal__SRC__launcher__cage_2": [
+        "MAT_LAUNCHER_GUNMETAL"
+      ],
+      "LOOK__Cobie_Prop_FetchLauncher__010__cyan__SRC__launcher__charge_ring": [
+        "MAT_CHARGE_CYAN"
+      ],
+      "LOOK__Cobie_Prop_FetchLauncher__011__gunmetal__SRC__launcher__carry_handle_shaft": [
+        "MAT_LAUNCHER_GUNMETAL"
+      ],
+      "LOOK__Cobie_Prop_FetchLauncher__012__gunmetal__SRC__launcher__carry_handle_start": [
+        "MAT_LAUNCHER_GUNMETAL"
+      ],
+      "LOOK__Cobie_Prop_FetchLauncher__013__gunmetal__SRC__launcher__carry_handle_end": [
+        "MAT_LAUNCHER_GUNMETAL"
+      ],
+      "LOOK__Cobie_Prop_FetchLauncher__014__dark_metal__SRC__launcher__grip_shaft": [
+        "MAT_LAUNCHER_BLACK"
+      ],
+      "LOOK__Cobie_Prop_FetchLauncher__015__dark_metal__SRC__launcher__grip_start": [
+        "MAT_LAUNCHER_BLACK"
+      ],
+      "LOOK__Cobie_Prop_FetchLauncher__016__dark_metal__SRC__launcher__grip_end": [
+        "MAT_LAUNCHER_BLACK"
+      ],
+      "LOOK__Cobie_Prop_FetchLauncher__017__gunmetal__SRC__launcher__spine_shaft": [
+        "MAT_LAUNCHER_GUNMETAL"
+      ],
+      "LOOK__Cobie_Prop_FetchLauncher__018__gunmetal__SRC__launcher__spine_start": [
+        "MAT_LAUNCHER_GUNMETAL"
+      ],
+      "LOOK__Cobie_Prop_FetchLauncher__019__gunmetal__SRC__launcher__spine_end": [
+        "MAT_LAUNCHER_GUNMETAL"
+      ],
+      "LOOK__Cobie_Prop_FetchLauncher__020__gunmetal__SRC__launcher__trigger_guard_shaft": [
+        "MAT_LAUNCHER_GUNMETAL"
+      ],
+      "LOOK__Cobie_Prop_FetchLauncher__021__gunmetal__SRC__launcher__trigger_guard_start": [
+        "MAT_LAUNCHER_GUNMETAL"
+      ],
+      "LOOK__Cobie_Prop_FetchLauncher__022__gunmetal__SRC__launcher__trigger_guard_end": [
+        "MAT_LAUNCHER_GUNMETAL"
+      ],
+      "LOOK__Cobie_Prop_FetchLauncher__023__hazard__SRC__launcher__hazard_panel": [
+        "MAT_HAZARD_GOLD"
+      ],
+      "LOOK__Cobie_Prop_FetchLauncher__024__cyan__SRC__launcher__charge_meter": [
+        "MAT_CHARGE_CYAN"
+      ],
+      "LOOK__Cobie_Prop_FetchLauncher__025__hazard__SRC__launcher__paw_badge": [
+        "MAT_HAZARD_GOLD"
+      ],
+      "LOOK__Cobie_Prop_FetchLauncher__026__tennis_seam__SRC__launcher__tennis_seam": [
+        "MAT_TENNIS_SEAM"
+      ],
+      "LOOK__Cobie_Prop_FetchLauncher__027__hazard__SRC__launcher__paw_toe_0": [
+        "MAT_HAZARD_GOLD"
+      ],
+      "LOOK__Cobie_Prop_FetchLauncher__028__hazard__SRC__launcher__paw_toe_1": [
+        "MAT_HAZARD_GOLD"
+      ],
+      "LOOK__Cobie_Prop_FetchLauncher__029__hazard__SRC__launcher__paw_toe_2": [
+        "MAT_HAZARD_GOLD"
+      ],
+      "LOOK__Cobie_Prop_FetchLauncher__030__hazard__SRC__launcher__paw_toe_3": [
+        "MAT_HAZARD_GOLD"
+      ],
+      "LOOK__Cobie_Prop_FetchLauncher__031__gunmetal__SRC__launcher__pin_0": [
+        "MAT_LAUNCHER_GUNMETAL"
+      ],
+      "LOOK__Cobie_Prop_FetchLauncher__032__gunmetal__SRC__launcher__pin_1": [
+        "MAT_LAUNCHER_GUNMETAL"
+      ],
+      "LOOK__Cobie_Sunglasses__000__brass__SRC__aviator_top_bridge": [
+        "MAT_FRAME_WARM_METAL"
+      ],
+      "LOOK__Cobie_Sunglasses__001__brass__SRC__aviator_lower_bridge": [
+        "MAT_FRAME_WARM_METAL"
+      ],
+      "LOOK__Cobie_Sunglasses__002__lens__SRC__aviator_lens_-1": [
+        "MAT_LENS_SMOKE"
+      ],
+      "LOOK__Cobie_Sunglasses__003__brass__SRC__aviator_rim_-1_0_shaft": [
+        "MAT_FRAME_WARM_METAL"
+      ],
+      "LOOK__Cobie_Sunglasses__004__brass__SRC__aviator_rim_-1_0_start": [
+        "MAT_FRAME_WARM_METAL"
+      ],
+      "LOOK__Cobie_Sunglasses__005__brass__SRC__aviator_rim_-1_0_end": [
+        "MAT_FRAME_WARM_METAL"
+      ],
+      "LOOK__Cobie_Sunglasses__006__brass__SRC__aviator_rim_-1_1_shaft": [
+        "MAT_FRAME_WARM_METAL"
+      ],
+      "LOOK__Cobie_Sunglasses__007__brass__SRC__aviator_rim_-1_1_start": [
+        "MAT_FRAME_WARM_METAL"
+      ],
+      "LOOK__Cobie_Sunglasses__008__brass__SRC__aviator_rim_-1_1_end": [
+        "MAT_FRAME_WARM_METAL"
+      ],
+      "LOOK__Cobie_Sunglasses__009__brass__SRC__aviator_rim_-1_2_shaft": [
+        "MAT_FRAME_WARM_METAL"
+      ],
+      "LOOK__Cobie_Sunglasses__010__brass__SRC__aviator_rim_-1_2_start": [
+        "MAT_FRAME_WARM_METAL"
+      ],
+      "LOOK__Cobie_Sunglasses__011__brass__SRC__aviator_rim_-1_2_end": [
+        "MAT_FRAME_WARM_METAL"
+      ],
+      "LOOK__Cobie_Sunglasses__012__brass__SRC__aviator_rim_-1_3_shaft": [
+        "MAT_FRAME_WARM_METAL"
+      ],
+      "LOOK__Cobie_Sunglasses__013__brass__SRC__aviator_rim_-1_3_start": [
+        "MAT_FRAME_WARM_METAL"
+      ],
+      "LOOK__Cobie_Sunglasses__014__brass__SRC__aviator_rim_-1_3_end": [
+        "MAT_FRAME_WARM_METAL"
+      ],
+      "LOOK__Cobie_Sunglasses__015__brass__SRC__aviator_rim_-1_4_shaft": [
+        "MAT_FRAME_WARM_METAL"
+      ],
+      "LOOK__Cobie_Sunglasses__016__brass__SRC__aviator_rim_-1_4_start": [
+        "MAT_FRAME_WARM_METAL"
+      ],
+      "LOOK__Cobie_Sunglasses__017__brass__SRC__aviator_rim_-1_4_end": [
+        "MAT_FRAME_WARM_METAL"
+      ],
+      "LOOK__Cobie_Sunglasses__018__brass__SRC__aviator_rim_-1_5_shaft": [
+        "MAT_FRAME_WARM_METAL"
+      ],
+      "LOOK__Cobie_Sunglasses__019__brass__SRC__aviator_rim_-1_5_start": [
+        "MAT_FRAME_WARM_METAL"
+      ],
+      "LOOK__Cobie_Sunglasses__020__brass__SRC__aviator_rim_-1_5_end": [
+        "MAT_FRAME_WARM_METAL"
+      ],
+      "LOOK__Cobie_Sunglasses__021__brass__SRC__aviator_rim_-1_6_shaft": [
+        "MAT_FRAME_WARM_METAL"
+      ],
+      "LOOK__Cobie_Sunglasses__022__brass__SRC__aviator_rim_-1_6_start": [
+        "MAT_FRAME_WARM_METAL"
+      ],
+      "LOOK__Cobie_Sunglasses__023__brass__SRC__aviator_rim_-1_6_end": [
+        "MAT_FRAME_WARM_METAL"
+      ],
+      "LOOK__Cobie_Sunglasses__024__brass__SRC__aviator_arm_-1_shaft": [
+        "MAT_FRAME_WARM_METAL"
+      ],
+      "LOOK__Cobie_Sunglasses__025__brass__SRC__aviator_arm_-1_start": [
+        "MAT_FRAME_WARM_METAL"
+      ],
+      "LOOK__Cobie_Sunglasses__026__brass__SRC__aviator_arm_-1_end": [
+        "MAT_FRAME_WARM_METAL"
+      ],
+      "LOOK__Cobie_Sunglasses__027__brass__SRC__aviator_hinge_-1": [
+        "MAT_FRAME_WARM_METAL"
+      ],
+      "LOOK__Cobie_Sunglasses__028__lens__SRC__aviator_lens_1": [
+        "MAT_LENS_SMOKE"
+      ],
+      "LOOK__Cobie_Sunglasses__029__brass__SRC__aviator_rim_1_0_shaft": [
+        "MAT_FRAME_WARM_METAL"
+      ],
+      "LOOK__Cobie_Sunglasses__030__brass__SRC__aviator_rim_1_0_start": [
+        "MAT_FRAME_WARM_METAL"
+      ],
+      "LOOK__Cobie_Sunglasses__031__brass__SRC__aviator_rim_1_0_end": [
+        "MAT_FRAME_WARM_METAL"
+      ],
+      "LOOK__Cobie_Sunglasses__032__brass__SRC__aviator_rim_1_1_shaft": [
+        "MAT_FRAME_WARM_METAL"
+      ],
+      "LOOK__Cobie_Sunglasses__033__brass__SRC__aviator_rim_1_1_start": [
+        "MAT_FRAME_WARM_METAL"
+      ],
+      "LOOK__Cobie_Sunglasses__034__brass__SRC__aviator_rim_1_1_end": [
+        "MAT_FRAME_WARM_METAL"
+      ],
+      "LOOK__Cobie_Sunglasses__035__brass__SRC__aviator_rim_1_2_shaft": [
+        "MAT_FRAME_WARM_METAL"
+      ],
+      "LOOK__Cobie_Sunglasses__036__brass__SRC__aviator_rim_1_2_start": [
+        "MAT_FRAME_WARM_METAL"
+      ],
+      "LOOK__Cobie_Sunglasses__037__brass__SRC__aviator_rim_1_2_end": [
+        "MAT_FRAME_WARM_METAL"
+      ],
+      "LOOK__Cobie_Sunglasses__038__brass__SRC__aviator_rim_1_3_shaft": [
+        "MAT_FRAME_WARM_METAL"
+      ],
+      "LOOK__Cobie_Sunglasses__039__brass__SRC__aviator_rim_1_3_start": [
+        "MAT_FRAME_WARM_METAL"
+      ],
+      "LOOK__Cobie_Sunglasses__040__brass__SRC__aviator_rim_1_3_end": [
+        "MAT_FRAME_WARM_METAL"
+      ],
+      "LOOK__Cobie_Sunglasses__041__brass__SRC__aviator_rim_1_4_shaft": [
+        "MAT_FRAME_WARM_METAL"
+      ],
+      "LOOK__Cobie_Sunglasses__042__brass__SRC__aviator_rim_1_4_start": [
+        "MAT_FRAME_WARM_METAL"
+      ],
+      "LOOK__Cobie_Sunglasses__043__brass__SRC__aviator_rim_1_4_end": [
+        "MAT_FRAME_WARM_METAL"
+      ],
+      "LOOK__Cobie_Sunglasses__044__brass__SRC__aviator_rim_1_5_shaft": [
+        "MAT_FRAME_WARM_METAL"
+      ],
+      "LOOK__Cobie_Sunglasses__045__brass__SRC__aviator_rim_1_5_start": [
+        "MAT_FRAME_WARM_METAL"
+      ],
+      "LOOK__Cobie_Sunglasses__046__brass__SRC__aviator_rim_1_5_end": [
+        "MAT_FRAME_WARM_METAL"
+      ],
+      "LOOK__Cobie_Sunglasses__047__brass__SRC__aviator_rim_1_6_shaft": [
+        "MAT_FRAME_WARM_METAL"
+      ],
+      "LOOK__Cobie_Sunglasses__048__brass__SRC__aviator_rim_1_6_start": [
+        "MAT_FRAME_WARM_METAL"
+      ],
+      "LOOK__Cobie_Sunglasses__049__brass__SRC__aviator_rim_1_6_end": [
+        "MAT_FRAME_WARM_METAL"
+      ],
+      "LOOK__Cobie_Sunglasses__050__brass__SRC__aviator_arm_1_shaft": [
+        "MAT_FRAME_WARM_METAL"
+      ],
+      "LOOK__Cobie_Sunglasses__051__brass__SRC__aviator_arm_1_start": [
+        "MAT_FRAME_WARM_METAL"
+      ],
+      "LOOK__Cobie_Sunglasses__052__brass__SRC__aviator_arm_1_end": [
+        "MAT_FRAME_WARM_METAL"
+      ],
+      "LOOK__Cobie_Sunglasses__053__brass__SRC__aviator_hinge_1": [
+        "MAT_FRAME_WARM_METAL"
+      ],
+      "LOOK__Cobie_Sunglasses__054__brass__SRC__glasses_pin_0": [
+        "MAT_FRAME_WARM_METAL"
+      ],
+      "LOOK__Cobie_Sunglasses__055__brass__SRC__glasses_pin_1": [
+        "MAT_FRAME_WARM_METAL"
+      ]
+    },
+    "external_textures": [],
+    "material_id_colours": {
+      "MAT_BASE_DARK": "#AAFFC3",
+      "MAT_CHARGE_CYAN": "#800000",
+      "MAT_FRAME_WARM_METAL": "#F032E6",
+      "MAT_FUR_APRICOT": "#E6194B",
+      "MAT_FUR_ROOT": "#3CB44B",
+      "MAT_FUR_TIP": "#FFE119",
+      "MAT_HAZARD_GOLD": "#E6BEFF",
+      "MAT_LAUNCHER_BLACK": "#008080",
+      "MAT_LAUNCHER_GUNMETAL": "#FABEBE",
+      "MAT_LEATHER_BLACK": "#4363D8",
+      "MAT_LEATHER_EDGE": "#F58231",
+      "MAT_LENS_SMOKE": "#46F0F0",
+      "MAT_METAL_AGED_SILVER": "#BCF60C",
+      "MAT_NOSE_GLOSS": "#911EB4",
+      "MAT_TENNIS_GREEN": "#9A6324",
+      "MAT_TENNIS_SEAM": "#FFFAC8",
+      "MAT_TEXT_DARK": "#808000"
+    },
+    "palette": {
+      "MAT_BASE_DARK": {
+        "hex": "#181D22",
+        "metallic": 0.55,
+        "procedural": "metal_roughness_variation",
+        "roughness": 0.48,
+        "variation_hex": "#2A333B"
+      },
+      "MAT_CHARGE_CYAN": {
+        "emission_strength": 0.0,
+        "hex": "#39D9E7",
+        "metallic": 0.18,
+        "roughness": 0.24
+      },
+      "MAT_FRAME_WARM_METAL": {
+        "hex": "#8A6A35",
+        "metallic": 0.85,
+        "roughness": 0.25
+      },
+      "MAT_FUR_APRICOT": {
+        "hex": "#B96B2F",
+        "metallic": 0.0,
+        "procedural": "fur_colour_variation",
+        "roughness": 0.75,
+        "variation_hex": "#D99152"
+      },
+      "MAT_FUR_ROOT": {
+        "hex": "#7A421F",
+        "metallic": 0.0,
+        "procedural": "fur_colour_variation",
+        "roughness": 0.82,
+        "variation_hex": "#9A5A31"
+      },
+      "MAT_FUR_TIP": {
+        "hex": "#D99A59",
+        "metallic": 0.0,
+        "procedural": "fur_colour_variation",
+        "roughness": 0.72,
+        "variation_hex": "#E8B374"
+      },
+      "MAT_HAZARD_GOLD": {
+        "hex": "#D59A12",
+        "metallic": 0.45,
+        "procedural": "metal_roughness_variation",
+        "roughness": 0.4,
+        "variation_hex": "#F0BB2B"
+      },
+      "MAT_LAUNCHER_BLACK": {
+        "hex": "#080B0E",
+        "metallic": 0.35,
+        "procedural": "metal_roughness_variation",
+        "roughness": 0.5,
+        "variation_hex": "#171C21"
+      },
+      "MAT_LAUNCHER_GUNMETAL": {
+        "hex": "#252C33",
+        "metallic": 0.82,
+        "procedural": "metal_roughness_variation",
+        "roughness": 0.32,
+        "variation_hex": "#3A444D"
+      },
+      "MAT_LEATHER_BLACK": {
+        "coat_roughness": 0.22,
+        "coat_weight": 0.28,
+        "hex": "#090A0C",
+        "metallic": 0.0,
+        "procedural": "leather_roughness_variation",
+        "roughness": 0.32,
+        "variation_hex": "#15191E"
+      },
+      "MAT_LEATHER_EDGE": {
+        "coat_roughness": 0.3,
+        "coat_weight": 0.16,
+        "hex": "#292B2E",
+        "metallic": 0.0,
+        "procedural": "leather_roughness_variation",
+        "roughness": 0.42,
+        "variation_hex": "#45484D"
+      },
+      "MAT_LENS_SMOKE": {
+        "coat_roughness": 0.1,
+        "coat_weight": 0.55,
+        "hex": "#050709",
+        "metallic": 0.08,
+        "roughness": 0.08
+      },
+      "MAT_METAL_AGED_SILVER": {
+        "hex": "#7E837F",
+        "metallic": 0.9,
+        "roughness": 0.34
+      },
+      "MAT_NOSE_GLOSS": {
+        "coat_roughness": 0.14,
+        "coat_weight": 0.42,
+        "hex": "#090A0A",
+        "metallic": 0.0,
+        "roughness": 0.18
+      },
+      "MAT_TENNIS_GREEN": {
+        "hex": "#A3C82F",
+        "metallic": 0.0,
+        "procedural": "fur_colour_variation",
+        "roughness": 0.74,
+        "variation_hex": "#C3DB62"
+      },
+      "MAT_TENNIS_SEAM": {
+        "hex": "#E7E3BB",
+        "metallic": 0.0,
+        "roughness": 0.78
+      },
+      "MAT_TEXT_DARK": {
+        "hex": "#111315",
+        "metallic": 0.15,
+        "roughness": 0.62
+      }
+    },
+    "required_material_ids": [
+      "MAT_BASE_DARK",
+      "MAT_CHARGE_CYAN",
+      "MAT_FRAME_WARM_METAL",
+      "MAT_FUR_APRICOT",
+      "MAT_FUR_ROOT",
+      "MAT_FUR_TIP",
+      "MAT_HAZARD_GOLD",
+      "MAT_LAUNCHER_BLACK",
+      "MAT_LAUNCHER_GUNMETAL",
+      "MAT_LEATHER_BLACK",
+      "MAT_LEATHER_EDGE",
+      "MAT_LENS_SMOKE",
+      "MAT_METAL_AGED_SILVER",
+      "MAT_NOSE_GLOSS",
+      "MAT_TENNIS_GREEN",
+      "MAT_TENNIS_SEAM",
+      "MAT_TEXT_DARK"
+    ],
+    "shader_displacement": false
+  },
+  "packet_type": "lookdev_colour_evidence",
+  "physical_prototype_approved": false,
+  "refinement_stage": "final",
+  "render_id": "cover-v2/I06-lookdev",
+  "renderer": {
+    "path": "cobie-collectible/scripts/render_figurine_lookdev.py",
+    "sha256": "f2c96320d32f6bf414a0f1d221d5c3177a5de132faab80c272507e6d14156263"
+  },
+  "schema_version": 1,
+  "source_master": "cobie-collectible/blender/cobie_figurine_v2_master.blend",
+  "source_sha256_after": "0d831eb581984f07d165e010006bd8f7bc44ac5574526c7423bfc339a9e1aff1",
+  "source_sha256_before": "0d831eb581984f07d165e010006bd8f7bc44ac5574526c7423bfc339a9e1aff1",
+  "source_unchanged": true,
+  "status": "PASS"
+}

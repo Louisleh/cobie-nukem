@@ -25,16 +25,16 @@
   },
   "failures": [],
   "metrics": {
-    "assembly_height_mm": 139.732,
-    "balance_margin_ratio": 0.0669,
-    "balance_offset_mm": 2.34,
+    "assembly_height_mm": 139.747,
+    "balance_margin_ratio": 0.077,
+    "balance_offset_mm": 2.692,
     "base_diameter_mm": 69.945,
     "base_thickness_mm": 5.0,
     "build_receipt": {
       "path": "cobie-collectible/exports/build_report.json",
       "pipeline_version": 4,
-      "sha256": "877b01686555514998498519e4274c4163afe312993134f6b8ed9f5411766da4",
-      "source_blend_sha256": "2a0784cdbb36bf86d291cd965a42dc2dafdbfc09375eedb45f87235f7d33bee2",
+      "sha256": "544612a47e0d096336ffe55fddcb1a07f7bdff4951e69cccca26d25fa64aebfe",
+      "source_blend_sha256": "0d831eb581984f07d165e010006bd8f7bc44ac5574526c7423bfc339a9e1aff1",
       "status": "PASS"
     },
     "clearance_contract_mm": [
@@ -50,17 +50,17 @@
     ],
     "export_hashes": {
       "Base_Keyed.stl": "1bf84f82b27139affbb4b694496f539c94d8f41e8c6c7198412acff152541bdf",
-      "Cobie_Body.stl": "8f217fbbd17344a1efb50c4f28547f70ed86c3b16c3f10bd002f241df349d095",
-      "Cobie_Head.stl": "413a4c87f1ca234bbe6a3f0084fa634939e97a7bfdb57ff6a70ec44b88ff6046",
-      "Cobie_Prop_FetchLauncher.stl": "9ef4f39a80adfad788bdcfb6b0c2397ada77edcb7ba495270a28568c7d311d05",
-      "Cobie_Sunglasses.stl": "e329a55c8fce3067a989c3c71a55a4658e7ad81375fdca515d41e2e38e3d349f"
+      "Cobie_Body.stl": "97c8e90d393cca294352fe3a58068b42073f58633aa7885c9b818a629f67f62c",
+      "Cobie_Head.stl": "e9c6bc13768f56d22f27648f9d002f62f778799cf39774c66630d606408acc53",
+      "Cobie_Prop_FetchLauncher.stl": "13399fe5d9235a6b738bc9fbe0ad7300eca2ab3fdb31a096d3fc148093869e56",
+      "Cobie_Sunglasses.stl": "49ba0a68ab5ab87253f553b9c9058b0bca0249b0cb7a51b63789eb6a76be75ac"
     },
     "interpart_overlaps": {
       "Cobie_Body<->Base_Keyed": {
         "aabb_overlap_extents_mm": [
-          55.83704,
-          42.58654,
-          5.05
+          56.135244,
+          41.057346,
+          5.169977
         ],
         "engine": "manifold",
         "intersection_faces": 0,
@@ -70,9 +70,9 @@
       },
       "Cobie_Body<->Cobie_Head": {
         "aabb_overlap_extents_mm": [
-          50.334007,
-          40.429028,
-          17.455841
+          50.365242,
+          38.894089,
+          17.466797
         ],
         "engine": "manifold",
         "intersection_faces": 0,
@@ -82,9 +82,9 @@
       },
       "Cobie_Body<->Cobie_Prop_FetchLauncher": {
         "aabb_overlap_extents_mm": [
-          46.188351,
-          15.697433,
-          30.106438
+          49.398903,
+          14.145119,
+          33.03606
         ],
         "engine": "manifold",
         "intersection_faces": 0,
@@ -94,9 +94,9 @@
       },
       "Cobie_Body<->Cobie_Sunglasses": {
         "aabb_overlap_extents_mm": [
-          30.630024,
-          18.199999,
-          0.151474
+          31.240904,
+          18.645119,
+          1.157402
         ],
         "engine": "manifold",
         "intersection_faces": 0,
@@ -106,8 +106,8 @@
       },
       "Cobie_Head<->Base_Keyed": {
         "aabb_overlap_extents_mm": [
-          50.334007,
-          42.15097,
+          50.365242,
+          42.18313,
           0.0
         ],
         "engine": "manifold",
@@ -118,8 +118,8 @@
       },
       "Cobie_Head<->Cobie_Prop_FetchLauncher": {
         "aabb_overlap_extents_mm": [
-          42.475533,
-          17.419376,
+          45.665022,
+          17.43416,
           0.0
         ],
         "engine": "manifold",
@@ -130,9 +130,9 @@
       },
       "Cobie_Head<->Cobie_Sunglasses": {
         "aabb_overlap_extents_mm": [
-          30.630024,
-          18.199999,
-          10.051468
+          31.240904,
+          19.085171,
+          11.931717
         ],
         "engine": "manifold",
         "intersection_faces": 0,
@@ -142,8 +142,8 @@
       },
       "Cobie_Prop_FetchLauncher<->Base_Keyed": {
         "aabb_overlap_extents_mm": [
-          52.281136,
-          19.180756,
+          55.455008,
+          24.760605,
           0.0
         ],
         "engine": "manifold",
@@ -154,8 +154,8 @@
       },
       "Cobie_Sunglasses<->Base_Keyed": {
         "aabb_overlap_extents_mm": [
-          30.630024,
-          18.199999,
+          31.240904,
+          19.085171,
           0.0
         ],
         "engine": "manifold",
@@ -166,8 +166,8 @@
       },
       "Cobie_Sunglasses<->Cobie_Prop_FetchLauncher": {
         "aabb_overlap_extents_mm": [
-          30.630024,
-          13.699999,
+          31.240904,
+          14.585171,
           0.0
         ],
         "engine": "manifold",
@@ -293,7 +293,7 @@
         "inside_count": 0,
         "max_interpenetration_mm": 0.0,
         "max_sampled_gap_mm": 0.336822,
-        "min_sampled_gap_mm": 0.247533,
+        "min_sampled_gap_mm": 0.247531,
         "missing_female_rays": 0,
         "missing_male_rays": 0,
         "sample_count": 256
@@ -303,7 +303,7 @@
         "expected_sample_count": 256,
         "female_origin_inside_count": 0,
         "gap_p05_mm": 0.27893,
-        "gap_p50_mm": 0.283046,
+        "gap_p50_mm": 0.282795,
         "gap_p95_mm": 0.305678,
         "inside_count": 0,
         "max_interpenetration_mm": 0.0,
@@ -331,26 +331,26 @@
       },
       "Cobie_Body": {
         "bodies": 1,
-        "triangles": 139610,
-        "volume_mm3": 68170.071,
+        "triangles": 149830,
+        "volume_mm3": 75597.267,
         "watertight": true
       },
       "Cobie_Head": {
         "bodies": 1,
-        "triangles": 238054,
-        "volume_mm3": 30722.256,
+        "triangles": 237834,
+        "volume_mm3": 30973.038,
         "watertight": true
       },
       "Cobie_Prop_FetchLauncher": {
         "bodies": 1,
-        "triangles": 52608,
-        "volume_mm3": 8841.099,
+        "triangles": 71612,
+        "volume_mm3": 11312.69,
         "watertight": true
       },
       "Cobie_Sunglasses": {
         "bodies": 1,
-        "triangles": 24212,
-        "volume_mm3": 652.728,
+        "triangles": 32180,
+        "volume_mm3": 855.335,
         "watertight": true
       }
     }

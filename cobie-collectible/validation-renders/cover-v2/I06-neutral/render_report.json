@@ -1,0 +1,189 @@
+{
+  "build_receipt": {
+    "path": "cobie-collectible/exports/build_report.json",
+    "pipeline_version": 4,
+    "sha256": "544612a47e0d096336ffe55fddcb1a07f7bdff4951e69cccca26d25fa64aebfe",
+    "status": "PASS"
+  },
+  "contact_sheet": {
+    "path": "cobie-collectible/validation-renders/cover-v2/I06-neutral/contact_sheet.png",
+    "sha256": "d7fd9fd7014d3804066752bde3bedac3e864ed6b0951eb89282195b7c9f0a734"
+  },
+  "environment": {
+    "blender": "5.2.0 LTS",
+    "machine": "arm64",
+    "platform": "macOS-26.5.2-arm64-arm-64bit-Mach-O",
+    "python": "3.13.2",
+    "render_engine": "BLENDER_EEVEE"
+  },
+  "failures": [],
+  "ortho_scale_mm": 166.0,
+  "protocol": {
+    "camera": {
+      "orbit_radius_mm": 360.0,
+      "ortho_scale_mm": 166.0,
+      "projection": "ORTHO",
+      "target_mm": [
+        0.0,
+        0.0,
+        70.0
+      ],
+      "z_mm": 82.0
+    },
+    "floor": {
+      "location_mm": [
+        0.0,
+        0.0,
+        -0.25
+      ],
+      "material": {
+        "metallic": 0.0,
+        "rgba": [
+          0.1,
+          0.12,
+          0.15,
+          1.0
+        ],
+        "roughness": 0.9
+      },
+      "size_mm": 260.0
+    },
+    "lights": [
+      {
+        "angle_radians": 0.16,
+        "energy": 3.8,
+        "location_mm": [
+          -105.0,
+          -145.0,
+          205.0
+        ],
+        "name": "Review_Key",
+        "type": "SUN"
+      },
+      {
+        "angle_radians": 0.32,
+        "energy": 1.45,
+        "location_mm": [
+          130.0,
+          -95.0,
+          120.0
+        ],
+        "name": "Review_Fill",
+        "type": "SUN"
+      },
+      {
+        "angle_radians": 0.22,
+        "energy": 2.35,
+        "location_mm": [
+          40.0,
+          130.0,
+          185.0
+        ],
+        "name": "Review_Rim",
+        "type": "SUN"
+      }
+    ],
+    "materials": {
+      "base": {
+        "metallic": 0.0,
+        "rgba": [
+          0.26,
+          0.28,
+          0.31,
+          1.0
+        ],
+        "roughness": 0.82
+      },
+      "figure": {
+        "metallic": 0.0,
+        "rgba": [
+          0.48,
+          0.5,
+          0.52,
+          1.0
+        ],
+        "roughness": 0.78
+      },
+      "smooth_shading": {
+        "Base_Keyed": false,
+        "other_parts": true
+      }
+    },
+    "render": {
+      "color_depth_bits": 8,
+      "color_mode": "RGB",
+      "engine": "BLENDER_EEVEE",
+      "file_format": "PNG",
+      "film_transparent": false,
+      "resolution_percentage": 100,
+      "resolution_px": [
+        640,
+        640
+      ],
+      "use_compositing": false,
+      "use_sequencer": false,
+      "view_look": "AgX - Medium High Contrast"
+    },
+    "version": 1,
+    "views_yaw_degrees": {
+      "front": 0.0,
+      "hero": 35.0,
+      "left": 90.0,
+      "rear": 180.0,
+      "right": 270.0
+    },
+    "world": {
+      "background_rgba": [
+        0.055,
+        0.065,
+        0.08,
+        1.0
+      ],
+      "strength": 0.32
+    }
+  },
+  "render_id": "cover-v2/I06-neutral",
+  "resolution": [
+    640,
+    640
+  ],
+  "source_blend": "cobie-collectible/blender/cobie_figurine_v2_master.blend",
+  "source_blend_sha256": "0d831eb581984f07d165e010006bd8f7bc44ac5574526c7423bfc339a9e1aff1",
+  "source_provenance": {
+    "build_receipt_sha256": "544612a47e0d096336ffe55fddcb1a07f7bdff4951e69cccca26d25fa64aebfe",
+    "generator_path": "cobie-collectible/scripts/build_figurine_v2.py",
+    "generator_sha256": "8565cbdd40347d251f0f9e98eb0736161543b2ee120081a80171807215b30030",
+    "historical_blend_sha256": "0d831eb581984f07d165e010006bd8f7bc44ac5574526c7423bfc339a9e1aff1",
+    "kind": "deterministic_refinement_stage",
+    "refinement_stage": "final",
+    "renderer_path": "cobie-collectible/scripts/render_figurine.py",
+    "renderer_sha256": "10f6e582176b53819d235b020b73703f6e151c3ff0aa5fc8574126ecce9456b5"
+  },
+  "views": {
+    "front": {
+      "path": "cobie-collectible/validation-renders/cover-v2/I06-neutral/front.png",
+      "sha256": "c9f1b58e9839c478e149e5d7bc3e651c81851b30c98790fcd17c4b09d2da1b31",
+      "yaw_degrees": 0.0
+    },
+    "hero": {
+      "path": "cobie-collectible/validation-renders/cover-v2/I06-neutral/hero.png",
+      "sha256": "a41c0dfaec89385d35ac5c5bf4cb486b8a8911aaa44fdcd1db6a1175c1cb8325",
+      "yaw_degrees": 35.0
+    },
+    "left": {
+      "path": "cobie-collectible/validation-renders/cover-v2/I06-neutral/left.png",
+      "sha256": "d7202aa7b97227d675791b15838ee98a57a62efc2d0c51147244ea5bb9a8110e",
+      "yaw_degrees": 90.0
+    },
+    "rear": {
+      "path": "cobie-collectible/validation-renders/cover-v2/I06-neutral/rear.png",
+      "sha256": "352e150656ddce2566bb47b22b6f5b6b991e328445b139d821d9c76b70b90c1e",
+      "yaw_degrees": 180.0
+    },
+    "right": {
+      "path": "cobie-collectible/validation-renders/cover-v2/I06-neutral/right.png",
+      "sha256": "bffb48c0c9784d430c9310f3ad2fa8f926689fb7b72c9fdcea215c4fbde90008",
+      "yaw_degrees": 270.0
+    }
+  }
+}
