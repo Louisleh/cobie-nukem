@@ -40,7 +40,6 @@ from _common import (
     write_json,
 )
 
-BLEND_PATH = FIGURINE_BLEND
 RENDER_ID = os.environ.get("COBIE_RENDER_ID", "prototype-current")
 OUTPUT_DIR = VALIDATION_RENDERS / RENDER_ID
 RENDER_PROTOCOL = figurine_render_protocol()
@@ -53,6 +52,7 @@ CAMERA_DISTANCE = CAMERA_SETTINGS["orbit_radius_mm"]
 CAMERA_Z = CAMERA_SETTINGS["z_mm"]
 TARGET = Vector(CAMERA_SETTINGS["target_mm"])
 VIEW_ORDER = ("front", "left", "rear", "right", "hero")
+RENDERER_PATH = Path(__file__).resolve()
 
 
 def material(name: str, colour: tuple[float, float, float, float], roughness: float) -> bpy.types.Material:
@@ -73,9 +73,39 @@ def aim_at(obj: bpy.types.Object, target: Vector) -> None:
     obj.rotation_euler = (target - obj.location).to_track_quat("-Z", "Y").to_euler()
 
 
-def prepare_scene() -> tuple[bpy.types.Object, list[Failure]]:
+def source_blend_path(build_receipt: dict) -> Path:
+    recorded = build_receipt.get("source_blend")
+    if not isinstance(recorded, str):
+        return FIGURINE_BLEND
+    candidate = (ROOT / recorded).resolve()
+    root = ROOT.resolve()
+    if candidate == root or root not in candidate.parents:
+        raise RuntimeError(f"build receipt source escapes repository: {recorded!r}")
+    return candidate
+
+
+def source_provenance(build_receipt: dict, blend_path: Path) -> dict | None:
+    """Bind overwriteable V2 stages to reproducible source, not a live path."""
+    if build_receipt.get("mode") != "cover_refinement_v2":
+        return None
+    generator = build_receipt.get("generator")
+    if not isinstance(generator, dict):
+        return None
+    return {
+        "kind": "deterministic_refinement_stage",
+        "generator_path": generator.get("path"),
+        "generator_sha256": generator.get("sha256"),
+        "renderer_path": RENDERER_PATH.relative_to(ROOT).as_posix(),
+        "renderer_sha256": sha256_file(RENDERER_PATH),
+        "refinement_stage": build_receipt.get("refinement_stage"),
+        "historical_blend_sha256": sha256_file(blend_path),
+        "build_receipt_sha256": sha256_file(BUILD_REPORT),
+    }
+
+
+def prepare_scene(blend_path: Path) -> tuple[bpy.types.Object, list[Failure]]:
     failures: list[Failure] = []
-    bpy.ops.wm.open_mainfile(filepath=str(BLEND_PATH))
+    bpy.ops.wm.open_mainfile(filepath=str(blend_path))
     scene = bpy.context.scene
     scene.render.engine = RENDER_SETTINGS["engine"]
     scene.render.resolution_x, scene.render.resolution_y = RESOLUTION
@@ -108,10 +138,20 @@ def prepare_scene() -> tuple[bpy.types.Object, list[Failure]]:
         material_settings["base"]["roughness"],
     )
     renderable_types = {"MESH", "CURVE", "SURFACE", "META", "FONT", "VOLUME", "POINTCLOUD"}
+    print_collection = bpy.data.collections.get("PRINT_EXPORT")
+    if print_collection is not None:
+        for collection in scene.collection.children:
+            collection.hide_render = collection != print_collection
+            collection.hide_viewport = collection != print_collection
+        source_objects = list(print_collection.objects)
+    else:
+        source_objects = [
+            obj for obj in scene.objects if not obj.name.startswith("Review_")
+        ]
     source_renderables = {
         obj.name: obj.type
-        for obj in scene.objects
-        if obj.type in renderable_types and not obj.name.startswith("Review_")
+        for obj in source_objects
+        if obj.type in renderable_types
     }
     expected_mesh_names = set(PART_NAMES)
     for unexpected in sorted(set(source_renderables) - expected_mesh_names):
@@ -126,7 +166,11 @@ def prepare_scene() -> tuple[bpy.types.Object, list[Failure]]:
     review_collection = bpy.data.collections.new("Review_Source")
     scene.collection.children.link(review_collection)
     for name in PART_NAMES:
-        obj = scene.objects.get(name)
+        obj = (
+            print_collection.objects.get(name)
+            if print_collection is not None
+            else scene.objects.get(name)
+        )
         if obj is None or obj.type != "MESH":
             failures.append(Failure("missing_part", name, "named mesh is absent from the current .blend"))
             continue
@@ -256,11 +300,12 @@ def make_contact_sheet(paths: dict[str, Path]) -> Path:
 
 def _run() -> int:
     receipt_failures, build_receipt = check_build_receipt()
+    blend_path = source_blend_path(build_receipt)
     if receipt_failures:
         payload = {
             "render_id": RENDER_ID,
-            "source_blend": str(BLEND_PATH.relative_to(ROOT)),
-            "source_blend_sha256": sha256_file(BLEND_PATH) if BLEND_PATH.is_file() else None,
+            "source_blend": str(blend_path.relative_to(ROOT)),
+            "source_blend_sha256": sha256_file(blend_path) if blend_path.is_file() else None,
             "build_receipt": {
                 "path": str(BUILD_REPORT.relative_to(ROOT)),
                 "sha256": sha256_file(BUILD_REPORT) if BUILD_REPORT.is_file() else None,
@@ -277,12 +322,12 @@ def _run() -> int:
         write_json(OUTPUT_DIR / "render_report.json", payload)
         return report("COBIE_FIGURINE_RENDER", receipt_failures)
 
-    camera, failures = prepare_scene()
+    camera, failures = prepare_scene(blend_path)
     if failures:
         payload = {
             "render_id": RENDER_ID,
-            "source_blend": str(BLEND_PATH.relative_to(ROOT)),
-            "source_blend_sha256": sha256_file(BLEND_PATH),
+            "source_blend": str(blend_path.relative_to(ROOT)),
+            "source_blend_sha256": sha256_file(blend_path),
             "build_receipt": {
                 "path": str(BUILD_REPORT.relative_to(ROOT)),
                 "sha256": sha256_file(BUILD_REPORT),
@@ -312,8 +357,9 @@ def _run() -> int:
     contact_sheet = make_contact_sheet(paths)
     payload = {
         "render_id": RENDER_ID,
-        "source_blend": str(BLEND_PATH.relative_to(ROOT)),
-        "source_blend_sha256": sha256_file(BLEND_PATH),
+        "source_blend": str(blend_path.relative_to(ROOT)),
+        "source_blend_sha256": sha256_file(blend_path),
+        "source_provenance": source_provenance(build_receipt, blend_path),
         "build_receipt": {
             "path": str(BUILD_REPORT.relative_to(ROOT)),
             "sha256": sha256_file(BUILD_REPORT),

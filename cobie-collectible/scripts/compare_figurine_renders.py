@@ -17,7 +17,6 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from _common import (
     BUILD_REPORT,
-    FIGURINE_BLEND,
     ROOT,
     TURNAROUND_VIEWS,
     VALIDATION_RENDERS,
@@ -77,6 +76,84 @@ def validate_historical_source(payload: dict, subject: str) -> list[Failure]:
                 )
             ]
         return []
+
+    if provenance.get("kind") == "deterministic_refinement_stage":
+        required = {
+            "kind",
+            "generator_path",
+            "generator_sha256",
+            "renderer_path",
+            "renderer_sha256",
+            "refinement_stage",
+            "historical_blend_sha256",
+            "build_receipt_sha256",
+        }
+        if set(provenance) != required:
+            return [
+                Failure(
+                    "render_source_provenance",
+                    subject,
+                    f"refinement provenance schema differs; expected={sorted(required)} "
+                    f"observed={sorted(provenance)}",
+                )
+            ]
+        failures: list[Failure] = []
+        for path_key, hash_key in (
+            ("generator_path", "generator_sha256"),
+            ("renderer_path", "renderer_sha256"),
+        ):
+            raw_path = provenance.get(path_key)
+            relative = Path(raw_path) if isinstance(raw_path, str) else Path("..")
+            source_path = (ROOT / relative).resolve()
+            root = ROOT.resolve()
+            if (
+                not isinstance(raw_path, str)
+                or relative.is_absolute()
+                or ".." in relative.parts
+                or source_path == root
+                or root not in source_path.parents
+                or source_path.is_symlink()
+                or not source_path.is_file()
+                or provenance.get(hash_key) != sha256_file(source_path)
+            ):
+                failures.append(
+                    Failure(
+                        "render_source_provenance",
+                        subject,
+                        f"{path_key} is unsafe, missing, or no longer matches its recorded hash",
+                    )
+                )
+        if provenance.get("refinement_stage") not in {
+            "silhouette",
+            "head",
+            "costume",
+            "launcher",
+            "final",
+        }:
+            failures.append(
+                Failure(
+                    "render_source_provenance",
+                    subject,
+                    f"invalid refinement stage {provenance.get('refinement_stage')!r}",
+                )
+            )
+        receipt = payload.get("build_receipt")
+        if (
+            not isinstance(receipt, dict)
+            or not isinstance(provenance.get("historical_blend_sha256"), str)
+            or SHA256_RE.fullmatch(provenance["historical_blend_sha256"]) is None
+            or provenance.get("historical_blend_sha256")
+            != payload.get("source_blend_sha256")
+            or provenance.get("build_receipt_sha256") != receipt.get("sha256")
+        ):
+            failures.append(
+                Failure(
+                    "render_source_provenance",
+                    subject,
+                    "refinement source/build hashes are malformed or internally inconsistent",
+                )
+            )
+        return failures
 
     required = {
         "kind",
@@ -254,16 +331,28 @@ def validate_render_packet(render_id: str, *, require_current: bool) -> tuple[li
             failures.append(Failure("contact_sheet_hash", subject, "contact sheet hash does not match"))
 
     if require_current:
-        receipt_failures, _ = check_build_receipt()
+        receipt_failures, build_receipt = check_build_receipt()
         failures.extend(receipt_failures)
-        expected_source = str(FIGURINE_BLEND.relative_to(ROOT))
+        recorded_source = build_receipt.get("source_blend")
+        expected_source = recorded_source if isinstance(recorded_source, str) else ""
+        source_path = (ROOT / expected_source).resolve()
+        root = ROOT.resolve()
+        if (
+            not expected_source
+            or source_path == root
+            or root not in source_path.parents
+        ):
+            failures.append(
+                Failure("render_source", subject, "build receipt has an unsafe source path")
+            )
+            source_path = ROOT / "__invalid_collectible_source__"
         if payload.get("source_blend") != expected_source:
             failures.append(
                 Failure("render_source", subject, f"reported {payload.get('source_blend')!r}")
             )
         if (
-            not FIGURINE_BLEND.is_file()
-            or payload.get("source_blend_sha256") != sha256_file(FIGURINE_BLEND)
+            not source_path.is_file()
+            or payload.get("source_blend_sha256") != sha256_file(source_path)
         ):
             failures.append(
                 Failure("render_source_hash", subject, "candidate render is not from the current .blend")

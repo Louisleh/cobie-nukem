@@ -27,12 +27,13 @@ EXPORTS = COLLECTIBLE / "exports"
 SLICER_TESTS = COLLECTIBLE / "slicer-tests"
 BUILD_REPORT = EXPORTS / "build_report.json"
 FIGURINE_BLEND = BLEND_DIR / "cobie_figurine_v1.blend"
+REFINEMENT_MASTER_BLEND = BLEND_DIR / "cobie_figurine_v2_master.blend"
 
 # Bakeoff renders are bulky and regenerable, so they stage under the repo's
 # already-gitignored builds/ tree. Only hashes and the scorecard are committed.
 BUILDS = ROOT / "builds" / "collectible"
 
-PIPELINE_VERSION = 3
+PIPELINE_VERSION = 4
 
 # --------------------------------------------------------------------------
 # Scale contract
@@ -244,7 +245,7 @@ def check_build_receipt(
     *,
     exports: Path = EXPORTS,
     receipt_path: Path = BUILD_REPORT,
-    blend_path: Path = FIGURINE_BLEND,
+    blend_path: Path | None = None,
     selected_mesh: Path = GENERATED_MESHES / "selected.glb",
 ) -> tuple[list["Failure"], dict]:
     """Bind downstream evidence to one successful source/export transaction.
@@ -325,13 +326,13 @@ def check_build_receipt(
                     )
                 )
     else:
-        if mode != "provisional_game_art_prototype":
+        if mode not in {"provisional_game_art_prototype", "cover_refinement_v2"}:
             failures.append(
                 Failure(
                     "build_receipt_mode",
                     subject,
                     "without selected.glb, a successful receipt must identify the "
-                    "provisional game-art prototype workflow",
+                    "provisional or cover-refinement workflow",
                 )
             )
         if recorded_selected_hash is not None:
@@ -340,6 +341,48 @@ def check_build_receipt(
                     "build_receipt_selected_hash",
                     subject,
                     "receipt records a selected candidate, but selected.glb is absent",
+                )
+            )
+
+    if mode == "cover_refinement_v2":
+        generator = payload.get("generator")
+        expected_generator = (
+            ROOT / "cobie-collectible" / "scripts" / "build_figurine_v2.py"
+        )
+        expected_generator_path = expected_generator.relative_to(ROOT).as_posix()
+        if not isinstance(generator, dict) or set(generator) != {"path", "sha256"}:
+            failures.append(
+                Failure(
+                    "build_receipt_generator",
+                    subject,
+                    "cover-refinement receipt must bind the deterministic generator",
+                )
+            )
+        elif (
+            generator.get("path") != expected_generator_path
+            or expected_generator.is_symlink()
+            or not expected_generator.is_file()
+            or generator.get("sha256") != sha256_file(expected_generator)
+        ):
+            failures.append(
+                Failure(
+                    "build_receipt_generator",
+                    subject,
+                    "recorded refinement generator path/hash does not match current source",
+                )
+            )
+        if payload.get("refinement_stage") not in {
+            "silhouette",
+            "head",
+            "costume",
+            "launcher",
+            "final",
+        }:
+            failures.append(
+                Failure(
+                    "build_receipt_refinement_stage",
+                    subject,
+                    f"invalid refinement stage {payload.get('refinement_stage')!r}",
                 )
             )
 
@@ -398,16 +441,35 @@ def check_build_receipt(
                 )
             )
 
+    recorded_source = payload.get("source_blend")
+    if blend_path is None:
+        if isinstance(recorded_source, str):
+            candidate = (ROOT / recorded_source).resolve()
+            root_resolved = ROOT.resolve()
+            if candidate != root_resolved and root_resolved not in candidate.parents:
+                failures.append(
+                    Failure(
+                        "build_receipt_source",
+                        subject,
+                        f"source_blend escapes the repository: {recorded_source!r}",
+                    )
+                )
+                blend_path = FIGURINE_BLEND
+            else:
+                blend_path = candidate
+        else:
+            blend_path = FIGURINE_BLEND
+
     try:
-        expected_source = str(blend_path.relative_to(ROOT))
+        expected_source = blend_path.resolve().relative_to(ROOT.resolve()).as_posix()
     except ValueError:
         expected_source = str(blend_path)
-    if payload.get("source_blend") != expected_source:
+    if recorded_source != expected_source:
         failures.append(
             Failure(
                 "build_receipt_source",
                 subject,
-                f"source_blend {payload.get('source_blend')!r} != {expected_source!r}",
+                f"source_blend {recorded_source!r} != {expected_source!r}",
             )
         )
     if blend_path.is_symlink() or not blend_path.is_file():

@@ -11,8 +11,10 @@ import bpy
 SCRIPT_DIR = Path(__file__).resolve().parent
 sys.path.insert(0, str(SCRIPT_DIR))
 
-from _common import PART_NAMES, ROOT, sha256_file
+from _common import PART_NAMES, PIPELINE_VERSION, ROOT, sha256_file
 from create_refinement_master import MASTER_BLEND, REFERENCE_SPECS, TOP_LEVEL_COLLECTIONS
+
+REFINEMENT_STAGES = ("silhouette", "head", "costume", "launcher", "final")
 
 
 def main() -> None:
@@ -44,17 +46,53 @@ def main() -> None:
         failures.append("every PRINT_EXPORT object must be a mesh")
 
     source_collection = bpy.data.collections.get("SCULPT_SOURCE")
-    expected_sources = {f"SRC_{name}" for name in PART_NAMES}
-    source_inventory = (
-        {obj.name for obj in source_collection.objects}
+    source_meshes = (
+        [obj for obj in source_collection.all_objects if obj.type == "MESH"]
         if source_collection is not None
-        else set()
+        else []
     )
-    if source_inventory != expected_sources:
-        failures.append(
-            f"SCULPT_SOURCE differs: expected={sorted(expected_sources)} "
-            f"observed={sorted(source_inventory)}"
-        )
+    if len(source_meshes) < len(PART_NAMES):
+        failures.append("SCULPT_SOURCE must retain editable semantic construction meshes")
+    for obj in source_meshes:
+        if obj.get("cobie_part") not in PART_NAMES:
+            failures.append(f"{obj.name}: missing canonical cobie_part")
+        if not isinstance(obj.get("cobie_zone"), str):
+            failures.append(f"{obj.name}: missing cobie_zone")
+        if not isinstance(obj.get("cobie_role"), str):
+            failures.append(f"{obj.name}: missing cobie_role")
+        if obj.get("cobie_stage") not in REFINEMENT_STAGES:
+            failures.append(f"{obj.name}: invalid cobie_stage {obj.get('cobie_stage')!r}")
+
+    lookdev_collection = bpy.data.collections.get("LOOKDEV")
+    lookdev_meshes = (
+        [obj for obj in lookdev_collection.all_objects if obj.type == "MESH"]
+        if lookdev_collection is not None
+        else []
+    )
+    if not lookdev_meshes:
+        failures.append("LOOKDEV must contain semantic meshes")
+    for obj in lookdev_meshes:
+        if obj.get("cobie_part") not in PART_NAMES:
+            failures.append(f"{obj.name}: LOOKDEV mesh lacks canonical cobie_part")
+        if not obj.material_slots or any(
+            slot.material is None for slot in obj.material_slots
+        ):
+            failures.append(f"{obj.name}: LOOKDEV mesh lacks a bound material")
+
+    active_stage = scene.get("refinement_stage")
+    if active_stage not in REFINEMENT_STAGES:
+        failures.append(f"invalid scene refinement_stage {active_stage!r}")
+    else:
+        active_index = REFINEMENT_STAGES.index(active_stage)
+        for obj in lookdev_meshes:
+            object_stage = obj.get("cobie_stage")
+            if (
+                object_stage not in REFINEMENT_STAGES
+                or REFINEMENT_STAGES.index(object_stage) > active_index
+            ):
+                failures.append(
+                    f"{obj.name}: inactive stage {object_stage!r} leaked into LOOKDEV"
+                )
 
     reference_collection = bpy.data.collections.get("REFERENCE")
     reference_objects = (
@@ -79,10 +117,27 @@ def main() -> None:
 
     if bpy.data.images:
         failures.append("master must not embed or externally link image datablocks")
+    if bpy.data.libraries:
+        failures.append("master must not link external Blender libraries")
+    if scene.get("cobie_pipeline_version") != PIPELINE_VERSION:
+        failures.append("master pipeline version does not match current source")
+    if scene.get("build_mode") != "cover_refinement_v2":
+        failures.append("master build_mode must be cover_refinement_v2")
     if scene.get("identity_approved") is not False:
         failures.append("identity_approved must remain false before owner photo review")
+    if scene.get("physical_validation_complete") is not False:
+        failures.append("physical_validation_complete must remain false before a physical test")
     if scene.get("physical_prototype_approved") is not False:
         failures.append("physical_prototype_approved must remain false before a physical test")
+    if scene.get("manufacture_authorized") is not False:
+        failures.append("manufacture_authorized must remain false before human/physical approval")
+
+    review_collection = bpy.data.collections.get("REVIEW_RIG")
+    review_objects = list(review_collection.all_objects) if review_collection else []
+    if sum(obj.type == "CAMERA" for obj in review_objects) != 1:
+        failures.append("REVIEW_RIG must contain exactly one camera")
+    if sum(obj.type == "LIGHT" for obj in review_objects) != 3:
+        failures.append("REVIEW_RIG must contain exactly three lights")
 
     if failures:
         for failure in failures:
