@@ -1,0 +1,33 @@
+version: 1
+work_id: cobie-collectible-cover-refinement-v2
+baseline:
+  revision: ed050bebc9e2f4524593a7cb8b92ad50a69d8d51
+  tag: collectible-prototype-v1-baseline
+  weighted_score: 35
+  digital_gates:
+    collectible_tests: 43_pass
+    assembly_height_mm: 140.541
+    base_diameter_mm: 69.94
+    base_thickness_mm: 5.008
+    balance_margin_ratio: 0.0598
+    exact_print_parts: 5
+    watertight_single_solid_parts: 5
+    prusaslicer_manifold_single_parts: 5
+    interpart_intersection_max_mm3: 0.0
+  human_gates:
+    cover_taste_approved: false
+    identity_approved: false
+    physical_fit_approved: false
+iterations:
+  - id: I00
+    stage: reference_and_infrastructure
+    status: accepted
+    focus: freeze cover hierarchy, scorecard, provenance, Git LFS, and branch boundary
+    score_before: 35
+    score_after: 35
+    geometry_changed: false
+    hard_gate_regressions: []
+    open_human_gates:
+      - owner photo pack
+      - real-Cobie identity approval
+      - physical print and fit review

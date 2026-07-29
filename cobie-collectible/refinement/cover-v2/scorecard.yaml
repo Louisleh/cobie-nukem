@@ -1,0 +1,62 @@
+version: 1
+work_id: cobie-collectible-cover-refinement-v2
+rating_scale:
+  minimum: 0
+  maximum: 5
+  meaning:
+    0: absent or contradictory
+    1: placeholder
+    2: recognizable but materially off target
+    3: competent and directionally correct
+    4: cover-faithful at shelf distance
+    5: exceptional and production-ready subject to human/physical gates
+categories:
+  silhouette:
+    weight: 20
+    baseline_rating: 2
+  head_and_fur_identity:
+    weight: 20
+    baseline_rating: 2
+  pose_and_weight:
+    weight: 15
+    baseline_rating: 1
+  jacket_construction:
+    weight: 15
+    baseline_rating: 1
+  fetch_launcher:
+    weight: 15
+    baseline_rating: 2
+  aviators:
+    weight: 5
+    baseline_rating: 2
+  neutral_geometry_evidence:
+    weight: 5
+    baseline_rating: 5
+  material_and_color_cohesion:
+    weight: 5
+    baseline_rating: 0
+baseline_weighted_score: 35
+acceptance:
+  weighted_score_minimum: 85
+  every_category_rating_minimum: 4
+  identity_approved: false
+  physical_prototype_approved: false
+iteration_budget:
+  accepted_total_maximum: 28
+  reference_and_infrastructure: 1
+  silhouette_and_pose: 4
+  head_and_fur: 6
+  jacket_and_accessories: 5
+  fetch_launcher: 4
+  print_reconciliation: 3
+  pbr_and_color: 3
+  polish_and_evidence: 2
+loop_rules:
+  - select exactly one highest-impact failed category per iteration
+  - make one cohesive change and save a restorable checkpoint
+  - render neutral, silhouette, color-proof, and relevant closeup evidence
+  - rebuild and rerun print gates whenever geometry changes
+  - accept only when the weighted score improves and no hard gate regresses
+  - restore the prior accepted checkpoint after a rejected iteration
+  - stop after two failed attempts on the same issue or three accepted iterations without score improvement
+  - commit and push every stage boundary and at least every third accepted iteration
