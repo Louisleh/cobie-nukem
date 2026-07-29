@@ -16,7 +16,16 @@ export COBIE_LOOKDEV_ID="cover-v2/${COBIE_ITERATION_ID}-lookdev"
 export COBIE_RENDER_BASELINE_ID="${COBIE_RENDER_BASELINE_ID:-prototype-v1}"
 
 UV=(uv run --project cobie-collectible/tools --locked)
-BLENDER="/Applications/Blender.app/Contents/MacOS/Blender"
+if [[ -n "${BLENDER_BIN:-}" ]]; then
+  BLENDER="${BLENDER_BIN}"
+elif [[ -x "/Applications/Blender.app/Contents/MacOS/Blender" ]]; then
+  BLENDER="/Applications/Blender.app/Contents/MacOS/Blender"
+elif command -v blender >/dev/null 2>&1; then
+  BLENDER="$(command -v blender)"
+else
+  echo "Blender was not found. Set BLENDER_BIN to its executable path." >&2
+  exit 2
+fi
 
 "${UV[@]}" python cobie-collectible/scripts/build_figurine_v2.py
 "${BLENDER}" --background \
