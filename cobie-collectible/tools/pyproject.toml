@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=68.2"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "cobie-collectible"
+version = "0.1.0"
+description = "Deterministic figurine geometry, clay bakeoff scoring, and print validation for the Cobie Nukem physical collectible."
+# bpy 5.2.0 publishes cp313 wheels only. This is the one place in the repo that
+# requires a newer interpreter than tools/visual_quality (>=3.11); the pin is a
+# hard constraint from the Blender wheel, not a preference.
+requires-python = ">=3.13"
+dependencies = [
+    "bpy==5.2.0",
+    "manifold3d==3.5.2",
+    "trimesh==4.12.2",
+    "pymeshlab==2025.7.post1",
+    "numpy==2.5.1",
+    "pillow==12.3.0",
+    "scipy==1.16.3",
+    "rtree==1.4.1",
+]
+
+[tool.uv]
+package = false

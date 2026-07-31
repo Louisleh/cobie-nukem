@@ -1,0 +1,11 @@
+{
+  "baseline_id": "proxy-baseline",
+  "baseline_render_report_sha256": "bbc41c2f9cfc4949ef469fe5ad6d4f4f4e698639a3da4c377644c8de3366ae17",
+  "candidate_id": "prototype-v1",
+  "candidate_render_report_sha256": "74c7004e3cb9d0d612e6e0446dd2aa96c13b8705161944cf4cef8e5553f640b5",
+  "failures": [],
+  "output": {
+    "path": "cobie-collectible/validation-renders/prototype-v1/before_candidate_difference.png",
+    "sha256": "90d586d133e54378d7b3050f383101378f80d6c714d09b4e9d4fad391224d0b9"
+  }
+}

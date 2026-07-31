@@ -1,0 +1,16 @@
+{
+  "detail": "",
+  "exports": {
+    "Base_Keyed.stl": "5637c73bcd7a52370eb34edd65247af7389d6785e9a7551cd3472ef4915d0130",
+    "Cobie_Body.stl": "cb06edb4cf8d73e7ee951314696d6558f850c8c698460065dd515e6c85081ff6",
+    "Cobie_Head.stl": "a10e24910c9a555735602d8f906c80d5614c66b1b6efcbfabcc533765636c9c4",
+    "Cobie_Prop_FetchLauncher.stl": "9af76e2048ea1cfc0974485a3746d1f378f7589c0e76c30ff8add733025c6706",
+    "Cobie_Sunglasses.stl": "d991aaf59c9f6efbc0be049cf1267ebb59a6357d0eaadef38bf9c4c8ab8a5ec6"
+  },
+  "mode": "provisional_game_art_prototype",
+  "pipeline_version": 3,
+  "selected_candidate_sha256": null,
+  "source_blend": "cobie-collectible/blender/cobie_figurine_v1.blend",
+  "source_blend_sha256": "f3048d42cb0b3c8dbd69521937cf63dd37f2328279b8e31fba01364f0479474d",
+  "status": "PASS"
+}

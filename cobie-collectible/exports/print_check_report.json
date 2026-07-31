@@ -1,0 +1,358 @@
+{
+  "environment": {
+    "packages": {
+      "bpy": "5.2.0",
+      "manifold3d": "3.5.2",
+      "numpy": "2.5.1",
+      "pillow": "12.3.0",
+      "pymeshlab": "2025.7.post1",
+      "rtree": "1.4.1",
+      "scipy": "1.16.3",
+      "trimesh": "4.12.2"
+    },
+    "platform": {
+      "description": "macOS-26.5.2-arm64-arm-64bit-Mach-O",
+      "machine": "arm64",
+      "release": "25.5.0",
+      "system": "Darwin"
+    },
+    "python": {
+      "compiler": "Clang 15.0.0 (clang-1500.3.9.4)",
+      "executable": "python3.13",
+      "implementation": "CPython",
+      "version": "3.13.2"
+    }
+  },
+  "failures": [],
+  "metrics": {
+    "assembly_height_mm": 140.541,
+    "balance_margin_ratio": 0.0598,
+    "balance_offset_mm": 2.09,
+    "base_diameter_mm": 69.94,
+    "base_thickness_mm": 5.008,
+    "build_receipt": {
+      "path": "cobie-collectible/exports/build_report.json",
+      "pipeline_version": 3,
+      "sha256": "345c00a8140eaf94fd0b299ea715354a38e93949415a51eeb65da4a56a5717ba",
+      "source_blend_sha256": "f3048d42cb0b3c8dbd69521937cf63dd37f2328279b8e31fba01364f0479474d",
+      "status": "PASS"
+    },
+    "clearance_contract_mm": [
+      0.2,
+      0.35
+    ],
+    "expected_stl_files": [
+      "Cobie_Body.stl",
+      "Cobie_Head.stl",
+      "Cobie_Sunglasses.stl",
+      "Cobie_Prop_FetchLauncher.stl",
+      "Base_Keyed.stl"
+    ],
+    "export_hashes": {
+      "Base_Keyed.stl": "5637c73bcd7a52370eb34edd65247af7389d6785e9a7551cd3472ef4915d0130",
+      "Cobie_Body.stl": "cb06edb4cf8d73e7ee951314696d6558f850c8c698460065dd515e6c85081ff6",
+      "Cobie_Head.stl": "a10e24910c9a555735602d8f906c80d5614c66b1b6efcbfabcc533765636c9c4",
+      "Cobie_Prop_FetchLauncher.stl": "9af76e2048ea1cfc0974485a3746d1f378f7589c0e76c30ff8add733025c6706",
+      "Cobie_Sunglasses.stl": "d991aaf59c9f6efbc0be049cf1267ebb59a6357d0eaadef38bf9c4c8ab8a5ec6"
+    },
+    "interpart_overlaps": {
+      "Cobie_Body<->Base_Keyed": {
+        "aabb_overlap_extents_mm": [
+          52.613182,
+          44.150465,
+          4.747798
+        ],
+        "engine": "manifold",
+        "intersection_faces": 0,
+        "intersection_volume_mm3": 0.0,
+        "maximum_allowed_volume_mm3": 0.0001,
+        "status": "CLEAR"
+      },
+      "Cobie_Body<->Cobie_Head": {
+        "aabb_overlap_extents_mm": [
+          49.480064,
+          41.67342,
+          17.747536
+        ],
+        "engine": "manifold",
+        "intersection_faces": 0,
+        "intersection_volume_mm3": 0.0,
+        "maximum_allowed_volume_mm3": 0.0001,
+        "status": "CLEAR"
+      },
+      "Cobie_Body<->Cobie_Prop_FetchLauncher": {
+        "aabb_overlap_extents_mm": [
+          43.266333,
+          16.449839,
+          29.24815
+        ],
+        "engine": "manifold",
+        "intersection_faces": 0,
+        "intersection_volume_mm3": 0.0,
+        "maximum_allowed_volume_mm3": 0.0001,
+        "status": "CLEAR"
+      },
+      "Cobie_Body<->Cobie_Sunglasses": {
+        "aabb_overlap_extents_mm": [
+          31.137663,
+          17.5,
+          0.958038
+        ],
+        "engine": "manifold",
+        "intersection_faces": 0,
+        "intersection_volume_mm3": 0.0,
+        "maximum_allowed_volume_mm3": 0.0001,
+        "status": "CLEAR"
+      },
+      "Cobie_Head<->Base_Keyed": {
+        "aabb_overlap_extents_mm": [
+          49.480064,
+          42.03413,
+          0.0
+        ],
+        "engine": "manifold",
+        "intersection_faces": 0,
+        "intersection_volume_mm3": 0.0,
+        "maximum_allowed_volume_mm3": 0.0001,
+        "status": "AABB_DISJOINT_OR_TOUCHING"
+      },
+      "Cobie_Head<->Cobie_Prop_FetchLauncher": {
+        "aabb_overlap_extents_mm": [
+          41.700167,
+          16.810549,
+          0.0
+        ],
+        "engine": "manifold",
+        "intersection_faces": 0,
+        "intersection_volume_mm3": 0.0,
+        "maximum_allowed_volume_mm3": 0.0001,
+        "status": "AABB_DISJOINT_OR_TOUCHING"
+      },
+      "Cobie_Head<->Cobie_Sunglasses": {
+        "aabb_overlap_extents_mm": [
+          31.137663,
+          17.5,
+          10.258034
+        ],
+        "engine": "manifold",
+        "intersection_faces": 0,
+        "intersection_volume_mm3": 0.0,
+        "maximum_allowed_volume_mm3": 0.0001,
+        "status": "CLEAR"
+      },
+      "Cobie_Prop_FetchLauncher<->Base_Keyed": {
+        "aabb_overlap_extents_mm": [
+          49.460131,
+          22.160366,
+          0.0
+        ],
+        "engine": "manifold",
+        "intersection_faces": 0,
+        "intersection_volume_mm3": 0.0,
+        "maximum_allowed_volume_mm3": 0.0001,
+        "status": "AABB_DISJOINT_OR_TOUCHING"
+      },
+      "Cobie_Sunglasses<->Base_Keyed": {
+        "aabb_overlap_extents_mm": [
+          31.137663,
+          17.5,
+          0.0
+        ],
+        "engine": "manifold",
+        "intersection_faces": 0,
+        "intersection_volume_mm3": 0.0,
+        "maximum_allowed_volume_mm3": 0.0001,
+        "status": "AABB_DISJOINT_OR_TOUCHING"
+      },
+      "Cobie_Sunglasses<->Cobie_Prop_FetchLauncher": {
+        "aabb_overlap_extents_mm": [
+          31.137663,
+          13.0,
+          0.0
+        ],
+        "engine": "manifold",
+        "intersection_faces": 0,
+        "intersection_volume_mm3": 0.0,
+        "maximum_allowed_volume_mm3": 0.0001,
+        "status": "AABB_DISJOINT_OR_TOUCHING"
+      }
+    },
+    "joint_clearances": {
+      "base_key_0": {
+        "coverage_ratio": 1.0,
+        "expected_sample_count": 256,
+        "female_origin_inside_count": 0,
+        "gap_p05_mm": 0.225022,
+        "gap_p50_mm": 0.24336,
+        "gap_p95_mm": 0.259414,
+        "inside_count": 0,
+        "max_interpenetration_mm": 0.0,
+        "max_sampled_gap_mm": 0.331033,
+        "min_sampled_gap_mm": 0.220896,
+        "missing_female_rays": 0,
+        "missing_male_rays": 0,
+        "sample_count": 256
+      },
+      "base_key_1": {
+        "coverage_ratio": 1.0,
+        "expected_sample_count": 256,
+        "female_origin_inside_count": 0,
+        "gap_p05_mm": 0.287084,
+        "gap_p50_mm": 0.309309,
+        "gap_p95_mm": 0.327531,
+        "inside_count": 0,
+        "max_interpenetration_mm": 0.0,
+        "max_sampled_gap_mm": 0.343671,
+        "min_sampled_gap_mm": 0.275666,
+        "missing_female_rays": 0,
+        "missing_male_rays": 0,
+        "sample_count": 256
+      },
+      "glasses_pin_0": {
+        "coverage_ratio": 1.0,
+        "expected_sample_count": 256,
+        "female_origin_inside_count": 0,
+        "gap_p05_mm": 0.247415,
+        "gap_p50_mm": 0.254023,
+        "gap_p95_mm": 0.258137,
+        "inside_count": 0,
+        "max_interpenetration_mm": 0.0,
+        "max_sampled_gap_mm": 0.281962,
+        "min_sampled_gap_mm": 0.244926,
+        "missing_female_rays": 0,
+        "missing_male_rays": 0,
+        "sample_count": 256
+      },
+      "glasses_pin_1": {
+        "coverage_ratio": 1.0,
+        "expected_sample_count": 256,
+        "female_origin_inside_count": 0,
+        "gap_p05_mm": 0.247415,
+        "gap_p50_mm": 0.254021,
+        "gap_p95_mm": 0.258147,
+        "inside_count": 0,
+        "max_interpenetration_mm": 0.0,
+        "max_sampled_gap_mm": 0.285591,
+        "min_sampled_gap_mm": 0.244926,
+        "missing_female_rays": 0,
+        "missing_male_rays": 0,
+        "sample_count": 256
+      },
+      "head_key_0": {
+        "coverage_ratio": 1.0,
+        "expected_sample_count": 256,
+        "female_origin_inside_count": 0,
+        "gap_p05_mm": 0.273237,
+        "gap_p50_mm": 0.284301,
+        "gap_p95_mm": 0.301895,
+        "inside_count": 0,
+        "max_interpenetration_mm": 0.0,
+        "max_sampled_gap_mm": 0.305193,
+        "min_sampled_gap_mm": 0.26943,
+        "missing_female_rays": 0,
+        "missing_male_rays": 0,
+        "sample_count": 256
+      },
+      "head_key_1": {
+        "coverage_ratio": 1.0,
+        "expected_sample_count": 256,
+        "female_origin_inside_count": 0,
+        "gap_p05_mm": 0.272511,
+        "gap_p50_mm": 0.313208,
+        "gap_p95_mm": 0.34561,
+        "inside_count": 0,
+        "max_interpenetration_mm": 0.0,
+        "max_sampled_gap_mm": 0.350953,
+        "min_sampled_gap_mm": 0.26436,
+        "missing_female_rays": 0,
+        "missing_male_rays": 0,
+        "sample_count": 256
+      },
+      "launcher_pin_0": {
+        "coverage_ratio": 1.0,
+        "expected_sample_count": 256,
+        "female_origin_inside_count": 0,
+        "gap_p05_mm": 0.252762,
+        "gap_p50_mm": 0.278218,
+        "gap_p95_mm": 0.317153,
+        "inside_count": 0,
+        "max_interpenetration_mm": 0.0,
+        "max_sampled_gap_mm": 0.337076,
+        "min_sampled_gap_mm": 0.238051,
+        "missing_female_rays": 0,
+        "missing_male_rays": 0,
+        "sample_count": 256
+      },
+      "launcher_pin_1": {
+        "coverage_ratio": 1.0,
+        "expected_sample_count": 256,
+        "female_origin_inside_count": 0,
+        "gap_p05_mm": 0.244963,
+        "gap_p50_mm": 0.273467,
+        "gap_p95_mm": 0.306832,
+        "inside_count": 0,
+        "max_interpenetration_mm": 0.0,
+        "max_sampled_gap_mm": 0.31984,
+        "min_sampled_gap_mm": 0.238666,
+        "missing_female_rays": 0,
+        "missing_male_rays": 0,
+        "sample_count": 256
+      },
+      "neck_recess": {
+        "coverage_ratio": 1.0,
+        "expected_sample_count": 256,
+        "female_origin_inside_count": 0,
+        "gap_p05_mm": 0.27874,
+        "gap_p50_mm": 0.282971,
+        "gap_p95_mm": 0.314059,
+        "inside_count": 0,
+        "max_interpenetration_mm": 0.0,
+        "max_sampled_gap_mm": 0.318365,
+        "min_sampled_gap_mm": 0.270652,
+        "missing_female_rays": 0,
+        "missing_male_rays": 0,
+        "sample_count": 256
+      }
+    },
+    "observed_stl_files": [
+      "Base_Keyed.stl",
+      "Cobie_Body.stl",
+      "Cobie_Head.stl",
+      "Cobie_Prop_FetchLauncher.stl",
+      "Cobie_Sunglasses.stl"
+    ],
+    "part_count": 5,
+    "parts": {
+      "Base_Keyed": {
+        "bodies": 1,
+        "triangles": 52860,
+        "volume_mm3": 19702.689,
+        "watertight": true
+      },
+      "Cobie_Body": {
+        "bodies": 1,
+        "triangles": 111162,
+        "volume_mm3": 62573.246,
+        "watertight": true
+      },
+      "Cobie_Head": {
+        "bodies": 1,
+        "triangles": 227838,
+        "volume_mm3": 30118.695,
+        "watertight": true
+      },
+      "Cobie_Prop_FetchLauncher": {
+        "bodies": 1,
+        "triangles": 56892,
+        "volume_mm3": 7943.784,
+        "watertight": true
+      },
+      "Cobie_Sunglasses": {
+        "bodies": 1,
+        "triangles": 24240,
+        "volume_mm3": 668.257,
+        "watertight": true
+      }
+    }
+  }
+}

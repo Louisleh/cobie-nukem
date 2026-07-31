@@ -27,10 +27,19 @@ jobs:
           use-dotnet: false
           include-templates: true
 
+      - name: Install Python dependencies for visual-quality tests
+        # tools/release_validate.sh runs tools/visual_quality/test_capture_tool.py
+        # under bare python3, and five of its tests import PIL. The runner ships
+        # no Pillow, so those five have always errored here with
+        # ModuleNotFoundError -- a pre-existing break, not a regression.
+        # Versions match tools/visual_quality/pyproject.toml.
+        run: python3 -m pip install --quiet "pillow==10.4.0" "numpy==2.1.2"
+
       - name: Record toolchain
         run: |
           godot --version | tee godot-version.txt
           python3 --version | tee python-version.txt
+          python3 -c "import PIL, numpy; print('pillow', PIL.__version__, 'numpy', numpy.__version__)" | tee python-deps.txt
 
       - name: Run full validation and export matrix
         env:

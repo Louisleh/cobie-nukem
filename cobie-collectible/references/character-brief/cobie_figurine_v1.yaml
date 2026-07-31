@@ -1,0 +1,201 @@
+schema_version: 1
+work_id: cobie_figurine_v1
+target: physical_collectible_static_resin
+status: phase_0_character_freeze
+baseline_revision: main
+
+# ---------------------------------------------------------------------------
+# What V1 is, and equally what it is not
+# ---------------------------------------------------------------------------
+product:
+  form: single static display collectible
+  total_height_mm: 140
+  height_tolerance_mm: [130, 150]
+  material: neutral grey high-detail resin, hand painted after printing
+  base: separate keyed disc, 70 mm diameter, 5 mm thick
+  parts_split: [Cobie_Body, Cobie_Head, Cobie_Sunglasses, Cobie_Prop_FetchLauncher, Base_Keyed]
+
+out_of_scope:
+  - articulation or poseability
+  - bobble mechanism
+  - photoreal fur strands
+  - full-colour printing
+  - injection-mould tooling
+  - one-click autonomous generation
+  - any second pose before the first physical print is validated
+
+# ---------------------------------------------------------------------------
+# Identity. docs/PRD.md 15.1 is the authority; this only makes it dimensional.
+# ---------------------------------------------------------------------------
+identity_freeze:
+  species: labradoodle, anthropomorphised to a bipedal action-hero stance
+  coat: apricot / golden-honey, tight corkscrew curls, longest on crown and ears
+  # Structure vs silhouette, deliberately split. An earlier draft said the ears
+  # "read as one continuous mass" (a print-strength note) and that wording,
+  # reaching prompts, produced the known failure: side/rear views where the
+  # ears collapse into a bob of crown fur. Fused is a structural property;
+  # distinct is a visual one. Both hold at once.
+  ears: >
+    long floppy drop ears hanging past the jaw; structurally fused to the
+    skull for print strength, but VISUALLY distinct hanging lobes in the
+    silhouette of every view -- never absorbed into a bob of crown fur
+  tail: >
+    medium-length labradoodle tail, relaxed upward curve with a plume of
+    curls, emerging below the jacket hem; must be consistent between side
+    and rear views (no canonical view shows it yet, so it is specified here
+    rather than left for a generator to invent)
+  muzzle: short and blunt, blended into beard furnishings
+  nose: large glossy black, wide nostrils
+  eyes: never visible in the healthy canon, always behind mirrored lenses
+  sunglasses: teardrop aviators, thin gold/brass wire frames, double bridge bar
+  jacket: black leather biker, asymmetric zip, wide notch lapels, worn open
+  signature_accessory: chain collar with rectangular metal dog tag stamped COBIE
+  expression: closed mouth, neutral-to-stern, playful confident energy
+
+# The single most important line in this file. If the figure is unidentifiable
+# it is because one of these was lost.
+must_survive_to_print:
+  - COBIE dog tag at the sternum, legible, thick enough not to snap
+  - aviator silhouette low on the muzzle
+  - open jacket with the chest ruff showing through the front
+  - ear flaps distinct in silhouette on every view -- fused to the head for
+    strength, never absorbed into a bob of crown fur
+  - black nose as a distinct glossy mass
+
+silhouette_goal: >
+  Recognisable as Cobie from approximately six feet, with no colour information.
+  The test is the pure black silhouette: jacket shoulders, ear mass, muzzle
+  angle and the launcher across the body must be readable as one shape.
+
+# Owner-supplied Fable render, 2026-07-30: figurine-sculpt style, wide action
+# stance, launcher across the body, black background. It is the sculpt target
+# and the final-pose authority, and it feeds single-image generators
+# (TRELLIS.2, Stable Fast 3D) directly.
+canonical_reference:
+  id: cobie_hero_figurine
+  source: owner-supplied Fable render, 2026-07-30
+  committed_path: pending_file  # re-upload needed; then references/game-art/cobie_hero_figurine.png + SHA-256 here
+  resolves:
+    - hero prop design (windowed-chamber hybrid, see hero_prop)
+    - final pose authority
+    - sculpt style: matte clay-like curls in distinct clumps
+
+reference_pose: >
+  T-pose (arms horizontal, no weapon) for the turnaround and mesh generation,
+  so the core asset stays reusable for a second pose (FR-6). The FINAL figurine
+  pose is the canonical hero render's stance; posing happens in Blender.
+
+pose:
+  stance: wide planted action stance per the canonical render, weight on the back paw
+  arms: launcher held across the body, both paws on the weapon
+  head: level, chin slightly raised
+  head_scale: +12% over anatomical
+  head_scale_rationale: >
+    The cover art already reads figurine-adjacent. A moderately oversized head
+    is what makes a 140 mm figure read as a character rather than a scale model,
+    and it enlarges the features that carry identity.
+
+hero_prop:
+  id: fetch_launcher
+  design_source: canonical hero render (supersedes the earlier viewmodel-only assumption)
+  dimension_reference: assets/models/weapons/fetch_launcher_viewmodel.glb
+  elements:
+    - gunmetal receiver
+    - hazard-gold armor panels
+    - windowed chamber with the golden tennis ball visible inside
+    - ribbed barrel collars and round muzzle
+    - cyan charge indicators
+    - under-barrel grip
+  rationale: >
+    The canonical render resolves the poster-vs-viewmodel design conflict with
+    a hybrid: the poster's visible-ball chamber on the viewmodel's chunky
+    gunmetal-and-gold construction. Chunky and printable -- no thin clear
+    barrel. The "window" prints as an open sculpted frame with the ball solid
+    inside it, or as a solid panel painted as glass; no clear resin needed.
+  fallback_if_fragile: golden tennis ball palmed in one paw
+
+# ---------------------------------------------------------------------------
+# Print engineering. Encoded as constants in scripts/_common.py and asserted by
+# scripts/print_check.py -- these are not aspirational numbers.
+# ---------------------------------------------------------------------------
+print_rules_mm:
+  min_feature: 1.2
+  preferred_feature: 1.5
+  sunglasses_arms: 1.5
+  sunglasses_note: fuse arms to the head contact points rather than thinning to scale
+  hollow_wall: 2.0
+  drain_holes: [3.0, 4.0]
+  assembly_clearance: [0.20, 0.35]
+  base_thickness: [4.0, 6.0]
+  base_diameter: [60.0, 80.0]
+
+scale_contract: 1 Blender unit = 1 millimetre (the game uses 1 unit = 1 metre)
+
+# ---------------------------------------------------------------------------
+# Source material
+# ---------------------------------------------------------------------------
+source_and_license:
+  game_art:
+    - path: assets/brand/cobie_nukem_cover.png
+      value: only existing full-body view; costume and stance authority
+    - path: assets/source/ui/cobie_portrait_healthy_clean.png
+      value: best head reference; fur curl, aviators, nose, collar, dog tag
+    - path: assets/source/ui/cobie_portrait_set_a.png
+      value: second clean frontal in panel (a)
+    - path: assets/level_previews/vancouver_waterfront.png
+      value: three-quarter view with launcher held across the body
+    - path: assets/level_previews/ventura_pier.png
+      value: cleanest read on jacket construction, lapels and zip
+  photographs:
+    status: required, not yet supplied
+    purpose: real-dog head and coat identity, which game art alone cannot fix
+  license: >
+    Project-original. Game art is project-owned generated derivative; no
+    third-party characters, brands, or franchise material. Photographs are the
+    owner's own.
+
+# ---------------------------------------------------------------------------
+# Photo identity pack. Phase 0 is gated on this.
+# ---------------------------------------------------------------------------
+photo_shot_list:
+  conditions:
+    - flat even indoor light, no direct sun, no on-camera flash
+    - plain uncluttered background, ideally a single wall or sheet
+    - phone camera is fine; keep the same camera and height across the set
+    - Cobie standing naturally on all fours, calm, mouth closed
+    - do not crop; leave margin on all sides
+  full_body: 8 frames, one every 45 degrees, camera at chest height
+  face: 5 frames - front, three-quarter left, three-quarter right, profile left, profile right
+  details:
+    - ear underside and where the ear meets the skull
+    - top-down muzzle showing width and the nose
+    - front paw pads and claws
+    - tail at rest, full length
+    - chest ruff and neck fur depth
+  consistency: 2-3 frames repeating the front and one profile, to verify nothing drifted
+  total: 18-24 frames
+
+# ---------------------------------------------------------------------------
+# Gates
+# ---------------------------------------------------------------------------
+acceptance_evidence:
+  phase_1: scripts/validate_turnaround.py prints COBIE_TURNAROUND_VALIDATE PASS
+  phase_2: scripts/bakeoff_render.py prints COBIE_BAKEOFF_RENDER PASS and a scored scorecard exists
+  phase_3: scripts/print_check.py prints COBIE_FIGURINE_PRINT_CHECK PASS and the STL imports into a slicer
+  phase_5: PRD 11.3 acceptance criteria, judged on the physical object
+
+human_review_questions:
+  - Do Louis and Jen each identify the figure as Cobie without being prompted?
+  - Does it read as Cobie Nukem, or merely as a dog wearing sunglasses?
+  - Is the silhouette recognisable from six feet?
+  - Does anything feel fragile when handled normally?
+
+known_tension:
+  description: >
+    The PRD's identity pack is photographs of the real dog, but the deliverable
+    is the game character. These are not the same subject.
+  resolution: >
+    Photographs drive head, muzzle, ear and coat identity. Game art drives
+    costume, stance, proportion and prop. Neither source is authoritative alone:
+    photographs alone produce a dog in sunglasses, and game art alone produces a
+    generic apricot doodle. Both acceptance criteria 1 and 2 must pass.
