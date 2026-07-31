@@ -1,0 +1,37 @@
+{
+  "build_receipt_sha256": "6a358f6be1c96e496dd35c898ba52752d232bfbf6874ac0dcfd8474d9b918611",
+  "failures": [],
+  "human_gates": {
+    "identity_approved": false,
+    "physical_prototype_approved": false
+  },
+  "improved": true,
+  "iteration_id": "I01",
+  "rating_packet": "cobie-collectible/refinement/cover-v2/ratings/I01.json",
+  "rating_packet_sha256": "a71518742460685ff35a3032707599164258d10e9931ed2685277703a96277c3",
+  "ratings": {
+    "aviators": 3,
+    "fetch_launcher": 1,
+    "head_and_fur_identity": 3,
+    "jacket_construction": 1,
+    "material_and_color_cohesion": 3,
+    "neutral_geometry_evidence": 5,
+    "pose_and_weight": 3,
+    "silhouette": 3
+  },
+  "score_before": 35,
+  "target_met": false,
+  "target_minimum_rating": 4,
+  "target_score": 85,
+  "weighted_score": 50.0,
+  "weights": {
+    "aviators": 5,
+    "fetch_launcher": 15,
+    "head_and_fur_identity": 20,
+    "jacket_construction": 15,
+    "material_and_color_cohesion": 5,
+    "neutral_geometry_evidence": 5,
+    "pose_and_weight": 15,
+    "silhouette": 20
+  }
+}

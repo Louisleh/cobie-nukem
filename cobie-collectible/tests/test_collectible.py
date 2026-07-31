@@ -23,6 +23,7 @@ import sys
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 import numpy as np
 import trimesh
@@ -30,7 +31,10 @@ from PIL import Image
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
 
+import _common as common_module
+import compare_figurine_renders as compare_module
 import receipt as receipt_module
+import score_refinement as score_module
 from _common import (
     CARDINAL_VIEWS,
     MIN_FEATURE_MM,
@@ -44,6 +48,7 @@ from _common import (
     view_seed,
     write_json,
 )
+from compare_figurine_renders import validate_historical_source
 from print_check import (
     _decimate,
     build_report_payload,
@@ -172,6 +177,77 @@ class SeedTest(unittest.TestCase):
     def test_seeds_are_stable_and_view_specific(self) -> None:
         self.assertEqual(view_seed("front"), view_seed("front"))
         self.assertNotEqual(view_seed("front"), view_seed("rear"))
+
+
+class RefinementScoreTest(unittest.TestCase):
+    def test_weighted_score_matches_declared_baseline(self) -> None:
+        baseline = {
+            "silhouette": 2,
+            "head_and_fur_identity": 2,
+            "pose_and_weight": 1,
+            "jacket_construction": 1,
+            "fetch_launcher": 2,
+            "aviators": 2,
+            "neutral_geometry_evidence": 5,
+            "material_and_color_cohesion": 0,
+        }
+        self.assertEqual(score_module.weighted_score(baseline), 35.0)
+        self.assertFalse(score_module.acceptance_target_met(baseline))
+
+    def test_target_requires_every_category_at_least_four(self) -> None:
+        ratings = {category: 5 for category in score_module.CATEGORIES}
+        ratings["aviators"] = 3
+        self.assertGreaterEqual(score_module.weighted_score(ratings), 85.0)
+        self.assertFalse(score_module.acceptance_target_met(ratings))
+        ratings["aviators"] = 4
+        self.assertTrue(score_module.acceptance_target_met(ratings))
+
+
+class RefinementRenderProvenanceTest(unittest.TestCase):
+    def _fixture(self, root: Path) -> tuple[dict, Path]:
+        generator = root / "cobie-collectible/scripts/build_figurine_v2.py"
+        renderer = root / "cobie-collectible/scripts/render_figurine.py"
+        generator.parent.mkdir(parents=True)
+        generator.write_text("# generator\n")
+        renderer.write_text("# renderer\n")
+        blend_hash = "a" * 64
+        receipt_hash = "b" * 64
+        return (
+            {
+                "source_blend_sha256": blend_hash,
+                "build_receipt": {"sha256": receipt_hash},
+                "source_provenance": {
+                    "kind": "deterministic_refinement_stage",
+                    "generator_path": generator.relative_to(root).as_posix(),
+                    "generator_sha256": sha256_file(generator),
+                    "renderer_path": renderer.relative_to(root).as_posix(),
+                    "renderer_sha256": sha256_file(renderer),
+                    "refinement_stage": "costume",
+                    "historical_blend_sha256": blend_hash,
+                    "build_receipt_sha256": receipt_hash,
+                },
+            },
+            generator,
+        )
+
+    def test_overwritten_refinement_master_uses_generator_provenance(self) -> None:
+        with tempfile.TemporaryDirectory() as raw:
+            root = Path(raw)
+            payload, _generator = self._fixture(root)
+            with patch.object(compare_module, "ROOT", root):
+                self.assertEqual(validate_historical_source(payload, "I03"), [])
+
+    def test_refinement_generator_drift_invalidates_historical_packet(self) -> None:
+        with tempfile.TemporaryDirectory() as raw:
+            root = Path(raw)
+            payload, generator = self._fixture(root)
+            generator.write_text("# changed generator\n")
+            with patch.object(compare_module, "ROOT", root):
+                failures = validate_historical_source(payload, "I03")
+            self.assertIn(
+                "render_source_provenance",
+                [failure.check for failure in failures],
+            )
 
 
 class PortablePathTest(unittest.TestCase):
@@ -371,6 +447,65 @@ class PrintCheckTest(unittest.TestCase):
                 blend_path=blend,
             )
             self.assertEqual([failure.check for failure in failures], ["build_receipt_invalid"])
+
+    def test_refinement_receipt_resolves_recorded_repo_source(self) -> None:
+        with tempfile.TemporaryDirectory() as raw:
+            root = Path(raw)
+            exports, blend, receipt = self._build_receipt_fixture(root)
+            relative_blend = Path("cobie-collectible/blender/cobie_figurine_v2_master.blend")
+            target = root / relative_blend
+            target.parent.mkdir(parents=True)
+            blend.replace(target)
+            generator = root / "cobie-collectible/scripts/build_figurine_v2.py"
+            generator.parent.mkdir(parents=True, exist_ok=True)
+            generator.write_text("# deterministic refinement generator\n")
+            payload = json.loads(receipt.read_text())
+            payload["mode"] = "cover_refinement_v2"
+            payload["refinement_stage"] = "head"
+            payload["generator"] = {
+                "path": "cobie-collectible/scripts/build_figurine_v2.py",
+                "sha256": sha256_file(generator),
+            }
+            payload["source_blend"] = relative_blend.as_posix()
+            payload["source_blend_sha256"] = sha256_file(target)
+            write_json(receipt, payload)
+
+            with patch.object(common_module, "ROOT", root):
+                failures, _ = check_build_receipt(
+                    exports=exports,
+                    receipt_path=receipt,
+                    blend_path=None,
+                    selected_mesh=root / "missing.glb",
+                )
+            self.assertEqual(failures, [])
+            generator.write_text("# drifted refinement generator\n")
+            with patch.object(common_module, "ROOT", root):
+                failures, _ = check_build_receipt(
+                    exports=exports,
+                    receipt_path=receipt,
+                    blend_path=None,
+                    selected_mesh=root / "missing.glb",
+                )
+            self.assertIn(
+                "build_receipt_generator",
+                [failure.check for failure in failures],
+            )
+
+    def test_recorded_source_cannot_escape_repository(self) -> None:
+        with tempfile.TemporaryDirectory() as raw:
+            root = Path(raw)
+            exports, _blend, receipt = self._build_receipt_fixture(root)
+            payload = json.loads(receipt.read_text())
+            payload["source_blend"] = "../outside.blend"
+            write_json(receipt, payload)
+            with patch.object(common_module, "ROOT", root):
+                failures, _ = check_build_receipt(
+                    exports=exports,
+                    receipt_path=receipt,
+                    blend_path=None,
+                    selected_mesh=root / "missing.glb",
+                )
+            self.assertIn("build_receipt_source", [failure.check for failure in failures])
 
     def test_thin_plate_is_rejected(self) -> None:
         """A 0.6 mm plate must fail; this is the control for the whole check."""

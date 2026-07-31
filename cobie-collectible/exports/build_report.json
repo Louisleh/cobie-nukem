@@ -1,16 +1,23 @@
 {
   "detail": "",
   "exports": {
-    "Base_Keyed.stl": "5637c73bcd7a52370eb34edd65247af7389d6785e9a7551cd3472ef4915d0130",
-    "Cobie_Body.stl": "cb06edb4cf8d73e7ee951314696d6558f850c8c698460065dd515e6c85081ff6",
-    "Cobie_Head.stl": "a10e24910c9a555735602d8f906c80d5614c66b1b6efcbfabcc533765636c9c4",
-    "Cobie_Prop_FetchLauncher.stl": "9af76e2048ea1cfc0974485a3746d1f378f7589c0e76c30ff8add733025c6706",
-    "Cobie_Sunglasses.stl": "d991aaf59c9f6efbc0be049cf1267ebb59a6357d0eaadef38bf9c4c8ab8a5ec6"
+    "Base_Keyed.stl": "1bf84f82b27139affbb4b694496f539c94d8f41e8c6c7198412acff152541bdf",
+    "Cobie_Body.stl": "f4e2a7727dbed1c0cfb09a8838121f02fbfcedf516d8dcf93adbc023da41599a",
+    "Cobie_Head.stl": "125ca850e903a46a292e243518468a35ec5e437287eda3b08ff28d4bffc61853",
+    "Cobie_Prop_FetchLauncher.stl": "13399fe5d9235a6b738bc9fbe0ad7300eca2ab3fdb31a096d3fc148093869e56",
+    "Cobie_Sunglasses.stl": "49ba0a68ab5ab87253f553b9c9058b0bca0249b0cb7a51b63789eb6a76be75ac"
   },
-  "mode": "provisional_game_art_prototype",
-  "pipeline_version": 3,
+  "generator": {
+    "path": "cobie-collectible/scripts/build_figurine_v2.py",
+    "sha256": "03b451fac84083005635e8c758e51a704fbfd534d292f1c565b6918374b7672b"
+  },
+  "identity_approved": false,
+  "mode": "cover_refinement_v2",
+  "physical_validation_complete": false,
+  "pipeline_version": 4,
+  "refinement_stage": "final",
   "selected_candidate_sha256": null,
-  "source_blend": "cobie-collectible/blender/cobie_figurine_v1.blend",
-  "source_blend_sha256": "f3048d42cb0b3c8dbd69521937cf63dd37f2328279b8e31fba01364f0479474d",
+  "source_blend": "cobie-collectible/blender/cobie_figurine_v2_master.blend",
+  "source_blend_sha256": "e8e1d83be1a590fcef8ec300e2591bb07f440f02f6ddd7a954ce365ce1ccc9cf",
   "status": "PASS"
 }

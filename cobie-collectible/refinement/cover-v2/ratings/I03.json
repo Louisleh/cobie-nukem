@@ -1,0 +1,29 @@
+{
+  "iteration_id": "I03",
+  "stage": "costume",
+  "reviewer": "GPT-5.6 visual review",
+  "score_before": 54,
+  "ratings": {
+    "silhouette": 3,
+    "head_and_fur_identity": 4,
+    "pose_and_weight": 3,
+    "jacket_construction": 4,
+    "fetch_launcher": 1,
+    "aviators": 4,
+    "neutral_geometry_evidence": 5,
+    "material_and_color_cohesion": 4
+  },
+  "evidence": {
+    "neutral_render_id": "cover-v2/I03-neutral",
+    "lookdev_report": "cobie-collectible/validation-renders/cover-v2/I03-lookdev/lookdev_report.json"
+  },
+  "judgment": {
+    "accepted": true,
+    "summary": "Separate jacket panels, asymmetric lapels and zipper, cuffs, snaps, rear yoke, chain, tag, and warm-metal aviator rims turn the black torso shell into a readable biker costume.",
+    "next_highest_impact_gap": "Replace the launcher blockout with the Fetch Launcher drum, loaded ball, cage rings, hazard panel, muzzle, underbarrel, charge meter, and emblem language."
+  },
+  "human_gates": {
+    "identity_approved": false,
+    "physical_prototype_approved": false
+  }
+}

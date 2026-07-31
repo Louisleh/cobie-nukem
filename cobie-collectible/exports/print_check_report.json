@@ -25,16 +25,16 @@
   },
   "failures": [],
   "metrics": {
-    "assembly_height_mm": 140.541,
-    "balance_margin_ratio": 0.0598,
-    "balance_offset_mm": 2.09,
-    "base_diameter_mm": 69.94,
-    "base_thickness_mm": 5.008,
+    "assembly_height_mm": 139.725,
+    "balance_margin_ratio": 0.0841,
+    "balance_offset_mm": 2.943,
+    "base_diameter_mm": 69.945,
+    "base_thickness_mm": 5.0,
     "build_receipt": {
       "path": "cobie-collectible/exports/build_report.json",
-      "pipeline_version": 3,
-      "sha256": "345c00a8140eaf94fd0b299ea715354a38e93949415a51eeb65da4a56a5717ba",
-      "source_blend_sha256": "f3048d42cb0b3c8dbd69521937cf63dd37f2328279b8e31fba01364f0479474d",
+      "pipeline_version": 4,
+      "sha256": "66d8cc066a1f22e7f890132b5d2c183b85da0b3a60138bd6f2b030c2133f6705",
+      "source_blend_sha256": "e8e1d83be1a590fcef8ec300e2591bb07f440f02f6ddd7a954ce365ce1ccc9cf",
       "status": "PASS"
     },
     "clearance_contract_mm": [
@@ -49,18 +49,18 @@
       "Base_Keyed.stl"
     ],
     "export_hashes": {
-      "Base_Keyed.stl": "5637c73bcd7a52370eb34edd65247af7389d6785e9a7551cd3472ef4915d0130",
-      "Cobie_Body.stl": "cb06edb4cf8d73e7ee951314696d6558f850c8c698460065dd515e6c85081ff6",
-      "Cobie_Head.stl": "a10e24910c9a555735602d8f906c80d5614c66b1b6efcbfabcc533765636c9c4",
-      "Cobie_Prop_FetchLauncher.stl": "9af76e2048ea1cfc0974485a3746d1f378f7589c0e76c30ff8add733025c6706",
-      "Cobie_Sunglasses.stl": "d991aaf59c9f6efbc0be049cf1267ebb59a6357d0eaadef38bf9c4c8ab8a5ec6"
+      "Base_Keyed.stl": "1bf84f82b27139affbb4b694496f539c94d8f41e8c6c7198412acff152541bdf",
+      "Cobie_Body.stl": "f4e2a7727dbed1c0cfb09a8838121f02fbfcedf516d8dcf93adbc023da41599a",
+      "Cobie_Head.stl": "125ca850e903a46a292e243518468a35ec5e437287eda3b08ff28d4bffc61853",
+      "Cobie_Prop_FetchLauncher.stl": "13399fe5d9235a6b738bc9fbe0ad7300eca2ab3fdb31a096d3fc148093869e56",
+      "Cobie_Sunglasses.stl": "49ba0a68ab5ab87253f553b9c9058b0bca0249b0cb7a51b63789eb6a76be75ac"
     },
     "interpart_overlaps": {
       "Cobie_Body<->Base_Keyed": {
         "aabb_overlap_extents_mm": [
-          52.613182,
-          44.150465,
-          4.747798
+          56.135244,
+          43.179222,
+          5.169977
         ],
         "engine": "manifold",
         "intersection_faces": 0,
@@ -70,9 +70,9 @@
       },
       "Cobie_Body<->Cobie_Head": {
         "aabb_overlap_extents_mm": [
-          49.480064,
-          41.67342,
-          17.747536
+          43.250746,
+          42.393583,
+          16.016449
         ],
         "engine": "manifold",
         "intersection_faces": 0,
@@ -82,9 +82,9 @@
       },
       "Cobie_Body<->Cobie_Prop_FetchLauncher": {
         "aabb_overlap_extents_mm": [
-          43.266333,
-          16.449839,
-          29.24815
+          49.398903,
+          16.266994,
+          33.03606
         ],
         "engine": "manifold",
         "intersection_faces": 0,
@@ -94,9 +94,9 @@
       },
       "Cobie_Body<->Cobie_Sunglasses": {
         "aabb_overlap_extents_mm": [
-          31.137663,
-          17.5,
-          0.958038
+          31.240904,
+          19.085171,
+          1.157402
         ],
         "engine": "manifold",
         "intersection_faces": 0,
@@ -106,8 +106,8 @@
       },
       "Cobie_Head<->Base_Keyed": {
         "aabb_overlap_extents_mm": [
-          49.480064,
-          42.03413,
+          43.250746,
+          45.995052,
           0.0
         ],
         "engine": "manifold",
@@ -118,8 +118,8 @@
       },
       "Cobie_Head<->Cobie_Prop_FetchLauncher": {
         "aabb_overlap_extents_mm": [
-          41.700167,
-          16.810549,
+          42.107698,
+          19.868464,
           0.0
         ],
         "engine": "manifold",
@@ -130,9 +130,9 @@
       },
       "Cobie_Head<->Cobie_Sunglasses": {
         "aabb_overlap_extents_mm": [
-          31.137663,
-          17.5,
-          10.258034
+          31.240904,
+          19.085171,
+          11.931717
         ],
         "engine": "manifold",
         "intersection_faces": 0,
@@ -142,8 +142,8 @@
       },
       "Cobie_Prop_FetchLauncher<->Base_Keyed": {
         "aabb_overlap_extents_mm": [
-          49.460131,
-          22.160366,
+          55.455008,
+          24.760605,
           0.0
         ],
         "engine": "manifold",
@@ -154,8 +154,8 @@
       },
       "Cobie_Sunglasses<->Base_Keyed": {
         "aabb_overlap_extents_mm": [
-          31.137663,
-          17.5,
+          31.240904,
+          19.085171,
           0.0
         ],
         "engine": "manifold",
@@ -166,8 +166,8 @@
       },
       "Cobie_Sunglasses<->Cobie_Prop_FetchLauncher": {
         "aabb_overlap_extents_mm": [
-          31.137663,
-          13.0,
+          31.240904,
+          14.585171,
           0.0
         ],
         "engine": "manifold",
@@ -182,13 +182,13 @@
         "coverage_ratio": 1.0,
         "expected_sample_count": 256,
         "female_origin_inside_count": 0,
-        "gap_p05_mm": 0.225022,
-        "gap_p50_mm": 0.24336,
-        "gap_p95_mm": 0.259414,
+        "gap_p05_mm": 0.231863,
+        "gap_p50_mm": 0.242636,
+        "gap_p95_mm": 0.251217,
         "inside_count": 0,
         "max_interpenetration_mm": 0.0,
-        "max_sampled_gap_mm": 0.331033,
-        "min_sampled_gap_mm": 0.220896,
+        "max_sampled_gap_mm": 0.259223,
+        "min_sampled_gap_mm": 0.229658,
         "missing_female_rays": 0,
         "missing_male_rays": 0,
         "sample_count": 256
@@ -197,13 +197,13 @@
         "coverage_ratio": 1.0,
         "expected_sample_count": 256,
         "female_origin_inside_count": 0,
-        "gap_p05_mm": 0.287084,
-        "gap_p50_mm": 0.309309,
-        "gap_p95_mm": 0.327531,
+        "gap_p05_mm": 0.293399,
+        "gap_p50_mm": 0.313431,
+        "gap_p95_mm": 0.335933,
         "inside_count": 0,
         "max_interpenetration_mm": 0.0,
-        "max_sampled_gap_mm": 0.343671,
-        "min_sampled_gap_mm": 0.275666,
+        "max_sampled_gap_mm": 0.340906,
+        "min_sampled_gap_mm": 0.285963,
         "missing_female_rays": 0,
         "missing_male_rays": 0,
         "sample_count": 256
@@ -213,11 +213,11 @@
         "expected_sample_count": 256,
         "female_origin_inside_count": 0,
         "gap_p05_mm": 0.247415,
-        "gap_p50_mm": 0.254023,
-        "gap_p95_mm": 0.258137,
+        "gap_p50_mm": 0.254018,
+        "gap_p95_mm": 0.258043,
         "inside_count": 0,
         "max_interpenetration_mm": 0.0,
-        "max_sampled_gap_mm": 0.281962,
+        "max_sampled_gap_mm": 0.258173,
         "min_sampled_gap_mm": 0.244926,
         "missing_female_rays": 0,
         "missing_male_rays": 0,
@@ -228,11 +228,11 @@
         "expected_sample_count": 256,
         "female_origin_inside_count": 0,
         "gap_p05_mm": 0.247415,
-        "gap_p50_mm": 0.254021,
-        "gap_p95_mm": 0.258147,
+        "gap_p50_mm": 0.254018,
+        "gap_p95_mm": 0.258043,
         "inside_count": 0,
         "max_interpenetration_mm": 0.0,
-        "max_sampled_gap_mm": 0.285591,
+        "max_sampled_gap_mm": 0.258173,
         "min_sampled_gap_mm": 0.244926,
         "missing_female_rays": 0,
         "missing_male_rays": 0,
@@ -242,13 +242,13 @@
         "coverage_ratio": 1.0,
         "expected_sample_count": 256,
         "female_origin_inside_count": 0,
-        "gap_p05_mm": 0.273237,
-        "gap_p50_mm": 0.284301,
-        "gap_p95_mm": 0.301895,
+        "gap_p05_mm": 0.265461,
+        "gap_p50_mm": 0.280166,
+        "gap_p95_mm": 0.296018,
         "inside_count": 0,
         "max_interpenetration_mm": 0.0,
-        "max_sampled_gap_mm": 0.305193,
-        "min_sampled_gap_mm": 0.26943,
+        "max_sampled_gap_mm": 0.298142,
+        "min_sampled_gap_mm": 0.256471,
         "missing_female_rays": 0,
         "missing_male_rays": 0,
         "sample_count": 256
@@ -257,13 +257,13 @@
         "coverage_ratio": 1.0,
         "expected_sample_count": 256,
         "female_origin_inside_count": 0,
-        "gap_p05_mm": 0.272511,
-        "gap_p50_mm": 0.313208,
-        "gap_p95_mm": 0.34561,
+        "gap_p05_mm": 0.269858,
+        "gap_p50_mm": 0.302098,
+        "gap_p95_mm": 0.327323,
         "inside_count": 0,
         "max_interpenetration_mm": 0.0,
-        "max_sampled_gap_mm": 0.350953,
-        "min_sampled_gap_mm": 0.26436,
+        "max_sampled_gap_mm": 0.332056,
+        "min_sampled_gap_mm": 0.26394,
         "missing_female_rays": 0,
         "missing_male_rays": 0,
         "sample_count": 256
@@ -272,13 +272,13 @@
         "coverage_ratio": 1.0,
         "expected_sample_count": 256,
         "female_origin_inside_count": 0,
-        "gap_p05_mm": 0.252762,
-        "gap_p50_mm": 0.278218,
-        "gap_p95_mm": 0.317153,
+        "gap_p05_mm": 0.266594,
+        "gap_p50_mm": 0.286767,
+        "gap_p95_mm": 0.321679,
         "inside_count": 0,
         "max_interpenetration_mm": 0.0,
-        "max_sampled_gap_mm": 0.337076,
-        "min_sampled_gap_mm": 0.238051,
+        "max_sampled_gap_mm": 0.340913,
+        "min_sampled_gap_mm": 0.253028,
         "missing_female_rays": 0,
         "missing_male_rays": 0,
         "sample_count": 256
@@ -287,13 +287,13 @@
         "coverage_ratio": 1.0,
         "expected_sample_count": 256,
         "female_origin_inside_count": 0,
-        "gap_p05_mm": 0.244963,
-        "gap_p50_mm": 0.273467,
-        "gap_p95_mm": 0.306832,
+        "gap_p05_mm": 0.254114,
+        "gap_p50_mm": 0.277333,
+        "gap_p95_mm": 0.315565,
         "inside_count": 0,
         "max_interpenetration_mm": 0.0,
-        "max_sampled_gap_mm": 0.31984,
-        "min_sampled_gap_mm": 0.238666,
+        "max_sampled_gap_mm": 0.336822,
+        "min_sampled_gap_mm": 0.247531,
         "missing_female_rays": 0,
         "missing_male_rays": 0,
         "sample_count": 256
@@ -302,13 +302,13 @@
         "coverage_ratio": 1.0,
         "expected_sample_count": 256,
         "female_origin_inside_count": 0,
-        "gap_p05_mm": 0.27874,
-        "gap_p50_mm": 0.282971,
-        "gap_p95_mm": 0.314059,
+        "gap_p05_mm": 0.278801,
+        "gap_p50_mm": 0.283198,
+        "gap_p95_mm": 0.305678,
         "inside_count": 0,
         "max_interpenetration_mm": 0.0,
-        "max_sampled_gap_mm": 0.318365,
-        "min_sampled_gap_mm": 0.270652,
+        "max_sampled_gap_mm": 0.326067,
+        "min_sampled_gap_mm": 0.270979,
         "missing_female_rays": 0,
         "missing_male_rays": 0,
         "sample_count": 256
@@ -325,32 +325,32 @@
     "parts": {
       "Base_Keyed": {
         "bodies": 1,
-        "triangles": 52860,
-        "volume_mm3": 19702.689,
+        "triangles": 63036,
+        "volume_mm3": 19704.997,
         "watertight": true
       },
       "Cobie_Body": {
         "bodies": 1,
-        "triangles": 111162,
-        "volume_mm3": 62573.246,
+        "triangles": 156772,
+        "volume_mm3": 75558.038,
         "watertight": true
       },
       "Cobie_Head": {
         "bodies": 1,
-        "triangles": 227838,
-        "volume_mm3": 30118.695,
+        "triangles": 235450,
+        "volume_mm3": 28959.564,
         "watertight": true
       },
       "Cobie_Prop_FetchLauncher": {
         "bodies": 1,
-        "triangles": 56892,
-        "volume_mm3": 7943.784,
+        "triangles": 71612,
+        "volume_mm3": 11312.69,
         "watertight": true
       },
       "Cobie_Sunglasses": {
         "bodies": 1,
-        "triangles": 24240,
-        "volume_mm3": 668.257,
+        "triangles": 32180,
+        "volume_mm3": 855.335,
         "watertight": true
       }
     }

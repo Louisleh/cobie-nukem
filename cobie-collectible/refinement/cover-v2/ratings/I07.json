@@ -1,0 +1,30 @@
+{
+  "iteration_id": "I07",
+  "stage": "final",
+  "reviewer": "Claude Fable 5 visual review, recalibrated scale",
+  "score_before": 66,
+  "ratings": {
+    "silhouette": 4,
+    "head_and_fur_identity": 3,
+    "pose_and_weight": 4,
+    "jacket_construction": 4,
+    "fetch_launcher": 5,
+    "aviators": 5,
+    "neutral_geometry_evidence": 5,
+    "material_and_color_cohesion": 4
+  },
+  "evidence": {
+    "neutral_render_id": "cover-v2/I07-neutral",
+    "lookdev_report": "cobie-collectible/validation-renders/cover-v2/I07-lookdev/lookdev_report.json"
+  },
+  "judgment": {
+    "accepted": false,
+    "summary": "I07 adds a four-stage projecting snout with nasal bridge and brow shelf, flattened drop ears, a radial fan of elongated crown locks, jacket panels that are finally the outermost layer over a narrowed chest ruff, proud lapels, a popped collar, surface-derived yoke/waist/shoulder seams, piped panel edges, and a dog tag that exists on the visible surface for the first time. Three outright defects in the I06 source are fixed: the whole fur clump was assigned the light MAT_FUR_TIP zone rather than only its cap, the back yoke was authored 1.8 mm inside the jacket shell, and the dog tag and its COBIE relief were authored 2.3 mm behind the chest fur that enclosed them. All five print contracts, nine keyed interfaces and the balance envelope are unchanged and green.",
+    "next_highest_impact_gap": "Head and fur identity. The crown is now directional rather than bubble-wrap, but the radial fan still reads as petals rather than tousled curly fur, and the cheek and jowl masses remain discrete rounded lobes. Reaching 4/5 needs a fur strategy built from overlapping irregular flattened locks with varied length and lean, not a symmetric fan. Real-Cobie photo identity review and a physical clearance/fit prototype remain mandatory and untouched by this iteration.",
+    "calibration_note": "score_before is a re-rating of the I06 packet on this reviewer's scale, not the 85 recorded in refinement/cover-v2/ratings/I06.json. The I06 renders do not support 4/5 for head and fur identity or jacket construction: at that checkpoint the muzzle did not project past the cheeks, the ears were round capsules, the jacket panels sat 5.5 mm behind the chest fur, and the dog tag, its text and the back yoke were geometrically buried and therefore absent from every render. Re-rated consistently, I06 scores 66. I07 scores 81 on the same scale, a real 15-point gain, and still fails the scorecard's acceptance gate of 85 with every category at 4 or above. That failure is recorded deliberately rather than dressed up."
+  },
+  "human_gates": {
+    "identity_approved": false,
+    "physical_prototype_approved": false
+  }
+}

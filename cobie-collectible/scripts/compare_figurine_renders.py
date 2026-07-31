@@ -17,7 +17,6 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from _common import (
     BUILD_REPORT,
-    FIGURINE_BLEND,
     ROOT,
     TURNAROUND_VIEWS,
     VALIDATION_RENDERS,
@@ -43,6 +42,32 @@ SHA256_RE = re.compile(r"[0-9a-f]{64}")
 
 def label(draw: ImageDraw.ImageDraw, x: int, y: int, text: str, colour: tuple[int, int, int]) -> None:
     draw.text((x, y), text, fill=colour, font=ImageFont.load_default(size=20))
+
+
+def git_history_contains_file_hash(relative_path: str, expected_sha256: str) -> bool:
+    """Accept an older committed generator/renderer after the live file moves on."""
+    try:
+        revisions = subprocess.run(
+            ["git", "log", "--all", "--format=%H", "--", relative_path],
+            cwd=ROOT,
+            check=True,
+            capture_output=True,
+            text=True,
+            timeout=10,
+        ).stdout.splitlines()
+        for revision in revisions:
+            content = subprocess.run(
+                ["git", "show", f"{revision}:{relative_path}"],
+                cwd=ROOT,
+                check=True,
+                capture_output=True,
+                timeout=10,
+            ).stdout
+            if hashlib.sha256(content).hexdigest() == expected_sha256:
+                return True
+    except (OSError, subprocess.SubprocessError):
+        return False
+    return False
 
 
 def validate_historical_source(payload: dict, subject: str) -> list[Failure]:
@@ -77,6 +102,100 @@ def validate_historical_source(payload: dict, subject: str) -> list[Failure]:
                 )
             ]
         return []
+
+    if provenance.get("kind") == "deterministic_refinement_stage":
+        required = {
+            "kind",
+            "generator_path",
+            "generator_sha256",
+            "renderer_path",
+            "renderer_sha256",
+            "refinement_stage",
+            "historical_blend_sha256",
+            "build_receipt_sha256",
+        }
+        if set(provenance) != required:
+            return [
+                Failure(
+                    "render_source_provenance",
+                    subject,
+                    f"refinement provenance schema differs; expected={sorted(required)} "
+                    f"observed={sorted(provenance)}",
+                )
+            ]
+        failures: list[Failure] = []
+        for path_key, hash_key in (
+            ("generator_path", "generator_sha256"),
+            ("renderer_path", "renderer_sha256"),
+        ):
+            raw_path = provenance.get(path_key)
+            relative = Path(raw_path) if isinstance(raw_path, str) else Path("..")
+            source_path = (ROOT / relative).resolve()
+            root = ROOT.resolve()
+            expected_hash = provenance.get(hash_key)
+            safe_path = (
+                isinstance(raw_path, str)
+                and not relative.is_absolute()
+                and ".." not in relative.parts
+                and source_path != root
+                and root in source_path.parents
+            )
+            live_matches = (
+                safe_path
+                and not source_path.is_symlink()
+                and source_path.is_file()
+                and isinstance(expected_hash, str)
+                and SHA256_RE.fullmatch(expected_hash) is not None
+                and expected_hash == sha256_file(source_path)
+            )
+            history_matches = (
+                safe_path
+                and isinstance(expected_hash, str)
+                and SHA256_RE.fullmatch(expected_hash) is not None
+                and git_history_contains_file_hash(raw_path, expected_hash)
+            )
+            if (
+                not safe_path
+                or not (live_matches or history_matches)
+            ):
+                failures.append(
+                    Failure(
+                        "render_source_provenance",
+                        subject,
+                        f"{path_key} is unsafe, missing, or no longer matches its recorded hash",
+                    )
+                )
+        if provenance.get("refinement_stage") not in {
+            "silhouette",
+            "head",
+            "costume",
+            "launcher",
+            "final",
+        }:
+            failures.append(
+                Failure(
+                    "render_source_provenance",
+                    subject,
+                    f"invalid refinement stage {provenance.get('refinement_stage')!r}",
+                )
+            )
+        receipt = payload.get("build_receipt")
+        if (
+            not isinstance(receipt, dict)
+            or not isinstance(provenance.get("historical_blend_sha256"), str)
+            or SHA256_RE.fullmatch(provenance["historical_blend_sha256"]) is None
+            or provenance.get("historical_blend_sha256")
+            != payload.get("source_blend_sha256")
+            or provenance.get("build_receipt_sha256") != receipt.get("sha256")
+        ):
+            failures.append(
+                Failure(
+                    "render_source_provenance",
+                    subject,
+                    "refinement source/build hashes are malformed or internally inconsistent",
+                )
+            )
+        return failures
 
     required = {
         "kind",
@@ -148,7 +267,10 @@ def validate_historical_source(payload: dict, subject: str) -> list[Failure]:
                 f"cannot resolve historical Git source {object_spec}: {exc}",
             )
         ]
-    if observed_blob != blob_oid or hashlib.sha256(script_content).hexdigest() != script_hash:
+    if (
+        observed_blob != blob_oid
+        or hashlib.sha256(script_content.encode()).hexdigest() != script_hash
+    ):
         return [
             Failure(
                 "render_source_provenance",
@@ -254,16 +376,28 @@ def validate_render_packet(render_id: str, *, require_current: bool) -> tuple[li
             failures.append(Failure("contact_sheet_hash", subject, "contact sheet hash does not match"))
 
     if require_current:
-        receipt_failures, _ = check_build_receipt()
+        receipt_failures, build_receipt = check_build_receipt()
         failures.extend(receipt_failures)
-        expected_source = str(FIGURINE_BLEND.relative_to(ROOT))
+        recorded_source = build_receipt.get("source_blend")
+        expected_source = recorded_source if isinstance(recorded_source, str) else ""
+        source_path = (ROOT / expected_source).resolve()
+        root = ROOT.resolve()
+        if (
+            not expected_source
+            or source_path == root
+            or root not in source_path.parents
+        ):
+            failures.append(
+                Failure("render_source", subject, "build receipt has an unsafe source path")
+            )
+            source_path = ROOT / "__invalid_collectible_source__"
         if payload.get("source_blend") != expected_source:
             failures.append(
                 Failure("render_source", subject, f"reported {payload.get('source_blend')!r}")
             )
         if (
-            not FIGURINE_BLEND.is_file()
-            or payload.get("source_blend_sha256") != sha256_file(FIGURINE_BLEND)
+            not source_path.is_file()
+            or payload.get("source_blend_sha256") != sha256_file(source_path)
         ):
             failures.append(
                 Failure("render_source_hash", subject, "candidate render is not from the current .blend")

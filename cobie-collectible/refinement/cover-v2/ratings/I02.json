@@ -1,0 +1,29 @@
+{
+  "iteration_id": "I02",
+  "stage": "head",
+  "reviewer": "GPT-5.6 visual review",
+  "score_before": 50,
+  "ratings": {
+    "silhouette": 3,
+    "head_and_fur_identity": 4,
+    "pose_and_weight": 3,
+    "jacket_construction": 1,
+    "fetch_launcher": 1,
+    "aviators": 3,
+    "neutral_geometry_evidence": 5,
+    "material_and_color_cohesion": 3
+  },
+  "evidence": {
+    "neutral_render_id": "cover-v2/I02-neutral",
+    "lookdev_report": "cobie-collectible/validation-renders/cover-v2/I02-lookdev/lookdev_report.json"
+  },
+  "judgment": {
+    "accepted": true,
+    "summary": "Layered cheek, jaw, mouth, crown, and ear locks replace the baseline's bead-like muzzle with a readable closed-mouth doodle face while preserving the strong silhouette and all mechanical gates.",
+    "next_highest_impact_gap": "Build the leather jacket as a readable garment with lapels, panels, zipper, cuffs, hardware, chain, and COBIE tag."
+  },
+  "human_gates": {
+    "identity_approved": false,
+    "physical_prototype_approved": false
+  }
+}

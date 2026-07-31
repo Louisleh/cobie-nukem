@@ -1,5 +1,5 @@
-# This repository has no Git LFS. Large regenerable build artifacts stay out of
-# history; identity inputs need a deliberate archive/LFS step before selection.
+# Large regenerable build artifacts stay out of history. Git LFS is reserved
+# for irreplaceable Blender source and an explicitly selected generator mesh.
 
 # Python environment for the collectible tools.
 .venv/
@@ -29,6 +29,7 @@ exports/*.3mf
 blender/*.blend
 blender/*.blend1
 !blender/cobie_figurine_v1_reviewed.blend
+!blender/cobie_figurine_v2_master.blend
 
 # Personal photographs of Cobie. Identity input, not project source.
 references/photos/*

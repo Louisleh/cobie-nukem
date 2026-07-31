@@ -1,0 +1,118 @@
+work_id: cobie-collectible-cover-refinement-v2
+target: >-
+  Refine the provisional 140 mm Cobie figurine into a shelf-readable,
+  cover-faithful digital prototype with an athletic labradoodle silhouette,
+  confident planted pose, modeled apricot fur, constructed black biker jacket,
+  aviators, collar/tag, and one detailed Fetch Launcher.
+baseline_revision: ed050bebc9e2f4524593a7cb8b92ad50a69d8d51
+baseline_tag: collectible-prototype-v1-baseline
+canonical_views:
+  neutral_geometry:
+    - front
+    - left
+    - rear
+    - right
+    - hero_35_degrees
+  additional_review:
+    - front_black_silhouette
+    - hero_black_silhouette
+    - head_glasses_closeup
+    - jacket_tag_closeup
+    - launcher_closeup
+    - color_proof_contact_sheet
+    - presentation_portrait
+gameplay_readability: >-
+  This asset does not own gameplay collision or navigation. At 140 mm display
+  scale, the first read must be Cobie's wide canine silhouette, aviators, black
+  jacket, and diagonal Fetch Launcher; small hardware and fur grooves remain
+  subordinate.
+silhouette_goal: >-
+  Replace the narrow pipe-limb mannequin read with a compact action-dog shape:
+  broad curly head and ears, strong shoulders/chest, tapered jacket waist,
+  fuller haunches and calves, broad planted paws, visible tail, and a diagonal
+  launcher crossing the torso without hiding the face.
+visual_story: >-
+  Cobie is calm and absurdly prepared: a heroic apricot labradoodle in a worn
+  black biker jacket and aviators, carrying one overbuilt tennis-ball launcher.
+  The expression stays closed-mouth and confident.
+palette:
+  fur_apricot: "#B96B2F"
+  fur_root: "#633318"
+  fur_tip: "#E5A867"
+  leather_black: "#090A0C"
+  lens_smoke: "#050709"
+  frame_warm_metal: "#8A6A35"
+  metal_aged_silver: "#7E837F"
+  launcher_gunmetal: "#20252A"
+  hazard_gold: "#D59A12"
+  tennis_green: "#A3C82F"
+  charge_cyan_presentation_only: "#39D9E7"
+  base_dark: "#181D22"
+value_hierarchy:
+  - readable dark jacket and launcher against mid-value apricot fur
+  - dark glasses and nose framing the face
+  - tennis-ball green and hazard gold as bounded prop accents
+  - silver tag and hardware as small highlights
+materials:
+  printable_truth: modeled geometry only; no shader displacement may imply printable detail
+  fur: broad clump silhouette plus secondary grooves, matte and high roughness
+  leather: modeled lapels/folds/panels, near-black with restrained clearcoat
+  glasses: robust solid teardrop lenses, warm-metal rims and arms
+  launcher: gunmetal and near-black panels with gold and tennis-ball accents
+lighting_and_fog:
+  color_proof: locked neutral three-light rig, AgX, no fog, bloom, or emission
+  presentation: warm key, cool rim, restrained cyan charge emission; never a geometry gate
+animation_or_state_vocabulary: static display pose only
+platform_budgets:
+  height_mm: 140.0
+  height_tolerance_mm: 1.0
+  base_diameter_max_mm: 70.0
+  base_thickness_mm: [4.0, 6.0]
+  exact_print_parts: 5
+  minimum_feature_mm: 1.2
+  preferred_feature_mm: 1.5
+  mating_clearance_mm: [0.20, 0.35]
+  joint_coverage_minimum: 0.98
+  balance_target_ratio: 0.20
+  balance_hard_limit_ratio: 0.35
+source_and_license:
+  primary_reference:
+    path: assets/brand/cobie_nukem_cover.png
+    role: geometry_pose_identity_direction
+    sha256: d9261853c1c5013b22164667d24958e639fcc6e97967e342be017f63a1810d6f
+    provenance: project-original OpenAI-generated art; existing manifest entry
+  secondary_reference:
+    path: cobie-collectible/references/game-art/cobie_nukem_dual_blaster_cover_reference.png
+    role: fur_leather_material_hardsurface_direction_only
+    sha256: 70d17b427cd8e4c6a686b34cf188155bf180d5de7e9e16f83556e5f497d18478
+    provenance: supplied directly by the owner in the Codex task on 2026-07-29
+  external_assets: none
+owned_paths:
+  - cobie-collectible/blender/cobie_figurine_v2_master.blend
+  - cobie-collectible/scripts/build_figurine_v2.py
+  - cobie-collectible/scripts/render_figurine_lookdev.py
+  - cobie-collectible/refinement/cover-v2/
+  - cobie-collectible/validation-renders/cover-v2/
+preserved_gameplay_contracts:
+  - no runtime Godot asset is changed by the collectible
+  - no gameplay collision, navigation, scale, or progression ownership
+  - the primary cover remains the game's existing brand asset
+acceptance_evidence:
+  - exact-five transactional build receipt and source hashes
+  - neutral five-view packet plus black silhouettes
+  - color-proof packet, closeups, material-ID pass, and presentation portrait
+  - watertightness, one-solid, thickness, balance, joint, and all-pairs overlap gates
+  - independent PrusaSlicer one-manifold-part import for each STL
+  - human-scored cover rubric at least 85/100 with no category below 4/5
+human_review_questions:
+  - Does the silhouette now read as Cobie rather than a generic mascot?
+  - Are the jacket, aviators, and launcher faithful without hiding the face?
+  - Is the apricot/black/gunmetal palette cohesive at shelf scale?
+  - Are any details too fragile, noisy, or visually misleading for a resin print?
+  - After the photo pack exists, does the head read as the real Cobie?
+out_of_scope:
+  - open mouth or tongue from the secondary cover
+  - second blaster or background cover enemies
+  - generated third-party meshes or external texture downloads
+  - animation, articulation, packaging, vendor selection, or physical-print claims
+  - identity approval before the owner photo pack and human review

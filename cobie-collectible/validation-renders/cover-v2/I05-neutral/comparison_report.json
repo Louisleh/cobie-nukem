@@ -1,0 +1,11 @@
+{
+  "baseline_id": "cover-v2/I04-neutral",
+  "baseline_render_report_sha256": "6dd33e15fcee2d1bc3ab1d202fc6430ba5972178b48433878aad230fca55094b",
+  "candidate_id": "cover-v2/I05-neutral",
+  "candidate_render_report_sha256": "667c4e4194a895115cef4340293ab137ec0195d0f44e2424492cd01c563fe9a3",
+  "failures": [],
+  "output": {
+    "path": "cobie-collectible/validation-renders/cover-v2/I05-neutral/before_candidate_difference.png",
+    "sha256": "0c434c8c0c399cf2e97a87010101f2d3e3ee15f2005fbd2acca51c6355e99f40"
+  }
+}
