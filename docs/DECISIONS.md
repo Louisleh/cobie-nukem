@@ -140,3 +140,9 @@ scene.
   headless, fail with specific numbers, and are unit-tested against controls.
 - **Collectible tests are not in `tools/release_validate.sh`.** That script runs
   its Python tests under bare `python3`; these require numpy, trimesh and scipy.
+- **Generator choice is deliberately swappable.** The bakeoff consumes any GLB
+  from any source, normalises it, and scores it on neutral clay — so a new
+  generator (e.g. TRELLIS.2, released mid-project) slots in without pipeline
+  changes, per the PRD nonfunctional requirement. Hosted-only remains a
+  hardware fact, not a preference: TRELLIS.2 requires Linux plus an NVIDIA GPU
+  with at least 24 GB VRAM.

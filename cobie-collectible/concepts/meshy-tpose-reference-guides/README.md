@@ -9,14 +9,16 @@ turnaround inputs and they do not clear a pipeline gate:
 
 - the four cardinal images are not dimension-normalized;
 - the set has no neutral three-quarter `hero` input;
-- the pose is a full T-pose rather than the frozen neutral A-pose;
+- the set does use the intended T-pose, but it does not provide all five
+  dimension-matched geometry inputs required by the frozen contract;
 - the combined sheet contains only three views;
 - no image-to-3D run, identity approval, mesh bakeoff, or physical validation
   has occurred.
 
 Keep these files out of `concepts/turnaround/`. Before using them as generator
 inputs, regenerate a complete five-view set through
-`references/turnaround-prompts.md`, normalize dimensions and framing, run
+`references/turnaround-prompts.md`, normalize dimensions and framing, add the
+neutral three-quarter `hero` view, run
 `scripts/validate_turnaround.py`, and complete the human identity checklist.
 
 ## Files

@@ -14,15 +14,18 @@ without re-deriving anything.
 
 ---
 
-## 2026-07-29 cover-refinement checkpoint
+## 2026-07-31 cover-refinement checkpoint
 
-The cover-driven pre-gate refinement is complete at iteration **I06**. Its
-reviewer-authored visual ratings produce **85/100**, with every category at
-least 4/5; the scorer machine-validates their provenance, completeness, and
-math. The accepted figure now has the primary cover's wide asymmetric stance and closed
-expression, printable layered fur, constructed black leather jacket, warm-
-metal aviators, collar tag, and one black/gold/cyan Fetch Launcher with a
-visible tennis-ball chamber.
+Iteration **I07** is the current provisional cover-driven prototype. It fixes
+buried jacket/tag geometry, rebuilds the projecting snout and drop ears, and
+improves the crown and construction hierarchy without regressing the five-part
+print contract. An independent recalibrated review scores I07 **81/100**, up
+from 66 for the same reviewer's I06 baseline, but the 85-point/every-category-
+at-least-4 gate is **not met** because head-and-fur identity remains 3/5.
+
+The earlier I06 packet and its original 85/100 reviewer result remain retained
+as historical evidence. They are not presented as final acceptance after the
+I07 review exposed buried geometry and recalibrated the visual bar.
 
 The canonical master is
 `blender/cobie_figurine_v2_master.blend`, committed through Git LFS and
@@ -33,31 +36,32 @@ parts. The master validator rejects collection drift, embedded image
 datablocks, unapproved flags, missing semantic material zones, and stale
 provenance.
 
-Accepted evidence:
+Current evidence:
 
-- `validation-renders/cover-v2/I06-neutral/` — five neutral views rendered
+- `validation-renders/cover-v2/I07-neutral/` — five neutral views rendered
   only from `PRINT_EXPORT`, plus comparison evidence.
-- `validation-renders/cover-v2/I06-lookdev/` — locked-colour views,
+- `validation-renders/cover-v2/I07-lookdev/` — locked-colour views,
   silhouettes, material ID, close-ups, portrait, palette, and review board.
-- `refinement/cover-v2/ratings/I06_report.json` — scorecard and target gate.
+- `refinement/cover-v2/ratings/I07_report.json` — scorecard and provisional
+  target result.
 - `exports/print_check_report.json` and
   `slicer-tests/prusaslicer_import_report.json` — current geometry and
   independent parser gates.
 
-Current engineering evidence: 139.747 mm overall height, 69.945 mm base,
-5.000 mm base plate, 7.70% balance-margin ratio, complete coverage with no
+Current engineering evidence: 139.725 mm overall height, 69.945 mm base,
+5.000 mm base plate, 8.41% balance-margin ratio, complete coverage with no
 sampled collision at all nine joint probes, 0.232–0.336 mm p05–p95 interface
 gaps, and 0 mm³ exact intersection across all ten unordered part pairs. All
 five STLs are watertight single solids and PrusaSlicer 2.9.6 reports one
 manifold part for each.
 
-Reproduce the accepted iteration with:
+Reproduce the current iteration with:
 
 ```bash
-COBIE_ITERATION_ID=I06 COBIE_V2_STAGE=final \
+COBIE_ITERATION_ID=I07 COBIE_V2_STAGE=final \
   bash cobie-collectible/scripts/run_refinement_iteration.sh
 
-COBIE_ITERATION_ID=I06 \
+COBIE_ITERATION_ID=I07 \
   uv run --project cobie-collectible/tools --locked \
   python cobie-collectible/scripts/score_refinement.py
 ```
@@ -99,7 +103,7 @@ is validated.
 | 1 Turnaround | **Tooling done, no images yet** | `scripts/validate_turnaround.py`, `references/turnaround-prompts.md` |
 | 2 Mesh bakeoff | **Tooling implemented and locally tested; no real candidates or retained bakeoff packet** | `scripts/bakeoff_render.py` |
 | Pre-gate engineering prototype | **Built; local print and slicer checks green** | `validation-renders/prototype-v1/`, `exports/print_check_report.json`, `slicer-tests/prusaslicer_import_report.json` |
-| Cover-driven pre-gate refinement | **I06 accepted at 85/100; all refinement engineering/evidence gates green** | `validation-renders/cover-v2/I06-neutral/`, `validation-renders/cover-v2/I06-lookdev/`, `refinement/cover-v2/ratings/I06_report.json` |
+| Cover-driven pre-gate refinement | **I07 improved to 81/100; engineering gates green, visual target and human gates open** | `validation-renders/cover-v2/I07-neutral/`, `validation-renders/cover-v2/I07-lookdev/`, `refinement/cover-v2/ratings/I07_report.json` |
 | 3 Digital V1 | **Not started; Phases 0–2 have not cleared** | No selected identity mesh, clean production `.blend`, quotes, or Phase 3 exit |
 | 4 Resin prototype | Not started | — |
 | 5 Finished collectible | Not started | — |
@@ -111,16 +115,31 @@ advances pose, print engineering, material hierarchy, game-art fidelity, and
 review evidence without pretending to satisfy the still-open owner and photo
 gates.
 
-### The two hard blockers, both owner-side
+### Blockers and unblocks (updated 2026-07-30)
 
 1. **Approve or amend the character freeze.** Pose, expression, head ratio,
    clothing, aviators, collar/tag, hero prop, base treatment, palette, realism,
-   and exaggeration must stop moving before identity generation.
+   and exaggeration must stop moving before identity generation. The canonical
+   render below settles several of these — confirm the rest.
 2. **Photographs of the real Cobie.** 18–24 frames. Shot list is in the brief
-   under `photo_shot_list`. Nothing in Phase 1 can start without them.
+   under `photo_shot_list`. Still owner-side.
 
-Turnaround generation is the first downstream action after those owner gates.
-The prompts are ready in `references/turnaround-prompts.md`.
+**Partially unblocked:** an owner-approved canonical hero render now exists
+(Fable, 2026-07-30; figurine-sculpt style). It settles the launcher design
+(gunmetal + hazard-gold hybrid with a windowed ball chamber), the final pose,
+and the sculpt style. `references/turnaround-prompts.md` is now **v2,
+image-conditioned**: attach the render, paste the per-view prompt.
+
+The render file is **not yet committed** — it arrived inline, not on disk.
+`canonical_reference.committed_path` is `pending_file` in the brief; when the
+file lands, put it at `references/game-art/cobie_hero_figurine.png` and record
+its SHA-256 there.
+
+Note the turnaround is a **neutral prop-free T-pose in all five views,
+`hero.png` included** — `validate_turnaround.py` requires all five at identical
+dimensions and measures drift across the set, so an action-posed `hero.png`
+would poison the comparison. The action render is a Blender posing reference,
+not a generator input.
 
 ---
 
@@ -433,14 +452,14 @@ COBIE_RENDER_ID=prototype-v1 uv run --project cobie-collectible/tools --locked \
 uv run --project cobie-collectible/tools --locked \
   python cobie-collectible/scripts/compare_figurine_renders.py
 
-# complete accepted cover-refinement rebuild and evidence loop
-COBIE_ITERATION_ID=I06 COBIE_V2_STAGE=final \
+# complete current cover-refinement rebuild and evidence loop
+COBIE_ITERATION_ID=I07 COBIE_V2_STAGE=final \
   bash cobie-collectible/scripts/run_refinement_iteration.sh
 
 # verifies the master independently and scores its bound evidence
 /Applications/Blender.app/Contents/MacOS/Blender --background \
   --python cobie-collectible/scripts/validate_refinement_master.py
-COBIE_ITERATION_ID=I06 \
+COBIE_ITERATION_ID=I07 \
   uv run --project cobie-collectible/tools --locked \
   python cobie-collectible/scripts/score_refinement.py
 ```
@@ -469,10 +488,11 @@ peg. See §6.
 
 ## 9. Next actions, in order
 
-The cover-fidelity loop itself is complete; do not keep changing the accepted
-I06 merely to raise an ungrounded score. Continue from these remaining gates:
+The cover-fidelity loop has a stronger provisional I07 checkpoint, but the
+visual target remains open. Continue through named gates rather than inflating
+the score or treating script-authored geometry as identity approval:
 
-1. **Owner: approve or amend `cobie_figurine_v1.yaml` and the I06 broad
+1. **Owner: approve or amend `cobie_figurine_v1.yaml` and the I07 broad
    design.** Especially the closed expression, wide stance, +12% head scale,
    leather jacket, aviators, and single Fetch Launcher.
 2. **Owner: shoot the 18–24 photo pack** into `references/photos/`.
@@ -483,14 +503,26 @@ I06 merely to raise an ungrounded score. Continue from these remaining gates:
    checklist honestly.
 5. Generate the separate Fetch Launcher pose reference outside the turnaround
    directory. Use it only for later supervised Blender posing.
-6. Use `validation-renders/cover-v2/I06-lookdev/` and
-   `validation-renders/cover-v2/I06-neutral/` to confirm or amend the broad
+6. Use `validation-renders/cover-v2/I07-lookdev/` and
+   `validation-renders/cover-v2/I07-neutral/` to confirm or amend the broad
    silhouette, pose, jacket, aviators, launcher, and palette before spending
    generation credits. Do not treat them as identity approval.
-7. Generate ≥3 candidates in a browser — Hunyuan3D 2.1 multi-view (primary),
-   TRELLIS, Stable Fast 3D. Consider one **Hunyuan3D-Part / PartCrafter** run;
-   part-aware decomposition maps directly onto FR-5 and the print split, and
-   postdates the PRD.
+7. Generate ≥3 candidates in a browser. Inputs differ per generator:
+
+   | Generator | Input | Give it |
+   |---|---|---|
+   | Hunyuan3D 2.1/3.x multi-view (primary) | up to 4 views | the 4 cardinals |
+   | TRELLIS.2 | **single image only** ([issue #10](https://github.com/microsoft/TRELLIS.2/issues/10)) | the neutral `hero.png` |
+   | Stable Fast 3D | single image | the neutral `hero.png` |
+
+   Feed single-image generators the **neutral** `hero.png`, not the action
+   render, so their candidates stay comparable in the clay bakeoff.
+   TRELLIS.2 caution: its O-Voxel output is deliberately open-surface /
+   non-manifold — its own docs ship hole-filling scripts for 3D-printing use.
+   Budget *more* `print_check.py` cleanup for that candidate, not less. Its
+   PBR headline is irrelevant here (clay-scored bakeoff, neutral resin).
+   Consider one **Hunyuan3D-Part / PartCrafter** run; part-aware decomposition
+   maps directly onto FR-5 and the print split, and postdates the PRD.
 8. Drop GLBs in `generated-meshes/`, run `bakeoff_render.py`, fill in
    `scorecard.md`, and pick a winner.
 9. Copy the winner to `selected.glb` only after confirming Git LFS is active

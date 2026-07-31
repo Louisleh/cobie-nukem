@@ -64,11 +64,20 @@ uv run --project cobie-collectible/tools --locked \
   python cobie-collectible/scripts/<script>.py
 ```
 
-Image-to-3D generation happens in a **browser**, not here — Hunyuan3D 2.1
-multi-view, TRELLIS, Stable Fast 3D. Download the GLBs into `generated-meshes/`.
-Nothing in this pipeline calls an external asset service, which keeps
-`docs/design/agentic-toolchain.md`'s "external asset services disabled" rule
-intact.
+Image-to-3D generation happens in a **browser**, not here. Download the GLBs
+into `generated-meshes/`. Nothing in this pipeline calls an external asset
+service, which keeps `docs/design/agentic-toolchain.md`'s "external asset
+services disabled" rule intact. Inputs differ per generator:
+
+| Generator | Input | Give it |
+|---|---|---|
+| Hunyuan3D 2.1/3.x multi-view (primary) | up to 4 views | `concepts/turnaround/{front,left,rear,right}.png` |
+| TRELLIS.2 | single image only | the canonical hero render / `hero.png` |
+| Stable Fast 3D | single image | `hero.png` |
+
+TRELLIS.2's O-Voxel output is deliberately open-surface / non-manifold (a
+game-engine feature, a resin defect); its docs ship hole-filling scripts for
+3D-printing use. Expect its candidate to need more cleanup, not less.
 
 ## Tests
 
@@ -93,7 +102,7 @@ irreplaceable manual work begins.
 
 ## Cover-driven V2 refinement
 
-The current branch contains a six-iteration, checkpointed refinement of the
+The current branch contains a seven-iteration, checkpointed refinement of the
 pre-gate figure toward the selected game-cover direction. The primary
 geometry/pose reference is `assets/brand/cobie_nukem_cover.png`; the dual-
 blaster cover in `references/game-art/` is secondary material and hard-surface
@@ -107,10 +116,10 @@ PrusaSlicer, renders neutral and colour evidence, and scores an explicit
 rating packet:
 
 ```bash
-COBIE_ITERATION_ID=I06 COBIE_V2_STAGE=final \
+COBIE_ITERATION_ID=I07 COBIE_V2_STAGE=final \
   bash cobie-collectible/scripts/run_refinement_iteration.sh
 
-COBIE_ITERATION_ID=I06 \
+COBIE_ITERATION_ID=I07 \
   uv run --project cobie-collectible/tools --locked \
   python cobie-collectible/scripts/score_refinement.py
 ```
@@ -118,26 +127,28 @@ COBIE_ITERATION_ID=I06 \
 Set `BLENDER_BIN` when Blender is neither the standard macOS app bundle nor
 available as `blender` on `PATH`.
 
-Iteration I06 meets the digital target at **85/100**, with every scorecard
-category at least 4/5. It adds the wide asymmetric stance, closed confident
-head treatment, layered printable fur masses, constructed black leather
-jacket, warm-metal aviators, collar tag, and single black/gold/cyan Fetch
-Launcher with a visible tennis-ball chamber. The neutral packet is rendered
-from `PRINT_EXPORT`; the colour packet is rendered from `LOOKDEV`.
+Iteration I07 is the current **provisional** checkpoint at **81/100** on an
+independent recalibrated scale. It improves the same reviewer's I06 baseline
+from 66, but does not meet the 85-point/every-category-at-least-4 target:
+head-and-fur identity remains 3/5. I07 rebuilds the projecting snout, drop ears,
+crown locks and jacket hierarchy; exposes the tag and surface-derived seams;
+and fixes three buried/material-assignment defects. The neutral packet is
+rendered from `PRINT_EXPORT`; the colour packet is rendered from `LOOKDEV`.
 
-Current I06 engineering results: 139.747 mm tall, 69.945 mm base, 5.000 mm
-plate, and centre of mass 7.70% off the base centre (limit 35%). All five
+Current I07 engineering results: 139.725 mm tall, 69.945 mm base, 5.000 mm
+plate, and centre of mass 8.41% off the base centre (limit 35%). All five
 canonical parts are watertight single solids and pass the executed thickness
 checks. All nine mating-interface probes have complete radial engagement and
 no sampled collision; their p05–p95 gaps span 0.232–0.336 mm. Exact Manifold
 boolean intersections are 0 mm³ across all ten unordered part pairs, and
 PrusaSlicer 2.9.6 reports every STL as one manifold part.
 
-The accepted evidence is in `validation-renders/cover-v2/I06-neutral/` and
-`validation-renders/cover-v2/I06-lookdev/`; the score and full iteration trail
+The current evidence is in `validation-renders/cover-v2/I07-neutral/` and
+`validation-renders/cover-v2/I07-lookdev/`; the score and full iteration trail
 are in `refinement/cover-v2/`. These are digital geometry and look-development
-results. Identity approval, the real-Cobie photo pack, a physical prototype,
-and manufacture approval all remain false.
+results. The earlier I06 review is retained as historical evidence but is
+superseded as the current acceptance claim. Identity approval, the real-Cobie
+photo pack, a physical prototype, and manufacture approval all remain false.
 
 ## Provisional digital prototype
 
