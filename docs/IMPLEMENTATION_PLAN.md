@@ -19,6 +19,7 @@ This plan replaces the historical scaffold milestones with an evidence-gated pro
 7. No release is stamped while source commit, packaged artifact, website artifact, and public PCK identity disagree.
 8. If Godot is unavailable, documentation and deterministic non-engine work may proceed, but gameplay packets remain blocked rather than being marked complete.
 9. After every two major milestones—and before launching a large Spark batch—run the sanitized `gpt-usage-shortcut` workflow. Use GPT-5.3-Codex-Spark aggressively for useful bounded workers while GPT-5.6-sol/high owns architecture, review, integration, and final claims; never create low-value work solely to burn quota.
+10. Ambitious pilots separate author, critic, and integration roles. Blind matched comparisons may rank coherent candidates, but no aspirational reference, critic score, or compute budget can override packet ownership, mechanical gates, provenance, or human-only acceptance.
 
 ## Program dependency graph
 
@@ -32,7 +33,10 @@ WCB-000 governance/PRD
                   ├─ WCB-006 encounter choreography
                   ├─ WCB-007 Towmaster spectacle
                   └─ WCB-008 mission-specific art/audio
-                         └─ WCB-009 Rain City integrated evidence + replication selection
+                         ├─ WCB-008J startup title first-impression pilot
+                         ├─ WCB-008K Salmon Creek first-30-second pilot
+                         └─ WCB-008L Rain City wetness/readability completion
+                                └─ WCB-009 Rain City integrated evidence + replication selection
                               └─ WCB-010 second-mission implementation + validation
                                    └─ WCB-011 release identity + campaign roadmap
 ```
@@ -193,6 +197,31 @@ bash tools/run_godot_safe.sh --timeout 300 -- --headless --path . --script res:/
 - Preserve editable Blender/Material Maker sources and provenance.
 
 **Exit:** asset/IP/import gates pass; canonical multi-aspect captures and bounded audio evidence exist; human art/mix/humor/photosensitivity gates remain open.
+
+#### WCB-008J–L — Opening-quality continuation
+
+The 2026-07-27 owner direction makes the startup screen plus Levels 1–2 the opening-quality tranche without replacing Rain City as the definitive slice or bypassing WCB-008's human prerequisite. Writers remain sequential even when read-only critics run in parallel.
+
+**WCB-008J — startup title first-impression pilot**
+
+- **Status:** Integrated candidate at `c461441`; automated mechanics, four-aspect rendered evidence, and scoped performance parity pass. Human visual/accessibility review remains open.
+- **Owner:** UI/presentation only.
+- **Owned paths:** `scenes/menus/title_screen.tscn`, `scripts/ui/title_screen.gd`, the title-specific seam in `tests/unit/ui_scene_test.gd`, and title capture evidence. `main_menu`, level select, `scripts/core/`, campaign, and level paths remain frozen unless a later packet explicitly transfers them.
+- **Acceptance:** the real warmup/readiness/input transaction remains deterministic; the title presents one clear Cobie/Golden-Ball/action hierarchy at 16:9, 16:10, 4:3, and ultrawide without clipping, dead space, false readiness, or loss of build identity. Human visual/accessibility review remains open.
+
+**WCB-008K — Salmon Creek first-30-second pilot**
+
+- **Status:** Integrated-candidate ready; the bounded sign/shed presentation pass, focused contracts, 12 matched four-aspect captures, and fresh Spark/high 80/100 artifact acceptance pass. The staged capture is only 7.3 seconds, so the declared continuous 0–30 second browser/target-Mac run remains open and WCB-008K is not baseline-approved.
+- **Owner:** Level-1 pacing/presentation; collision/navigation/boss architecture frozen unless a defect is independently proven.
+- **Owned paths:** exact Salmon Creek pacing/presentation resources, first-30-second test/capture adapters, and their focused tests, frozen in the buildout log before a writer starts.
+- **Acceptance:** one reproducible 0–30 second run exposes the hero, immediate weapon affordance, the rule-break joke, first enemy contact, and the equipment-shed route cue while preserving mission identity, enemy/weapon breadth, route topology, save/progression semantics, and native/Web budgets. Human learning, humor, combat, and art judgment remain open.
+
+**WCB-008L — Rain City wetness/readability completion**
+
+- **Status:** Pending WCB-008J; retains `a1e51c2` as an unapproved parameter-only candidate.
+- **Owner:** One visual/presentation writer.
+- **Owned paths:** the exact Rain City material/presentation families and focused tests named in the packet freeze. WCB-007 boss, route collision/navigation, progression, and other missions remain frozen.
+- **Acceptance:** selective wetness and readable value separation improve the five bound non-boss views at all four canonical aspects without universal gloss, route/HUD clipping, native performance regression, or weakening capture receipts. District identity, enemy/viewmodel readability, humor, motion, photosensitivity, target-Mac, and physical-iPad quality remain human gates.
 
 ### WCB-009 — Rain City integrated evidence and replication selection
 

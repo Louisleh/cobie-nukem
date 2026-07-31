@@ -41,8 +41,8 @@ func _build_shed_landmarks() -> void:
 	for index in 3:
 		_cylinder("VentStack", Vector3(-5.4 + index * 1.0, 2.0, -36.5), 0.12, 2.4, &"metal", Color("839095"))
 	_box("ShedSafetyStripe", Vector3(0, 0.035, -39.6), Vector3(12.0, 0.04, 0.16), &"hazard", Color("e0a632"))
-	_label("EQUIPMENT SHED\nAUTHORIZED GOOD DOGS ONLY", Vector3(0, 3.15, -42.35), Vector3.ZERO, 42, Color("f4dda0"))
-	_omni_light("ShedWorkLight", Vector3(0, 3.35, -34.0), Color("ffd18a"), 2.1, 10.0)
+	_label("EQUIPMENT SHED\nAUTHORIZED GOOD DOGS ONLY", Vector3(-2.0, 3.15, -34.8), Vector3.ZERO, 44, Color("f4dda0"))
+	_omni_light("ShedWorkLight", Vector3(-2.0, 3.5, -33.8), Color("ffdc97"), 2.8, 12.0)
 	_omni_light("GeneratorStatusLight", Vector3(-4.7, 1.8, -36.5), Color("ff8a38"), 1.3, 5.0)
 
 

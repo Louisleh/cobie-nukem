@@ -7,12 +7,12 @@
 [ext_resource type="Script" path="res://scripts/ui/retro_overlay.gd" id="5"]
 
 [sub_resource type="StyleBoxFlat" id="BrandBox"]
-bg_color = Color(0.015, 0.025, 0.03, 0.93)
+bg_color = Color(0.015, 0.025, 0.03, 0.88)
 border_width_left = 2
 border_width_top = 2
 border_width_right = 2
 border_width_bottom = 2
-border_color = Color(0.95, 0.59, 0.08, 0.8)
+border_color = Color(0.95, 0.59, 0.08, 0.72)
 corner_radius_top_left = 4
 corner_radius_top_right = 4
 corner_radius_bottom_right = 4
@@ -33,7 +33,7 @@ layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-color = Color(0.012, 0.024, 0.03, 1)
+color = Color(0.004, 0.009, 0.010, 1)
 mouse_filter = 2
 
 [node name="ArtColumn" type="Control" parent="."]
@@ -63,7 +63,7 @@ layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-color = Color(0, 0, 0, 0.08)
+color = Color(0, 0, 0, 0.1)
 mouse_filter = 2
 
 [node name="BrandPanel" type="PanelContainer" parent="."]
@@ -74,72 +74,74 @@ anchor_left = 0.56
 anchor_right = 1.0
 anchor_bottom = 1.0
 offset_left = 0.0
+offset_top = 0.0
+offset_bottom = -0.0
 theme_override_styles/panel = SubResource("BrandBox")
 
 [node name="Margin" type="MarginContainer" parent="BrandPanel"]
 layout_mode = 2
-theme_override_constants/margin_left = 14
-theme_override_constants/margin_top = 12
-theme_override_constants/margin_right = 14
-theme_override_constants/margin_bottom = 12
+theme_override_constants/margin_left = 18
+theme_override_constants/margin_top = 14
+theme_override_constants/margin_right = 18
+theme_override_constants/margin_bottom = 14
 
 [node name="VBox" type="VBoxContainer" parent="BrandPanel/Margin"]
 layout_mode = 2
-alignment = 1
+size_flags_horizontal = 3
+size_flags_vertical = 3
+alignment = 0
 
-[node name="Episode" type="Label" parent="BrandPanel/Margin/VBox"]
+[node name="Eyebrow" type="Label" parent="BrandPanel/Margin/VBox"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.57, 0.68, 0.62, 1)
-theme_override_font_sizes/font_size = 7
-text = "EPISODE 1 // SALMON CREEK"
-horizontal_alignment = 1
+theme_override_colors/font_color = Color(0.62, 0.74, 0.68, 1)
+theme_override_font_sizes/font_size = 10
+text = "FIELD DEPLOYMENT // EPISODE 01"
+horizontal_alignment = 0
 
 [node name="Title" type="Label" parent="BrandPanel/Margin/VBox"]
 layout_mode = 2
+text = "COBIE NUKEM"
 theme_override_colors/font_color = Color(1, 0.76, 0.19, 1)
 theme_override_colors/font_outline_color = Color(0.07, 0.035, 0.01, 1)
-theme_override_constants/outline_size = 3
-theme_override_font_sizes/font_size = 20
-text = "COBIE NUKEM"
-horizontal_alignment = 1
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 26
+horizontal_alignment = 0
 
-[node name="Subtitle" type="Label" parent="BrandPanel/Margin/VBox"]
+[node name="MissionBrief" type="Label" parent="BrandPanel/Margin/VBox"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.95, 0.91, 0.76, 1)
-theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
-theme_override_constants/outline_size = 2
-theme_override_font_sizes/font_size = 8
-text = "RETRO MAYHEM 3D"
-horizontal_alignment = 1
+text = "SALMON CREEK // STORM ACTIVE\nBREAK THE RULES. FETCH THE BALL."
+theme_override_colors/font_color = Color(0.96, 0.95, 0.82, 1)
+theme_override_font_sizes/font_size = 10
+horizontal_alignment = 0
 
 [node name="Spacer" type="Control" parent="BrandPanel/Margin/VBox"]
-custom_minimum_size = Vector2(0, 12)
+custom_minimum_size = Vector2(0, 14)
 layout_mode = 2
 
 [node name="Prompt" type="Label" parent="BrandPanel/Margin/VBox"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_colors/font_color = Color(1, 0.78, 0.25, 1)
+theme_override_colors/font_color = Color(1, 0.83, 0.28, 1)
 theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
 theme_override_constants/outline_size = 2
-theme_override_font_sizes/font_size = 9
+theme_override_font_sizes/font_size = 12
 text = "PREPARING COBIE… 0%"
-horizontal_alignment = 1
 autowrap_mode = 2
+horizontal_alignment = 0
 
 [node name="LoadingBar" type="ProgressBar" parent="BrandPanel/Margin/VBox"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 7)
+custom_minimum_size = Vector2(0, 10)
 layout_mode = 2
 show_percentage = false
 
 [node name="BuildLabel" type="Label" parent="BrandPanel/Margin/VBox"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_colors/font_color = Color(0.47, 0.57, 0.52, 1)
-theme_override_font_sizes/font_size = 5
 text = "BUILD"
-horizontal_alignment = 1
+theme_override_colors/font_color = Color(0.47, 0.57, 0.52, 0.95)
+theme_override_font_sizes/font_size = 6
+horizontal_alignment = 0
 
 [node name="ProceduralAudio" type="Node" parent="."]
 unique_name_in_owner = true

@@ -1,5 +1,11 @@
 # Decisions
 
+## D-020 — Opening quality uses bounded author/critic loops, not autonomous score chasing
+
+Rain City remains the definitive vertical slice, while the title/startup experience and Salmon Creek's first 30 seconds become bounded WCB-008 child packets because they determine whether a player reaches that slice with trust and excitement. This is an opening-quality tranche, not new mission, weapon, enemy, economy, or meta-progression breadth. It does not remove `BETA`, close Rain City's human prerequisite, or transfer collision/navigation/progression ownership.
+
+The adopted ambitious-process pattern is staffing by explicit roles, one writer per owned path, separate harsh critics, matched captures, and blind comparison when two coherent candidates exist. The project rejects a literally unreachable acceptance bar: aspiration may drive iteration, but scope, performance, provenance, reproducibility, and human-only gates remain hard stops. The integration owner selects and verifies one coherent slice; no agent merges, promotes a baseline, or converts critic preference into human approval.
+
 ## D-019 — Rain City route topology is gameplay-owned, stateful, and mechanically inspectable
 
 Rain City freezes three two-ended vertical loops (`seawall_overlook`, `terminal_control`, and `pier_crane_flank`) plus the terminal-powered `rainline_return` shortcut. `VancouverWaterfrontWorldBuilder` retains collision/navigation ownership and delegates only route geometry construction to `RainCitySpatialRouteBuilder`; presentation may style but never move or own those nodes. Completing `restore_terminal` opens the return gate and checkpoint restoration derives that gate state from the objective snapshot. The optional graph edge back to `waterfront_seawall` documents revisit reachability while ordered mission progression remains forward-only.

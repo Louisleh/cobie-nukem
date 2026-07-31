@@ -44,6 +44,8 @@ commit_hash:
 
 `commit_hash` is required for writers and `null` for read-only agents. Raw logs remain available in the worker thread or worktree but do not replace the summary.
 
+If a `workspace-write` sandbox permits owned-file edits but rejects `.git/index.lock`, do **not** widen the sandbox or let the worker touch the shared program checkout. The writer returns `status: blocked`, `commit_hash: null`, its exact changed files, tests, and acceptance evidence. The integration owner then reviews the isolated tree, reruns the required checks, and may create the commit in that isolated clone before fetching/cherry-picking it into the clean program branch. Uncommitted output without that review remains a failed/partial lane, not an integration artifact.
+
 ## Role routing
 
 | Profile | Owns | Must not own |

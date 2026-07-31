@@ -200,7 +200,8 @@ func _build_story_objects() -> void:
 	opening_sign.secret_after_reads = 3
 	opening_sign.secret_id = &"optional_sign"
 	opening_sign.secret_title = "SIGN SEEMS OPTIONAL"
-	opening_sign.position = Vector3(-5, 1.4, 5.5)
+	opening_sign.scale = Vector3(0.95, 0.95, 1.0)
+	opening_sign.position = Vector3(-4.0, 1.4, 5.5)
 	opening_sign.rotation_degrees.y = 0
 	opening_sign.read.connect(_on_sign_read)
 	opening_sign.secret_requested.connect(_on_secret_discovered)
