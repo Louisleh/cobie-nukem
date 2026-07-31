@@ -30,7 +30,20 @@ out_of_scope:
 identity_freeze:
   species: labradoodle, anthropomorphised to a bipedal action-hero stance
   coat: apricot / golden-honey, tight corkscrew curls, longest on crown and ears
-  ears: long floppy drop ears to jaw level, read as ONE continuous curled mass
+  # Structure vs silhouette, deliberately split. An earlier draft said the ears
+  # "read as one continuous mass" (a print-strength note) and that wording,
+  # reaching prompts, produced the known failure: side/rear views where the
+  # ears collapse into a bob of crown fur. Fused is a structural property;
+  # distinct is a visual one. Both hold at once.
+  ears: >
+    long floppy drop ears hanging past the jaw; structurally fused to the
+    skull for print strength, but VISUALLY distinct hanging lobes in the
+    silhouette of every view -- never absorbed into a bob of crown fur
+  tail: >
+    medium-length labradoodle tail, relaxed upward curve with a plume of
+    curls, emerging below the jacket hem; must be consistent between side
+    and rear views (no canonical view shows it yet, so it is specified here
+    rather than left for a generator to invent)
   muzzle: short and blunt, blended into beard furnishings
   nose: large glossy black, wide nostrils
   eyes: never visible in the healthy canon, always behind mirrored lenses
@@ -45,7 +58,8 @@ must_survive_to_print:
   - COBIE dog tag at the sternum, legible, thick enough not to snap
   - aviator silhouette low on the muzzle
   - open jacket with the chest ruff showing through the front
-  - ears reading as one mass, not two protruding flaps
+  - ear flaps distinct in silhouette on every view -- fused to the head for
+    strength, never absorbed into a bob of crown fur
   - black nose as a distinct glossy mass
 
 silhouette_goal: >
@@ -53,8 +67,26 @@ silhouette_goal: >
   The test is the pure black silhouette: jacket shoulders, ear mass, muzzle
   angle and the launcher across the body must be readable as one shape.
 
+# Owner-supplied Fable render, 2026-07-30: figurine-sculpt style, wide action
+# stance, launcher across the body, black background. It is the sculpt target
+# and the final-pose authority, and it feeds single-image generators
+# (TRELLIS.2, Stable Fast 3D) directly.
+canonical_reference:
+  id: cobie_hero_figurine
+  source: owner-supplied Fable render, 2026-07-30
+  committed_path: pending_file  # re-upload needed; then references/game-art/cobie_hero_figurine.png + SHA-256 here
+  resolves:
+    - hero prop design (windowed-chamber hybrid, see hero_prop)
+    - final pose authority
+    - sculpt style: matte clay-like curls in distinct clumps
+
+reference_pose: >
+  T-pose (arms horizontal, no weapon) for the turnaround and mesh generation,
+  so the core asset stays reusable for a second pose (FR-6). The FINAL figurine
+  pose is the canonical hero render's stance; posing happens in Blender.
+
 pose:
-  stance: planted, weight on the back paw, slight contrapposto
+  stance: wide planted action stance per the canonical render, weight on the back paw
   arms: launcher held across the body, both paws on the weapon
   head: level, chin slightly raised
   head_scale: +12% over anatomical
@@ -65,13 +97,21 @@ pose:
 
 hero_prop:
   id: fetch_launcher
-  design_source: assets/models/weapons/fetch_launcher_viewmodel.glb
-  elements: [gold drum magazine, loaded tennis ball, caged barrel, cyan charge ring, carry handle]
+  design_source: canonical hero render (supersedes the earlier viewmodel-only assumption)
+  dimension_reference: assets/models/weapons/fetch_launcher_viewmodel.glb
+  elements:
+    - gunmetal receiver
+    - hazard-gold armor panels
+    - windowed chamber with the golden tennis ball visible inside
+    - ribbed barrel collars and round muzzle
+    - cyan charge indicators
+    - under-barrel grip
   rationale: >
-    Chosen over the poster design because it is the only version with real
-    geometry to dimension against, and over the Pawstol because it has the
-    largest silhouette. The poster version's clear barrel is a resin fragility
-    risk.
+    The canonical render resolves the poster-vs-viewmodel design conflict with
+    a hybrid: the poster's visible-ball chamber on the viewmodel's chunky
+    gunmetal-and-gold construction. Chunky and printable -- no thin clear
+    barrel. The "window" prints as an open sculpted frame with the ball solid
+    inside it, or as a solid panel painted as glass; no clear resin needed.
   fallback_if_fragile: golden tennis ball palmed in one paw
 
 # ---------------------------------------------------------------------------

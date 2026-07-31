@@ -62,11 +62,20 @@ uv run --project cobie-collectible/tools --locked \
   python cobie-collectible/scripts/<script>.py
 ```
 
-Image-to-3D generation happens in a **browser**, not here — Hunyuan3D 2.1
-multi-view, TRELLIS, Stable Fast 3D. Download the GLBs into `generated-meshes/`.
-Nothing in this pipeline calls an external asset service, which keeps
-`docs/design/agentic-toolchain.md`'s "external asset services disabled" rule
-intact.
+Image-to-3D generation happens in a **browser**, not here. Download the GLBs
+into `generated-meshes/`. Nothing in this pipeline calls an external asset
+service, which keeps `docs/design/agentic-toolchain.md`'s "external asset
+services disabled" rule intact. Inputs differ per generator:
+
+| Generator | Input | Give it |
+|---|---|---|
+| Hunyuan3D 2.1/3.x multi-view (primary) | up to 4 views | `concepts/turnaround/{front,left,rear,right}.png` |
+| TRELLIS.2 | single image only | the canonical hero render / `hero.png` |
+| Stable Fast 3D | single image | `hero.png` |
+
+TRELLIS.2's O-Voxel output is deliberately open-surface / non-manifold (a
+game-engine feature, a resin defect); its docs ship hole-filling scripts for
+3D-printing use. Expect its candidate to need more cleanup, not less.
 
 ## Tests
 

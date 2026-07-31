@@ -52,16 +52,31 @@ silhouette/assembly prototype, not an identity-approved Digital V1. It advances
 pose, print engineering, game-art fidelity, and review evidence without
 pretending to satisfy the still-open owner and photo gates.
 
-### The two hard blockers, both owner-side
+### Blockers and unblocks (updated 2026-07-30)
 
 1. **Approve or amend the character freeze.** Pose, expression, head ratio,
    clothing, aviators, collar/tag, hero prop, base treatment, palette, realism,
-   and exaggeration must stop moving before identity generation.
+   and exaggeration must stop moving before identity generation. The canonical
+   render below settles several of these — confirm the rest.
 2. **Photographs of the real Cobie.** 18–24 frames. Shot list is in the brief
-   under `photo_shot_list`. Nothing in Phase 1 can start without them.
+   under `photo_shot_list`. Still owner-side.
 
-Turnaround generation is the first downstream action after those owner gates.
-The prompts are ready in `references/turnaround-prompts.md`.
+**Partially unblocked:** an owner-approved canonical hero render now exists
+(Fable, 2026-07-30; figurine-sculpt style). It settles the launcher design
+(gunmetal + hazard-gold hybrid with a windowed ball chamber), the final pose,
+and the sculpt style. `references/turnaround-prompts.md` is now **v2,
+image-conditioned**: attach the render, paste the per-view prompt.
+
+The render file is **not yet committed** — it arrived inline, not on disk.
+`canonical_reference.committed_path` is `pending_file` in the brief; when the
+file lands, put it at `references/game-art/cobie_hero_figurine.png` and record
+its SHA-256 there.
+
+Note the turnaround is a **neutral prop-free T-pose in all five views,
+`hero.png` included** — `validate_turnaround.py` requires all five at identical
+dimensions and measures drift across the set, so an action-posed `hero.png`
+would poison the comparison. The action render is a Blender posing reference,
+not a generator input.
 
 ---
 
@@ -403,10 +418,22 @@ peg. See §6.
 6. Use `validation-renders/prototype-v1/` to confirm or amend the broad
    silhouette/pose before spending generation credits. Do not treat it as
    identity approval.
-7. Generate ≥3 candidates in a browser — Hunyuan3D 2.1 multi-view (primary),
-   TRELLIS, Stable Fast 3D. Consider one **Hunyuan3D-Part / PartCrafter** run;
-   part-aware decomposition maps directly onto FR-5 and the print split, and
-   postdates the PRD.
+7. Generate ≥3 candidates in a browser. Inputs differ per generator:
+
+   | Generator | Input | Give it |
+   |---|---|---|
+   | Hunyuan3D 2.1/3.x multi-view (primary) | up to 4 views | the 4 cardinals |
+   | TRELLIS.2 | **single image only** ([issue #10](https://github.com/microsoft/TRELLIS.2/issues/10)) | the neutral `hero.png` |
+   | Stable Fast 3D | single image | the neutral `hero.png` |
+
+   Feed single-image generators the **neutral** `hero.png`, not the action
+   render, so their candidates stay comparable in the clay bakeoff.
+   TRELLIS.2 caution: its O-Voxel output is deliberately open-surface /
+   non-manifold — its own docs ship hole-filling scripts for 3D-printing use.
+   Budget *more* `print_check.py` cleanup for that candidate, not less. Its
+   PBR headline is irrelevant here (clay-scored bakeoff, neutral resin).
+   Consider one **Hunyuan3D-Part / PartCrafter** run; part-aware decomposition
+   maps directly onto FR-5 and the print split, and postdates the PRD.
 8. Drop GLBs in `generated-meshes/`, run `bakeoff_render.py`, fill in
    `scorecard.md`, and pick a winner.
 9. Before copying the winner to `selected.glb`, enable Git LFS or make a

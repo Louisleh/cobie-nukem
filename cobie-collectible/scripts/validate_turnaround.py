@@ -244,9 +244,15 @@ by eye on every view:
   [ ] Aviators have the same shape and gold/brass frame wherever visible.
   [ ] COBIE tag placement is consistent; front/hero show it at the sternum.
   [ ] Black leather jacket, open, same lapel geometry, chest ruff showing.
-  [ ] Apricot curly coat, floppy ears reading as one continuous curled mass.
+  [ ] Apricot curly coat matching the canonical hero render's sculpted clumps.
+  [ ] Side and rear views show the ear flaps as DISTINCT hanging volumes,
+      separated from the skull curls -- not a bob of crown fur. This is the
+      known failure mode; reject on it without hesitation.
+  [ ] Tail present and consistent in both profiles and the rear view
+      (relaxed upward curve, curl plume, below the jacket hem).
   [ ] Black nose, short blunt muzzle.
-  [ ] The REAR view is genuinely a rear view, not a mirrored front.
+  [ ] The REAR view is genuinely a rear view, not a mirrored front -- no
+      glasses, no facial features visible.
   [ ] No view contradicts another about what is behind or beneath Cobie.
 Reject and regenerate now. Every later gate costs more than this one.
 """
