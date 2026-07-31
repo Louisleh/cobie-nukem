@@ -205,6 +205,7 @@ def sphere(
     location,
     *,
     scale=(1.0, 1.0, 1.0),
+    rotation=(0.0, 0.0, 0.0),
     zone="fur",
     role="surface",
     stage="silhouette",
@@ -213,6 +214,7 @@ def sphere(
     bpy.ops.mesh.primitive_uv_sphere_add(
         radius=radius,
         location=location,
+        rotation=rotation,
         segments=32,
         ring_count=16,
     )
@@ -472,10 +474,99 @@ def fur_lock(
     *,
     scale=(1.0, 0.78, 1.0),
     zone="fur_tip",
+    root_zone="fur",
     stage="final",
 ) -> list[Component]:
-    pieces = capsule(name, radius, start, end, zone=zone, stage=stage)
-    pieces[-1].obj.scale = scale
+    """A directional fur clump whose outer cap alone reads as a lit tip.
+
+    I06 assigned the whole capsule to ``fur_tip``.  Because MAT_FUR_TIP is much
+    lighter than MAT_FUR_APRICOT, every clump rendered in colour as a pale worm
+    laid on top of the surface rather than as a lock of fur catching light at
+    its end.  Only the terminal cap now carries the light zone; the shaft and
+    root blend into the surrounding coat.  This is a semantic/material change:
+    the fused print geometry is unaffected.
+    """
+    pieces = capsule(name, radius, start, end, zone=root_zone, stage=stage)
+    tip = pieces[-1]
+    tip.obj.scale = scale
+    pieces[-1] = component(tip.obj, zone, role=tip.role, stage=tip.stage)
+    return pieces
+
+
+# The jacket shell is one ellipsoid, so every seam that should read as leather
+# construction has to be placed on that ellipsoid's actual surface.  I06 authored
+# its back yoke as a flat prism at y=+15.3 while the jacket shell's back reaches
+# y=+17.1, so the yoke was entirely buried and the "back-yoke read" it claimed
+# did not exist in the mesh.  Deriving seam positions from the shell definition
+# instead of hand-typed constants makes that class of bug impossible.
+JACKET_CORE_RADIUS = 19.0
+JACKET_CORE_CENTRE = (1.8, 2.5, 79.0)
+JACKET_CORE_SCALE = (1.22, 0.80, 1.05)
+JACKET_CORE_SEMI = tuple(JACKET_CORE_RADIUS * value for value in JACKET_CORE_SCALE)
+
+
+def ellipsoid_surface_y(
+    centre: tuple[float, float, float],
+    semi: tuple[float, float, float],
+    x: float,
+    z: float,
+    *,
+    front: bool,
+) -> float | None:
+    """Y of the ellipsoid surface at (x, z), or None outside its shadow."""
+    dx = (x - centre[0]) / semi[0]
+    dz = (z - centre[2]) / semi[2]
+    remainder = 1.0 - dx * dx - dz * dz
+    if remainder <= 0.0:
+        return None
+    offset = semi[1] * math.sqrt(remainder)
+    return centre[1] - offset if front else centre[1] + offset
+
+
+def jacket_seam_points(
+    samples: list[tuple[float, float]],
+    *,
+    front: bool,
+    embed: float,
+) -> list[tuple[float, float, float]]:
+    """Seam path riding the jacket shell, sunk ``embed`` mm below its surface."""
+    points: list[tuple[float, float, float]] = []
+    for x, z in samples:
+        surface = ellipsoid_surface_y(
+            JACKET_CORE_CENTRE,
+            JACKET_CORE_SEMI,
+            x,
+            z,
+            front=front,
+        )
+        if surface is None:
+            raise RuntimeError(
+                f"seam sample ({x}, {z}) lies outside the jacket shell shadow"
+            )
+        points.append((x, surface + (embed if front else -embed), z))
+    return points
+
+
+def seam_chain(
+    name: str,
+    points: list[tuple[float, float, float]],
+    radius: float,
+    *,
+    zone: str = "leather_edge",
+    stage: str = "costume",
+) -> list[Component]:
+    pieces: list[Component] = []
+    for index in range(len(points) - 1):
+        pieces.extend(
+            capsule(
+                f"{name}_{index}",
+                radius,
+                points[index],
+                points[index + 1],
+                zone=zone,
+                stage=stage,
+            )
+        )
     return pieces
 
 
@@ -727,12 +818,33 @@ def build_body_source() -> list[Component]:
                 (x, paw_y, 19.0),
             )
         )
+        # Knee/calf blending.  I06 scaled this lock to 1.12 in X and Z, which
+        # produced a visible bulge stepping off the shin capsules instead of a
+        # transition; 1.04 blends the two segments.
         pieces.append(
             sphere(
                 f"SRC__calf_lock_{side}",
                 6.7,
                 (x * 0.92, paw_y + 1.5, 29.5),
-                scale=(1.12, 0.95, 1.12),
+                scale=(1.04, 0.95, 1.04),
+            )
+        )
+        # Explicit hip and ankle fillets so the haunch-to-shin and shin-to-paw
+        # joins stop reading as separate primitives.
+        pieces.append(
+            sphere(
+                f"SRC__hip_fillet_{side}",
+                8.2,
+                (knee_x * 0.94, (knee_y + 2.5) * 0.5, thigh_z - 6.5),
+                scale=(1.06, 0.94, 0.86),
+            )
+        )
+        pieces.append(
+            sphere(
+                f"SRC__ankle_fillet_{side}",
+                6.4,
+                (x, paw_y + 0.5, 16.4),
+                scale=(1.06, 1.04, 0.92),
             )
         )
         pieces.append(
@@ -743,12 +855,14 @@ def build_body_source() -> list[Component]:
                 scale=(1.35, 1.55, 0.78),
             )
         )
+        # Toes pulled back onto the paw so they fuse into a foot with modelled
+        # splits rather than reading as three loose balls at the toe line.
         for toe in (-1, 0, 1):
             pieces.append(
                 sphere(
                     f"SRC__paw_toe_{side}_{toe}",
-                    2.6,
-                    (x + toe * 3.6, paw_y - 10.2, 8.7),
+                    2.9,
+                    (x + toe * 3.9, paw_y - 9.0, 8.9),
                     scale=(1.10, 1.20, 0.72),
                 )
             )
@@ -805,26 +919,30 @@ def build_body_source() -> list[Component]:
     pieces.append(
         sphere(
             "SRC__jacket_core",
-            19.0,
-            (1.8, 2.5, 79.0),
-            scale=(1.22, 0.82, 1.05),
+            JACKET_CORE_RADIUS,
+            JACKET_CORE_CENTRE,
+            scale=JACKET_CORE_SCALE,
             zone="leather",
         )
     )
+    # I06's chest ruff bulged to y=-20.7 while the jacket panels sat at -15.2, so
+    # the fur was 5.5 mm in front of the leather and the jacket could not read as
+    # the outer layer anywhere.  The ruff is now narrow enough to show only
+    # through the open V, which is what the cover shows.
     pieces.append(
         sphere(
             "SRC__chest_ruff",
             12.0,
-            (0.6, -12.5, 84.0),
-            scale=(1.05, 0.68, 1.12),
+            (0.6, -11.0, 85.0),
+            scale=(0.72, 0.46, 1.05),
         )
     )
     chest_locks = (
-        (-8.0, -18.0, 90.5, -5.0, -18.8, 85.5),
-        (-1.0, -18.5, 92.0, 1.0, -19.0, 86.5),
-        (7.0, -18.0, 90.0, 5.0, -18.8, 84.0),
-        (-5.0, -18.0, 82.0, -2.0, -18.7, 77.5),
-        (4.0, -18.0, 82.0, 2.0, -18.8, 77.0),
+        (-2.6, -15.2, 91.0, -1.2, -16.0, 86.0),
+        (1.4, -15.4, 92.0, 2.2, -16.2, 87.0),
+        (-1.0, -15.0, 84.5, 0.6, -15.8, 79.5),
+        (3.2, -14.6, 82.5, 4.0, -15.4, 78.0),
+        (-4.0, -14.4, 80.0, -2.8, -15.2, 75.5),
     )
     for index, values in enumerate(chest_locks):
         pieces.extend(
@@ -832,7 +950,7 @@ def build_body_source() -> list[Component]:
                 f"SRC__chest_lock_{index}",
                 values[:3],
                 values[3:],
-                2.5,
+                2.3,
             )
         )
 
@@ -848,91 +966,204 @@ def build_body_source() -> list[Component]:
             )
         )
 
+    # Jacket panels are pushed forward of the chest fur (front face y=-18.4) and
+    # the opening is widened into a real V.  The right panel overlaps the left,
+    # matching the cover's offset-zip biker cut.
+    panel_left_edge = [(-10.8, 94.5), (-5.2, 80.0), (-7.8, 66.5)]
+    panel_right_edge = [(10.8, 94.5), (5.6, 80.0), (8.2, 67.0)]
     pieces.extend(
         [
             prism(
                 "SRC__jacket_panel_left",
-                [(-20.0, 91.5), (-9.0, 94.0), (-2.0, 81.0), (-6.0, 67.0), (-19.0, 70.0)],
-                -13.2,
-                4.0,
+                [(-20.5, 92.0), *panel_left_edge, (-19.5, 69.5)],
+                -16.0,
+                4.8,
                 zone="leather",
                 stage="costume",
             ),
             prism(
                 "SRC__jacket_panel_right",
-                [(20.5, 91.5), (9.0, 94.0), (2.5, 81.0), (7.0, 67.0), (20.0, 71.0)],
-                -13.0,
-                4.0,
+                [(20.5, 92.0), *panel_right_edge, (20.0, 70.5)],
+                -16.0,
+                4.8,
                 zone="leather",
                 stage="costume",
             ),
+            # Lapels now stand 2.0 mm proud of the panel face instead of being
+            # buried inside it, which is what gives the collar its hierarchy.
             prism(
                 "SRC__lapel_left",
-                [(-18.0, 94.0), (-8.0, 95.0), (-1.5, 82.0), (-8.0, 85.0), (-14.0, 79.0)],
-                -16.0,
-                2.6,
+                [(-15.5, 94.5), (-9.5, 95.5), (-3.5, 82.0), (-8.5, 85.0), (-13.0, 80.5)],
+                -18.6,
+                3.6,
                 zone="leather",
                 stage="costume",
             ),
             prism(
                 "SRC__lapel_right",
-                [(18.0, 94.0), (8.0, 95.0), (1.5, 82.0), (9.0, 85.5), (15.0, 79.0)],
-                -15.8,
-                2.6,
-                zone="leather",
-                stage="costume",
-            ),
-            prism(
-                "SRC__jacket_back_yoke",
-                [(-18.0, 90.0), (18.0, 90.0), (15.0, 82.5), (-15.0, 82.5)],
-                15.3,
-                2.8,
+                [(15.5, 94.5), (9.5, 95.5), (3.5, 82.0), (9.5, 85.5), (13.5, 80.5)],
+                -18.6,
+                3.6,
                 zone="leather",
                 stage="costume",
             ),
         ]
     )
-    # Raised leather piping survives neutral resin while the semantic edge zone
-    # gives the black jacket a readable construction language in colour.
-    leather_edges = (
-        ((-18.0, -18.0, 93.5), (-8.0, -18.1, 94.2)),
-        ((-8.0, -18.1, 94.2), (-1.5, -18.1, 82.0)),
-        ((18.0, -17.8, 93.5), (8.0, -17.9, 94.2)),
-        ((8.0, -17.9, 94.2), (1.5, -18.0, 82.0)),
-    )
-    for index, (start, end) in enumerate(leather_edges):
-        pieces.extend(
-            capsule(
-                f"SRC__leather_edge_{index}",
-                1.2,
-                start,
-                end,
-                zone="leather_edge",
-                stage="final",
+
+    # Popped collar band riding the neck, higher at the back.  Capped at z=98 so
+    # its outer sweep stays 0.8 mm clear of the head part's neck collar (z>=101)
+    # and cannot create an inter-part intersection.
+    collar_points: list[tuple[float, float, float]] = []
+    for step in range(9):
+        theta = math.radians(58.0 + step * (244.0 / 8.0))
+        collar_points.append(
+            (
+                11.0 * math.sin(theta),
+                -0.5 - 11.0 * math.cos(theta),
+                95.0 + 3.0 * (0.5 - 0.5 * math.cos(theta)),
             )
         )
     pieces.extend(
-        capsule(
-            "SRC__asymmetric_zip",
-            1.25,
-            (7.0, -17.4, 89.0),
-            (-4.0, -17.5, 69.0),
-            zone="silver",
-            stage="costume",
+        seam_chain(
+            "SRC__jacket_collar",
+            collar_points,
+            2.2,
+            zone="leather",
+        )
+    )
+
+    # Back yoke expressed as a raised seam on the real shell surface rather than
+    # as a buried flat prism, plus a waist seam and two shoulder seams.
+    pieces.extend(
+        seam_chain(
+            "SRC__yoke_seam",
+            jacket_seam_points(
+                [(-15.0, 84.0), (-8.0, 87.5), (0.0, 88.5), (8.0, 87.5), (15.0, 84.0)],
+                front=False,
+                embed=0.55,
+            ),
+            1.0,
+        )
+    )
+    pieces.extend(
+        seam_chain(
+            "SRC__waist_seam",
+            jacket_seam_points(
+                [(-13.0, 69.0), (-6.0, 66.5), (2.0, 66.0), (10.0, 67.0), (16.0, 70.5)],
+                front=False,
+                embed=0.55,
+            ),
+            0.95,
         )
     )
     for side in (-1, 1):
-        for z in (88.5, 81.5):
-            pieces.append(
-                sphere(
-                    f"SRC__jacket_snap_{side}_{z}",
-                    1.45,
-                    (side * 12.5, -17.5, z),
-                    scale=(1.0, 0.72, 1.0),
-                    zone="silver",
-                    stage="costume",
-                )
+        pieces.extend(
+            seam_chain(
+                f"SRC__shoulder_seam_{side}",
+                jacket_seam_points(
+                    [
+                        (side * 9.5, 91.0),
+                        (side * 14.0, 89.0),
+                        (side * 17.5, 85.0),
+                        (side * 19.0, 80.0),
+                    ],
+                    front=False,
+                    embed=0.7,
+                ),
+                1.05,
             )
+        )
+
+    # Rounded outer edges.  Flat prisms with square borders read as cardboard;
+    # piping the outer boundary gives the panels a leather edge in silhouette.
+    pieces.extend(
+        seam_chain(
+            "SRC__panel_outer_left",
+            [(-20.3, -16.0, 91.0), (-20.6, -16.0, 80.0), (-19.6, -16.0, 70.2)],
+            1.15,
+        )
+    )
+    pieces.extend(
+        seam_chain(
+            "SRC__panel_outer_right",
+            [(20.3, -16.0, 91.0), (20.6, -16.0, 80.5), (20.1, -16.0, 71.2)],
+            1.15,
+        )
+    )
+
+    # Edge piping is centred on each panel's mid-depth, not stood off its front
+    # face.  Placed in front of the face it rendered as loose grey rods lying
+    # across the chest; centred on the border it bulges sideways past the panel
+    # outline and rounds the edge, which is what piping actually does.
+    panel_mid_y = -16.0
+    lapel_mid_y = -18.6
+    pieces.extend(
+        seam_chain(
+            "SRC__panel_edge_left",
+            [(x, panel_mid_y, z) for x, z in panel_left_edge],
+            1.15,
+        )
+    )
+    pieces.extend(
+        seam_chain(
+            "SRC__panel_edge_right",
+            [(x, panel_mid_y, z) for x, z in panel_right_edge],
+            1.15,
+        )
+    )
+    pieces.extend(
+        seam_chain(
+            "SRC__lapel_edge_left",
+            [(-15.5, lapel_mid_y, 94.5), (-9.5, lapel_mid_y, 95.5), (-3.5, lapel_mid_y, 82.0)],
+            1.05,
+        )
+    )
+    pieces.extend(
+        seam_chain(
+            "SRC__lapel_edge_right",
+            [(15.5, lapel_mid_y, 94.5), (9.5, lapel_mid_y, 95.5), (3.5, lapel_mid_y, 82.0)],
+            1.05,
+        )
+    )
+    pieces.extend(
+        seam_chain(
+            "SRC__hem_edge",
+            [
+                (-19.0, panel_mid_y, 69.8),
+                (-7.5, panel_mid_y, 66.8),
+                (8.2, panel_mid_y, 67.3),
+                (19.8, panel_mid_y, 70.8),
+            ],
+            1.15,
+        )
+    )
+
+    # Asymmetric zip, riding 1.2 mm inside the right panel's inner edge.
+    pieces.extend(
+        seam_chain(
+            "SRC__asymmetric_zip",
+            [(12.0, -19.0, 93.0), (6.8, -19.0, 80.2), (9.4, -19.0, 67.6)],
+            1.25,
+            zone="silver",
+        )
+    )
+    snap_specs = (
+        (-15.5, 90.0),
+        (-13.0, 83.0),
+        (15.5, 90.0),
+        (13.0, 83.0),
+    )
+    for index, (x, z) in enumerate(snap_specs):
+        pieces.append(
+            sphere(
+                f"SRC__jacket_snap_{index}",
+                1.5,
+                (x, -18.7, z),
+                scale=(1.0, 0.72, 1.0),
+                zone="silver",
+                stage="costume",
+            )
+        )
 
     arm_paths = {
         -1: ((-16.0, -2.0, 89.5), (-20.5, -10.0, 79.0), (-8.0, -18.2, 74.0)),
@@ -957,14 +1188,29 @@ def build_body_source() -> list[Component]:
                 zone="leather",
             )
         )
-        cuff_start = Vector(elbow).lerp(Vector(hand), 0.72)
+        # A 6.6 mm cuff over a 6.0 mm forearm gave a 0.6 mm step, below the
+        # 1.2 mm printable-feature floor and invisible at 140 mm.  7.2 mm makes
+        # the cuff an honest 1.2 mm band.
+        cuff_start = Vector(elbow).lerp(Vector(hand), 0.70)
         cuff_end = Vector(elbow).lerp(Vector(hand), 0.88)
         pieces.extend(
             capsule(
                 f"SRC__cuff_{side}",
-                6.6,
+                7.2,
                 tuple(cuff_start),
                 tuple(cuff_end),
+                zone="leather",
+                stage="costume",
+            )
+        )
+        # Sleeve-head fillet: softens the hard capsule-into-sphere transition
+        # where the upper arm meets the shoulder mass.
+        pieces.append(
+            sphere(
+                f"SRC__sleeve_head_{side}",
+                7.4,
+                (shoulder[0] + side * 1.2, shoulder[1] - 1.0, shoulder[2] - 2.5),
+                scale=(1.0, 0.88, 0.92),
                 zone="leather",
                 stage="costume",
             )
@@ -977,12 +1223,16 @@ def build_body_source() -> list[Component]:
                 scale=(1.05, 0.92, 1.0),
             )
         )
+        # I06's three grip balls sat 3.8 mm off the paw and read as detached
+        # spheres.  Pulled in and enlarged, they fuse into a mitt with modelled
+        # separations instead of floating fingers.
         for toe in (-1, 0, 1):
             pieces.append(
                 sphere(
                     f"SRC__grip_toe_{side}_{toe}",
-                    2.2,
-                    (hand[0] + toe * 2.5, hand[1] - 3.8, hand[2] - 1.0),
+                    2.5,
+                    (hand[0] + toe * 2.9, hand[1] - 2.9, hand[2] - 1.0),
+                    scale=(1.0, 1.15, 0.92),
                 )
             )
 
@@ -1040,11 +1290,28 @@ def build_body_source() -> list[Component]:
             stage="costume",
         )
     )
+    # The I06 dog tag sat at y=-17.0 with a front face at -18.4, i.e. 2.3 mm
+    # *behind* the chest fur that surrounded it, so neither the tag nor its
+    # "COBIE" relief existed on the visible surface.  It now hangs in clear air
+    # in front of the jacket and is carried by two chain straps off the collar
+    # ring, which is also what keeps it a single connected solid.  Its band
+    # (z 85.5-95.5) stays 2.0 mm above the launcher mating envelope.
+    for index, x in enumerate((-2.8, 2.8)):
+        pieces.extend(
+            capsule(
+                f"SRC__tag_strap_{index}",
+                1.4,
+                (x, -11.5, 95.2),
+                (x, -20.8, 92.0),
+                zone="silver",
+                stage="costume",
+            )
+        )
     pieces.append(
         cube(
             "SRC__dog_tag",
             (12.0, 2.8, 10.0),
-            (0.0, -17.0, 88.5),
+            (0.0, -21.8, 90.5),
             zone="silver",
             stage="costume",
         )
@@ -1053,7 +1320,7 @@ def build_body_source() -> list[Component]:
         text_relief(
             "SRC__dog_tag_text",
             "COBIE",
-            (0.0, -18.55, 88.5),
+            (0.0, -23.35, 90.5),
             3.2,
             zone="tag_text",
         )
@@ -1062,6 +1329,15 @@ def build_body_source() -> list[Component]:
 
 
 def build_head_source() -> list[Component]:
+    # I07 head rebuild.  I06 built the face from two muzzle spheres sitting at
+    # the same height as two larger cheek spheres, so the snout never projected
+    # and the face read as one dome.  The snout is now an explicit four-stage
+    # taper (root -> mid -> front -> nose) that clears the cheeks by ~7 mm, with
+    # a nasal bridge and brow shelf for the aviators to sit on, and a jowl mass
+    # framing the muzzle.  Every added mass stays above z=99 so the head cannot
+    # reach the body's shoulders (top ~z=95) and break the no-intersection
+    # contract, and nothing is added inside the neck, head-key or glasses-pin
+    # engagement bands.
     pieces: list[Component] = [
         sphere(
             "SRC__skull",
@@ -1072,48 +1348,119 @@ def build_head_source() -> list[Component]:
         sphere(
             "SRC__forehead_bridge",
             7.0,
-            (0.0, -11.5, 121.5),
-            scale=(0.72, 1.05, 1.18),
+            (0.0, -10.0, 121.5),
+            scale=(0.78, 1.02, 1.16),
+            stage="head",
+        ),
+        # Brow shelf: gives the aviators a ridge to rest on and restores the
+        # cover's level, confident eyeline instead of a featureless forehead.
+        sphere(
+            "SRC__brow_left",
+            4.2,
+            (-7.5, -14.2, 123.4),
+            scale=(1.28, 0.76, 0.56),
             stage="head",
         ),
         sphere(
+            "SRC__brow_right",
+            4.2,
+            (7.5, -14.2, 123.4),
+            scale=(1.28, 0.76, 0.56),
+            stage="head",
+        ),
+        # Narrower, further-back cheeks so the snout reads as a snout.
+        sphere(
             "SRC__cheek_left",
-            8.4,
-            (-7.0, -12.5, 112.0),
-            scale=(1.0, 0.92, 0.88),
+            8.0,
+            (-8.6, -9.6, 111.0),
+            scale=(1.0, 0.80, 0.90),
             stage="head",
         ),
         sphere(
             "SRC__cheek_right",
-            8.4,
-            (7.0, -12.5, 112.0),
-            scale=(1.0, 0.92, 0.88),
+            8.0,
+            (8.6, -9.6, 111.0),
+            scale=(1.0, 0.80, 0.90),
+            stage="head",
+        ),
+        # Outer cheek floof, the widest part of the head in the cover.
+        sphere(
+            "SRC__cheek_floof_left",
+            6.8,
+            (-11.8, -6.2, 110.2),
+            scale=(0.95, 0.95, 1.05),
             stage="head",
         ),
         sphere(
-            "SRC__muzzle_left",
-            7.5,
-            (-4.6, -16.6, 112.0),
-            scale=(1.05, 0.86, 0.72),
+            "SRC__cheek_floof_right",
+            6.8,
+            (11.8, -6.2, 110.2),
+            scale=(0.95, 0.95, 1.05),
+            stage="head",
+        ),
+        # Jowl/beard masses framing the muzzle.
+        sphere(
+            "SRC__jowl_left",
+            6.4,
+            (-8.8, -11.0, 105.2),
+            scale=(1.0, 0.95, 0.92),
+            stage="head",
         ),
         sphere(
-            "SRC__muzzle_right",
-            7.5,
-            (4.6, -16.6, 112.0),
-            scale=(1.05, 0.86, 0.72),
+            "SRC__jowl_right",
+            6.4,
+            (8.8, -11.0, 105.2),
+            scale=(1.0, 0.95, 0.92),
+            stage="head",
+        ),
+        # Four-stage snout taper.
+        sphere(
+            "SRC__muzzle_root",
+            7.6,
+            (0.0, -12.0, 112.5),
+            scale=(1.30, 0.95, 0.90),
+        ),
+        sphere(
+            "SRC__muzzle_mid",
+            6.4,
+            (0.0, -17.0, 111.8),
+            scale=(1.22, 0.95, 0.86),
+        ),
+        sphere(
+            "SRC__muzzle_front",
+            5.0,
+            (0.0, -21.3, 112.2),
+            scale=(1.16, 0.92, 0.86),
+        ),
+        # Nasal bridge, kept below the aviators' centre bridge cubes so the
+        # glasses mating cut only grazes it where the lenses actually sit.
+        sphere(
+            "SRC__nasal_bridge",
+            4.6,
+            (0.0, -15.5, 117.0),
+            scale=(0.85, 1.55, 0.58),
+            stage="head",
         ),
         sphere(
             "SRC__lower_jaw",
-            7.2,
-            (0.0, -14.7, 105.5),
-            scale=(1.18, 0.82, 0.88),
+            7.0,
+            (0.0, -16.5, 105.8),
+            scale=(1.16, 0.86, 0.84),
+            stage="head",
+        ),
+        # Lower lip pad: gives the closed, confident mouth something to sit on.
+        sphere(
+            "SRC__lip_pad",
+            4.4,
+            (0.0, -20.2, 107.4),
+            scale=(1.15, 0.82, 0.70),
             stage="head",
         ),
         sphere(
             "SRC__nose",
-            4.7,
-            (0.0, -22.0, 113.6),
-            scale=(1.2, 0.74, 0.78),
+            4.6,
+            (0.0, -24.6, 113.4),
+            scale=(1.22, 0.72, 0.80),
             zone="nose",
         ),
         cylinder(
@@ -1124,65 +1471,115 @@ def build_head_source() -> list[Component]:
         ),
     ]
 
-    crown_curls = (
-        (-12.0, -1.0, 131.0, 4.8),
-        (-7.0, 1.0, 134.0, 5.0),
-        (-1.5, 0.0, 135.0, 4.8),
-        (4.0, 1.0, 134.5, 4.8),
-        (9.5, -0.5, 132.5, 4.8),
-        (-9.5, -7.0, 129.0, 4.2),
-        (-3.0, -8.5, 131.0, 4.2),
-        (4.0, -8.0, 130.5, 4.2),
-        (10.0, -6.0, 128.5, 4.2),
-    )
-    for index, (x, y, z, radius) in enumerate(crown_curls):
+    # Crown fur as a radial fan of elongated, flattened locks.  I06 used nine
+    # near-equal round spheres on a regular grid, which read as bubble wrap; an
+    # earlier I07 attempt varied their size but kept them round and still read as
+    # a bunch of grapes.  Each mass is now a lock roughly 1.5x longer than it is
+    # wide, yawed so its long axis points radially out from the crown apex, which
+    # gives the directional clump rhythm the brief asks for.
+    #
+    # Yaw is rotation about Z only, so a lock's vertical extent stays exactly
+    # z + radius * z-scale.  That keeps the assembly-height contract analytic:
+    # the apex lock is the tallest point at 139.76 mm and nothing else reaches it.
+    crown_fan: list[tuple[str, float, float, float, float, tuple[float, float, float], float]] = [
+        ("apex", -1.0, -1.0, 134.6, 6.0, (1.15, 0.95, 0.86), 0.0),
+    ]
+    for index in range(6):
+        angle = math.radians(index * 60.0)
+        crown_fan.append(
+            (
+                f"upper{index}",
+                8.5 * math.cos(angle),
+                -1.0 + 8.5 * math.sin(angle),
+                131.5,
+                5.4,
+                (1.50, 0.80, 0.66),
+                index * 60.0,
+            )
+        )
+    for index in range(6):
+        angle = math.radians(30.0 + index * 60.0)
+        crown_fan.append(
+            (
+                f"outer{index}",
+                11.5 * math.cos(angle),
+                -1.0 + 11.5 * math.sin(angle),
+                127.5,
+                5.0,
+                (1.55, 0.82, 0.62),
+                30.0 + index * 60.0,
+            )
+        )
+    for label, x, y, z, radius, curl_scale, yaw in crown_fan:
         pieces.append(
             sphere(
-                f"SRC__crown_curl_{index}",
+                f"SRC__crown_curl_{label}",
                 radius,
                 (x, y, z),
-                scale=(1.0, 0.85, 1.0),
+                scale=curl_scale,
+                rotation=(0.0, 0.0, math.radians(yaw)),
             )
         )
     crown_locks = (
-        ((-10.0, -8.0, 132.0), (-6.0, -9.5, 136.0)),
-        ((-3.0, -9.0, 133.0), (0.0, -10.0, 137.0)),
-        ((4.0, -8.5, 132.0), (8.0, -9.0, 135.5)),
+        ((-11.0, -7.0, 131.5), (-7.5, -11.2, 134.6), 2.4),
+        ((-4.5, -8.0, 134.0), (-1.5, -12.0, 136.2), 2.4),
+        ((2.5, -8.0, 133.6), (5.5, -11.6, 135.6), 2.3),
+        ((9.0, -5.5, 131.0), (12.0, -8.6, 132.4), 2.2),
+        ((-1.0, 4.0, 135.2), (2.5, 1.0, 136.6), 2.3),
     )
-    for index, (start, end) in enumerate(crown_locks):
+    for index, (start, end, radius) in enumerate(crown_locks):
+        # Crown clumps keep the base coat colour.  A light tip cap on top of the
+        # head rendered as a row of pale spots rather than as sunlit fur; the
+        # light zone is reserved for clumps seen edge-on (ears, chest, legs).
         pieces.extend(
             fur_lock(
                 f"SRC__crown_lock_{index}",
                 start,
                 end,
-                2.2,
+                radius,
+                zone="fur",
                 stage="head",
             )
         )
 
+    # Cheek-to-snout fur flow, re-seated onto the new snout surface.  The two
+    # clumps that previously crossed the mouth corners are now routed down the
+    # jowl: with a light tip cap they protruded past the snout and read as a
+    # pair of fangs.
     muzzle_locks = (
-        ((-9.0, -18.0, 113.0), (-6.0, -20.0, 109.0)),
-        ((-4.0, -18.5, 108.5), (-1.0, -19.5, 104.5)),
-        ((4.0, -18.5, 108.5), (1.0, -19.5, 104.5)),
-        ((9.0, -18.0, 113.0), (6.0, -20.0, 109.0)),
+        ((-9.6, -12.0, 114.5), (-6.4, -17.0, 110.8), 2.3),
+        ((-7.6, -12.4, 105.4), (-8.8, -12.0, 100.8), 1.9),
+        ((7.6, -12.4, 105.4), (8.8, -12.0, 100.8), 1.9),
+        ((9.6, -12.0, 114.5), (6.4, -17.0, 110.8), 2.3),
+        ((-12.4, -6.0, 108.0), (-10.0, -10.5, 103.6), 2.4),
+        ((12.4, -6.0, 108.0), (10.0, -10.5, 103.6), 2.4),
     )
-    for index, (start, end) in enumerate(muzzle_locks):
+    for index, (start, end, radius) in enumerate(muzzle_locks):
+        # Base-coat tips on the face.  A light tip cap here rendered as a pair of
+        # pale points flanking the mouth that read unmistakably as fangs.  The
+        # light zone stays on the ear, chest and leg clumps, which are seen
+        # edge-on against the coat and are what it was intended for.
         pieces.extend(
             fur_lock(
                 f"SRC__muzzle_lock_{index}",
                 start,
                 end,
-                2.2,
+                radius,
+                zone="fur",
                 stage="head",
             )
         )
 
+    # Closed, confident mouth.  I06 placed this line ~2 mm inside the snout
+    # surface, so it was fused away entirely; it now sits on the surface as a
+    # shallow raised crease that survives a 0.5 mm voxel remesh and can be
+    # lined with wash by hand.
     pieces.extend(
         capsule(
             "SRC__mouth_left",
             1.15,
-            (-5.5, -20.0, 108.5),
-            (0.0, -20.8, 107.8),
+            (-5.2, -22.6, 109.2),
+            (0.0, -23.6, 108.4),
             zone="mouth",
             stage="head",
         )
@@ -1191,43 +1588,40 @@ def build_head_source() -> list[Component]:
         capsule(
             "SRC__mouth_right",
             1.15,
-            (0.0, -20.8, 107.8),
-            (5.5, -20.0, 108.5),
+            (0.0, -23.6, 108.4),
+            (5.2, -22.6, 109.2),
             zone="mouth",
             stage="head",
         )
     )
 
     for side in (-1, 1):
-        pieces.extend(
-            capsule(
-                f"SRC__ear_core_{side}",
-                8.0,
-                (side * 14.0, 0.5, 123.0),
-                (side * 17.0, 0.0, 105.5),
-            )
+        # Drop ears.  I06 used a round r=8 capsule plus four round lobes, which
+        # is why the ears read as two thick sausages.  Each ear is now a set of
+        # X-flattened plates that hang wide and taper downward, with a distinct
+        # front fold.  The lowest plate stops at z=99.1, leaving ~4 mm to the
+        # body's shoulder crown.
+        ear_plates = (
+            ("upper", side * 14.6, -1.5, 122.0, 8.4, (0.48, 1.02, 1.12)),
+            ("mid", side * 17.4, -3.0, 113.5, 8.0, (0.46, 1.00, 1.08)),
+            ("low", side * 18.4, -3.5, 105.5, 6.4, (0.46, 0.98, 1.00)),
+            ("fold", side * 16.0, -8.5, 116.0, 4.4, (0.50, 0.90, 1.30)),
         )
-        ear_lobes = (
-            (side * 19.0, -4.0, 123.0, 4.4),
-            (side * 21.0, -2.0, 117.0, 4.7),
-            (side * 21.0, -4.0, 111.0, 4.7),
-            (side * 19.0, -2.0, 105.0, 4.5),
-        )
-        for index, (x, y, z, radius) in enumerate(ear_lobes):
+        for label, x, y, z, radius, plate_scale in ear_plates:
             pieces.append(
                 sphere(
-                    f"SRC__ear_lobe_{side}_{index}",
+                    f"SRC__ear_{label}_{side}",
                     radius,
                     (x, y, z),
-                    scale=(0.9, 1.0, 1.0),
+                    scale=plate_scale,
                 )
             )
         pieces.extend(
             capsule(
                 f"SRC__ear_root_{side}",
                 1.8,
-                (side * 16.5, -7.0, 121.0),
-                (side * 18.5, -7.0, 108.0),
+                (side * 15.0, -7.0, 121.0),
+                (side * 17.5, -7.0, 108.0),
                 zone="fur_root",
                 stage="final",
             )
@@ -1235,8 +1629,8 @@ def build_head_source() -> list[Component]:
         pieces.extend(
             fur_lock(
                 f"SRC__ear_lock_upper_{side}",
-                (side * 18.0, -7.0, 122.0),
-                (side * 21.0, -7.5, 116.0),
+                (side * 16.8, -8.0, 121.5),
+                (side * 19.4, -8.6, 115.0),
                 2.1,
                 stage="head",
             )
@@ -1244,8 +1638,8 @@ def build_head_source() -> list[Component]:
         pieces.extend(
             fur_lock(
                 f"SRC__ear_lock_lower_{side}",
-                (side * 21.0, -6.0, 112.0),
-                (side * 18.0, -6.5, 105.0),
+                (side * 19.6, -7.0, 111.0),
+                (side * 17.4, -7.4, 104.0),
                 2.1,
                 stage="head",
             )

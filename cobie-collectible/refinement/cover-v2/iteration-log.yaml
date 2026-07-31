@@ -143,7 +143,7 @@ iterations:
       - physical print and fit review
   - id: I06
     stage: pose_surface_and_evidence_polish
-    status: accepted_target_met
+    status: superseded_by_recalibrated_I07_review
     focus: widen and angle the planted stance, shift weight, unify the launcher axis, smooth authored primitives, complete semantic surface accents, and repair the review-board evidence
     score_before: 78
     score_after: 85
@@ -163,6 +163,35 @@ iterations:
       weighted_score_observed: 85
       every_category_rating_minimum: 4
       target_met: true
+      later_review_note: I07's independent recalibrated review scores this same I06 evidence at 66 and reopens the visual target; preserve both reviewer records rather than presenting the earlier score as final truth
+    remaining_required_human_gates:
+      identity_approved: false
+      physical_prototype_approved: false
+      manufacture_authorized: false
+  - id: I07
+    stage: identity_and_construction_correction
+    status: improved_provisional_target_not_met
+    focus: rebuild the projecting snout, drop ears and crown locks; expose the jacket, dog tag and surface-derived seams; repair fur-tip material ownership and buried geometry
+    score_before: 66
+    score_after: 81
+    geometry_changed: true
+    refinement_stage: final
+    hard_gate_regressions: []
+    digital_evidence:
+      master_structure: pass
+      collectible_tests: 49_pass
+      print_check: pass
+      prusaslicer_import: pass
+      neutral_render: cobie-collectible/validation-renders/cover-v2/I07-neutral/contact_sheet.png
+      lookdev_review: cobie-collectible/validation-renders/cover-v2/I07-lookdev/review_board.png
+      score_report: cobie-collectible/refinement/cover-v2/ratings/I07_report.json
+    digital_acceptance:
+      weighted_score_minimum: 85
+      weighted_score_observed: 81
+      every_category_rating_minimum: 4
+      lowest_category_observed: 3
+      target_met: false
+    next_highest_impact_gap: replace the symmetric crown fan and rounded cheek/jowl lobes with overlapping irregular flattened locks, then obtain real-Cobie identity review
     remaining_required_human_gates:
       identity_approved: false
       physical_prototype_approved: false

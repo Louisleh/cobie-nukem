@@ -1,2 +1,6 @@
 cobie-collectible/blender/*.blend filter=lfs diff=lfs merge=lfs -text
 cobie-collectible/generated-meshes/selected.glb filter=lfs diff=lfs merge=lfs -text
+cobie-collectible/concepts/action-figure-packaging-guides/*.png filter=lfs diff=lfs merge=lfs -text
+cobie-collectible/concepts/meshy-tpose-reference-guides/*.png filter=lfs diff=lfs merge=lfs -text
+cobie-collectible/validation-renders/cover-v2/I07-lookdev/*.png filter=lfs diff=lfs merge=lfs -text
+cobie-collectible/validation-renders/cover-v2/I07-neutral/*.png filter=lfs diff=lfs merge=lfs -text
