@@ -216,12 +216,13 @@ The 2026-07-27 owner direction makes the startup screen plus Levels 1–2 the op
 - **Owned paths:** exact Salmon Creek pacing/presentation resources, first-30-second test/capture adapters, and their focused tests, frozen in the buildout log before a writer starts.
 - **Acceptance:** one reproducible 0–30 second run exposes the hero, immediate weapon affordance, the rule-break joke, first enemy contact, and the equipment-shed route cue while preserving mission identity, enemy/weapon breadth, route topology, save/progression semantics, and native/Web budgets. Human learning, humor, combat, and art judgment remain open.
 
-**WCB-008L — Rain City wetness/readability completion**
+**WCB-008L — Rain City 90-second production gauntlet**
 
-- **Status:** Pending WCB-008J; retains `a1e51c2` as an unapproved parameter-only candidate.
-- **Owner:** One visual/presentation writer.
-- **Owned paths:** the exact Rain City material/presentation families and focused tests named in the packet freeze. WCB-007 boss, route collision/navigation, progression, and other missions remain frozen.
-- **Acceptance:** selective wetness and readable value separation improve the five bound non-boss views at all four canonical aspects without universal gloss, route/HUD clipping, native performance regression, or weakening capture receipts. District identity, enemy/viewmodel readability, humor, motion, photosensitivity, target-Mac, and physical-iPad quality remain human gates.
+- **Status:** Active from clean source `854d552`; contract frozen in `docs/work_packets/wcb008l/PRODUCTION_GAUNTLET.md`. WCB-008K remains honestly open for its rejected continuous-evidence continuation, but its production paths are frozen and no concurrent writer may run. Owner direction permits this independent WCB-008L production experiment without relabeling WCB-008K complete.
+- **Owner:** GPT-5.6-sol/high architect, reviewer, integrator, art director, and final claimant; explicitly pinned GPT-5.3-Codex-Spark workers receive bounded, sequential, non-overlapping packets.
+- **Milestones:** contract/baseline freeze; truthful 90-second input-driven baseline evidence; authored Downtown-to-waterfront environment/material/light uplift; bounded Pawstol/combat-feedback uplift; one existing enemy's deterministic Blender-to-directional-atlas and debug-only runtime-3D A/B; integrated native/Web evidence and human-review packet. GPT/Spark capacity is checked after every two major milestones.
+- **Owned paths:** exact paths are frozen per milestone in the gauntlet. Environment presentation, combat presentation, and one-enemy source/runtime paths never have concurrent writers. WCB-007 boss, route collision/navigation, progression, damage/balance, enemy/weapon breadth, other missions, release identity, and BETA status remain frozen.
+- **Acceptance:** the production candidate scores at least 82/100 with no category below 70%, passes milestone mechanical/performance/provenance gates, produces source-bound matched four-aspect stills plus a truthful 90-second automated moving run, and is a clear bounded improvement under fresh artifact criticism. Selective wetness avoids universal gloss; combat feedback preserves authoritative aim/damage; production retains high-resolution 2.5D. Human identity, art taste, humor, feel, mix, comfort, photosensitivity, target-Mac, browser, iPad, and controller approval remain open.
 
 ### WCB-009 — Rain City integrated evidence and replication selection
 
