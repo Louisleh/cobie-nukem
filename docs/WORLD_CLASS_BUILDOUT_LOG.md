@@ -490,6 +490,19 @@ Decision and remaining gate:
 - **Acceptance boundary:** final automated acceptance requires at least `82/100`, no category below `70%`, truthful source-bound 90-second moving evidence, complete four-aspect matched stills, green mechanical/provenance/performance/export gates, fresh artifact criticism, and explicit human review questions. The BETA label and all human/device claims remain open.
 - **Next dependency-safe milestone:** validate, commit, and push M0; then launch one isolated Spark M1 evidence writer with only additive debug/wrapper/verifier/test ownership.
 
+## 2026-08-03 — WCB-008L M1R capture adapter blocked and stopped
+
+- **Canonical source:** `21b406f4a6f5c809396c30f435c5e2b1c9cc4525`, clean and matching `origin/hermes/world-class-369-buildout` before this docs-only blocker receipt.
+- **Routing:** GPT-5.6 SOL via OpenAI Codex remained root architect/reviewer/integrator. The isolated M1R writer and one bounded repair were explicitly pinned `gpt-5.3-codex-spark`; no Ortnith execution was used.
+- **Root cause:** direct Movie Maker launch owned no listener that converted the canonical harness's `run_finished` signal into one receipt and `SceneTree.quit()`. The integration test has such an owner, but the direct scene does not.
+- **Candidate disposition:** a tiny additive parent host/launcher/verifier candidate was developed only in `/tmp/cobie-wcb008l-m1r-sandbox`; it did not edit the canonical harness or production paths and was never committed or integrated.
+- **Probe 1:** produced 60 evidence frames plus one flush frame at 1280×720/30 FPS, `18,719,584` raw PNG bytes, one explicitly non-evidence receipt, canonical-relabel rejection, and no remaining process. Root rejected its apparent exit-0 result because raw logs contained shader-cache, ParticlesShader, ObjectDB, resource, and RID leak diagnostics that the first verifier failed to enforce.
+- **Probe 2 after one bounded repair:** generated 62 raw frames, then failed closed on shader-cache plus one ParticlesShader/one RID teardown diagnostic. No PNG was promoted; only about 8 KiB of logs remained, no process survived, and disk remained healthy.
+- **Mechanical evidence:** Bash syntax, eight standard-library verifier tests, the focused GDScript host test, and `git diff --check` passed. These do not override the rendered engine-cleanliness failure.
+- **Stop decision:** under the frozen two-failed-repair/repeated-engine-leak rule, M1R is **BLOCKED / STOPPED**. The exact 90-second canonical run was not launched; M2–M5 remain frozen. Full receipt: `docs/work_packets/wcb008l/M1R_CAPTURE_BLOCKER.md`.
+- **Capacity checkpoint (15:26 PDT):** Main GPT/Codex `21%` used / `79%` remaining; GPT-5.3-Codex-Spark `14%` used / `86%` remaining; no limit hit.
+- **Reopen boundary:** require a materially different pre-approved evidence strategy and a new packet; do not repeat this Movie Maker teardown path as an implicit third repair.
+
 ---
 
 ## Resume protocol
