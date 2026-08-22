@@ -290,7 +290,8 @@ class ReceiptVerifierTests(unittest.TestCase):
     def test_tampered_png_bytes_fail_structure(self) -> None:
         fx = self.fixture()
         path = fx.frame_path("000010.png")
-        data = bytearray(open(path, "rb").read())
+        with open(path, "rb") as handle:
+            data = bytearray(handle.read())
         data[-1] ^= 0xFF  # corrupt IEND CRC region
         with open(path, "wb") as handle:
             handle.write(bytes(data))
@@ -300,7 +301,8 @@ class ReceiptVerifierTests(unittest.TestCase):
     def test_truncated_png_file_fails(self) -> None:
         fx = self.fixture()
         path = fx.frame_path("000020.png")
-        data = open(path, "rb").read()
+        with open(path, "rb") as handle:
+            data = handle.read()
         with open(path, "wb") as handle:
             handle.write(data[: len(data) // 2])
         msg = fx.verify_message()
