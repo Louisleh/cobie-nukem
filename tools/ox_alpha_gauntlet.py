@@ -23,22 +23,24 @@ MODEL = "x-preview-f-free"
 PROVIDER = "opencode-free"
 DEFAULT_PROFILE_HOME = Path.home() / ".hermes/profiles/oxcobielab"
 REQUIRED_REPORT_KEYS = (
-    "work_id:",
-    "status:",
-    "model:",
-    "baseline_revision:",
-    "role:",
-    "owned_paths:",
-    "changed_paths:",
-    "commands_run:",
-    "mechanical_results:",
-    "evidence_paths:",
-    "verdict:",
-    "largest_gap:",
-    "regressions:",
-    "remaining_human_gates:",
-    "commit_hash:",
+    "work_id",
+    "status",
+    "model",
+    "baseline_revision",
+    "role",
+    "owned_paths",
+    "changed_paths",
+    "commands_run",
+    "mechanical_results",
+    "evidence_paths",
+    "verdict",
+    "largest_gap",
+    "regressions",
+    "remaining_human_gates",
+    "commit_hash",
 )
+REPORT_BEGIN = "WORKER_REPORT_JSON_BEGIN"
+REPORT_END = "WORKER_REPORT_JSON_END"
 SAFE_ENV_KEYS = {"PATH", "LANG", "LC_ALL", "TMPDIR", "SHELL", "TERM"}
 SECRET_NAME = re.compile(r"(KEY|TOKEN|SECRET|PASSWORD|CREDENTIAL|COOKIE|AUTH)", re.I)
 TRANSIENT_PROVIDER_ERROR = re.compile(r"HTTP (?:429|5\d\d)|timed out|temporarily unavailable", re.I)
@@ -123,27 +125,54 @@ Owned paths:
 Task:
 {task.strip()}
 
-Return one final YAML document with every field below, even if blocked:
-work_id: {work_id}
-status: complete | blocked | failed
-model: {MODEL}
-baseline_revision: {revision}
-role: audit | writer | critic | repair
-owned_paths: []
-changed_paths: []
-commands_run: []
-mechanical_results: []
-evidence_paths: []
-verdict: accept | revise | reject | blocked
-largest_gap: string
-regressions: []
-remaining_human_gates: []
-commit_hash: null
+End with exactly one machine-readable report between these markers. The body must be strict JSON,
+not YAML or Markdown, and must contain every field even if blocked:
+{REPORT_BEGIN}
+{{
+  "work_id": "{work_id}",
+  "status": "complete | blocked | failed",
+  "model": "{MODEL}",
+  "baseline_revision": "{revision}",
+  "role": "audit | writer | critic | repair",
+  "owned_paths": [],
+  "changed_paths": [],
+  "commands_run": [],
+  "mechanical_results": [],
+  "evidence_paths": [],
+  "verdict": "accept | revise | reject | blocked",
+  "largest_gap": "string",
+  "regressions": [],
+  "remaining_human_gates": [],
+  "commit_hash": null
+}}
+{REPORT_END}
 """
 
 
-def validate_report(text: str) -> list[str]:
-    return [key for key in REQUIRED_REPORT_KEYS if key not in text]
+def extract_report(text: str) -> dict[str, object]:
+    start = text.rfind(REPORT_BEGIN)
+    if start < 0:
+        raise ValueError(f"missing {REPORT_BEGIN}")
+    start += len(REPORT_BEGIN)
+    end = text.find(REPORT_END, start)
+    if end < 0:
+        raise ValueError(f"missing {REPORT_END}")
+    report = json.loads(text[start:end].strip())
+    if not isinstance(report, dict):
+        raise ValueError("worker report must be a JSON object")
+    return report
+
+
+def validate_report(report: dict[str, object], *, work_id: str, revision: str) -> list[str]:
+    violations = [f"worker report missing key: {key}" for key in REQUIRED_REPORT_KEYS if key not in report]
+    expected = {"work_id": work_id, "model": MODEL, "baseline_revision": revision}
+    for key, value in expected.items():
+        if report.get(key) != value:
+            violations.append(f"worker report {key} mismatch: {report.get(key)!r}")
+    for key in ("owned_paths", "changed_paths", "commands_run", "mechanical_results", "evidence_paths", "regressions", "remaining_human_gates"):
+        if key in report and not isinstance(report[key], list):
+            violations.append(f"worker report {key} must be a list")
+    return violations
 
 
 def changed_paths(repo: Path, revision: str) -> list[str]:
@@ -247,8 +276,14 @@ def main() -> int:
     (output / "worker.stdout.txt").write_text(stdout, encoding="utf-8")
     (output / "worker.stderr.txt").write_text(stderr, encoding="utf-8")
     paths = changed_paths(clone, revision)
-    missing = validate_report(stdout)
     violations: list[str] = []
+    worker_report: dict[str, object] | None = None
+    try:
+        worker_report = extract_report(stdout)
+        violations.extend(validate_report(worker_report, work_id=args.work_id, revision=revision))
+        (output / "worker.report.json").write_text(json.dumps(worker_report, indent=2) + "\n", encoding="utf-8")
+    except (ValueError, json.JSONDecodeError) as exc:
+        violations.append(f"invalid worker report: {exc}")
     if args.mode == "audit" and paths:
         violations.append(f"read-only audit changed paths: {paths}")
     if args.mode == "writer":
@@ -259,8 +294,6 @@ def main() -> int:
             violations.append("writer left an uncommitted working tree")
         if git(clone, "rev-parse", "HEAD").stdout.strip() == revision:
             violations.append("writer produced no commit")
-    if missing:
-        violations.append(f"worker report missing required keys: {missing}")
     if result.returncode != 0:
         violations.append(f"Hermes worker exited {result.returncode}")
 

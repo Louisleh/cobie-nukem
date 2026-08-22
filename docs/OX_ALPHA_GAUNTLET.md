@@ -19,7 +19,7 @@ Use the temporary Ox Alpha preview for bounded public-repository coding work wit
 ## Roles
 
 1. **GPT-5.6 architect:** reads authority, freezes one dependency-safe packet, exact ownership, acceptance, and stop rules.
-2. **Ox Alpha audit/critic:** inspects a clean isolated clone and returns the required YAML receipt without writing.
+2. **Ox Alpha audit/critic:** inspects a clean isolated clone and returns the required delimiter-bound strict JSON receipt without writing.
 3. **Ox Alpha writer:** optional; receives exact non-overlapping paths, works in a full clone, makes one cohesive local commit, and cannot push or integrate.
 4. **GPT-5.6 integrator:** independently reviews the patch and raw outputs, reruns focused and root tests in canonical source, accepts or rejects, commits, pushes, and updates the durable ledger.
 
