@@ -63,6 +63,27 @@ Stop rather than widen scope when:
 - two bounded repairs fail;
 - free-route availability, privacy terms, or output quality changes materially.
 
+## Ambitious free-development operating mode
+
+Significant Ox work uses one **logical serialized writer lane with fresh model context per verified milestone**, not one enormous prompt. GPT-5.6 freezes the complete authority contract, then decomposes it into dependency-ordered packets that each fit a bounded context and exact path set:
+
+1. narrow read-only audit with a required verdict;
+2. dependency-free implementation and focused tests;
+3. runtime/engine integration only after root accepts the prior checkpoint;
+4. wrapper, isolation, provenance, and negative fixtures;
+5. real bounded evidence generation;
+6. fresh Ox critic followed by GPT-5.6 adjudication and canonical gates.
+
+Each milestone gets a new work ID/output directory, one scoped commit, and an independent root review. The next context receives the frozen parent contract plus only the current packet and prior verified checkpoint. A timeout without a valid receipt is no progress. Do not resume an exhausted model context, widen ownership, run parallel writers over coupled paths, or substitute a paid/weaker model.
+
+Use the free lane aggressively for useful public-repository audits, tests, tooling, additive gameplay/presentation packets, accessibility/performance reviews, and fresh criticism. Keep architecture, integration, release, protected configuration, cross-project context, human taste/device gates, and final claims with GPT-5.6.
+
 ## Current first use
 
-The first audit asks Ox Alpha to evaluate a materially different WCB-008L reopen strategy: external bounded window capture instead of the rejected Godot Movie Maker teardown path. It may recommend a narrow spike or keep the packet blocked. GPT-5.6 decides whether any implementation packet is justified.
+The first audit evaluated a materially different WCB-008L reopen strategy after the rejected Godot Movie Maker teardown path. Its initial all-in-one writer packet timed out twice. The replacement serialized lane is frozen as:
+
+- `wcb008l_m1a_receipt_verifier.md` — dependency-free Python verifier/tests;
+- `wcb008l_m1b_capture_host.md` — additive Godot host/test after M1A integration;
+- a later root-authored wrapper/probe packet only after both checkpoints pass.
+
+This decomposition is a reliability repair, not permission to bypass WCB-008K/WCB-008L dependency truth, launch the 90-second run, or weaken the original M1S stop rules.
