@@ -177,6 +177,8 @@ def scan_frame_directory(frame_dir: str) -> Tuple[List[str], str]:
         return ([], "missing/non-contiguous frames (first few): %s" % ", ".join(missing[:5]))
     for name in expected:
         path = os.path.join(frame_dir, name)
+        if os.path.islink(path):
+            return ([], "frame entry must not be a symlink: %s" % name)
         if not os.path.isfile(path):
             return ([], "frame entry is not a regular file: %s" % name)
     return (expected, "")
@@ -343,6 +345,22 @@ def verify_hashes_and_bytes(
             "receipt output_bytes %d exceeds ceiling %d" % (output_bytes, OUTPUT_BYTE_CEILING)
         )
 
+    # Preflight the whole frame set before hashing or reading file contents.
+    # A dishonest small receipt value must not make the verifier read an
+    # unbounded frame into memory before discovering the real byte total.
+    actual_total_bytes = 0
+    for name in frame_names:
+        path = os.path.join(frame_dir, name)
+        try:
+            actual_total_bytes += os.path.getsize(path)
+        except OSError as exc:
+            return _fail("cannot stat frame %s: %s" % (name, exc))
+        if actual_total_bytes > OUTPUT_BYTE_CEILING:
+            return _fail(
+                "actual frame bytes %d exceed ceiling %d"
+                % (actual_total_bytes, OUTPUT_BYTE_CEILING)
+            )
+
     if frame_names[0] != FIRST_FRAME_NAME or frame_names[-1] != LAST_FRAME_NAME:
         return _fail(
             "frame span must run %s..%s, got %s..%s"
@@ -361,7 +379,6 @@ def verify_hashes_and_bytes(
     if payload.get(FIELD_LAST_FRAME_SHA256) != endpoint_hashes["last"]:
         return _fail("last frame SHA-256 mismatch")
 
-    total_bytes = 0
     for name in frame_names:
         path = os.path.join(frame_dir, name)
         try:
@@ -376,16 +393,10 @@ def verify_hashes_and_bytes(
                 "PNG %s dimensions %dx%d inconsistent with receipt %dx%d"
                 % (name, png_w, png_h, width, height)
             )
-        total_bytes += len(data)
-
-    if output_bytes != total_bytes:
+    if output_bytes != actual_total_bytes:
         return _fail(
             "aggregate output-byte mismatch: receipt claims %d, actual PNG bytes %d"
-            % (output_bytes, total_bytes)
-        )
-    if total_bytes > OUTPUT_BYTE_CEILING:
-        return _fail(
-            "aggregate output bytes %d exceed ceiling %d" % (total_bytes, OUTPUT_BYTE_CEILING)
+            % (output_bytes, actual_total_bytes)
         )
     return (True, "")
 

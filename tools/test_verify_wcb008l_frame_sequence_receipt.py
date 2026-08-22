@@ -277,6 +277,14 @@ class ReceiptVerifierTests(unittest.TestCase):
         self.assertFalse(ok)
         self.assertIn("does not exist", msg)
 
+    def test_symlinked_frame_fails(self) -> None:
+        fx = self.fixture()
+        source = fx.frame_path("000000.png")
+        link = fx.frame_path("000001.png")
+        os.remove(link)
+        os.symlink(source, link)
+        self.assertIn("must not be a symlink", fx.verify_message())
+
     # --- PNG integrity and telemetry ---------------------------------------
 
     def test_tampered_png_bytes_fail_structure(self) -> None:
@@ -422,11 +430,14 @@ class ReceiptVerifierTests(unittest.TestCase):
         self.assertIn("exceeds ceiling", msg)
 
     def test_actual_bytes_above_ceiling_fail(self) -> None:
-        # Writing 64 MiB of fixtures would be wasteful; lower the ceiling so
-        # the real aggregate-byte path above the limit is exercised.
+        # Writing 64 MiB of fixtures would be wasteful; lower the ceiling and
+        # lie with a small receipt value so the actual-byte preflight—not the
+        # receipt-claim gate—is exercised before frame contents are read.
         fx = self.fixture()
         original = verifier.OUTPUT_BYTE_CEILING
         verifier.OUTPUT_BYTE_CEILING = max(1, fx.output_bytes - 1)
+        fx.receipt["output_bytes"] = 1
+        fx.write_receipt()
         try:
             ok, msg = verifier.verify(
                 receipt_path=fx.receipt_path,
@@ -439,12 +450,7 @@ class ReceiptVerifierTests(unittest.TestCase):
         finally:
             verifier.OUTPUT_BYTE_CEILING = original
         self.assertFalse(ok)
-        # Either the receipt-claim gate ("exceeds ceiling") or the aggregate
-        # actual-byte gate ("exceed ceiling") may fire; both fail closed.
-        self.assertTrue(
-            "exceeds ceiling" in msg or "exceed ceiling" in msg,
-            "bytes above the ceiling must fail closed",
-        )
+        self.assertIn("actual frame bytes", msg)
 
     # --- raw log -------------------------------------------------------------
 

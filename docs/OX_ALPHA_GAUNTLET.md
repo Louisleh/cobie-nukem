@@ -87,3 +87,11 @@ The first audit evaluated a materially different WCB-008L reopen strategy after 
 - a later root-authored wrapper/probe packet only after both checkpoints pass.
 
 This decomposition is a reliability repair, not permission to bypass WCB-008K/WCB-008L dependency truth, launch the 90-second run, or weaken the original M1S stop rules.
+
+### M1A pilot result
+
+Ox Alpha timed out on its first attempt, then completed the two owned files and committed them on the fresh second attempt. The gauntlet correctly rejected the handoff because the final answer omitted the required `WORKER_REPORT_JSON` envelope; root therefore treated it as an untrusted candidate rather than an accepted worker receipt.
+
+GPT-5.6 independently inspected and salvaged the exact two-path commit, added symlink rejection plus a pre-read aggregate-byte ceiling, and reran the focused and canonical gates. Root evidence at integration: 40 focused verifier tests pass, Python compilation passes, `git diff --check` passes, world-class docs pass, Godot 4.7.1 import passes, and the core contract suite reports `PASS`.
+
+M1A is accepted as a root-verified checkpoint. M1B remains a separate fresh-context packet; no capture run or WCB-008L evidence claim is authorized by M1A alone.
