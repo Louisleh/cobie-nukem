@@ -31,6 +31,13 @@ These rules apply to the entire repository.
 - Use isolated checkouts for Spark writers and never allow overlapping writer ownership. Explicit CLI workers use a disposable parent sandbox with the assigned full local clone nested beneath it so their commit metadata is writable and externally verifiable. Spark workers do not merge, deploy, stamp builds, operate privileged MCP bridges, or claim human/physical-device evidence.
 - Review every Spark diff and complete test output with GPT-5.6 before integration. Repository guidance and the PRD—not conversational memory—are authoritative.
 
+## Ox Alpha preview lane
+
+- The temporary Ox Alpha route is manual-only and limited to public/sanitized Cobie work under `docs/OX_ALPHA_GAUNTLET.md`.
+- Invoke Ox workers only through `tools/ox_alpha_gauntlet.py`, the privacy-minimized `oxcobielab` profile, an isolated full clone, and a frozen read-only or exact-path packet.
+- GPT-5.6 retains the same architect, integration, verification, push, and final-claim ownership. Ox output is advisory until independently reviewed and rerun in canonical source.
+- Never expose unrelated projects, personal memory, credentials, private notes, customer data, or other sensitive context to the preview route. Stop if provider terms, availability, or behavior changes materially.
+
 ## Shared-file ownership
 
 - Architecture/integration owns `project.godot`, `export_presets.cfg`, `.github/workflows`, and `scripts/core`.
