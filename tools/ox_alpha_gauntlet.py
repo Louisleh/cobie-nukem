@@ -297,6 +297,7 @@ def main() -> int:
     if result.returncode != 0:
         violations.append(f"Hermes worker exited {result.returncode}")
 
+    retain_clone = args.keep_clone or (args.mode == "writer" and bool(paths))
     metadata = {
         "work_id": args.work_id,
         "mode": args.mode,
@@ -313,11 +314,11 @@ def main() -> int:
         "owned_paths": args.owned_path,
         "violations": violations,
         "accepted": not violations,
-        "clone_path": str(clone) if args.keep_clone or args.mode == "writer" else None,
+        "clone_path": str(clone) if retain_clone else None,
     }
     (output / "receipt.json").write_text(json.dumps(metadata, indent=2) + "\n", encoding="utf-8")
 
-    if not (args.keep_clone or args.mode == "writer"):
+    if not retain_clone:
         shutil.rmtree(temp_root)
     print(json.dumps(metadata, indent=2))
     return 0 if not violations else 1

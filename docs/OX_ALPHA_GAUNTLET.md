@@ -49,7 +49,7 @@ python3 tools/ox_alpha_gauntlet.py \
   --output-dir /tmp/cobie-ox-evidence/OX-WCB-008L-M1-EXTERNAL-CAPTURE
 ```
 
-Writer clones are retained and identified in `receipt.json`. Never cherry-pick until GPT-5.6 verifies baseline parent, changed-path scope, full diff, tests, and evidence.
+Writer clones with changes are retained and identified in `receipt.json`; clean failed clones are removed automatically unless `--keep-clone` is set. Never cherry-pick until GPT-5.6 verifies baseline parent, changed-path scope, full diff, tests, and evidence.
 
 ## Stop rules
 
