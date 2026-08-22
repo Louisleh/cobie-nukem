@@ -17,6 +17,7 @@ import shutil
 import subprocess
 import sys
 import tempfile
+import time
 
 MODEL = "x-preview-f-free"
 PROVIDER = "opencode-free"
@@ -40,6 +41,7 @@ REQUIRED_REPORT_KEYS = (
 )
 SAFE_ENV_KEYS = {"PATH", "LANG", "LC_ALL", "TMPDIR", "SHELL", "TERM"}
 SECRET_NAME = re.compile(r"(KEY|TOKEN|SECRET|PASSWORD|CREDENTIAL|COOKIE|AUTH)", re.I)
+TRANSIENT_PROVIDER_ERROR = re.compile(r"HTTP (?:429|5\d\d)|timed out|temporarily unavailable", re.I)
 
 
 def run(command: list[str], cwd: Path, *, check: bool = True) -> subprocess.CompletedProcess[str]:
@@ -165,6 +167,8 @@ def main() -> int:
     parser.add_argument("--profile-home", type=Path, default=DEFAULT_PROFILE_HOME)
     parser.add_argument("--owned-path", action="append", default=[])
     parser.add_argument("--timeout", type=int, default=1800)
+    parser.add_argument("--attempts", type=int, default=3)
+    parser.add_argument("--retry-delay", type=int, default=30)
     parser.add_argument("--keep-clone", action="store_true")
     args = parser.parse_args()
 
@@ -205,23 +209,41 @@ def main() -> int:
         "--quiet",
     ]
     started = dt.datetime.now(dt.timezone.utc).isoformat()
-    try:
-        result = subprocess.run(
-            command,
-            cwd=clone,
-            env=clean_worker_env(profile_home, sandbox_home),
-            text=True,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            timeout=args.timeout,
+    if args.attempts < 1:
+        raise SystemExit("--attempts must be at least 1")
+    attempt_receipts: list[dict[str, object]] = []
+    result: subprocess.CompletedProcess[str] = subprocess.CompletedProcess(
+        command, 125, "", "worker did not start"
+    )
+    stdout = ""
+    stderr = ""
+    for attempt in range(1, args.attempts + 1):
+        try:
+            result = subprocess.run(
+                command,
+                cwd=clone,
+                env=clean_worker_env(profile_home, sandbox_home),
+                text=True,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                timeout=args.timeout,
+            )
+        except subprocess.TimeoutExpired as exc:
+            timeout_stdout = exc.stdout.decode() if isinstance(exc.stdout, bytes) else (exc.stdout or "")
+            timeout_stderr = exc.stderr.decode() if isinstance(exc.stderr, bytes) else (exc.stderr or "worker timed out")
+            result = subprocess.CompletedProcess(command, 124, timeout_stdout, timeout_stderr)
+        stdout = result.stdout.decode() if isinstance(result.stdout, bytes) else (result.stdout or "")
+        stderr = result.stderr.decode() if isinstance(result.stderr, bytes) else (result.stderr or "")
+        (output / f"worker.attempt-{attempt}.stdout.txt").write_text(stdout, encoding="utf-8")
+        (output / f"worker.attempt-{attempt}.stderr.txt").write_text(stderr, encoding="utf-8")
+        transient = bool(TRANSIENT_PROVIDER_ERROR.search(stdout + "\n" + stderr))
+        attempt_receipts.append(
+            {"attempt": attempt, "returncode": result.returncode, "transient_provider_error": transient}
         )
-    except subprocess.TimeoutExpired as exc:
-        timeout_stdout = exc.stdout.decode() if isinstance(exc.stdout, bytes) else (exc.stdout or "")
-        timeout_stderr = exc.stderr.decode() if isinstance(exc.stderr, bytes) else (exc.stderr or "worker timed out")
-        result = subprocess.CompletedProcess(command, 124, timeout_stdout, timeout_stderr)
+        if result.returncode == 0 or not transient or attempt == args.attempts:
+            break
+        time.sleep(args.retry_delay * attempt)
 
-    stdout = result.stdout.decode() if isinstance(result.stdout, bytes) else (result.stdout or "")
-    stderr = result.stderr.decode() if isinstance(result.stderr, bytes) else (result.stderr or "")
     (output / "worker.stdout.txt").write_text(stdout, encoding="utf-8")
     (output / "worker.stderr.txt").write_text(stderr, encoding="utf-8")
     paths = changed_paths(clone, revision)
@@ -253,6 +275,7 @@ def main() -> int:
         "started_at_utc": started,
         "finished_at_utc": dt.datetime.now(dt.timezone.utc).isoformat(),
         "hermes_returncode": result.returncode,
+        "attempts": attempt_receipts,
         "changed_paths": paths,
         "owned_paths": args.owned_path,
         "violations": violations,

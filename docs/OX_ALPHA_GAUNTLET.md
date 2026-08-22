@@ -23,7 +23,7 @@ Use the temporary Ox Alpha preview for bounded public-repository coding work wit
 3. **Ox Alpha writer:** optional; receives exact non-overlapping paths, works in a full clone, makes one cohesive local commit, and cannot push or integrate.
 4. **GPT-5.6 integrator:** independently reviews the patch and raw outputs, reruns focused and root tests in canonical source, accepts or rejects, commits, pushes, and updates the durable ledger.
 
-No worker self-report is evidence. The runner fails closed on a dirty audit clone, missing receipt fields, out-of-scope writer paths, uncommitted writer changes, missing writer commit, nonzero Hermes exit, or dirty canonical source at launch.
+No worker self-report is evidence. The runner fails closed on a dirty audit clone, missing receipt fields, out-of-scope writer paths, uncommitted writer changes, missing writer commit, nonzero Hermes exit, or dirty canonical source at launch. It retries only transient HTTP 429/5xx or timeout failures, preserving every attempt log in the evidence directory.
 
 ## Commands
 
