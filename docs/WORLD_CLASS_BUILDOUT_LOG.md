@@ -7,10 +7,11 @@ This is the durable continuation ledger for the Cobie Nukem 3/6/9 quality progra
 - **Program branch:** `hermes/world-class-369-buildout`
 - **Baseline source:** `4dbbe2e8571efec290ed863415a78f09bc970ca9`
 - **Public baseline declared by roadmap:** `0.11.0-alpha.1-rc1`, gameplay/runtime `3c2de29`
-- **Current packet:** WCB-008K — Salmon Creek first-30-second hardened Gauntlet inside WCB-008 opening-quality continuation
-- **Last verified packet:** WCB-008K Salmon Creek opening-presentation v1 is integration-ready: focused/root mechanics pass, 12 matched four-aspect cells pass comparison, and a fresh image-attached Spark/high critic accepts at 80/100; continuous 0–30 second browser/target-Mac evidence and human feel/taste remain open
-- **Next dependency-safe packet:** continue WCB-008K with a truthful continuous 0–30 second opening run and named human/browser/target-Mac review without laundering the existing 7.3-second staged viewpoint capture. WCB-008L Rain City follows sequentially; WCB-007 boss paths remain frozen and WCB-009 remains blocked until the declared human prerequisite is recorded.
-- **Toolchain state:** Godot 4.7.1, Blender 5.2.0 LTS, Material Maker 1.7, and matching Godot export templates are installed; import, functional tests, IP/architecture/content gates, native Compatibility performance, the full release wrapper, and macOS/Web exports pass. Optional Codex/Godot/Blender MCP production-art integrations remain unavailable and are recorded below.
+- **Current packet:** WCB-ENV-1 — workstation recovery and fresh baseline (2026-09-15); detailed phase order is in the WCB-ENV section of `docs/IMPLEMENTATION_PLAN.md`.
+- **Last verified work:** current-source import, full non-export release validator, and separate fresh Web/macOS exports pass. New workstation-doctor regression tests pass. See the dated ENV-1 receipt below; these are mechanical results, not rendered/device acceptance.
+- **Game continuation:** WCB-008K remains human/continuous-evidence open. WCB-008L was independently activated on 2026-08-03, then blocked/stopped at M1R. The August 22 commits through `cdacb2c` implement receipt verification, not a completed capture host or canonical run. M2–M5 remain frozen; WCB-007 boss paths remain frozen; WCB-009 remains blocked by human prerequisites.
+- **Next dependency-safe packet:** close ENV-1 instruction-approval/storage warnings, then ENV-2 scoped agent/editor access. No implicit third Movie Maker repair or release promotion.
+- **Toolchain state:** Godot 4.7.1, Blender 5.2.0 LTS and Material Maker 1.7 are installed. Missing Web/macOS templates were restored and the iOS template added from a hash-verified official archive on 2026-09-15. Optional Godot/Blender MCPs remain unavailable. iOS signing/preset/device evidence and the protected Astra repository-rule migration remain open.
 - **Human-only gates:** target-Mac feel/playthrough, physical iPad, flight stick, art taste, pacing, mix, fairness, humor, motion comfort, photosensitivity
 
 ## Milestone dashboard
@@ -504,6 +505,19 @@ Decision and remaining gate:
 - **Reopen boundary:** require a materially different pre-approved evidence strategy and a new packet; do not repeat this Movie Maker teardown path as an implicit third repair.
 
 ---
+
+## 2026-09-15 — WCB-ENV-1 verified CLI/build recovery; remaining setup gates open
+
+- **Owner authorization:** phase-by-phase environment improvement, scoped Mac mini cleanup and iOS preparation. No gameplay or public-release change in this packet.
+- **Source:** `cdacb2ce50f8afc1eacbb975a40055faf467be06`; canonical worktree was clean before adding environment tooling/docs.
+- **Acceptance:** repair matching templates, establish a real functional/export baseline, add a fail-closed repeatable prerequisite check, and record unresolved integration/device/storage gates without claiming overall completion.
+- **Owned paths:** `tools/workstation_doctor.py`, `tools/tests/test_workstation_doctor.py`, `.github/workflows/ci.yml`, `docs/BUILD_AND_RELEASE.md`, `docs/IMPLEMENTATION_PLAN.md`, this log and `docs/evidence/environment-20260915/`. The protected `AGENTS.md` edit was blocked by an approval timeout and not applied or retried.
+- **Results:** official archive hash verified; Web/macOS and iOS template subset installed; 9 doctor regression tests pass; full non-export release validator passes, including 58 test script invocations and five-mission headless performance smoke; separate fresh Web/macOS exports and package exclusion/ZIP checks pass. CI pin and doctor steps updated, but remote CI has not yet run. Gameplay paths and export presets unchanged.
+- **Storage:** npm/Homebrew caches and inactive Codex installer staging cleaned with owner consent; primary runtime/models/personal data retained. Free space after staging cleanup was 18,216,046,592 bytes. The 20 GiB expensive-workload reserve remains unmet. Active uv cache was left alone after its prune timed out.
+- **Evidence:** `docs/evidence/environment-20260915/RECEIPT.md` contains exact commands, artifact hashes, limitations and links to durable raw logs/report. No staged capture, old export or headless timing was promoted into a rendered/device claim.
+- **Remaining gates:** protected Astra repository-role migration; optional editor MCP integration; high-workload storage reserve; iOS preset/signing/device models; remote CI; continuous capture and human visual/playability review.
+- Integrated commit: the commit containing this receipt (resolve with `git log -1 -- docs/evidence/environment-20260915/RECEIPT.md`); no public deployment.
+- Next dependency-safe packet: resolve the protected-file approval, then ENV-2 scoped agent/editor access; continue safe tooling work without reopening WCB-008L's failed Movie Maker route.
 
 ## Resume protocol
 

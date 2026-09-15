@@ -23,7 +23,7 @@ jobs:
       - name: Set up Godot 4.7 stable and export templates
         uses: chickensoft-games/setup-godot@v2
         with:
-          version: 4.7.0
+          version: 4.7.1
           use-dotnet: false
           include-templates: true
 
@@ -31,6 +31,11 @@ jobs:
         run: |
           godot --version | tee godot-version.txt
           python3 --version | tee python-version.txt
+
+      - name: Workstation prerequisite regression and report
+        run: |
+          python3 -m unittest discover -s tools/tests -p test_workstation_doctor.py -v
+          python3 tools/workstation_doctor.py --json
 
       - name: Run full validation and export matrix
         env:

@@ -2,7 +2,7 @@
 
 ## Toolchain pin
 
-Use the standard Godot **4.7 stable** executable and matching export templates. Do not use a .NET editor/build. `project.godot` declares the `4.7` and `GL Compatibility` features; CI requests 4.7.0 explicitly.
+Use the standard Godot **4.7.1 stable** executable and matching export templates. Do not use a .NET editor/build. `project.godot` declares the `4.7` and `GL Compatibility` features; CI requests 4.7.1 explicitly to match the recovered workstation baseline.
 
 Verify locally:
 
@@ -36,6 +36,10 @@ Arguments after `--` are passed to the game and are read through `OS.get_cmdline
 ## Export templates
 
 In Godot, install the templates matching the exact editor version via **Editor → Manage Export Templates**. CI installs them through the setup action.
+
+For a read-only prerequisite check, run `python3 tools/workstation_doctor.py --ios` (omit `--ios` for Web/macOS only). It validates the exact embedded template version and ZIP integrity, reports disk headroom, and checks the source bridge boundary. Use `--require-headroom` before expensive captures or parallel builds to require the chosen 20 GiB scratch reserve. Exit zero with `WARN` is not release acceptance: native iOS signing/device gates and optional MCPs are separate, and fresh import/tests/exports are still required. Run its regression tests with `python3 -m unittest discover -s tools/tests -p test_workstation_doctor.py -v`.
+
+The recovered Mac mini installation contains the official 4.7.1 Web, macOS and iOS template subset; Android/Linux/Windows templates are not claimed installed. The verified archive SHA-256 is recorded in the dated environment receipt. Install additional targets explicitly rather than assuming a complete all-platform template bundle.
 
 ### macOS
 

@@ -43,6 +43,22 @@ WCB-000 governance/PRD
 
 WCB-002, WCB-003, and the non-overlapping halves of WCB-004 may run in parallel after WCB-001. WCB-006–008 may use isolated writers only after WCB-005 freezes route/collision ownership.
 
+## WCB-ENV — 2026-09 workstation recovery and iteration environment
+
+Owner-approved setup program, started 2026-09-15. This repairs the environment before resuming the existing game packets; it does not replace the PRD, approve art, or reopen the rejected Movie Maker attempt implicitly. Actual results remain in `docs/WORLD_CLASS_BUILDOUT_LOG.md`.
+
+| Phase | Scope | Exit evidence |
+| --- | --- | --- |
+| ENV-1 | Safe storage recovery, exact templates, read-only workstation doctor, fresh functional/export baseline, reconcile continuation state | Doctor tests, real import/release tests, fresh Web/macOS exports and hashes; storage warnings and protected-instruction approval reported separately |
+| ENV-2 | Scoped Hermes/Codex access to existing Blender/Godot/Material Maker workflows; optional audited local editor/browser bridges | Real Python asset probe, Godot import/runtime inspection, named input and screenshot probe, console readback, shutdown and export exclusion; no unrelated global model/profile changes |
+| ENV-3 | New bounded non-Movie-Maker evidence strategy for WCB-008L | Short non-evidence probe first; independent wall-time/frame/byte/disk/process limits; source-bound continuous run and durable matched captures only after clean probe |
+| ENV-4 | One existing Rain City encounter quality pilot | Matched before/after environment, Pawstol and existing-enemy evidence; preserved collision/navigation/balance; source/provenance and native/Web budget checks |
+| ENV-5 | Browser-first plus native iPhone/iPad preparation and device acceptance | Explicit iOS preset and signing setup, fresh native build, desktop/mobile Safari tests, physical device model/OS/thermal/touch evidence; human review remains mandatory |
+
+ENV-1 is partially closed by the 2026-09-15 receipt; Astra is live in Hermes, but the attempted protected `AGENTS.md` migration was not applied because its approval timed out. Existing historical model references have not been rewritten through another path. Native iOS setup is owner-approved; minimum physical device models and Apple signing identity remain unknown.
+
+Use `python3 tools/workstation_doctor.py --ios` for read-only prerequisites. `--require-headroom` fails below the chosen 20 GiB high-workload reserve; ordinary mode warns below that reserve and fails below 6 GiB. This check does not replace fresh tests, exports, browser inspection, or physical devices. Optional MCP health remains a separate gate.
+
 ## Work packets
 
 ### WCB-000 — PRD, governance, and continuity
