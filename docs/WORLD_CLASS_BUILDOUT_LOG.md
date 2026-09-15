@@ -10,8 +10,8 @@ This is the durable continuation ledger for the Cobie Nukem 3/6/9 quality progra
 - **Current packet:** WCB-ENV-1 — workstation recovery and fresh baseline (2026-09-15); detailed phase order is in the WCB-ENV section of `docs/IMPLEMENTATION_PLAN.md`.
 - **Last verified work:** current-source import, full non-export release validator, and separate fresh Web/macOS exports pass. New workstation-doctor regression tests pass. See the dated ENV-1 receipt below; these are mechanical results, not rendered/device acceptance.
 - **Game continuation:** WCB-008K remains human/continuous-evidence open. WCB-008L was independently activated on 2026-08-03, then blocked/stopped at M1R. The August 22 commits through `cdacb2c` implement receipt verification, not a completed capture host or canonical run. M2–M5 remain frozen; WCB-007 boss paths remain frozen; WCB-009 remains blocked by human prerequisites.
-- **Next dependency-safe packet:** close ENV-1 instruction-approval/storage warnings, then ENV-2 scoped agent/editor access. No implicit third Movie Maker repair or release promotion.
-- **Toolchain state:** Godot 4.7.1, Blender 5.2.0 LTS and Material Maker 1.7 are installed. Missing Web/macOS templates were restored and the iOS template added from a hash-verified official archive on 2026-09-15. Optional Godot/Blender MCPs remain unavailable. iOS signing/preset/device evidence and the protected Astra repository-rule migration remain open.
+- **Next dependency-safe packet:** resolve ENV-1 storage warnings, then ENV-2 scoped agent/editor access; the protected Astra ownership migration is applied in the Telegram-authorized follow-up below. No implicit third Movie Maker repair or release promotion.
+- **Toolchain state:** Godot 4.7.1, Blender 5.2.0 LTS and Material Maker 1.7 are installed. Missing Web/macOS templates were restored and the iOS template added from a hash-verified official archive on 2026-09-15. Optional Godot/Blender MCPs remain unavailable. iOS signing/preset/device evidence remains open; Astra repository-role migration is applied, not a runtime/toolchain upgrade.
 - **Human-only gates:** target-Mac feel/playthrough, physical iPad, flight stick, art taste, pacing, mix, fairness, humor, motion comfort, photosensitivity
 
 ## Milestone dashboard
@@ -518,6 +518,16 @@ Decision and remaining gate:
 - **Remaining gates:** protected Astra repository-role migration; optional editor MCP integration; high-workload storage reserve; iOS preset/signing/device models; remote CI; continuous capture and human visual/playability review.
 - Integrated commit: the commit containing this receipt (resolve with `git log -1 -- docs/evidence/environment-20260915/RECEIPT.md`); no public deployment.
 - Next dependency-safe packet: resolve the protected-file approval, then ENV-2 scoped agent/editor access; continue safe tooling work without reopening WCB-008L's failed Movie Maker route.
+
+## 2026-09-15 — WCB-ENV-1 Telegram-authorized ownership follow-up
+
+- **Authorization and baseline:** Louis approved the Desktop handoff in Telegram; read the WCB-ENV plan, current ledger and PRD §1.5 before editing. Baseline `ff80bd9`, clean working tree. The normal protected-file patch operation succeeded; no alternate writer, guard change or bypass was used.
+- **Acceptance and owned paths:** change only orchestration/review/integration ownership in `AGENTS.md`, plus current-state reconciliation in `docs/IMPLEMENTATION_PLAN.md` and this ledger. Astra (`gpt-6-astra` through Hermes) takes the existing owner responsibilities; historical ownership references are superseded, not globally rewritten.
+- **Preserved:** Spark and Ox worker boundaries, isolated writer ownership, privacy/safety rules, asset provenance, PRD authority, mechanical verification, and every human/device/release gate. No gameplay, assets, exports, profiles, model configuration or public deployment changed.
+- **Verification:** documentation contract validator, exact protected-file diff scope/preservation assertion and `git diff --check`; see commit verification output. No fresh engine, export, rendered or physical-device test is claimed for this documentation-only follow-up.
+- **Remaining gates:** high-workload storage reserve, optional editor MCP integration, iOS preset/signing/device models, remote CI, continuous capture and human visual/playability review. ENV-1 is not declared fully complete.
+- Integrated commit: resolve with `git log -1 -- AGENTS.md`; this follow-up commits the approved migration and continuity notes together.
+- Next dependency-safe packet: resolve the storage warning and proceed to scoped ENV-2 work under its existing gates; do not reopen the failed Movie Maker route or promote a release.
 
 ## Resume protocol
 
