@@ -1,0 +1,409 @@
+==> import/parser validation
+Godot Engine v4.7.1.stable.official.a13da4feb - https://godotengine.org
+
+[   0% ] [90m[1mfirst_scan_filesystem[22m | Started Project initialization (5 steps)[39m[0m
+[   0% ] [90m[1mfirst_scan_filesystem[22m | Scanning file structure...[39m[0m
+[  16% ] [90m[1mfirst_scan_filesystem[22m | Loading global class names...[39m[0m
+[  33% ] [90m[1mfirst_scan_filesystem[22m | Verifying GDExtensions...[39m[0m
+[  50% ] [90m[1mfirst_scan_filesystem[22m | Creating autoload scripts...[39m[0m
+[  66% ] [90m[1mfirst_scan_filesystem[22m | Initializing plugins...[39m[0m
+[  83% ] [90m[1mfirst_scan_filesystem[22m | Starting file scan...[39m[0m
+[92m[ DONE ][39m [1mfirst_scan_filesystem[22m
+[0m
+[   0% ] [90m[1mloading_editor_layout[22m | Started Loading editor (5 steps)[39m[0m
+[   0% ] [90m[1mloading_editor_layout[22m | Loading editor layout...[39m[0m
+[  16% ] [90m[1mloading_editor_layout[22m | Loading docks...[39m[0m
+[92m[ DONE ][39m [1mloading_editor_layout[22m
+[0m
+SAFE GODOT RUNNER TESTS: PASS
+==> visual capture user-data isolation
+...........
+----------------------------------------------------------------------
+Ran 11 tests in 0.222s
+
+OK
+Capture completed with failures:
+- approval_guard:320x180: route captures route_a and route_b lack distinct low-frequency composition (MAE=0.0000, minimum=0.0000)
+- approval_guard:320x180: route captures route_a and route_b are near-duplicates (scene edge IoU=1.0000, maximum=0.8000)
+Capture completed with failures:
+- baseline approval requires complete distinctness group approval_guard: selected_views=['route_a', 'route_b'], required_views=['route_a', 'route_b'], selected_aspects=['320x180'], required_aspects=['320x180', '640x360']
+Visual capture complete.
+  Candidate directory: /var/folders/dy/05pk38515m51wkpphq8__lh80000gn/T/capture-receipt-binding-test-ko6_kugs/candidate/receipt-binding
+  Baseline is not modified without --approve.
+==> res://tests/run_tests.gd
+Godot Engine v4.7.1.stable.official.a13da4feb - https://godotengine.org
+
+PASS: core contract checks
+==> res://tests/unit/input_system_test.gd
+Godot Engine v4.7.1.stable.official.a13da4feb - https://godotengine.org
+
+PASS: input profiles, calibration math, and diagnostics scene
+==> res://tests/unit/combat_test_runner.gd
+Godot Engine v4.7.1.stable.official.a13da4feb - https://godotengine.org
+
+COMBAT TESTS: PASS
+==> res://tests/unit/enemy_contract_tests.gd
+Godot Engine v4.7.1.stable.official.a13da4feb - https://godotengine.org
+
+PASS: enemy contracts, damage hooks, shield, and boss phases
+==> res://tests/unit/enemy_sprite_presentation_test.gd
+Godot Engine v4.7.1.stable.official.a13da4feb - https://godotengine.org
+
+PASS: authored enemy atlases, deterministic direction/state selection, elite/boss vocabulary
+==> res://tests/unit/enemy_presentation_profile_test.gd
+Godot Engine v4.7.1.stable.official.a13da4feb - https://godotengine.org
+
+PASS: enemy presentation profile contract and frame validation
+==> res://tests/unit/navigation_contract_test.gd
+Godot Engine v4.7.1.stable.official.a13da4feb - https://godotengine.org
+
+NAVIGATION EVIDENCE: polygons=112 vertices=114 bounds=[P: (-17.0, 0.4, -166.5), S: (36.5, 2.0, 184.0)] map_iteration=2 closest_opening=(0.0, 0.4, 10.0) closest_arena=(0.0, 0.4, -164.0)
+NAVIGATION EVIDENCE: cross_zone_path_points=41
+NAVIGATION EVIDENCE: arena_cover_path_points=8 lateral_deviation=2.00
+NAVIGATION EVIDENCE: enemy_map_iteration=2 enemy_closest=(0.0, 0.4, -140.0)
+NAVIGATION EVIDENCE: recovery_reason=stuck_on_navigation
+NAVIGATION EVIDENCE: recovery_reason=path_unreachable
+NAVIGATION EVIDENCE: recovery_reason=fell_out_of_bounds
+PASS: production navigation bake, cross-zone route, ground/flying split, and bounded recovery
+==> res://tests/unit/ui_scene_test.gd
+Godot Engine v4.7.1.stable.official.a13da4feb - https://godotengine.org
+
+UI SCENE TESTS: PASS
+==> res://tests/unit/asset_contract_test.gd
+Godot Engine v4.7.1.stable.official.a13da4feb - https://godotengine.org
+
+ASSET CONTRACT TESTS: PASS
+==> res://tests/unit/visual_capture_manifest_test.gd
+Godot Engine v4.7.1.stable.official.a13da4feb - https://godotengine.org
+
+VISUAL CAPTURE MANIFEST TEST: PASS
+==> res://tests/unit/gameplay_foundation_test.gd
+Godot Engine v4.7.1.stable.official.a13da4feb - https://godotengine.org
+
+GAMEPLAY FOUNDATION TESTS: PASS
+==> res://tests/unit/world_interaction_test.gd
+Godot Engine v4.7.1.stable.official.a13da4feb - https://godotengine.org
+
+WORLD INTERACTION TESTS: PASS
+==> res://tests/unit/interaction_catalog_test.gd
+Godot Engine v4.7.1.stable.official.a13da4feb - https://godotengine.org
+
+INTERACTION CATALOG TESTS: PASS
+==> res://tests/unit/save_schema_test.gd
+Godot Engine v4.7.1.stable.official.a13da4feb - https://godotengine.org
+
+WARNING: Save file is not readable JSON { "slot": "qa_schema" }
+     at: push_warning (core/variant/variant_utility.cpp:1033)
+     GDScript backtrace (most recent call first):
+         [0] _record (res://scripts/core/debug_log.gd:39)
+         [1] warn (res://scripts/core/debug_log.gd:12)
+         [2] load_slot (res://scripts/core/save_manager.gd:73)
+         [3] _test_truncated_json (res://tests/unit/save_schema_test.gd:292)
+         [4] _initialize (res://tests/unit/save_schema_test.gd:36)
+WARNING: Save file is not readable JSON { "slot": "qa_schema" }
+     at: push_warning (core/variant/variant_utility.cpp:1033)
+     GDScript backtrace (most recent call first):
+         [0] _record (res://scripts/core/debug_log.gd:39)
+         [1] warn (res://scripts/core/debug_log.gd:12)
+         [2] load_slot (res://scripts/core/save_manager.gd:73)
+         [3] _test_non_dictionary_json (res://tests/unit/save_schema_test.gd:297)
+         [4] _initialize (res://tests/unit/save_schema_test.gd:37)
+WARNING: Save file is not readable JSON { "slot": "qa_schema" }
+     at: push_warning (core/variant/variant_utility.cpp:1033)
+     GDScript backtrace (most recent call first):
+         [0] _record (res://scripts/core/debug_log.gd:39)
+         [1] warn (res://scripts/core/debug_log.gd:12)
+         [2] load_slot (res://scripts/core/save_manager.gd:73)
+         [3] _test_non_dictionary_json (res://tests/unit/save_schema_test.gd:299)
+         [4] _initialize (res://tests/unit/save_schema_test.gd:37)
+WARNING: Save schema is newer than this build { "slot": "qa_schema", "version": 99 }
+     at: push_warning (core/variant/variant_utility.cpp:1033)
+     GDScript backtrace (most recent call first):
+         [0] _record (res://scripts/core/debug_log.gd:39)
+         [1] warn (res://scripts/core/debug_log.gd:12)
+         [2] load_slot (res://scripts/core/save_manager.gd:80)
+         [3] _test_future_schema_version (res://tests/unit/save_schema_test.gd:305)
+         [4] _initialize (res://tests/unit/save_schema_test.gd:38)
+SAVE SCHEMA TESTS: PASS
+==> res://tests/unit/run_result_calculator_test.gd
+Godot Engine v4.7.1.stable.official.a13da4feb - https://godotengine.org
+
+RUN RESULT CALCULATOR TEST: PASS
+==> res://tests/unit/campaign_backup_codec_test.gd
+Godot Engine v4.7.1.stable.official.a13da4feb - https://godotengine.org
+
+PASS: campaign backup codec
+==> res://tests/unit/progression_content_test.gd
+Godot Engine v4.7.1.stable.official.a13da4feb - https://godotengine.org
+
+PROGRESSION CONTENT TEST: PASS
+==> res://tests/unit/weapon_mod_applicator_test.gd
+Godot Engine v4.7.1.stable.official.a13da4feb - https://godotengine.org
+
+WEAPON MOD APPLICATOR TEST: PASS
+==> res://tests/unit/mobile_controls_test.gd
+Godot Engine v4.7.1.stable.official.a13da4feb - https://godotengine.org
+
+MOBILE CONTROLS TESTS: PASS
+==> res://tests/unit/secondary_fire_touch_hud_test.gd
+Godot Engine v4.7.1.stable.official.a13da4feb - https://godotengine.org
+
+SECONDARY FIRE TOUCH HUD TESTS: PASS
+==> res://tests/unit/imported_audio_contract_test.gd
+Godot Engine v4.7.1.stable.official.a13da4feb - https://godotengine.org
+
+PASS: imported audio contract
+==> res://tests/unit/mission_audio_director_test.gd
+Godot Engine v4.7.1.stable.official.a13da4feb - https://godotengine.org
+
+MISSION AUDIO DIRECTOR TESTS: PASS
+==> res://tests/unit/mission_presentation_test.gd
+Godot Engine v4.7.1.stable.official.a13da4feb - https://godotengine.org
+
+MISSION PRESENTATION TESTS: PASS
+==> res://tests/unit/rain_city_audio_event_contract_test.gd
+Godot Engine v4.7.1.stable.official.a13da4feb - https://godotengine.org
+
+RAIN CITY AUDIO EVENT CONTRACT TEST: PASS
+==> res://tests/unit/mission_route_runtime_test.gd
+Godot Engine v4.7.1.stable.official.a13da4feb - https://godotengine.org
+
+MISSION ROUTE RUNTIME TEST: PASS
+==> res://tests/unit/mission_spawn_registry_test.gd
+Godot Engine v4.7.1.stable.official.a13da4feb - https://godotengine.org
+
+WARNING: Optional level dependency missing: res://does_not_exist__mission_spawn_registry.tscn
+     at: push_warning (core/variant/variant_utility.cpp:1033)
+     GDScript backtrace (most recent call first):
+         [0] spawn_scene (res://scripts/gameplay/mission_spawn_registry.gd:151)
+         [1] _test_missing_scene_fail_safe (res://tests/unit/mission_spawn_registry_test.gd:118)
+         [2] _run (res://tests/unit/mission_spawn_registry_test.gd:31)
+WARNING: Optional level dependency missing: res://does_not_exist__mission_spawn_registry.tscn
+     at: push_warning (core/variant/variant_utility.cpp:1033)
+     GDScript backtrace (most recent call first):
+         [0] spawn_scene (res://scripts/gameplay/mission_spawn_registry.gd:151)
+         [1] spawn_pickup (res://scripts/gameplay/mission_spawn_registry.gd:167)
+         [2] _test_missing_scene_fail_safe (res://tests/unit/mission_spawn_registry_test.gd:119)
+         [3] _run (res://tests/unit/mission_spawn_registry_test.gd:31)
+WARNING: Enemy drop has no pickup scene: does_not_exist__mission_spawn_registry
+     at: push_warning (core/variant/variant_utility.cpp:1033)
+     GDScript backtrace (most recent call first):
+         [0] spawn_enemy_drop (res://scripts/gameplay/mission_spawn_registry.gd:179)
+         [1] _test_missing_scene_fail_safe (res://tests/unit/mission_spawn_registry_test.gd:120)
+         [2] _run (res://tests/unit/mission_spawn_registry_test.gd:31)
+MISSION SPAWN REGISTRY TESTS: PASS
+==> res://tests/unit/moving_set_piece_runtime_test.gd
+Godot Engine v4.7.1.stable.official.a13da4feb - https://godotengine.org
+
+MOVING SET PIECE RUNTIME TESTS: PASS
+==> res://tests/unit/moving_set_piece_encounter_coordinator_test.gd
+Godot Engine v4.7.1.stable.official.a13da4feb - https://godotengine.org
+
+MOVING SET PIECE ENCOUNTER COORDINATOR TEST: PASS
+==> res://tests/unit/external_wave_encounter_test.gd
+Godot Engine v4.7.1.stable.official.a13da4feb - https://godotengine.org
+
+EXTERNAL WAVE ENCOUNTER TEST: PASS
+==> res://tests/unit/directional_shield_component_test.gd
+Godot Engine v4.7.1.stable.official.a13da4feb - https://godotengine.org
+
+PASS: directional shield component contract
+==> res://tests/unit/umbrella_shield_enforcer_test.gd
+Godot Engine v4.7.1.stable.official.a13da4feb - https://godotengine.org
+
+PASS: umbrella shield enforcer contract
+==> res://tests/unit/compliance_gull_test.gd
+Godot Engine v4.7.1.stable.official.a13da4feb - https://godotengine.org
+
+COMPLIANCE GULL TEST: PASS
+==> res://tests/unit/campaign_progress_runtime_test.gd
+Godot Engine v4.7.1.stable.official.a13da4feb - https://godotengine.org
+
+WARNING: Save file is not readable JSON { "slot": "campaign_progress" }
+     at: push_warning (core/variant/variant_utility.cpp:1033)
+     GDScript backtrace (most recent call first):
+         [0] _record (res://scripts/core/debug_log.gd:39)
+         [1] warn (res://scripts/core/debug_log.gd:12)
+         [2] load_slot (res://scripts/core/save_manager.gd:73)
+         [3] load_progress (res://scripts/core/campaign_progress_runtime.gd:31)
+         [4] _test_corrupt_and_future_save_recovery (res://tests/unit/campaign_progress_runtime_test.gd:170)
+         [5] _initialize (res://tests/unit/campaign_progress_runtime_test.gd:29)
+WARNING: Save schema is newer than this build { "slot": "campaign_progress", "version": 99 }
+     at: push_warning (core/variant/variant_utility.cpp:1033)
+     GDScript backtrace (most recent call first):
+         [0] _record (res://scripts/core/debug_log.gd:39)
+         [1] warn (res://scripts/core/debug_log.gd:12)
+         [2] load_slot (res://scripts/core/save_manager.gd:80)
+         [3] load_progress (res://scripts/core/campaign_progress_runtime.gd:31)
+         [4] _test_corrupt_and_future_save_recovery (res://tests/unit/campaign_progress_runtime_test.gd:173)
+         [5] _initialize (res://tests/unit/campaign_progress_runtime_test.gd:29)
+CAMPAIGN PROGRESS RUNTIME TEST: PASS
+==> res://tests/unit/rain_city_campaign_test.gd
+Godot Engine v4.7.1.stable.official.a13da4feb - https://godotengine.org
+
+RAIN CITY CAMPAIGN TEST: PASS
+==> res://tests/unit/rain_city_checkpoint_state_test.gd
+Godot Engine v4.7.1.stable.official.a13da4feb - https://godotengine.org
+
+RAIN CITY CHECKPOINT STATE TEST: PASS
+==> res://tests/unit/mission_loadout_profile_test.gd
+Godot Engine v4.7.1.stable.official.a13da4feb - https://godotengine.org
+
+MISSION LOADOUT PROFILE TEST: PASS
+==> res://tests/unit/alpha8_resource_contract_test.gd
+Godot Engine v4.7.1.stable.official.a13da4feb - https://godotengine.org
+
+ALPHA8 RESOURCE CONTRACT TESTS: PASS
+==> res://tests/integration/integration_test_runner.gd
+Godot Engine v4.7.1.stable.official.a13da4feb - https://godotengine.org
+
+PASS: integrated combat, persistence, input, aim, enemy, secret, and exit contracts
+==> res://tests/integration/mission_runtime_contract_test.gd
+Godot Engine v4.7.1.stable.official.a13da4feb - https://godotengine.org
+
+MISSION RUNTIME CONTRACT TEST: PASS
+==> res://tests/integration/off_leash_mode_test.gd
+Godot Engine v4.7.1.stable.official.a13da4feb - https://godotengine.org
+
+OFF-LEASH MODE TEST: PASS
+==> res://tests/integration/test_episode_1_level.gd
+Godot Engine v4.7.1.stable.official.a13da4feb - https://godotengine.org
+
+PASS: Episode 1 Level 1 route, gates, secrets, pacing metadata, encounter wiring, and finale
+==> res://tests/integration/salmon_creek_encounter_pacing_test.gd
+Godot Engine v4.7.1.stable.official.a13da4feb - https://godotengine.org
+
+WALKER PRESSURE EVIDENCE: initial=20.000 minimum=6.559 settled=6.780 state=2 cooldown=0.350 attack_range=7.000 authored=(4.5, 12.0)
+SALMON CREEK ENCOUNTER PACING: PASS
+==> res://tests/integration/vancouver_content_contract_test.gd
+Godot Engine v4.7.1.stable.official.a13da4feb - https://godotengine.org
+
+VANCOUVER CONTENT CONTRACT TEST: PASS
+==> res://tests/integration/vancouver_route_foundation_test.gd
+Godot Engine v4.7.1.stable.official.a13da4feb - https://godotengine.org
+
+Vancouver route foundation test PASS
+==> res://tests/integration/vancouver_interaction_catalog_test.gd
+Godot Engine v4.7.1.stable.official.a13da4feb - https://godotengine.org
+
+VANCOUVER INTERACTION CATALOG TEST: PASS
+==> res://tests/integration/umbrella_shield_content_test.gd
+Godot Engine v4.7.1.stable.official.a13da4feb - https://godotengine.org
+
+PASS: umbrella shield enforcer integration contract
+==> res://tests/integration/vancouver_mission_host_test.gd
+Godot Engine v4.7.1.stable.official.a13da4feb - https://godotengine.org
+
+VANCOUVER MISSION HOST TEST: PASS
+==> res://tests/integration/rain_city_route_production_test.gd
+Godot Engine v4.7.1.stable.official.a13da4feb - https://godotengine.org
+
+VANCOUVER ROUTE PRODUCTION TEST: PASS
+==> res://tests/integration/rain_city_convoy_boss_test.gd
+Godot Engine v4.7.1.stable.official.a13da4feb - https://godotengine.org
+
+RAIN CITY CONVOY BOSS SOAK TEST: PASS
+==> res://tests/integration/rain_city_towmaster_combat_test.gd
+Godot Engine v4.7.1.stable.official.a13da4feb - https://godotengine.org
+
+RAIN CITY TOWMASTER COMBAT TEST: PASS (3 attacks, 4 phases, 2 arena changes, 100 reset cycles, 10.2s defeat)
+==> res://tests/integration/mount_hood_beta_test.gd
+Godot Engine v4.7.1.stable.official.a13da4feb - https://godotengine.org
+
+MOUNT HOOD BETA TESTS: PASS
+==> res://tests/integration/moon_mission_contract_test.gd
+Godot Engine v4.7.1.stable.official.a13da4feb - https://godotengine.org
+
+MOON MISSION CONTRACT TEST: PASS (moon-production//423004e)
+==> res://tests/integration/ventura_mission_contract_test.gd
+Godot Engine v4.7.1.stable.official.a13da4feb - https://godotengine.org
+
+VENTURA_MISSION_RUNTIME_BOOT: PASS
+VENTURA MISSION CONTRACT TEST: PASS
+==> res://tests/integration/five_mission_gauntlet_test.gd
+Godot Engine v4.7.1.stable.official.a13da4feb - https://godotengine.org
+
+FIVE MISSION GAUNTLET: PASS (5 missions, 1200 routes, 1000 checkpoint restores)
+==> res://tests/integration/adversarial_state_test.gd
+Godot Engine v4.7.1.stable.official.a13da4feb - https://godotengine.org
+
+WARNING: Optional level dependency missing: res://does_not_exist__mission_runtime_bug.tscn
+     at: push_warning (core/variant/variant_utility.cpp:1033)
+     GDScript backtrace (most recent call first):
+         [0] spawn_scene (res://scripts/gameplay/mission_spawn_registry.gd:151)
+         [1] _spawn_scene (res://scripts/level/episode_1_level_1.gd:514)
+         [2] _spawn_wave (res://scripts/gameplay/encounter_runner.gd:100)
+         [3] activate_zone (res://scripts/gameplay/encounter_runner.gd:60)
+         [4] activate_zone (res://scripts/gameplay/mission_runtime.gd:82)
+         [5] _spawn_wave (res://scripts/level/episode_1_level_1.gd:301)
+         [6] _enter_zone (res://scripts/level/episode_1_level_1.gd:289)
+         [7] _test_failed_encounter_retry_marker_clear (res://tests/integration/adversarial_state_test.gd:367)
+WARNING: Encounter adversarial_missing_scene failed: spawn returned null for res://does_not_exist__mission_runtime_bug.tscn
+     at: push_warning (core/variant/variant_utility.cpp:1033)
+     GDScript backtrace (most recent call first):
+         [0] _fail (res://scripts/gameplay/encounter_runner.gd:295)
+         [1] _spawn_wave (res://scripts/gameplay/encounter_runner.gd:102)
+         [2] activate_zone (res://scripts/gameplay/encounter_runner.gd:60)
+         [3] activate_zone (res://scripts/gameplay/mission_runtime.gd:82)
+         [4] _spawn_wave (res://scripts/level/episode_1_level_1.gd:301)
+         [5] _enter_zone (res://scripts/level/episode_1_level_1.gd:289)
+         [6] _test_failed_encounter_retry_marker_clear (res://tests/integration/adversarial_state_test.gd:367)
+WARNING: Optional level dependency missing: res://does_not_exist__mission_runtime_bug.tscn
+     at: push_warning (core/variant/variant_utility.cpp:1033)
+     GDScript backtrace (most recent call first):
+         [0] spawn_scene (res://scripts/gameplay/mission_spawn_registry.gd:151)
+         [1] _spawn_scene (res://scripts/level/episode_1_level_1.gd:514)
+         [2] _spawn_wave (res://scripts/gameplay/encounter_runner.gd:100)
+         [3] activate_zone (res://scripts/gameplay/encounter_runner.gd:60)
+         [4] activate_zone (res://scripts/gameplay/mission_runtime.gd:82)
+         [5] _spawn_wave (res://scripts/level/episode_1_level_1.gd:301)
+         [6] _enter_zone (res://scripts/level/episode_1_level_1.gd:289)
+         [7] _test_failed_encounter_retry_marker_clear (res://tests/integration/adversarial_state_test.gd:370)
+WARNING: Encounter adversarial_missing_scene failed: spawn returned null for res://does_not_exist__mission_runtime_bug.tscn
+     at: push_warning (core/variant/variant_utility.cpp:1033)
+     GDScript backtrace (most recent call first):
+         [0] _fail (res://scripts/gameplay/encounter_runner.gd:295)
+         [1] _spawn_wave (res://scripts/gameplay/encounter_runner.gd:102)
+         [2] activate_zone (res://scripts/gameplay/encounter_runner.gd:60)
+         [3] activate_zone (res://scripts/gameplay/mission_runtime.gd:82)
+         [4] _spawn_wave (res://scripts/level/episode_1_level_1.gd:301)
+         [5] _enter_zone (res://scripts/level/episode_1_level_1.gd:289)
+         [6] _test_failed_encounter_retry_marker_clear (res://tests/integration/adversarial_state_test.gd:370)
+ADVERSARIAL STATE TESTS: PASS
+==> res://tests/integration/vertical_slice_soak_test.gd
+Godot Engine v4.7.1.stable.official.a13da4feb - https://godotengine.org
+
+VERTICAL SLICE SOAK: PASS (100 routes, 100 checkpoints, 100 twin-stick cancellations, 500 weapon transitions, 100 effects)
+==> res://tests/smoke/smoke_test_runner.gd
+Godot Engine v4.7.1.stable.official.a13da4feb - https://godotengine.org
+
+[Cobie] Boot complete { "godot": "4.7.1-stable (official)", "renderer": "gl_compatibility" }
+PASS: 80 scenes and 189 resources load; boot/menu/level/diagnostics enter tree
+==> res://tests/smoke/performance_smoke.gd
+Godot Engine v4.7.1.stable.official.a13da4feb - https://godotengine.org
+
+PERFORMANCE SMOKE: scene=res://scenes/levels/episode_1_level_1.tscn warmup=30 frames=300 average=16.664ms p50=16.588ms p95=21.469ms p99=23.016ms max=23.453ms
+PERFORMANCE MONITORS: objects=4314->4304 drift=-10 nodes=890->890 drift=+0 memory=186833184->186782220 draw_calls=0
+NOTE: headless timing detects stalls only; it is not rendered GPU evidence.
+PERFORMANCE SMOKE: scene=res://scenes/levels/episode_1_vancouver_waterfront.tscn warmup=30 frames=300 average=16.661ms p50=16.584ms p95=21.633ms p99=23.619ms max=24.490ms
+PERFORMANCE MONITORS: objects=4716->4713 drift=-3 nodes=1095->1097 drift=+2 memory=193996009->193982833 draw_calls=0
+NOTE: headless timing detects stalls only; it is not rendered GPU evidence.
+PERFORMANCE SMOKE: scene=res://scenes/levels/mount_hood_whiteout.tscn warmup=30 frames=300 average=16.650ms p50=16.300ms p95=23.035ms p99=24.169ms max=24.903ms
+PERFORMANCE MONITORS: objects=3231->3226 drift=-5 nodes=430->430 drift=+0 memory=172225519->172238547 draw_calls=0
+NOTE: headless timing detects stalls only; it is not rendered GPU evidence.
+PERFORMANCE SMOKE: scene=res://scenes/levels/dark_side_fetch.tscn warmup=30 frames=300 average=16.650ms p50=16.509ms p95=22.815ms p99=24.510ms max=29.400ms
+PERFORMANCE MONITORS: objects=3161->3161 drift=+0 nodes=307->307 drift=+0 memory=184236147->184251379 draw_calls=0
+NOTE: headless timing detects stalls only; it is not rendered GPU evidence.
+PERFORMANCE SMOKE: scene=res://scenes/levels/ventura_pier_pressure.tscn warmup=30 frames=300 average=16.684ms p50=16.467ms p95=23.537ms p99=24.524ms max=24.715ms
+PERFORMANCE MONITORS: objects=3354->3354 drift=+0 nodes=363->363 drift=+0 memory=197928003->197943235 draw_calls=0
+NOTE: headless timing detects stalls only; it is not rendered GPU evidence.
+Asset/IP scan: prohibited filenames and source phrases
+Asset/IP scan: manifest coverage
+Asset/IP scan passed. This is a heuristic, not legal clearance.
+ARCHITECTURE CHECK: PASS
+==> res://tools/validate_content.gd
+Godot Engine v4.7.1.stable.official.a13da4feb - https://godotengine.org
+
+CONTENT VALIDATION: PASS (5 manifest(s))
+SKIP exports (set QA_EXPORTS=1 for release artifacts)
+Automated release validation passed. Complete docs/MANUAL_UX_CHECKLIST.md before release.
