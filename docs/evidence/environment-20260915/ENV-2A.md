@@ -53,6 +53,8 @@ Fresh results:
 
 ## Remaining gates / next packet
 
-ENV-2B: finish Codex/ChatGPT host discovery, verify the existing Blender Python asset workflow and decide whether a pinned, telemetry-off local Blender bridge adds value; browser/Material Maker access stays separately evidenced. No successful delegated Blender audit is accepted into this receipt.
+ENV-2B: finish Codex/ChatGPT host discovery and verify the existing Blender Python asset workflow; browser/Material Maker access stays separately evidenced.
+
+Subsequent Blender audit disposition: **CLI/Python remains the default; do not install a permanent Blender MCP.** Parent independently checked upstream revision `7684c6b3ad2aa0710bbdb1cb06b497c90899ae00` at <https://github.com/ahujasid/blender-mcp/tree/7684c6b3ad2aa0710bbdb1cb06b497c90899ae00>: `pyproject.toml:1–21` declares package 1.9.4/MIT; `addon.py:645–649` explicitly refuses background mode; `addon.py:880–899` always exposes `execute_code`; `src/blender_mcp/safe_mode.py:1–15` documents raw local-socket access bypassing the opt-in MCP validator and states it is not a sandbox. The late read-only worker report is consistent with this decision, but its proposed installation recipe and end-to-end GUI/MCP smoke are not executed evidence. If interactive viewport work later warrants MCP, use a separately audited disposable GUI session with telemetry/external services off, loopback-only binding, isolated preferences and verified listener shutdown.
 
 ENV-1 heavy-workload reserve remains open: latest free disk is about 14 GiB, below the 20 GiB target. Bounded synthetic probes are not permission for heavy parallel renders/captures. ENV-3 moving gameplay evidence, ENV-4 Rain City art pilot and ENV-5 physical iPhone/iPad acceptance remain open. No fresh full release matrix, public deployment, game visual-quality approval or device acceptance is claimed here.
