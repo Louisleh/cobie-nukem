@@ -1,0 +1,42 @@
+Godot Engine v4.7.1.stable.official.a13da4feb - https://godotengine.org
+OpenGL API 4.1 Metal - 90.5 - Compatibility - Using Device: Apple - Apple M4
+
+[AI Bridge] Timer started for polling
+[AI Bridge] Server started on port 6550
+[AI Bridge] New TCP connection!
+[AI Bridge] WebSocket peer created, waiting for handshake...
+[AI Bridge] Client connected: -9223370562338744939
+[AI Bridge] Client connected: -9223370562338744939
+[AI Bridge] Received message: {"jsonrpc":"2.0","id":1,"method":"initialize","params":{"client":"godot-mcp","ve
+[AI Bridge] Sending message: {"id":1.0,"jsonrpc":"2.0","result":{"capabilities":["scene_tree","editor","runti
+[AI Bridge] Received message: {"jsonrpc":"2.0","id":2,"method":"info.project","params":{}}
+[AI Bridge] Sending message: {"id":2.0,"jsonrpc":"2.0","result":{"godot_version":"4.7.1-stable (official)","n
+[AI Bridge] Received message: {"jsonrpc":"2.0","id":3,"method":"scene_tree.get","params":{}}
+[AI Bridge] Sending message: {"id":3.0,"jsonrpc":"2.0","result":{"nodes":[{"children_count":1,"name":"Probe",
+[AI Bridge] Received message: {"jsonrpc":"2.0","id":4,"method":"editor.run_scene","params":{"path":"res://prob
+[AI Bridge] Sending message: {"id":4.0,"jsonrpc":"2.0","result":{"running":true}}
+[AI Bridge] Received message: {"jsonrpc":"2.0","id":5,"method":"info.output","params":{"lines":100,"level":"al
+[AI Bridge] Sending message: {"id":5.0,"jsonrpc":"2.0","result":{"entries":[],"filters":{"level":"all","query
+Godot Engine v4.7.1.stable.official.a13da4feb - https://godotengine.org
+OpenGL API 4.1 Metal - 90.5 - Compatibility - Using Device: Apple - Apple M4
+
+[AI Bridge] Received message: {"jsonrpc":"2.0","id":6,"method":"info.output","params":{"lines":100,"level":"al
+[AI Bridge] Sending message: {"id":6.0,"jsonrpc":"2.0","result":{"entries":[{"level":"info","line":"[2026-09-
+[AI Bridge] Received message: {"jsonrpc":"2.0","id":7,"method":"info.output","params":{"lines":100,"level":"al
+[AI Bridge] Sending message: {"id":7.0,"jsonrpc":"2.0","result":{"entries":[{"level":"info","line":"[2026-09-
+[AI Bridge] Received message: {"jsonrpc":"2.0","id":8,"method":"runtime.status","params":{}}
+[AI Bridge] Sending message: {"id":8.0,"jsonrpc":"2.0","result":{"available":true,"focused_control":"","mouse
+[AI Bridge] Received message: {"jsonrpc":"2.0","id":9,"method":"runtime.tap_action","params":{"action":"ui_acc
+[AI Bridge] Sending message: {"id":9.0,"jsonrpc":"2.0","result":{"action":"ui_accept","frames":2,"strength":1
+[AI Bridge] Received message: {"jsonrpc":"2.0","id":10,"method":"runtime.wait","params":{"frames":5}}
+[AI Bridge] Sending message: {"id":10.0,"jsonrpc":"2.0","result":{"frames":5,"seconds":0.0}}
+[AI Bridge] Received message: {"jsonrpc":"2.0","id":11,"method":"runtime.inspect_nodes","params":{"group":"pro
+[AI Bridge] Sending message: {"id":11.0,"jsonrpc":"2.0","result":{"count":1,"nodes":[{"class":"ColorRect","gr
+[AI Bridge] Received message: {"jsonrpc":"2.0","id":12,"method":"runtime.capture_screenshot","params":{"path":
+[AI Bridge] Sending message: {"id":12.0,"jsonrpc":"2.0","result":{"height":360,"path":"/private/tmp/cobie-env
+[AI Bridge] Received message: {"jsonrpc":"2.0","id":13,"method":"info.errors","params":{"include_runtime":true
+[AI Bridge] Sending message: {"id":13.0,"jsonrpc":"2.0","result":{"count":0,"errors":[],"filters":{"include_l
+[AI Bridge] Received message: {"jsonrpc":"2.0","id":14,"method":"editor.stop_scene","params":{}}
+[AI Bridge] Sending message: {"id":14.0,"jsonrpc":"2.0","result":{"stopped":true}}
+[AI Bridge] Client disconnected: -9223370562338744939
+[AI Bridge] Client disconnected: -9223370562338744939

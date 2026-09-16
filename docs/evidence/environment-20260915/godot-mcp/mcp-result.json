@@ -1,0 +1,325 @@
+{
+  "evidence_class": "synthetic editor/runtime probe; not gameplay or device acceptance",
+  "tool_count": 101,
+  "steps": [
+    {
+      "name": "godot_connect",
+      "args": {
+        "host": "127.0.0.1",
+        "port": 6550
+      },
+      "result": {
+        "success": true,
+        "message": "Connected to Godot editor at ws://127.0.0.1:6550",
+        "info": {
+          "capabilities": [
+            "scene_tree",
+            "editor",
+            "runtime"
+          ],
+          "godot_version": "4.7.1-stable (official)",
+          "project": "Cobie ENV2 Probe",
+          "server": "godot-ai-bridge"
+        }
+      }
+    },
+    {
+      "name": "godot_editor_get_project_info",
+      "args": {},
+      "result": {
+        "godot_version": "4.7.1-stable (official)",
+        "name": "Cobie ENV2 Probe",
+        "path": "/private/var/folders/dy/05pk38515m51wkpphq8__lh80000gn/T/cobie-godot-mcp-8nr_x9t7/project/"
+      }
+    },
+    {
+      "name": "godot_editor_get_scene_tree",
+      "args": {},
+      "result": {
+        "nodes": [
+          {
+            "children_count": 1,
+            "name": "Probe",
+            "path": "Probe",
+            "script": "res://probe.gd",
+            "type": "ColorRect"
+          },
+          {
+            "children_count": 0,
+            "name": "Label",
+            "path": "Probe/Label",
+            "type": "Label"
+          }
+        ],
+        "root": "Probe",
+        "scene_path": "res://probe.tscn"
+      }
+    },
+    {
+      "name": "godot_editor_run_scene",
+      "args": {
+        "scenePath": "res://probe.tscn"
+      },
+      "result": {
+        "running": true
+      }
+    },
+    {
+      "name": "godot_editor_get_output",
+      "args": {
+        "lines": 100
+      },
+      "result": {
+        "entries": [],
+        "filters": {
+          "level": "all",
+          "query": "",
+          "source": "all"
+        },
+        "matched_lines": 0,
+        "output": [],
+        "returned_lines": 0,
+        "total_lines": 0
+      }
+    },
+    {
+      "name": "godot_editor_get_output",
+      "args": {
+        "lines": 100
+      },
+      "result": {
+        "entries": [
+          {
+            "level": "info",
+            "line": "[2026-09-15T17:56:02] [DEBUG] Game started (session 0)",
+            "message": "[DEBUG] Game started (session 0)",
+            "source": "debugger",
+            "timestamp": "2026-09-15T17:56:02"
+          },
+          {
+            "level": "debug",
+            "line": "[2026-09-15T17:56:02] [MSG:game_view:set_context_id] 3652072425",
+            "message": "[MSG:game_view:set_context_id] 3652072425",
+            "source": "debugger",
+            "timestamp": "2026-09-15T17:56:02"
+          }
+        ],
+        "filters": {
+          "level": "all",
+          "query": "",
+          "source": "all"
+        },
+        "matched_lines": 2,
+        "output": [
+          "[2026-09-15T17:56:02] [DEBUG] Game started (session 0)",
+          "[2026-09-15T17:56:02] [MSG:game_view:set_context_id] 3652072425"
+        ],
+        "returned_lines": 2,
+        "total_lines": 2
+      }
+    },
+    {
+      "name": "godot_editor_get_output",
+      "args": {
+        "lines": 100
+      },
+      "result": {
+        "entries": [
+          {
+            "level": "info",
+            "line": "[2026-09-15T17:56:02] [DEBUG] Game started (session 0)",
+            "message": "[DEBUG] Game started (session 0)",
+            "source": "debugger",
+            "timestamp": "2026-09-15T17:56:02"
+          },
+          {
+            "level": "debug",
+            "line": "[2026-09-15T17:56:02] [MSG:game_view:set_context_id] 3652072425",
+            "message": "[MSG:game_view:set_context_id] 3652072425",
+            "source": "debugger",
+            "timestamp": "2026-09-15T17:56:02"
+          },
+          {
+            "level": "debug",
+            "line": "[2026-09-15T17:56:02] [MSG:game_view:window_size] (638, 359)",
+            "message": "[MSG:game_view:window_size] (638, 359)",
+            "source": "debugger",
+            "timestamp": "2026-09-15T17:56:02"
+          },
+          {
+            "level": "debug",
+            "line": "[2026-09-15T17:56:02] [MSG:game_view:window_size] (638, 359)",
+            "message": "[MSG:game_view:window_size] (638, 359)",
+            "source": "debugger",
+            "timestamp": "2026-09-15T17:56:02"
+          },
+          {
+            "level": "info",
+            "line": "[2026-09-15T17:56:02] [RUNTIME] Automation harness ready for Probe (session 0)",
+            "message": "[RUNTIME] Automation harness ready for Probe (session 0)",
+            "source": "debugger",
+            "timestamp": "2026-09-15T17:56:02"
+          },
+          {
+            "level": "debug",
+            "line": "[2026-09-15T17:56:02] [MSG:game_view:window_size] (638, 359)",
+            "message": "[MSG:game_view:window_size] (638, 359)",
+            "source": "debugger",
+            "timestamp": "2026-09-15T17:56:02"
+          },
+          {
+            "level": "debug",
+            "line": "[2026-09-15T17:56:02] [MSG:game_view:hdr_state] false, false, 200.0, 100.0, 1.0, true, false",
+            "message": "[MSG:game_view:hdr_state] false, false, 200.0, 100.0, 1.0, true, false",
+            "source": "debugger",
+            "timestamp": "2026-09-15T17:56:02"
+          }
+        ],
+        "filters": {
+          "level": "all",
+          "query": "",
+          "source": "all"
+        },
+        "matched_lines": 7,
+        "output": [
+          "[2026-09-15T17:56:02] [DEBUG] Game started (session 0)",
+          "[2026-09-15T17:56:02] [MSG:game_view:set_context_id] 3652072425",
+          "[2026-09-15T17:56:02] [MSG:game_view:window_size] (638, 359)",
+          "[2026-09-15T17:56:02] [MSG:game_view:window_size] (638, 359)",
+          "[2026-09-15T17:56:02] [RUNTIME] Automation harness ready for Probe (session 0)",
+          "[2026-09-15T17:56:02] [MSG:game_view:window_size] (638, 359)",
+          "[2026-09-15T17:56:02] [MSG:game_view:hdr_state] false, false, 200.0, 100.0, 1.0, true, false"
+        ],
+        "returned_lines": 7,
+        "total_lines": 7
+      }
+    },
+    {
+      "name": "godot_runtime_status",
+      "args": {},
+      "result": {
+        "available": true,
+        "focused_control": "",
+        "mouse_position": {
+          "x": 0,
+          "y": 0
+        },
+        "node_count": 4,
+        "paused": false,
+        "physics_frame": 23,
+        "scene_path": "res://probe.tscn",
+        "scene_root": "Probe",
+        "viewport_size": {
+          "x": 640,
+          "y": 360
+        }
+      }
+    },
+    {
+      "name": "godot_runtime_tap_action",
+      "args": {
+        "action": "ui_accept",
+        "frames": 2
+      },
+      "result": {
+        "action": "ui_accept",
+        "frames": 2,
+        "strength": 1
+      }
+    },
+    {
+      "name": "godot_runtime_wait",
+      "args": {
+        "frames": 5
+      },
+      "result": {
+        "frames": 5,
+        "seconds": 0
+      }
+    },
+    {
+      "name": "godot_runtime_inspect_nodes",
+      "args": {
+        "group": "probe",
+        "properties": [
+          "taps"
+        ],
+        "maxResults": 1
+      },
+      "result": {
+        "count": 1,
+        "nodes": [
+          {
+            "class": "ColorRect",
+            "groups": [
+              "_root_canvas317827579904",
+              "probe"
+            ],
+            "methods": {},
+            "name": "Probe",
+            "path": "/root/Probe",
+            "properties": {
+              "taps": 1
+            },
+            "script_path": "res://probe.gd"
+          }
+        ],
+        "scene_path": "res://probe.tscn",
+        "truncated": true
+      }
+    },
+    {
+      "name": "godot_runtime_capture_screenshot",
+      "args": {
+        "path": "/private/tmp/cobie-env2-godot-final/probe.png"
+      },
+      "result": {
+        "height": 360,
+        "path": "/private/tmp/cobie-env2-godot-final/probe.png",
+        "width": 640
+      }
+    },
+    {
+      "name": "godot_editor_get_errors",
+      "args": {
+        "severity": "error",
+        "includeRuntime": true,
+        "includeScript": true,
+        "includeLogFile": true,
+        "logLines": 300
+      },
+      "result": {
+        "count": 0,
+        "errors": [],
+        "filters": {
+          "include_log_file": true,
+          "include_runtime": true,
+          "include_script": true,
+          "query": "",
+          "severity": "error"
+        },
+        "runtime_count": 0,
+        "source_counts": {
+          "log_file": 0,
+          "runtime": 0,
+          "script": 0
+        }
+      }
+    },
+    {
+      "name": "godot_editor_stop_scene",
+      "args": {},
+      "result": {
+        "stopped": true
+      }
+    },
+    {
+      "name": "godot_disconnect",
+      "args": {},
+      "result": {
+        "success": true,
+        "message": "Disconnected from Godot editor"
+      }
+    }
+  ]
+}

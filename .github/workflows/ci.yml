@@ -35,6 +35,7 @@ jobs:
       - name: Workstation prerequisite regression and report
         run: |
           python3 -m unittest discover -s tools/tests -p test_workstation_doctor.py -v
+          python3 -m unittest discover -s tools/tests -p test_godot_mcp.py -v
           python3 tools/workstation_doctor.py --json
 
       - name: Run full validation and export matrix

@@ -59,6 +59,8 @@ ENV-1 remains partially closed by the 2026-09-15 receipt and its Telegram-author
 
 Use `python3 tools/workstation_doctor.py --ios` for read-only prerequisites. `--require-headroom` fails below the chosen 20 GiB high-workload reserve; ordinary mode warns below that reserve and fails below 6 GiB. This check does not replace fresh tests, exports, browser inspection, or physical devices. Optional MCP health remains a separate gate.
 
+ENV-2A is verified by `docs/evidence/environment-20260915/ENV-2A.md`: restored/audited Godot bridge, bounded synthetic editor/runtime probe and narrow Hermes registration. ENV-2B still owns Codex/ChatGPT discovery and Blender workflow verification. Do not confuse the synthetic probe with game or device evidence.
+
 ## Work packets
 
 ### WCB-000 — PRD, governance, and continuity

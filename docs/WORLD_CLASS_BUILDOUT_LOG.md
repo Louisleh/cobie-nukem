@@ -7,11 +7,11 @@ This is the durable continuation ledger for the Cobie Nukem 3/6/9 quality progra
 - **Program branch:** `hermes/world-class-369-buildout`
 - **Baseline source:** `4dbbe2e8571efec290ed863415a78f09bc970ca9`
 - **Public baseline declared by roadmap:** `0.11.0-alpha.1-rc1`, gameplay/runtime `3c2de29`
-- **Current packet:** WCB-ENV-1 — workstation recovery and fresh baseline (2026-09-15); detailed phase order is in the WCB-ENV section of `docs/IMPLEMENTATION_PLAN.md`.
-- **Last verified work:** current-source import, full non-export release validator, and separate fresh Web/macOS exports pass. New workstation-doctor regression tests pass. See the dated ENV-1 receipt below; these are mechanical results, not rendered/device acceptance.
+- **Current packet:** WCB-ENV-2 — scoped agent/editor access; ENV-2A Godot bridge verified (2026-09-15), ENV-2B client/Blender completion remains open.
+- **Last verified work:** ENV-2A pinned Godot bridge: 148 upstream tests, clean npm audit, eight launcher tests, isolated live editor/runtime/input/640×360 screenshot probe, and exact 12-tool Hermes registration pass. Canonical headless import/core contracts pass. See `docs/evidence/environment-20260915/ENV-2A.md`; no gameplay art/device acceptance.
 - **Game continuation:** WCB-008K remains human/continuous-evidence open. WCB-008L was independently activated on 2026-08-03, then blocked/stopped at M1R. The August 22 commits through `cdacb2c` implement receipt verification, not a completed capture host or canonical run. M2–M5 remain frozen; WCB-007 boss paths remain frozen; WCB-009 remains blocked by human prerequisites.
-- **Next dependency-safe packet:** resolve ENV-1 storage warnings, then ENV-2 scoped agent/editor access; the protected Astra ownership migration is applied in the Telegram-authorized follow-up below. No implicit third Movie Maker repair or release promotion.
-- **Toolchain state:** Godot 4.7.1, Blender 5.2.0 LTS and Material Maker 1.7 are installed. Missing Web/macOS templates were restored and the iOS template added from a hash-verified official archive on 2026-09-15. Optional Godot/Blender MCPs remain unavailable. iOS signing/preset/device evidence remains open; Astra repository-role migration is applied, not a runtime/toolchain upgrade.
+- **Next dependency-safe packet:** ENV-2B Codex/ChatGPT host discovery and Blender workflow verification. Park heavy capture/render work until the ENV-1 20 GiB reserve is restored; bounded tooling probes may proceed. No implicit third Movie Maker repair or release promotion.
+- **Toolchain state:** Godot 4.7.1, Blender 5.2.0 LTS and Material Maker 1.7 are installed. Exact Web/macOS/iOS templates were restored on 2026-09-15. Godot MCP is restored at `0854fee`; Hermes fresh-process inspection registration passes. Codex project configuration is prepared but not discovered by its MCP CLI; Blender MCP remains unavailable. iOS signing/preset/device evidence remains open.
 - **Human-only gates:** target-Mac feel/playthrough, physical iPad, flight stick, art taste, pacing, mix, fairness, humor, motion comfort, photosensitivity
 
 ## Milestone dashboard

@@ -1,6 +1,6 @@
 # Godot MCP operating guide
 
-The selected local bridge is the audited project fork at <https://github.com/Louisleh/godot-mcp>, branch `codex/cobie-hardened-e71540f`, pinned to `87ece143e3fedb494dd13494c35f120d6fb0a8d7` from upstream base `e71540f8985e123a0fe6f977dc531aa10ea5bb3a`. It won the three-candidate bakeoff and was then hardened to cover Godot 4.7 run/stop, bounded live node/property inspection, InputMap press/hold/release, raw keyboard input, pointer input, screenshots, pause state, output, and engine errors. The fork passes 148 tests, TypeScript build, and `npm audit --omit=dev` with zero known vulnerabilities.
+The selected local bridge is the audited project fork at <https://github.com/Louisleh/godot-mcp>, branch `cobie/env2-dependency-refresh`, pinned to `0854fee0974b615297cae52da8beb91d8a37e415` (2026-09-15 dependency refresh of `87ece143e3fedb494dd13494c35f120d6fb0a8d7`) from upstream base `e71540f8985e123a0fe6f977dc531aa10ea5bb3a`. It won the three-candidate bakeoff and was then hardened to cover Godot 4.7 run/stop, bounded live node/property inspection, InputMap press/hold/release, raw keyboard input, pointer input, screenshots, pause state, output, and engine errors. The fork passes 148 tests, TypeScript build, and `npm audit --omit=dev` with zero known vulnerabilities.
 
 ## Health and startup
 

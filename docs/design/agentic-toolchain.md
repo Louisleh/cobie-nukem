@@ -6,7 +6,9 @@ The Godot project and its typed Resources remain the source of truth. MCP server
 
 ## Live local capability status
 
-Verify this section with `.agents/skills/cobie-visual-foundry/scripts/verify_visual_toolchain.py --project-root .` and `bash tools/game_dev_health.sh` before each privileged visual packet. As of the WCB-005 start gate on 2026-07-21:
+Verify this section with `.agents/skills/cobie-visual-foundry/scripts/verify_visual_toolchain.py --project-root .` and `bash tools/game_dev_health.sh` before each privileged visual packet. Current ENV-2A status (2026-09-15): Godot MCP is restored at `0854fee0974b615297cae52da8beb91d8a37e415`; 148 tests, build, clean dependency audit and isolated live editor/runtime/input/screenshot probe pass. Hermes connection test passes with a configured inspection-only allowlist; current-chat hot reload is not claimed. Codex project configuration is prepared but CLI discovery remains unverified. Blender CLI is installed at 5.2.0 LTS; Blender MCP and the complete optional-tool health gate remain open. See `docs/evidence/environment-20260915/ENV-2A.md` for commands and boundaries.
+
+Historical WCB-005 start gate on 2026-07-21 (not current installation status):
 
 - Godot `4.7.1.stable.official.a13da4feb` is available at `/opt/homebrew/bin/godot`.
 - The audited `godot-cobie` checkout does not pass its clean pinned-revision health gate, so Godot MCP is unavailable for acceptance evidence.
