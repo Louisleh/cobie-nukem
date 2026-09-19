@@ -1,0 +1,88 @@
+Godot Engine v4.7.1.stable.official.a13da4feb - https://godotengine.org
+ERROR: Can't create shader cache folder, no shader caching will happen: user://
+   at: RasterizerGLES3 (drivers/gles3/rasterizer_gles3.cpp:352)
+OpenGL API 4.1 Metal - 90.5 - Compatibility - Using Device: Apple - Apple M4
+
+ZONE LOAD: main_menu load=10.276ms instantiate=0.819ms
+ZONE PROFILE: main_menu average=27.490ms p95=86.201ms p99=99.893ms max=111.239ms@sample89 stalls_gt_100ms=3 draw_calls=25 objects=2383 nodes=129 memory=57254563
+ZONE POPULATION: main_menu enemies=0 physics_bodies=0 nav_agents=0 audio_voices=1 particles=0 decals=0
+ZONE LOAD: salmon_creek load=1.996ms instantiate=0.087ms
+ZONE PROFILE: opening_field average=20.031ms p95=62.980ms p99=84.919ms max=94.161ms@sample242 stalls_gt_100ms=0 draw_calls=574 objects=4195 nodes=890 memory=88080584
+ZONE POPULATION: opening_field enemies=3 physics_bodies=1 nav_agents=1 audio_voices=1 particles=0 decals=0
+ZONE PROFILE: lab average=18.746ms p95=49.806ms p99=76.500ms max=87.804ms@sample74 stalls_gt_100ms=0 draw_calls=335 objects=4423 nodes=1026 memory=89194244
+ZONE POPULATION: lab enemies=11 physics_bodies=12 nav_agents=6 audio_voices=1 particles=0 decals=0
+ZONE PROFILE: tunnels average=19.870ms p95=63.033ms p99=86.867ms max=96.218ms@sample41 stalls_gt_100ms=0 draw_calls=490 objects=4434 nodes=1036 memory=89276376
+ZONE POPULATION: tunnels enemies=11 physics_bodies=14 nav_agents=6 audio_voices=1 particles=0 decals=0
+ZONE PROFILE: walker_arena average=18.749ms p95=48.655ms p99=78.349ms max=89.839ms@sample181 stalls_gt_100ms=0 draw_calls=205 objects=4464 nodes=1050 memory=90012972
+ZONE POPULATION: walker_arena enemies=12 physics_bodies=13 nav_agents=7 audio_voices=1 particles=0 decals=0
+ZONE PROFILE: victory average=18.733ms p95=60.573ms p99=76.156ms max=88.642ms@sample137 stalls_gt_100ms=0 draw_calls=201 objects=4472 nodes=1051 memory=91476436
+ZONE POPULATION: victory enemies=12 physics_bodies=13 nav_agents=7 audio_voices=1 particles=0 decals=0
+ZONE LOAD: rain_city load=58.690ms instantiate=0.111ms
+ZONE PROFILE: rain_city_alley average=19.763ms p95=58.680ms p99=85.278ms max=99.655ms@sample185 stalls_gt_100ms=0 draw_calls=610 objects=4600 nodes=1097 memory=93018819
+ZONE POPULATION: rain_city_alley enemies=3 physics_bodies=5 nav_agents=2 audio_voices=1 particles=0 decals=0
+ZONE PROFILE: rain_city_slice average=19.014ms p95=47.251ms p99=74.926ms max=174.462ms@sample30 stalls_gt_100ms=1 draw_calls=536 objects=4630 nodes=1107 memory=93276953
+ZONE POPULATION: rain_city_slice enemies=3 physics_bodies=6 nav_agents=2 audio_voices=2 particles=1 decals=0
+ZONE PROFILE: rain_city_seawall average=19.634ms p95=59.259ms p99=68.786ms max=85.154ms@sample44 stalls_gt_100ms=0 draw_calls=495 objects=4644 nodes=1110 memory=93392141
+ZONE POPULATION: rain_city_seawall enemies=3 physics_bodies=5 nav_agents=1 audio_voices=1 particles=1 decals=0
+ZONE PROFILE: rain_city_terminal average=19.692ms p95=59.285ms p99=71.029ms max=76.186ms@sample97 stalls_gt_100ms=0 draw_calls=368 objects=4682 nodes=1121 memory=93460441
+ZONE POPULATION: rain_city_terminal enemies=2 physics_bodies=5 nav_agents=3 audio_voices=1 particles=0 decals=0
+ZONE PROFILE: rain_city_pier average=21.567ms p95=68.453ms p99=96.629ms max=173.851ms@sample201 stalls_gt_100ms=3 draw_calls=258 objects=4709 nodes=1146 memory=93626911
+ZONE POPULATION: rain_city_pier enemies=2 physics_bodies=3 nav_agents=2 audio_voices=1 particles=0 decals=0
+ERROR: main_menu exceeded rendered frame budget (p95 86.201ms, p99 99.893ms, max 111.239ms, stalls >100ms 3)
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _run (res://tests/smoke/zone_performance_profile.gd:29)
+       [1] _profile_rain_city (res://tests/smoke/zone_performance_profile.gd:146)
+ERROR: opening_field exceeded rendered frame budget (p95 62.980ms, p99 84.919ms, max 94.161ms, stalls >100ms 0)
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _run (res://tests/smoke/zone_performance_profile.gd:29)
+       [1] _profile_rain_city (res://tests/smoke/zone_performance_profile.gd:146)
+ERROR: lab exceeded rendered frame budget (p95 49.806ms, p99 76.500ms, max 87.804ms, stalls >100ms 0)
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _run (res://tests/smoke/zone_performance_profile.gd:29)
+       [1] _profile_rain_city (res://tests/smoke/zone_performance_profile.gd:146)
+ERROR: tunnels exceeded rendered frame budget (p95 63.033ms, p99 86.867ms, max 96.218ms, stalls >100ms 0)
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _run (res://tests/smoke/zone_performance_profile.gd:29)
+       [1] _profile_rain_city (res://tests/smoke/zone_performance_profile.gd:146)
+ERROR: walker_arena exceeded rendered frame budget (p95 48.655ms, p99 78.349ms, max 89.839ms, stalls >100ms 0)
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _run (res://tests/smoke/zone_performance_profile.gd:29)
+       [1] _profile_rain_city (res://tests/smoke/zone_performance_profile.gd:146)
+ERROR: victory exceeded rendered frame budget (p95 60.573ms, p99 76.156ms, max 88.642ms, stalls >100ms 0)
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _run (res://tests/smoke/zone_performance_profile.gd:29)
+       [1] _profile_rain_city (res://tests/smoke/zone_performance_profile.gd:146)
+ERROR: rain_city_alley exceeded rendered frame budget (p95 58.680ms, p99 85.278ms, max 99.655ms, stalls >100ms 0)
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _run (res://tests/smoke/zone_performance_profile.gd:29)
+       [1] _profile_rain_city (res://tests/smoke/zone_performance_profile.gd:146)
+ERROR: rain_city_slice exceeded rendered frame budget (p95 47.251ms, p99 74.926ms, max 174.462ms, stalls >100ms 1)
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _run (res://tests/smoke/zone_performance_profile.gd:29)
+       [1] _profile_rain_city (res://tests/smoke/zone_performance_profile.gd:146)
+ERROR: rain_city_seawall exceeded rendered frame budget (p95 59.259ms, p99 68.786ms, max 85.154ms, stalls >100ms 0)
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _run (res://tests/smoke/zone_performance_profile.gd:29)
+       [1] _profile_rain_city (res://tests/smoke/zone_performance_profile.gd:146)
+ERROR: rain_city_terminal exceeded rendered frame budget (p95 59.285ms, p99 71.029ms, max 76.186ms, stalls >100ms 0)
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _run (res://tests/smoke/zone_performance_profile.gd:29)
+       [1] _profile_rain_city (res://tests/smoke/zone_performance_profile.gd:146)
+ERROR: rain_city_pier exceeded rendered frame budget (p95 68.453ms, p99 96.629ms, max 173.851ms, stalls >100ms 3)
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _run (res://tests/smoke/zone_performance_profile.gd:29)
+       [1] _profile_rain_city (res://tests/smoke/zone_performance_profile.gd:146)
+ERROR: 1 shaders of type ParticlesShaderGLES3 were never freed
+   at: ~ShaderGLES3 (drivers/gles3/shader_gles3.cpp:838)
+ERROR: 1 RID allocations of type 'N5GLES36ShaderE' were leaked at exit.

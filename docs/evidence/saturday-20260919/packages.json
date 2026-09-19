@@ -1,0 +1,46 @@
+{
+  "package_exclusion": "PASS Web and macOS PCK",
+  "macos_zip_integrity": "PASS",
+  "artifacts": {
+    "builds/web/index.apple-touch-icon.png": {
+      "bytes": 11944,
+      "sha256": "01d4f63e525941e06ce74f5187dad030d20a8d52a07ce365ae4e94af97a3b1f5"
+    },
+    "builds/web/index.wasm": {
+      "bytes": 39513091,
+      "sha256": "35116f68540ac41acf7d71ea457added91b5e960a9cca3e2acc72918eaf01277"
+    },
+    "builds/web/index.icon.png": {
+      "bytes": 5700,
+      "sha256": "ad3c35ad0facf487c618204bd98db543034fc95224eadc7f08c7a9ff38d5b3b5"
+    },
+    "builds/web/index.html": {
+      "bytes": 6605,
+      "sha256": "8fbbb52b69d18e9958957888284c4a512ee9bddcebcef420264620c130ff02f0"
+    },
+    "builds/web/index.png": {
+      "bytes": 21443,
+      "sha256": "3cb4495c0b98dfbe4b663cbf2b6836473572339beb66d902367893162a70be0e"
+    },
+    "builds/web/index.audio.worklet.js": {
+      "bytes": 7298,
+      "sha256": "5b476a9c9ce642c0ee4256436d1bc31d9c38f868aca0f9a8e2a57c18d2dec2a3"
+    },
+    "builds/web/index.js": {
+      "bytes": 279815,
+      "sha256": "68586d6daafc93c6e697b3fb258976874aa7459b8931165ebb1dc3c9614cc42c"
+    },
+    "builds/web/index.audio.position.worklet.js": {
+      "bytes": 2973,
+      "sha256": "be33985bc7160d6bf9646f259cd86b259cd67b02ccb297ee5c44f8ac84327bc8"
+    },
+    "builds/web/index.pck": {
+      "bytes": 69816612,
+      "sha256": "62c200cdbbfcdbe007112604fd2ae3a18fb2c9dd80dfb04922c08e8e264299d8"
+    },
+    "builds/macos/CobieNukem.zip": {
+      "bytes": 115810857,
+      "sha256": "316a9082f232f73b4a1752cf063b9083fe8d2938ae33fd65f10da058f1dc5907"
+    }
+  }
+}

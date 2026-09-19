@@ -1,0 +1,18 @@
+[
+  {
+    "level": "log",
+    "text": "Godot Engine v4.7.1.stable.official.a13da4feb - https://godotengine.org"
+  },
+  {
+    "level": "log",
+    "text": "OpenGL API OpenGL ES 3.0 (WebGL 2.0 (OpenGL ES 3.0 Chromium)) - Compatibility - Using Device: WebKit - WebKit WebGL"
+  },
+  {
+    "level": "log",
+    "text": "Build configuration: Emscripten 4.0.20, single-threaded, no GDExtension support."
+  },
+  {
+    "level": "log",
+    "text": "[Cobie] Boot complete { \"godot\": \"4.7.1-stable (official)\", \"renderer\": \"gl_compatibility\" }"
+  }
+]

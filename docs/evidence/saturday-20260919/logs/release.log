@@ -1,0 +1,97 @@
+==> import/parser validation
+Godot Engine v4.7.1.stable.official.a13da4feb - https://godotengine.org
+
+[   0% ] [90m[1mfirst_scan_filesystem[22m | Started Project initialization (5 steps)[39m[0m
+[   0% ] [90m[1mfirst_scan_filesystem[22m | Scanning file structure...[39m[0m
+[  16% ] [90m[1mfirst_scan_filesystem[22m | Loading global class names...[39m[0m
+[  33% ] [90m[1mfirst_scan_filesystem[22m | Verifying GDExtensions...[39m[0m
+[  50% ] [90m[1mfirst_scan_filesystem[22m | Creating autoload scripts...[39m[0m
+[  66% ] [90m[1mfirst_scan_filesystem[22m | Initializing plugins...[39m[0m
+[  83% ] [90m[1mfirst_scan_filesystem[22m | Starting file scan...[39m[0m
+[92m[ DONE ][39m [1mfirst_scan_filesystem[22m
+[0m
+[   0% ] [90m[1mupdate_scripts_classes[22m | Started Registering global classes... (3 steps)[39m[0m
+[   0% ] [90m[1mupdate_scripts_classes[22m | SalmonCreekWorldBuilder[39m[0m
+[  25% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  50% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[92m[ DONE ][39m [1mupdate_scripts_classes[22m
+[0m
+[   0% ] [90m[1mloading_editor_layout[22m | Started Loading editor (5 steps)[39m[0m
+[   0% ] [90m[1mloading_editor_layout[22m | Loading editor layout...[39m[0m
+[  16% ] [90m[1mloading_editor_layout[22m | Loading docks...[39m[0m
+[92m[ DONE ][39m [1mloading_editor_layout[22m
+[0m
+SAFE GODOT RUNNER TESTS: PASS
+==> visual capture user-data isolation
+.....Capture completed with failures:
+- approval_guard:320x180: route captures route_a and route_b lack distinct low-frequency composition (MAE=0.0000, minimum=0.0000)
+- approval_guard:320x180: route captures route_a and route_b are near-duplicates (scene edge IoU=1.0000, maximum=0.8000)
+...Capture completed with failures:
+- baseline approval requires complete distinctness group approval_guard: selected_views=['route_a', 'route_b'], required_views=['route_a', 'route_b'], selected_aspects=['320x180'], required_aspects=['320x180', '640x360']
+.Visual capture complete.
+  Candidate directory: /var/folders/dy/05pk38515m51wkpphq8__lh80000gn/T/capture-receipt-binding-test-m8v41cir/candidate/receipt-binding
+  Baseline is not modified without --approve.
+..
+----------------------------------------------------------------------
+Ran 11 tests in 0.413s
+
+OK
+==> res://tests/run_tests.gd
+Godot Engine v4.7.1.stable.official.a13da4feb - https://godotengine.org
+
+PASS: core contract checks
+==> res://tests/unit/input_system_test.gd
+Godot Engine v4.7.1.stable.official.a13da4feb - https://godotengine.org
+
+PASS: input profiles, calibration math, and diagnostics scene
+==> res://tests/unit/combat_test_runner.gd
+Godot Engine v4.7.1.stable.official.a13da4feb - https://godotengine.org
+
+COMBAT TESTS: PASS
+==> res://tests/unit/enemy_contract_tests.gd
+Godot Engine v4.7.1.stable.official.a13da4feb - https://godotengine.org
+
+PASS: enemy contracts, damage hooks, shield, and boss phases
+==> res://tests/unit/enemy_sprite_presentation_test.gd
+Godot Engine v4.7.1.stable.official.a13da4feb - https://godotengine.org
+
+PASS: authored enemy atlases, deterministic direction/state selection, elite/boss vocabulary
+==> res://tests/unit/enemy_presentation_profile_test.gd
+Godot Engine v4.7.1.stable.official.a13da4feb - https://godotengine.org
+
+PASS: enemy presentation profile contract and frame validation
+==> res://tests/unit/navigation_contract_test.gd
+Godot Engine v4.7.1.stable.official.a13da4feb - https://godotengine.org
+
+NAVIGATION EVIDENCE: polygons=112 vertices=114 bounds=[P: (-17.0, 0.4, -166.5), S: (36.5, 2.0, 184.0)] map_iteration=2 closest_opening=(0.0, 0.4, 10.0) closest_arena=(0.0, 0.4, -164.0)
+NAVIGATION EVIDENCE: cross_zone_path_points=41
+NAVIGATION EVIDENCE: arena_cover_path_points=8 lateral_deviation=2.00
+NAVIGATION EVIDENCE: enemy_map_iteration=2 enemy_closest=(0.0, 0.4, -140.0)
+NAVIGATION EVIDENCE: recovery_reason=stuck_on_navigation
+NAVIGATION EVIDENCE: recovery_reason=path_unreachable
+NAVIGATION EVIDENCE: recovery_reason=fell_out_of_bounds
+PASS: production navigation bake, cross-zone route, ground/flying split, and bounded recovery
+==> res://tests/unit/ui_scene_test.gd
+Godot Engine v4.7.1.stable.official.a13da4feb - https://godotengine.org
+
+UI SCENE TESTS: PASS
+==> res://tests/unit/asset_contract_test.gd
+Godot Engine v4.7.1.stable.official.a13da4feb - https://godotengine.org
+
+ASSET CONTRACT TESTS: PASS
+==> res://tests/unit/visual_capture_manifest_test.gd
+Godot Engine v4.7.1.stable.official.a13da4feb - https://godotengine.org
+
+VISUAL CAPTURE MANIFEST TEST: PASS
+==> res://tests/unit/gameplay_foundation_test.gd
+Godot Engine v4.7.1.stable.official.a13da4feb - https://godotengine.org
+
+GAMEPLAY FOUNDATION TESTS: PASS
+==> res://tests/unit/world_interaction_test.gd
+Godot Engine v4.7.1.stable.official.a13da4feb - https://godotengine.org
+
+ERROR: interaction presentation returns to the temporary-effect baseline
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _run (res://tests/unit/world_interaction_test.gd:40)
+       [1] _test_reset_rewinds_non_persistent (res://tests/unit/world_interaction_test.gd:248)

@@ -109,7 +109,9 @@ func _run() -> void:
 		await create_timer(0.2).timeout
 
 	target.queue_free()
-	enemy.queue_free()
+	# The production death timer can already have released this fixture.
+	if is_instance_valid(enemy):
+		enemy.queue_free()
 	await process_frame
 	_finish()
 

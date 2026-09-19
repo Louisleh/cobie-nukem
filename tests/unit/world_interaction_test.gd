@@ -87,6 +87,10 @@ func _test_weapon_hit_and_effect_cleanup_contract() -> void:
 	interaction.apply_damage(5.0, null, interaction.global_position)
 	_expect(interaction.is_active(), "raycast breakable activates from damage")
 	await create_timer(0.5).timeout
+	# SceneTree timers run after node processing; allow the final tween callback
+	# and its deferred free to cross their real process-frame boundaries.
+	await process_frame
+	await process_frame
 	if quality != null:
 		_expect(quality.temporary_effect_count() == effects_before, "interaction presentation returns to the temporary-effect baseline")
 
