@@ -2,6 +2,8 @@
 
 **Scope:** Salmon Creek / **No Dogs Allowed**, the actual first campaign card and `scenes/levels/episode_1_level_1.tscn`. Rain City remains the definitive WCB slice; its frozen production packets are not advanced here.
 
+**Candidate source:** [`3bee4d20e63a02a0259f9e77e312948c429940bd`](https://github.com/Louisleh/cobie-nukem/commit/3bee4d20e63a02a0259f9e77e312948c429940bd), pushed and remote-ref verified on `codex/saturday-level1-opening-20260919`; not merged into the program branch. Capture source maps were checked against the committed candidate. Closeout: 12:41 PDT; no owned server/capture/engine process left running, no continuation scheduled. Capacity snapshot: 92% main allowance remaining; Spark unavailable on this account.
+
 ## What changed
 
 A deliberately small lighting-only readability candidate: fog density `0.012 → 0.0045`, aerial perspective `0.7 → 0.35`, ambient energy `0.55 → 0.48`, existing cool directional key `1.1 → 1.25`. The runtime keeps exactly the same two lighting nodes, directions, shadows, environment assets, route, collision, navigation, weapons, enemies, encounters, and progression. Every byte outside the lighting function in the production file is unchanged.

@@ -557,7 +557,8 @@ Decision and remaining gate:
 - **Capacity:** sanitized 12:25 PDT result: allowed, 5% used / 95% remaining, no spending/reset performed. Spark unsupported; separate Astra read-only reviews were explicitly identified, not represented as Spark work.
 - **Evidence:** durable README, four short sampled-motion clips, exact stills, source/receipt maps, Chrome screenshots/console, package hashes and raw logs under `docs/evidence/saturday-20260919/`.
 - **Remaining/next:** resolve smoke leaks and profile pacing before integration; then freeze a first-level enemy-label/readability packet and a genuine 30-second combat capture. Preserve all human/device gates and WCB-008L frozen paths. No scheduled continuation.
-- **Integrated commit:** none in the program branch; candidate commit is the commit containing this checkpoint (exact pushed ref recorded in closeout).
+- **Integrated commit:** none in the program branch. Review candidate `3bee4d20e63a02a0259f9e77e312948c429940bd` pushed to `origin/codex/saturday-level1-opening-20260919` and read back with `git ls-remote`; source-map verification matches the captured candidate. Program remote remains exactly `4311937d768a12de88693013aaed47c3d694de17`.
+- **Closeout, 12:41 PDT:** working tree clean after candidate push; owned HTTP listener closed, no Godot/Blender process remains, both Astra reviewers joined and Spark pilot exited. Removed 259,463,852 bytes of verified task-owned capture scratch after preserving durable evidence; live disk approximately 12 GiB, still below the heavy-workload reserve. Final sanitized capacity 8% used / 92% remaining, no limit hit; endpoint reports September 26 12:01 PDT reset and no separate Spark/weekly fields. No credits spent/reset, deployment or continuation scheduled. Stop at this bounded checkpoint rather than expand scope after substantial tool churn.
 
 ## Resume protocol
 
