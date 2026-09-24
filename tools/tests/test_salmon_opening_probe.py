@@ -41,7 +41,14 @@ class OpeningProbeTests(unittest.TestCase):
                     "user_data_dir": temp, "save_directory": str(home / "saves"),
                     "render_fps": 30, "sample_fps": 10, "physics_tps": 60,
                     "start_process_frame": 10, "end_process_frame": 40,
-                    "start_physics_frame": 20, "end_physics_frame": 80, "samples": samples}
+                    "start_physics_frame": 20, "end_physics_frame": 80, "samples": samples,
+                    "fire_input": {"action": "fire_primary", "method": "Input.parse_input_event",
+                                   "events": [{"frame": 12, "pressed": True, "button_index": 1},
+                                              {"frame": 15, "pressed": False, "button_index": 1}]},
+                    "primary_fire": {"weapon_id": "pawstol", "initial_ammo": 12,
+                                     "final_ammo": 11, "ammo_cost": 1,
+                                     "fired_events": [{"process_frame": 22, "weapon_id": "pawstol",
+                                                       "ammo_after": 11}]}}
             probe.validate_receipt(data, frames, 1, (1280, 720), home)
             for key, value in (("save_directory", "/tmp/escaped"), ("end_process_frame", 39), ("physics_tps", 30), ("teleports", True), ("viewport", [640, 360])):
                 bad = copy.deepcopy(data)
@@ -51,6 +58,22 @@ class OpeningProbeTests(unittest.TestCase):
             for key, value in (("simulation_seconds", 0), ("png_sha256", "fake"), ("elapsed_usec", 0), ("physics_ticks", 0)):
                 bad = copy.deepcopy(data)
                 bad["samples"][1][key] = value
+                with self.assertRaises(ValueError):
+                    probe.validate_receipt(bad, frames, 1, (1280, 720), home)
+            # A changed ammo count alone is not a fired-event proof.
+            for mutation in (
+                lambda bad: bad.pop("primary_fire"),
+                lambda bad: bad["primary_fire"].update(final_ammo=11, fired_events=[]),
+                lambda bad: bad["primary_fire"].update(final_ammo=12),
+                lambda bad: bad["primary_fire"].update(final_ammo=10),
+                lambda bad: bad["primary_fire"]["fired_events"][0].update(ammo_after=12),
+                lambda bad: bad["primary_fire"]["fired_events"][0].update(process_frame=40),
+                lambda bad: bad["fire_input"].update(method="Input.action_press"),
+                lambda bad: bad["fire_input"]["events"][0].update(frame=120),
+                lambda bad: bad["fire_input"]["events"].pop(),
+            ):
+                bad = copy.deepcopy(data)
+                mutation(bad)
                 with self.assertRaises(ValueError):
                     probe.validate_receipt(bad, frames, 1, (1280, 720), home)
 

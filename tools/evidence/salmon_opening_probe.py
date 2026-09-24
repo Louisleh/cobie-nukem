@@ -81,6 +81,28 @@ def validate_receipt(data, frames, seconds, expected_size, home):
     if seconds >= 5:
         if abs(data["samples"][0]["position"][2] - data["samples"][-1]["position"][2]) < 1:
             raise ValueError("named movement did not move player")
+    fire_frame = min(90, max(12, seconds * 30 - 30))
+    fire_input = data.get("fire_input", {})
+    if (fire_input.get("action"), fire_input.get("method"), fire_input.get("events")) != (
+        "fire_primary", "Input.parse_input_event",
+        [{"frame": fire_frame, "pressed": True, "button_index": 1},
+         {"frame": fire_frame + 3, "pressed": False, "button_index": 1}],
+    ):
+        raise ValueError("missing scheduled mouse input event proof")
+    shot = data.get("primary_fire", {})
+    fired = shot.get("fired_events")
+    weapon_id = shot.get("weapon_id")
+    initial, final, cost = (shot.get(key) for key in ("initial_ammo", "final_ammo", "ammo_cost"))
+    if (not isinstance(weapon_id, str) or not weapon_id or
+            any(type(value) is not int for value in (initial, final, cost)) or
+            initial < cost or cost <= 0 or final < 0 or initial - final != cost or
+            not isinstance(fired, list) or len(fired) != 1):
+        raise ValueError("missing real ammo-consuming fired signal")
+    event = fired[0]
+    if (event.get("weapon_id") != weapon_id or event.get("ammo_after") != final or
+            type(event.get("process_frame")) is not int or
+            not data["start_process_frame"] + fire_frame <= event["process_frame"] < data["start_process_frame"] + fire_frame + 3):
+        raise ValueError("fired signal does not match input and ammo")
 
 
 def check_budget(scratch, destination, started, max_frames):
@@ -173,6 +195,7 @@ def main():
             (args.out / "source.json").write_text(json.dumps(identity, indent=2) + "\n")
             receipt = {"status": "PASS", "kind": "sampled_automated_native_motion", "seconds": args.seconds,
                        "source_sha256": identity["content_sha256"], "samples": len(frames),
+                       "fire_input": data["fire_input"], "primary_fire": data["primary_fire"],
                        "png_bytes": sum(p.stat().st_size for p in frames), "wall_seconds": time.monotonic() - started,
                        "command": cmd, "engine_version": version, "user_data_and_save_roots_isolated": True,
                        "human_acceptance": False, "canonical_WCB008L_evidence": False}
