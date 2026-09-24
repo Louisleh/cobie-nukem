@@ -88,9 +88,18 @@ func _test_finale_completion_and_checkpoint_clear() -> void:
 	var completions := [0]
 	level.level_completed.connect(func(_summary: Dictionary) -> void: completions[0] += 1)
 	_authorize_finale(level)
-	level._on_golden_ball_claimed(null)
-	level._on_golden_ball_claimed(null)
+	# Exercise the actual interaction: it consumes the ball before emitting claimed.
+	# A missing save service must leave it claimable for a later retry.
+	root.remove_child(save_manager)
+	level._golden_ball.interact(null)
+	_expect(not level.completion_started, "failed campaign save does not start victory")
+	_expect(level._golden_ball.enabled and not level._golden_ball.claimed_once, "failed save restores Golden Ball interaction")
+	_expect(level._golden_ball.is_in_group(&"interactables"), "failed save restores Golden Ball discovery")
+	root.add_child(save_manager)
+	level._golden_ball.interact(null)
+	level._golden_ball.interact(null)
 	_expect(level.completion_started, "finale claim starts completion")
+	_expect(level._golden_ball.claimed_once and not level._golden_ball.enabled, "successful claim consumes reward once")
 	_expect(save_manager.load_slot(&"checkpoint").is_empty(), "finishing the level clears the stale checkpoint")
 	await create_timer(1.5).timeout
 	_expect(completions[0] == 1, "double finale claims complete the level exactly once")
@@ -322,7 +331,7 @@ func _test_level_lifecycle_twice_in_one_process() -> void:
 			level._enter_zone(StringName(milestone[1]), String(milestone[2]), null)
 		_expect(level.spawned_zones.has(&"walker_arena"), "lifecycle %d arms the boss encounter" % lifecycle)
 		_authorize_finale(level)
-		level._on_golden_ball_claimed(null)
+		level._golden_ball.interact(null)
 		await create_timer(1.4).timeout
 		_expect(game_state.phase == game_state.Phase.VICTORY, "lifecycle %d reaches victory" % lifecycle)
 		level.free()

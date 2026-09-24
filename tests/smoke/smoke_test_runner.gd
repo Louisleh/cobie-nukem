@@ -26,17 +26,25 @@ func _run() -> void:
 	]:
 		if not runtime_scene.is_empty():
 			await _runtime_boot(runtime_scene)
+	# Boot changes the current scene asynchronously. Release that destination too,
+	# then let the audio server retire any playing WAV before the process exits.
+	if current_scene != null:
+		_stop_audio_under(current_scene)
+		current_scene.queue_free()
+		current_scene = null
 	_stop_test_audio()
-	await create_timer(0.1).timeout
+	for frame in 3:
+		await process_frame
+	await create_timer(0.25).timeout
 	for item in pending:
 		print("PENDING: " + item)
 	if failures.is_empty():
 		print("PASS: %d scenes and %d resources load; boot/menu/level/diagnostics enter tree" % [scene_count, resource_count])
-		quit(0)
+		quit.call_deferred(0)
 	else:
 		for failure in failures:
 			push_error("SMOKE: " + failure)
-		quit(1)
+		quit.call_deferred(1)
 
 func _scan_scenes(directory_path: String) -> void:
 	var directory := DirAccess.open(directory_path)

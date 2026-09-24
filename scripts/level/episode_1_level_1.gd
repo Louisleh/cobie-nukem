@@ -434,7 +434,7 @@ func _reset_active_encounter_for_checkpoint() -> void:
 
 func _on_golden_ball_claimed(_actor: Node) -> void:
 	if completion_started: return
-	if _golden_ball == null or not _golden_ball.enabled or not _objective_tracker.completed.has(&"defeat_walker"):
+	if _golden_ball == null or not _golden_ball.claimed_once or not _objective_tracker.completed.has(&"defeat_walker"):
 		narrative_message.emit("GOLDEN BALL CONTAINMENT ACTIVE — WALKER STILL ONLINE.", 2.0)
 		return
 	# A finished run must not offer a stale mid-level Continue from the menu.
@@ -447,6 +447,7 @@ func _on_golden_ball_claimed(_actor: Node) -> void:
 	var save_error := _mission_runtime.record_campaign_completion(metadata.level_id, summary, save_manager, game_state.difficulty_id if game_state != null else &"classic", [&"episode_1_vancouver_waterfront"])
 	if save_error != OK:
 		completion_started = false
+		_golden_ball.enable_as_reward()
 		narrative_message.emit("CAMPAIGN SAVE FAILED // CLAIM THE GOLDEN BALL TO RETRY", 4.0)
 		return
 	if save_manager != null and save_manager.delete_slot(&"checkpoint") != OK:
