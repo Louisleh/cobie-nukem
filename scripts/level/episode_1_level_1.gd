@@ -439,8 +439,6 @@ func _on_golden_ball_claimed(_actor: Node) -> void:
 		return
 	# A finished run must not offer a stale mid-level Continue from the menu.
 	completion_started = true
-	_objective_tracker.record(ObjectiveDefinition.Kind.COLLECT_ITEM, &"golden_tennis_ball")
-	narrative_message.emit("THEY SAID NO ANIMALS. THEY SHOULD HAVE SAID PLEASE.", 5.0)
 	var summary := get_level_summary()
 	var save_manager := get_node_or_null("/root/SaveManager")
 	var game_state := get_node_or_null("/root/GameState")
@@ -450,6 +448,8 @@ func _on_golden_ball_claimed(_actor: Node) -> void:
 		_golden_ball.enable_as_reward()
 		narrative_message.emit("CAMPAIGN SAVE FAILED // CLAIM THE GOLDEN BALL TO RETRY", 4.0)
 		return
+	_objective_tracker.record(ObjectiveDefinition.Kind.COLLECT_ITEM, &"golden_tennis_ball")
+	narrative_message.emit("THEY SAID NO ANIMALS. THEY SHOULD HAVE SAID PLEASE.", 5.0)
 	if save_manager != null and save_manager.delete_slot(&"checkpoint") != OK:
 		push_warning("Campaign result saved, but Salmon Creek checkpoint cleanup failed")
 	_completion_timer.start()

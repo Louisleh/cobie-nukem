@@ -95,11 +95,13 @@ func _test_finale_completion_and_checkpoint_clear() -> void:
 	_expect(not level.completion_started, "failed campaign save does not start victory")
 	_expect(level._golden_ball.enabled and not level._golden_ball.claimed_once, "failed save restores Golden Ball interaction")
 	_expect(level._golden_ball.is_in_group(&"interactables"), "failed save restores Golden Ball discovery")
+	_expect(not level._objective_tracker.completed.has(&"fetch_ball"), "failed save does not complete the final objective")
 	root.add_child(save_manager)
 	level._golden_ball.interact(null)
 	level._golden_ball.interact(null)
 	_expect(level.completion_started, "finale claim starts completion")
 	_expect(level._golden_ball.claimed_once and not level._golden_ball.enabled, "successful claim consumes reward once")
+	_expect(level._objective_tracker.completed.has(&"fetch_ball"), "saved claim completes the final objective")
 	_expect(save_manager.load_slot(&"checkpoint").is_empty(), "finishing the level clears the stale checkpoint")
 	await create_timer(1.5).timeout
 	_expect(completions[0] == 1, "double finale claims complete the level exactly once")
