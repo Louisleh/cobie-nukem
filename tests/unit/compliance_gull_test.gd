@@ -31,6 +31,7 @@ func _run() -> void:
 	_test_committed_dive_is_interruptible()
 	_test_state_change_cleanup()
 	_test_dive_retains_pressure_token()
+	_test_health_feedback_expires_during_dive()
 
 	if fake_pressure != null:
 		fake_pressure.queue_free()
@@ -47,6 +48,23 @@ func _run() -> void:
 			push_error(failure)
 		quit(1)
 
+
+func _test_health_feedback_expires_during_dive() -> void:
+	var camera := Camera3D.new()
+	test_scene.add_child(camera)
+	camera.current = true
+	camera.global_position = Vector3(0.0, 1.5, 8.0)
+	var gull := _spawn_gull()
+	gull.apply_damage(1.0)
+	var label := gull.get_node("EnemyHealthBar/HealthPoints") as Label3D
+	gull._perform_attack()
+	_expect(gull.is_dive_active(), "Gull enters committed dive for HP feedback test")
+	gull._health_label_time = 0.04
+	label.visible = true
+	gull._physics_process(0.05)
+	_expect(is_zero_approx(gull._health_label_time) and not label.visible, "Gull dive advances and expires HP readout without running base movement")
+	gull.queue_free()
+	camera.queue_free()
 
 func _test_visible_telegraph() -> void:
 	var gull := _spawn_gull()

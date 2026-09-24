@@ -66,7 +66,7 @@ func _run() -> void:
 		_expect(health_bar != null, "World-space health bar exists: %s" % scene_path)
 		var health_fill := enemy.get_node_or_null("EnemyHealthBar/Fill") as MeshInstance3D
 		var health_label := enemy.get_node_or_null("EnemyHealthBar/HealthPoints") as Label3D
-		_expect(health_label != null and "HP" in health_label.text, "Numeric health points are visible: %s" % scene_path)
+		_expect(health_label != null and "HP" in health_label.text and not health_label.visible, "Undamaged enemy health numbers start hidden: %s" % scene_path)
 		_expect(health_label != null and health_label.fixed_size, "HP text uses constant screen sizing: %s" % scene_path)
 		var full_width := (health_fill.mesh as QuadMesh).size.x if health_fill != null else 0.0
 		if enemy.uses_gravity:
@@ -84,6 +84,7 @@ func _run() -> void:
 		if health_fill != null:
 			_expect((health_fill.mesh as QuadMesh).size.x < full_width, "Health bar shrinks immediately: %s" % scene_path)
 		enemy.free()
+	await _test_health_readout_lifecycle()
 	await _test_hound_shield()
 	await _test_charge_obstruction()
 	await _test_walker_phases()
@@ -96,6 +97,54 @@ func _run() -> void:
 			push_error(failure)
 		quit(1)
 
+
+func _test_health_readout_lifecycle() -> void:
+	var camera := Camera3D.new()
+	root.add_child(camera)
+	camera.current = true
+	camera.global_position = Vector3(0.0, 1.5, 8.0)
+	var enemy := preload("res://scenes/enemies/mutant_groundskeeper.tscn").instantiate() as EnemyAgent
+	root.add_child(enemy)
+	await physics_frame
+	var label := enemy.get_node("EnemyHealthBar/HealthPoints") as Label3D
+	var bar := enemy.get_node("EnemyHealthBar") as Node3D
+	_expect(bar.visible and not label.visible, "Near full-health enemy shows bar without numeric clutter")
+	var node_count := enemy.find_children("*", "Node", true, false).size()
+	enemy.apply_damage(5.0)
+	await physics_frame
+	_expect(label.visible and label.text.begins_with(str(ceili(enemy.health))), "Near damaged enemy briefly shows accurate HP")
+	camera.global_position.z = 14.0
+	await physics_frame
+	_expect(bar.visible and not label.visible, "Distant damaged enemy keeps bar but hides numbers")
+	camera.global_position.z = 8.0
+	await physics_frame
+	_expect(label.visible, "Moving back within combat range restores unexpired hit feedback")
+	await create_timer(0.7).timeout
+	enemy.apply_damage(5.0)
+	await create_timer(0.7).timeout
+	_expect(label.visible, "A second hit refreshes the numeric feedback window")
+	await create_timer(0.65).timeout
+	_expect(bar.visible and not label.visible, "Numeric feedback expires without hiding the bar")
+	_expect(enemy.find_children("*", "Node", true, false).size() == node_count, "Repeated hits allocate no presentation nodes")
+	enemy.apply_damage(10000.0)
+	_expect(not bar.visible, "Death hides the world-space health display immediately")
+	enemy.free()
+	for scene_path in ["res://scenes/enemies/compliance_hound.tscn", "res://scenes/enemies/animal_control_walker.tscn"]:
+		var elite := (load(scene_path) as PackedScene).instantiate() as EnemyAgent
+		root.add_child(elite)
+		camera.global_position.z = 14.0
+		await physics_frame
+		var elite_label := elite.get_node("EnemyHealthBar/HealthPoints") as Label3D
+		_expect(not elite_label.visible, "Undamaged elite/boss numbers remain hidden: %s" % scene_path)
+		elite.apply_damage(5.0)
+		await physics_frame
+		_expect(elite_label.visible and elite_label.text.begins_with(str(ceili(elite.health))), "Damaged elite/boss retains named HP at 14 m: %s" % scene_path)
+		camera.global_position.z = 18.0
+		await physics_frame
+		_expect(not elite_label.visible, "Elite/boss numbers clear beyond 16 m: %s" % scene_path)
+		elite.free()
+	camera.free()
+	await process_frame
 
 func _visible_mesh_extent(visual: Node) -> float:
 	if visual == null:

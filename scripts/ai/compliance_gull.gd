@@ -49,6 +49,8 @@ func _physics_process(delta: float) -> void:
 	if _dive_phase == DivePhase.NONE:
 		super._physics_process(delta)
 	else:
+		_health_label_time = maxf(0.0, _health_label_time - delta)
+		_update_health_bar_presentation()
 		_advance_dive(delta)
 	var visual := get_node_or_null("Visual") as Node3D
 	if visual != null:
