@@ -572,6 +572,18 @@ func _check_death_screen_contract() -> void:
 	screen.show_death(authored)
 	if screen.get_node("Panel/VBox/QuipLabel").text != "TEST QUIP":
 		failures.append("Authored death quips must retain their typed-array contract")
+	var saved_size := root.size
+	for size in [Vector2i(640, 360), Vector2i(480, 360)]:
+		root.size = size
+		await process_frame
+		screen._layout_panel()
+		var viewport_bounds := Rect2(Vector2.ZERO, size)
+		for path in ["Panel", "Panel/VBox/Buttons/RetryButton", "Panel/VBox/Buttons/MainMenuButton"]:
+			var control := screen.get_node(path) as Control
+			if not viewport_bounds.encloses(control.get_global_rect()):
+				failures.append("Death %s must fit the %s logical canvas" % [path, size])
+	root.size = saved_size
+	await process_frame
 	var retry_count := [0]
 	screen.retry_requested.connect(func() -> void: retry_count[0] += 1)
 	PointerCaptureController._launch_capture_requested_msec = -1

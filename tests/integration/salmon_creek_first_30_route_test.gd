@@ -116,7 +116,19 @@ func _run() -> void:
 			shed = frame
 			ammo_at_shed = weapon.ammo
 			Input.action_release(&"move_forward")
-		if death == -1 and player.is_dead: death = frame
+		if death == -1 and player.is_dead:
+			death = frame
+			var death_screen := level.find_children("*", "DeathScreen", true, false)
+			if death_screen.size() != 1:
+				failures.append("death must show exactly one death screen")
+			else:
+				var panel := death_screen[0].get_node("Panel") as Control
+				var logical_width := roundi(float(root.content_scale_size.y) * root.size.x / root.size.y)
+				var viewport_bounds := Rect2(Vector2.ZERO, Vector2(logical_width, root.content_scale_size.y))
+				for path in [".", "VBox/Buttons/RetryButton", "VBox/Buttons/MainMenuButton"]:
+					var control := panel.get_node(path) as Control
+					if not viewport_bounds.encloses(control.get_global_rect()):
+						failures.append("death %s clipped at %s" % [path, viewport_bounds.size])
 		if death >= 0 and recovered == -1 and not player.is_dead:
 			recovered = frame
 			if hud.notification_label.text.contains("GOOD DOG DOWN") or hud.get_caption_text().contains("GOOD DOG DOWN"):
