@@ -346,6 +346,8 @@ func _activate_opening_encounter(_weapon: WeaponBase = null, _secondary := false
 	_opening_grace_timer.stop()
 	_spawn_registry.activate_staged_enemies(player)
 	_sync_spawn_runtime_state()
+	if _opening_encounter_active and _mission_presentation != null:
+		_mission_presentation.on_staged_encounter_activated(&"forbidden_field")
 
 func _on_enemy_died(enemy: Node, zone_id: StringName) -> void:
 	# Checkpoint retries rebuild an authored encounter without increasing its

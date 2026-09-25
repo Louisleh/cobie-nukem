@@ -186,7 +186,15 @@ func on_actor_spawned(enemy: Node, definition: EncounterDefinition) -> void:
 	if zone_id == _boss_zone_id:
 		_request_audio_state(&"boss")
 		return
+	# A grace-staged opening has spawned actors, but none can threaten the player
+	# until its level owner wakes them by contact, firing, or the timeout.
+	if zone_id == _initial_zone_id and definition.opening_grace_seconds > 0.0:
+		return
 	if zone_id == _last_zone and _current_audio_state in [&"exploration", &"tension"]:
+		_request_audio_state(&"combat")
+
+func on_staged_encounter_activated(zone_id: StringName) -> void:
+	if zone_id == _last_zone and int(_zone_actor_counts.get(zone_id, 0)) > 0:
 		_request_audio_state(&"combat")
 
 func on_actor_defeated(_enemy: Node, definition: EncounterDefinition) -> void:

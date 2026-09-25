@@ -167,7 +167,13 @@ func _initialize() -> void:
 	check(reset_actors.size() == 3, "Checkpoint restart does not respawn the active encounter")
 	var authored_positions: Array[Vector3] = [Vector3(-5, 2, -4), Vector3(5, 2, -9), Vector3(0, 0, -14)]
 	for actor in reset_actors:
-		check(actor.position in authored_positions, "Restarted enemy did not return to an authored spawn")
+		var at_authored_spawn := false
+		for authored in authored_positions:
+			if actor.position.distance_to(authored) < 0.05:
+				at_authored_spawn = true
+				break
+		check(at_authored_spawn and actor.process_mode == Node.PROCESS_MODE_DISABLED,
+			"Restarted enemy must remain staged within 5 cm of its authored spawn: %s" % actor.position)
 	var compliance_trigger: LevelZoneTrigger
 	for child in level.get_node("Interactables").get_children():
 		if child is LevelZoneTrigger and child.zone_id == &"compliance_lab":
