@@ -31,8 +31,8 @@ func _run() -> void:
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 	var weapon := player.weapons[player.current_weapon_index] as WeaponBase
 	var ammo := weapon.ammo
-	var shots := 0
-	weapon.fired.connect(func(_source: WeaponBase, _secondary: bool) -> void: shots += 1)
+	var shots := [0]
+	weapon.fired.connect(func(_source: WeaponBase, _secondary: bool) -> void: shots[0] += 1)
 	for frame in 90: await process_frame
 	if level._spawn_registry.opening_enemies_active() or level._opening_grace_timer.is_stopped():
 		failures.append("waiting at spawn retains the authored twelve-second grace window")
@@ -67,12 +67,12 @@ func _run() -> void:
 		if zone_frame != -1: break
 	Input.action_release(&"move_forward")
 	_use(false)
-	print("FIELD EXIT RECEIPT: use=%d open=%d awake=%d telegraphs=%s attacks=%s shed=%d ammo=%d->%d shots=%d dead=%s\n%s" % [use_frame, open_frame, awake_frame, telegraphs, attacks, zone_frame, ammo, weapon.ammo, shots, player.is_dead, "\n".join(observations)])
+	print("FIELD EXIT RECEIPT: use=%d open=%d awake=%d telegraphs=%s attacks=%s shed=%d ammo=%d->%d shots=%d dead=%s\n%s" % [use_frame, open_frame, awake_frame, telegraphs, attacks, zone_frame, ammo, weapon.ammo, shots[0], player.is_dead, "\n".join(observations)])
 	if use_frame == -1 or open_frame == -1 or zone_frame == -1:
 		failures.append("ordinary forward/use input must reach the unchanged shed gate")
 	if awake_frame == -1 or awake_frame >= zone_frame or telegraphs.is_empty() or telegraphs[0] >= zone_frame or attacks.is_empty() or attacks[0] >= zone_frame:
 		failures.append("no-fire approach must wake, telegraph and attack before entering the shed")
-	if shots != 0 or weapon.ammo != ammo:
+	if shots[0] != 0 or weapon.ammo != ammo:
 		failures.append("no shot must be required for field contact")
 	for audio in level.find_children("*", "ProceduralAudio", true, false): audio.stop_all()
 	level.queue_free()
