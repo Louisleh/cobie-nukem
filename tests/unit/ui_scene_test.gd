@@ -548,6 +548,9 @@ func _check_caption_contracts() -> void:
 		var viewport_rect := Rect2(Vector2.ZERO, viewport)
 		if not viewport_rect.encloses(bounds):
 			failures.append("Caption label must stay within viewport in bounds %s: x=%s y=%s w=%s h=%s" % [viewport, bounds.position.x, bounds.position.y, bounds.size.x, bounds.size.y])
+		var actual_viewport := hud.get_viewport().get_visible_rect().size
+		if actual_viewport.x / actual_viewport.y <= 1.5 and bounds.position.x < actual_viewport.x * 0.25 - 1.0:
+			failures.append("Tablet captions must reserve the portrait lane: %s x=%s" % [actual_viewport, bounds.position.x])
 	root.size = Vector2i(1280, 720)
 	hud.queue_free()
 	await process_frame

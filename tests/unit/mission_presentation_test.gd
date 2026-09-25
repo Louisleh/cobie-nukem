@@ -2,6 +2,7 @@ extends SceneTree
 
 const MANIFEST := preload("res://resources/content/salmon_creek_manifest.tres")
 const PLAYER_SCENE := preload("res://scenes/player/cobie_player.tscn")
+const FIELD_DRONE := preload("res://resources/enemies/leash_enforcement_drone.tres")
 
 class FakeLevel extends Node:
 	signal zone_entered(zone_id: StringName, title: String)
@@ -27,6 +28,7 @@ func _run() -> void:
 	await _test_null_player()
 	await _test_ui_and_audio_ownership()
 	await _test_enemy_binding_current_and_future()
+	await _test_named_enemy_warning()
 	await _test_state_and_zone_transitions()
 	await _test_checkpoint_reset()
 	await _test_death_touch_release_and_pause_suppression()
@@ -163,6 +165,32 @@ func _test_enemy_binding_current_and_future() -> void:
 	level.queue_free()
 	await process_frame
 
+
+func _test_named_enemy_warning() -> void:
+	var level := _make_level()
+	var actors := Node.new(); actors.name = "Actors"; level.add_child(actors)
+	await process_frame
+	var presentation := _make_presentation(level, actors)
+	var drone := EnemyAgent.new()
+	drone.definition = FIELD_DRONE
+	actors.add_child(drone)
+	presentation.bind_warning_enemy(drone)
+	drone.telegraph_started.emit(&"compliance_bolt", 0.52)
+	var caption := presentation.get_hud().get_caption_text()
+	_expect(caption.contains("LEASH ENFORCEMENT DRONE") and caption.contains("COMPLIANCE BOLT WARNING"), "real opening drone caption names attacker and attack")
+	presentation.get_hud().clear_captions()
+	var anonymous := FakeEnemy.new()
+	actors.add_child(anonymous)
+	presentation.bind_warning_enemy(anonymous)
+	anonymous.telegraph_started.emit(&"generic_attack", 0.5)
+	_expect(presentation.get_hud().get_caption_text().contains("GENERIC ATTACK WARNING"), "non-agent telegraph retains generic warning")
+	presentation.get_hud().clear_captions()
+	presentation._enemy_cues._on_enemy_telegraph(&"lost_target", 0.5, null)
+	_expect(presentation.get_hud().get_caption_text().contains("LOST TARGET WARNING"), "expired enemy reference retains generic warning")
+	drone.queue_free()
+	presentation.queue_free()
+	level.queue_free()
+	await process_frame
 
 func _test_state_and_zone_transitions() -> void:
 	var level := _make_level()

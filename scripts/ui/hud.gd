@@ -318,13 +318,13 @@ func _apply_caption_layout() -> void:
 	var viewport_width := maxf(320.0, viewport_size.x)
 	var viewport_height := maxf(360.0, viewport_size.y)
 	var target_width := clampf(viewport_width * 0.86, 240.0, 900.0)
-	var left_margin := maxf(12.0, (viewport_width - target_width) * 0.5)
+	var left_margin := maxf(maxf(12.0, (viewport_width - target_width) * 0.5), viewport_width * 0.25 if viewport_width / viewport_height <= 1.5 else 0.0)
 	caption.anchor_left = 0.0
 	caption.anchor_top = 1.0
 	caption.anchor_right = 0.0
 	caption.anchor_bottom = 1.0
 	caption.offset_left = left_margin
-	caption.offset_right = left_margin + target_width
+	caption.offset_right = minf(left_margin + target_width, viewport_width - 12.0)
 	caption.offset_top = -maxf(96.0, roundf(viewport_height * 0.072))
 	caption.offset_bottom = caption.offset_top + 36.0
 

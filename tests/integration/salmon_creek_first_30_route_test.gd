@@ -49,9 +49,14 @@ func _run() -> void:
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 	var weapon := player.weapons[player.current_weapon_index] as WeaponBase
 	var director := level._mission_presentation.get_audio_director() as MissionAudioDirector
+	var hud := level._mission_presentation.get_hud() as GameHUD
+	var viewport := hud.get_viewport().get_visible_rect().size
+	if viewport.x / viewport.y <= 1.5 and (hud.get_node("Root/CaptionLabel") as Control).get_global_rect().position.x < viewport.x * 0.25 - 1.0:
+		failures.append("tablet warning caption overlaps the portrait lane")
 	var initial_ammo := weapon.ammo
 	var shots: Array[int] = []
 	var warnings: Array[int] = []
+	var warning_captions: Array[String] = []
 	var attacks: Array[int] = []
 	var awake := -1
 	var combat := -1
@@ -69,7 +74,8 @@ func _run() -> void:
 		if not actor is EnemyAgent: continue
 		var enemy := actor as EnemyAgent
 		enemy.telegraph_started.connect(func(_kind: StringName, _duration: float) -> void:
-			warnings.append(Engine.get_process_frames() - starting_process))
+			warnings.append(Engine.get_process_frames() - starting_process)
+			warning_captions.append(hud.get_caption_text()))
 		enemy.attack_fired.connect(func(_kind: StringName) -> void:
 			attacks.append(Engine.get_process_frames() - starting_process))
 	if director.current_state() == &"combat": failures.append("combat music starts before player contact")
@@ -100,13 +106,19 @@ func _run() -> void:
 	_menu_accept(false)
 	var elapsed_process := Engine.get_process_frames() - starting_process
 	var elapsed_physics := Engine.get_physics_frames() - starting_physics
-	print("FIRST 30 RECEIPT: process=%d physics=%d shot=%s awake=%d combat=%d warning=%s attack=%s use=%d gate=%d shed=%d death=%d recovered=%d ammo_at_shed=%d health=%.1f" % [elapsed_process, elapsed_physics, shots, awake, combat, warnings, attacks, use_frame, opened, shed, death, recovered, ammo_at_shed, player.health_armor.health])
+	print("FIRST 30 RECEIPT: process=%d physics=%d shot=%s awake=%d combat=%d warning=%s caption=%s attack=%s use=%d gate=%d shed=%d death=%d recovered=%d ammo_at_shed=%d health=%.1f" % [elapsed_process, elapsed_physics, shots, awake, combat, warnings, warning_captions.slice(0, 2), attacks, use_frame, opened, shed, death, recovered, ammo_at_shed, player.health_armor.health])
 	if elapsed_process != FRAMES or abs(elapsed_physics - FRAMES * 2) > 2:
 		failures.append("30 simulated seconds must contain 900 rendered and 1800 physics frames")
 	if shots.size() != 1 or shots[0] < 60 or shots[0] > 63 or ammo_at_shed != initial_ammo - weapon.definition.ammo_per_primary:
 		failures.append("real mapped mouse input must consume exactly one Pawstol shot")
 	if awake < 0 or combat < awake or warnings.is_empty() or attacks.is_empty() or warnings[0] <= awake or attacks[0] <= warnings[0]:
 		failures.append("field contact must wake staged enemies, cue combat, telegraph and attack")
+	var named_warning := false
+	for caption in warning_captions:
+		if caption.contains(":") and caption.contains(" WARNING") and (caption.contains("LEASH ENFORCEMENT DRONE") or caption.contains("MUTANT GROUNDSKEEPER")):
+			named_warning = true
+	if not named_warning:
+		failures.append("real opening telegraph must caption both attacker and attack")
 	if use_frame < 0 or opened < use_frame or shed < opened or shed >= FRAMES:
 		failures.append("mapped forward/use must open unchanged gate and enter shed")
 	if death >= 0 and death <= shed:
