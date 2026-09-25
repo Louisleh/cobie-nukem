@@ -492,7 +492,7 @@ func _spawn_player() -> void:
 		for weapon in player.weapons:
 			weapon.fired.connect(_activate_opening_encounter)
 		if player.has_signal("died"): player.died.connect(func(_source):
-			narrative_message.emit("GOOD DOG DOWN. PRESS FIRE TO RESTART.", 3.0)
+			narrative_message.emit("GOOD DOG DOWN. SELECT RETRY TO GET BACK UP.", 3.0)
 			var game_state := get_node_or_null("/root/GameState")
 			if game_state: game_state.run_stats["deaths"] = int(game_state.run_stats.get("deaths", 0)) + 1
 		)

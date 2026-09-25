@@ -112,6 +112,17 @@ func _initialize() -> void:
 		check(is_equal_approx(float(v5_checkpoint.get("player_state", {}).get("armor", 0.0)), 17.0), "Salmon checkpoint persists player armor")
 	player.health_armor.health = 1.0
 	level.restart_from_checkpoint()
+	var reset_actors: Array = level._encounter_runner.active.get(&"forbidden_field", {}).get("actors", [])
+	check(reset_actors.size() == 3, "Checkpoint restart does not respawn the active encounter")
+	var authored_positions: Array[Vector3] = [Vector3(-5, 2, -4), Vector3(5, 2, -9), Vector3(0, 0, -14)]
+	for actor in reset_actors:
+		var at_authored_spawn := false
+		for authored in authored_positions:
+			if actor.position.distance_to(authored) < 0.05:
+				at_authored_spawn = true
+				break
+		check(at_authored_spawn and actor.process_mode == Node.PROCESS_MODE_DISABLED,
+			"Restarted enemy must begin staged within 5 cm of its authored spawn: %s" % actor.position)
 	var runtime_loot_interaction := _find_interaction_by_kind(level, WorldInteractionDefinition.Kind.LOOT_CONTAINER)
 	var actor_children_before := level.get_node("Actors").get_children()
 	if runtime_loot_interaction != null:
@@ -163,17 +174,6 @@ func _initialize() -> void:
 	await process_frame
 	check(player.health_armor.health == player.health_armor.max_health, "Checkpoint restart does not restore player health")
 	check(player.health_armor.invulnerable_remaining > 0.0, "Checkpoint restart lacks immediate spawn protection")
-	var reset_actors: Array = level._encounter_runner.active.get(&"forbidden_field", {}).get("actors", [])
-	check(reset_actors.size() == 3, "Checkpoint restart does not respawn the active encounter")
-	var authored_positions: Array[Vector3] = [Vector3(-5, 2, -4), Vector3(5, 2, -9), Vector3(0, 0, -14)]
-	for actor in reset_actors:
-		var at_authored_spawn := false
-		for authored in authored_positions:
-			if actor.position.distance_to(authored) < 0.05:
-				at_authored_spawn = true
-				break
-		check(at_authored_spawn and actor.process_mode == Node.PROCESS_MODE_DISABLED,
-			"Restarted enemy must remain staged within 5 cm of its authored spawn: %s" % actor.position)
 	var compliance_trigger: LevelZoneTrigger
 	for child in level.get_node("Interactables").get_children():
 		if child is LevelZoneTrigger and child.zone_id == &"compliance_lab":
@@ -233,9 +233,10 @@ func _initialize() -> void:
 		save_manager.delete_slot(&"checkpoint")
 	else:
 		check(false, "SaveManager and GameState are available for continue checkpoint identity coverage")
-	level.free()
-	await process_frame
-	await process_frame
+	for audio in level.find_children("*", "ProceduralAudio", true, false):
+		audio.stop_all()
+	level.queue_free()
+	for frame in 12: await process_frame
 	finish()
 
 
