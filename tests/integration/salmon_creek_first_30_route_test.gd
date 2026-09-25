@@ -55,6 +55,24 @@ func _run() -> void:
 	Engine.physics_ticks_per_second = 60
 	var level := LEVEL.instantiate() as EpisodeOneLevel
 	root.add_child(level)
+	var pause_menus := level.find_children("*", "PauseMenu", true, false)
+	if pause_menus.size() != 1:
+		push_error("FIRST 30: expected one pause menu immediately after level entry")
+		quit(1)
+		return
+	var pause_menu := pause_menus[0] as PauseMenu
+	if pause_menu == null:
+		push_error("FIRST 30: invalid pause menu")
+		quit(1)
+		return
+	# Real play pauses on focus loss. Scripted capture has no human to resume:
+	# suppress synchronously after scene entry, before the first warmup frame.
+	pause_menu.set_suppressed(true)
+	pause_menu.notification(Node.NOTIFICATION_APPLICATION_FOCUS_OUT)
+	if paused or pause_menu.visible:
+		push_error("FIRST 30: focus-loss suppression failed before warmup")
+		quit(1)
+		return
 	for index in 12: await process_frame
 	var player := level.player as CobiePlayer
 	var gate := level.get_node_or_null("Interactables/ShedGate") as LevelDoor
@@ -62,7 +80,12 @@ func _run() -> void:
 		push_error("FIRST 30: missing real player or shed gate")
 		quit(1)
 		return
-	for menu in level.find_children("*", "PauseMenu", true, false): menu.set_suppressed(true)
+	var paused_at_start := paused
+	var pause_menu_visible := pause_menu.visible
+	if paused_at_start or pause_menu_visible:
+		push_error("FIRST 30: route started paused after warmup (paused=%s menu=%s focus=%s)" % [paused_at_start, pause_menu_visible, root.has_focus()])
+		quit(1)
+		return
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 	var weapon := player.weapons[player.current_weapon_index] as WeaponBase
 	var director := level._mission_presentation.get_audio_director() as MissionAudioDirector
@@ -150,6 +173,8 @@ func _run() -> void:
 	var elapsed_process := Engine.get_process_frames() - starting_process
 	var elapsed_physics := Engine.get_physics_frames() - starting_physics
 	print("FIRST 30 RECEIPT: process=%d physics=%d shot=%s awake=%d combat=%d warning=%s caption=%s attack=%s use=%d gate=%d shed=%d death=%d recovered=%d ammo_at_shed=%d health=%.1f" % [elapsed_process, elapsed_physics, shots, awake, combat, warnings, warning_captions.slice(0, 2), attacks, use_frame, opened, shed, death, recovered, ammo_at_shed, player.health_armor.health])
+	if shots.is_empty() and use_frame < 0:
+		print("FIRST 30 INPUT DIAGNOSTIC: paused_start=%s paused_end=%s menu_start=%s focus_end=%s player_physics=%s player_pos=%s move_strength=%.1f phase=%s" % [paused_at_start, paused, pause_menu_visible, root.has_focus(), player.is_physics_processing(), player.global_position, Input.get_action_strength(&"move_forward"), root.get_node_or_null("/root/GameState").phase])
 	if elapsed_process != FRAMES or abs(elapsed_physics - FRAMES * 2) > 2:
 		failures.append("30 simulated seconds must contain 900 rendered and 1800 physics frames")
 	if shots.size() != 1 or shots[0] < 60 or shots[0] > 63 or ammo_at_shed != initial_ammo - weapon.definition.ammo_per_primary:
