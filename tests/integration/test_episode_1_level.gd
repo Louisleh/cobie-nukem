@@ -112,6 +112,7 @@ func _initialize() -> void:
 		check(is_equal_approx(float(v5_checkpoint.get("player_state", {}).get("armor", 0.0)), 17.0), "Salmon checkpoint persists player armor")
 	player.health_armor.health = 1.0
 	level.restart_from_checkpoint()
+	check(level.current_zone == &"forbidden_field", "Start checkpoint Retry restores field zone identity")
 	var reset_actors: Array = level._encounter_runner.active.get(&"forbidden_field", {}).get("actors", [])
 	check(reset_actors.size() == 3, "Checkpoint restart does not respawn the active encounter")
 	var authored_positions: Array[Vector3] = [Vector3(-5, 2, -4), Vector3(5, 2, -9), Vector3(0, 0, -14)]
@@ -229,6 +230,8 @@ func _initialize() -> void:
 		check(not game_state.continue_requested, "Continue request flag is consumed during checkpoint restore")
 		check(game_state.run_stats.get("checkpoint_id", "") == "lab_entry", "Continue restore applies sanitized checkpoint identity to run stats")
 		check(continue_level.checkpoint_position.is_equal_approx(EpisodeOneLevel.CHECKPOINT_POSITIONS[&"lab_entry"]), "Legacy Salmon checkpoint remaps obsolete coordinates to its authored anchor")
+		continue_level.restart_from_checkpoint()
+		check(continue_level.current_zone == &"compliance_lab", "Lab checkpoint Retry restores lab zone identity")
 		continue_level.queue_free()
 		save_manager.delete_slot(&"checkpoint")
 	else:

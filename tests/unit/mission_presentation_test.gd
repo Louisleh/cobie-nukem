@@ -248,8 +248,11 @@ func _test_checkpoint_reset() -> void:
 	if audio.sounds != null:
 		audio.sounds.play(ProceduralAudio.Cue.PAWSTOL)
 	presentation.on_player_died(player)
+	presentation.on_narrative_message("GOOD DOG DOWN. SELECT RETRY TO GET BACK UP.", 3.0)
+	_expect(presentation.get_hud().notification_label.text.contains("GOOD DOG DOWN"), "death instruction is present before Retry")
 	presentation.reset_for_checkpoint()
 	await process_frame
+	_expect(presentation.get_hud().notification_label.text.is_empty() and not presentation.get_hud().is_caption_visible(), "Retry clears stale death instruction and caption")
 	_expect(not presentation.is_pause_suppressed(), "checkpoint reset clears pause suppression")
 	_expect(presentation.get_death_screen().visible == false, "checkpoint reset hides death UI")
 	_expect(_count_playing_audio(audio.sounds) == 0, "checkpoint reset stops procedural combat audio")

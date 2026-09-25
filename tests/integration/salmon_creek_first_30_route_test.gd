@@ -3,9 +3,19 @@ extends SceneTree
 ## Thirty simulated seconds on the native renderer; mapped input only, no teleports.
 const LEVEL := preload("res://scenes/levels/episode_1_level_1.tscn")
 const FRAMES := 900
+const CAPTURE_FRAMES := [0, 75, 105, 132, 163, 300, 429, 462, 899]
 var failures: Array[String] = []
+var capture_dir := ""
+var capture_size := Vector2i.ZERO
 
 func _initialize() -> void:
+	for argument in OS.get_cmdline_user_args():
+		if argument.begins_with("--capture-dir="):
+			capture_dir = argument.trim_prefix("--capture-dir=")
+		if argument.begins_with("--capture-size="):
+			var dimensions := argument.trim_prefix("--capture-size=").split("x")
+			if dimensions.size() == 2:
+				capture_size = Vector2i(int(dimensions[0]), int(dimensions[1]))
 	call_deferred("_run")
 
 func _key_use(pressed: bool) -> void:
@@ -34,6 +44,13 @@ func _menu_accept(pressed: bool) -> void:
 	Input.parse_input_event(event)
 
 func _run() -> void:
+	if not capture_dir.is_empty():
+		if capture_size.x < 640 or capture_size.y < 360:
+			push_error("FIRST 30: capture needs an explicit safe viewport")
+			quit(1)
+			return
+		root.size = capture_size
+		root.content_scale_size = Vector2i(roundi(360.0 * capture_size.x / capture_size.y), 360)
 	seed(20260924)
 	Engine.physics_ticks_per_second = 60
 	var level := LEVEL.instantiate() as EpisodeOneLevel
@@ -57,6 +74,7 @@ func _run() -> void:
 	var shots: Array[int] = []
 	var warnings: Array[int] = []
 	var warning_captions: Array[String] = []
+	var captures: Array[Dictionary] = []
 	var attacks: Array[int] = []
 	var awake := -1
 	var combat := -1
@@ -99,7 +117,20 @@ func _run() -> void:
 			ammo_at_shed = weapon.ammo
 			Input.action_release(&"move_forward")
 		if death == -1 and player.is_dead: death = frame
-		if death >= 0 and recovered == -1 and not player.is_dead: recovered = frame
+		if death >= 0 and recovered == -1 and not player.is_dead:
+			recovered = frame
+			if hud.notification_label.text.contains("GOOD DOG DOWN") or hud.get_caption_text().contains("GOOD DOG DOWN"):
+				failures.append("focused Retry leaves stale death instruction over live play")
+			if level.current_zone != &"forbidden_field":
+				failures.append("focused Retry leaves shed zone active after field respawn")
+		if not capture_dir.is_empty() and frame in CAPTURE_FRAMES:
+			await RenderingServer.frame_post_draw
+			var path := capture_dir.path_join("frame_%04d.png" % frame)
+			var image := root.get_texture().get_image()
+			if image.get_size() != Vector2i(root.size) or image.save_png(path) != OK:
+				failures.append("bounded route capture failed at frame %d" % frame)
+			else:
+				captures.append({"frame": frame, "sha256": FileAccess.get_sha256(path), "zone": String(level.current_zone), "process_frame": Engine.get_process_frames() - starting_process})
 	Input.action_release(&"move_forward")
 	_key_use(false)
 	_mouse_fire(false)
@@ -125,6 +156,13 @@ func _run() -> void:
 		failures.append("player must be alive on first shed entry")
 	if death >= 0 and (recovered < death or recovered >= FRAMES or player.is_dead):
 		failures.append("death during first 30 must permit focused Retry via mapped menu accept")
+	if not capture_dir.is_empty():
+		var file := FileAccess.open(capture_dir.path_join("captures.json"), FileAccess.WRITE)
+		if file == null:
+			failures.append("bounded route capture receipt could not be written")
+		else:
+			file.store_string(JSON.stringify({"viewport": [root.size.x, root.size.y], "frames": captures, "process": elapsed_process, "physics": elapsed_physics, "shot": shots, "warning": warnings, "attack": attacks, "gate": opened, "shed": shed, "death": death, "recovered": recovered}, "	"))
+			file.close()
 	for audio in level.find_children("*", "ProceduralAudio", true, false): audio.stop_all()
 	level.queue_free()
 	for index in 12: await process_frame

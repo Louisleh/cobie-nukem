@@ -240,6 +240,9 @@ func bind_restart_requests(callback: Callable) -> void:
 		restart_requested.connect(callback)
 
 func reset_for_checkpoint() -> void:
+	if _hud != null:
+		_hud.clear_captions()
+		_hud.show_notification("", -1)
 	if _combat_audio != null:
 		_combat_audio.reset_gameplay_audio()
 	if _pause_menu != null:

@@ -427,6 +427,17 @@ func restart_from_checkpoint() -> void:
 			player.global_position = checkpoint_position
 			if player.has_method("restore_full"): player.restore_full()
 			if "velocity" in player: player.velocity = Vector3.ZERO
+	var respawn_zone: StringName = &"forbidden_field"
+	var respawn_title := "FORBIDDEN FIELD"
+	for milestone in ROUTE_PROGRESS:
+		if checkpoint_position.z <= float(milestone[0]):
+			respawn_zone = milestone[1]
+			respawn_title = milestone[2]
+	current_zone = respawn_zone
+	zone_entered.emit(respawn_zone, respawn_title)
+	var game_state := get_node_or_null("/root/GameState")
+	if game_state != null:
+		game_state.run_stats["last_zone"] = String(respawn_zone)
 
 func _reset_active_encounter_for_checkpoint() -> void:
 	if _encounter_runner == null or _last_combat_zone == &"" or not _encounter_runner.definitions.has(_last_combat_zone): return
