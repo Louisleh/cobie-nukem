@@ -4,9 +4,11 @@ extends SceneTree
 const LEVEL := preload("res://scenes/levels/episode_1_level_1.tscn")
 const FRAMES := 900
 const CAPTURE_FRAMES := [0, 75, 105, 132, 163, 300, 429, 462, 899]
+const ACTIVE_CAPTURE_FRAMES := [0, 75, 105, 145, 175, 204, 300, 520, 899]
 var failures: Array[String] = []
 var capture_dir := ""
 var capture_size := Vector2i.ZERO
+var active_route := false
 
 func _initialize() -> void:
 	for argument in OS.get_cmdline_user_args():
@@ -16,6 +18,7 @@ func _initialize() -> void:
 			var dimensions := argument.trim_prefix("--capture-size=").split("x")
 			if dimensions.size() == 2:
 				capture_size = Vector2i(int(dimensions[0]), int(dimensions[1]))
+		if argument == "--route=active": active_route = true
 	call_deferred("_run")
 
 func _key_use(pressed: bool) -> void:
@@ -32,6 +35,14 @@ func _mouse_fire(pressed: bool) -> void:
 	event.pressed = pressed
 	if not InputMap.event_is_action(event, &"fire_primary"):
 		failures.append("mapped fire button missing")
+	Input.parse_input_event(event)
+
+func _strafe(pressed: bool, right: bool) -> void:
+	var event := InputEventKey.new()
+	event.physical_keycode = KEY_D if right else KEY_A
+	event.pressed = pressed
+	if not InputMap.event_is_action(event, &"strafe_right" if right else &"strafe_left"):
+		failures.append("mapped strafe key missing")
 	Input.parse_input_event(event)
 
 func _menu_accept(pressed: bool) -> void:
@@ -107,6 +118,14 @@ func _run() -> void:
 	var death := -1
 	var recovered := -1
 	var ammo_at_shed := -1
+	var shed_x := 0.0
+	var max_lateral := 0.0
+	var health_at_shed := -1.0
+	var charge_warnings: Array[int] = []
+	var charge_attacks: Array[int] = []
+	var charge_warning_x: Array[float] = []
+	var charge_attack_x: Array[float] = []
+	var charge_warning_distance: Array[float] = []
 	var starting_process := Engine.get_process_frames()
 	var starting_physics := Engine.get_physics_frames()
 	weapon.fired.connect(func(_source: WeaponBase, _secondary: bool) -> void:
@@ -114,23 +133,46 @@ func _run() -> void:
 	for actor in level._opening_enemies:
 		if not actor is EnemyAgent: continue
 		var enemy := actor as EnemyAgent
-		enemy.telegraph_started.connect(func(_kind: StringName, _duration: float) -> void:
+		enemy.telegraph_started.connect(func(kind: StringName, _duration: float) -> void:
 			warnings.append(Engine.get_process_frames() - starting_process)
-			warning_captions.append(hud.get_caption_text()))
-		enemy.attack_fired.connect(func(_kind: StringName) -> void:
+			warning_captions.append(hud.get_caption_text())
+			if enemy is MutantGroundskeeper and kind == &"mower_charge":
+				charge_warnings.append(Engine.get_process_frames() - starting_process)
+				charge_warning_x.append(player.global_position.x)
+				charge_warning_distance.append(player.global_position.distance_to(enemy.global_position)))
+		enemy.attack_fired.connect(func(kind: StringName) -> void:
+			if enemy is MutantGroundskeeper and kind == &"mower_charge":
+				charge_attacks.append(Engine.get_process_frames() - starting_process)
+				charge_attack_x.append(player.global_position.x)
 			attacks.append(Engine.get_process_frames() - starting_process))
 	if director.current_state() == &"combat": failures.append("combat music starts before player contact")
 	Input.action_press(&"move_forward")
 	for frame in FRAMES:
 		if frame == 60: _mouse_fire(true)
 		if frame == 63: _mouse_fire(false)
-		if use_frame == -1 and player.global_position.z < -15.8:
+		if active_route:
+			if frame == 98: _strafe(true, true)
+			if frame == 118: _strafe(false, true)
+			if frame == 119: _strafe(true, false)
+			if frame == 139: _strafe(false, false)
+			if shed >= 0:
+				var shed_frame := frame - shed
+				if shed_frame == 5: _strafe(true, true)
+				if shed_frame == 28: _mouse_fire(true)
+				if shed_frame == 31: _mouse_fire(false)
+				if shed_frame == 50: _strafe(false, true)
+				if shed_frame == 75: _strafe(true, false)
+				if shed_frame == 120: _strafe(false, false)
+				if shed_frame == 125: Input.action_press(&"move_forward")
+				if shed_frame == 350: Input.action_release(&"move_forward")
+		if use_frame == -1 and player.global_position.z < -15.8 and (not active_route or frame >= 145):
 			use_frame = frame
 			_key_use(true)
 		if use_frame >= 0 and frame == use_frame + 3: _key_use(false)
 
 		if death >= 0 and frame == death + 30: _menu_accept(true)
 		if death >= 0 and frame == death + 33: _menu_accept(false)
+		if active_route and recovered >= 0 and frame == recovered + 1: Input.action_press(&"move_forward")
 		await process_frame
 		if awake == -1 and level._spawn_registry.opening_enemies_active(): awake = frame
 		if combat == -1 and director.current_state() == &"combat": combat = frame
@@ -138,7 +180,11 @@ func _run() -> void:
 		if shed == -1 and level.current_zone == &"equipment_shed":
 			shed = frame
 			ammo_at_shed = weapon.ammo
+			shed_x = player.global_position.x
+			health_at_shed = player.health_armor.health
 			Input.action_release(&"move_forward")
+		if active_route and shed >= 0:
+			max_lateral = maxf(max_lateral, absf(player.global_position.x - shed_x))
 		if death == -1 and player.is_dead:
 			death = frame
 			var death_screen := level.find_children("*", "DeathScreen", true, false)
@@ -158,7 +204,7 @@ func _run() -> void:
 				failures.append("focused Retry leaves stale death instruction over live play")
 			if level.current_zone != &"forbidden_field":
 				failures.append("focused Retry leaves shed zone active after field respawn")
-		if not capture_dir.is_empty() and frame in CAPTURE_FRAMES:
+		if not capture_dir.is_empty() and frame in (ACTIVE_CAPTURE_FRAMES if active_route else CAPTURE_FRAMES):
 			await RenderingServer.frame_post_draw
 			var path := capture_dir.path_join("frame_%04d.png" % frame)
 			var image := root.get_texture().get_image()
@@ -169,16 +215,22 @@ func _run() -> void:
 	Input.action_release(&"move_forward")
 	_key_use(false)
 	_mouse_fire(false)
+	_strafe(false, true)
+	_strafe(false, false)
 	_menu_accept(false)
 	var elapsed_process := Engine.get_process_frames() - starting_process
 	var elapsed_physics := Engine.get_physics_frames() - starting_physics
-	print("FIRST 30 RECEIPT: process=%d physics=%d shot=%s awake=%d combat=%d warning=%s caption=%s attack=%s use=%d gate=%d shed=%d death=%d recovered=%d ammo_at_shed=%d health=%.1f" % [elapsed_process, elapsed_physics, shots, awake, combat, warnings, warning_captions.slice(0, 2), attacks, use_frame, opened, shed, death, recovered, ammo_at_shed, player.health_armor.health])
+	print("FIRST 30 RECEIPT: route=%s process=%d physics=%d shot=%s awake=%d combat=%d warning=%s caption=%s attack=%s mower_warning=%s mower_attack=%s mower_x=%s->%s mower_range=%s use=%d gate=%d shed=%d death=%d recovered=%d ammo_at_shed=%d lateral=%.3f health_shed=%.1f health_end=%.1f" % ["active" if active_route else "retry", elapsed_process, elapsed_physics, shots, awake, combat, warnings, warning_captions.slice(0, 2), attacks, charge_warnings, charge_attacks, charge_warning_x, charge_attack_x, charge_warning_distance, use_frame, opened, shed, death, recovered, ammo_at_shed, max_lateral, health_at_shed, player.health_armor.health])
 	if shots.is_empty() and use_frame < 0:
 		print("FIRST 30 INPUT DIAGNOSTIC: paused_start=%s paused_end=%s menu_start=%s focus_end=%s player_physics=%s player_pos=%s move_strength=%.1f phase=%s" % [paused_at_start, paused, pause_menu_visible, root.has_focus(), player.is_physics_processing(), player.global_position, Input.get_action_strength(&"move_forward"), root.get_node_or_null("/root/GameState").phase])
 	if elapsed_process != FRAMES or abs(elapsed_physics - FRAMES * 2) > 2:
 		failures.append("30 simulated seconds must contain 900 rendered and 1800 physics frames")
-	if shots.size() != 1 or shots[0] < 60 or shots[0] > 63 or ammo_at_shed != initial_ammo - weapon.definition.ammo_per_primary:
-		failures.append("real mapped mouse input must consume exactly one Pawstol shot")
+	if shots.is_empty() or shots[0] < 60 or shots[0] > 63 or ammo_at_shed != initial_ammo - weapon.definition.ammo_per_primary:
+		failures.append("first real mapped mouse input must consume one Pawstol shot before shed")
+	if active_route and (shots.size() != 2 or shots[1] < shed + 28 or shots[1] > shed + 31 or weapon.ammo != initial_ammo - 2 * weapon.definition.ammo_per_primary or max_lateral < 2.0):
+		failures.append("active shed route must move laterally and consume a second mapped Pawstol shot")
+	if not active_route and shots.size() != 1:
+		failures.append("Retry route must consume exactly one Pawstol shot")
 	if awake < 0 or combat < awake or warnings.is_empty() or attacks.is_empty() or warnings[0] <= awake or attacks[0] <= warnings[0]:
 		failures.append("field contact must wake staged enemies, cue combat, telegraph and attack")
 	var named_warning := false
@@ -191,14 +243,20 @@ func _run() -> void:
 		failures.append("mapped forward/use must open unchanged gate and enter shed")
 	if death >= 0 and death <= shed:
 		failures.append("player must be alive on first shed entry")
-	if death >= 0 and (recovered < death or recovered >= FRAMES or player.is_dead):
-		failures.append("death during first 30 must permit focused Retry via mapped menu accept")
+	if active_route:
+		if charge_warnings.is_empty() or charge_attacks.is_empty() or charge_warnings[0] >= 98 or charge_attacks[0] <= 118 or charge_attack_x.is_empty() or charge_warning_x.is_empty() or charge_attack_x[0] - charge_warning_x[0] < 1.5 or health_at_shed < 100.0:
+			failures.append("mapped lateral movement must cross the field mower warning/attack while preserving full health at shed entry")
+		if death < 500 or recovered < death or recovered >= FRAMES or player.is_dead:
+			failures.append("active route must survive first contact and later allow mapped Retry if overrun")
+	else:
+		if death < 0 or recovered < death or recovered >= FRAMES or player.is_dead:
+			failures.append("standstill death must permit focused Retry via mapped menu accept")
 	if not capture_dir.is_empty():
 		var file := FileAccess.open(capture_dir.path_join("captures.json"), FileAccess.WRITE)
 		if file == null:
 			failures.append("bounded route capture receipt could not be written")
 		else:
-			file.store_string(JSON.stringify({"viewport": [root.size.x, root.size.y], "frames": captures, "process": elapsed_process, "physics": elapsed_physics, "shot": shots, "warning": warnings, "attack": attacks, "gate": opened, "shed": shed, "death": death, "recovered": recovered}, "	"))
+			file.store_string(JSON.stringify({"route": "active" if active_route else "retry", "viewport": [root.size.x, root.size.y], "frames": captures, "process": elapsed_process, "physics": elapsed_physics, "shot": shots, "warning": warnings, "attack": attacks, "mower_warning": charge_warnings, "mower_attack": charge_attacks, "mower_warning_x": charge_warning_x, "mower_attack_x": charge_attack_x, "mower_warning_distance": charge_warning_distance, "lateral": max_lateral, "health_shed": health_at_shed, "health_end": player.health_armor.health, "gate": opened, "shed": shed, "death": death, "recovered": recovered}, "	"))
 			file.close()
 	for audio in level.find_children("*", "ProceduralAudio", true, false): audio.stop_all()
 	level.queue_free()

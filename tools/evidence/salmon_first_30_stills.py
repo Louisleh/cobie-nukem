@@ -17,6 +17,7 @@ import salmon_opening_probe as opening
 ROOT = Path(__file__).resolve().parents[2]
 SCRATCH = Path.home() / ".hermes/cache/scratch"
 FRAMES = (0, 75, 105, 132, 163, 300, 429, 462, 899)
+ACTIVE_FRAMES = (0, 75, 105, 145, 175, 204, 300, 520, 899)
 ALLOWED = opening.ALLOWED | {"ERROR: Can't create shader cache folder, no shader caching will happen: user://"}
 
 
@@ -66,16 +67,19 @@ def check_engine(log):
     return counts
 
 
-def validate(data, frames, size):
+def validate(data, frames, size, route="retry"):
     if data["viewport"] != list(size) or data["process"] != 900 or abs(data["physics"] - 1800) > 2:
         raise ValueError("wrong viewport or simulation duration")
-    if len(data["shot"]) != 1 or not data["warning"] or not data["attack"] or data["attack"][0] <= data["warning"][0]:
+    if data["route"] != route or len(data["shot"]) != (2 if route == "active" else 1) or not data["warning"] or not data["attack"] or data["attack"][0] <= data["warning"][0]:
         raise ValueError("mapped shot/contact missing")
     if not 0 <= data["gate"] <= data["shed"] < 900 or not data["death"] < data["recovered"] < 900:
         raise ValueError("route or Retry missing")
-    if [sample["frame"] for sample in data["frames"]] != list(FRAMES) or len(frames) != len(FRAMES):
+    selected_frames = ACTIVE_FRAMES if route == "active" else FRAMES
+    if [sample["frame"] for sample in data["frames"]] != list(selected_frames) or len(frames) != len(selected_frames):
         raise ValueError("missing or extra sampled frames")
-    expected_zones = ("forbidden_field",) * 4 + ("equipment_shed",) * 3 + ("forbidden_field",) * 2
+    if route == "active" and (data["mower_warning"][0] >= 98 or data["mower_attack"][0] <= 118 or data["mower_attack_x"][0] - data["mower_warning_x"][0] < 1.5 or data["lateral"] < 2 or data["health_shed"] < 100 or data["death"] < 500):
+        raise ValueError("active route lacks mapped field charge avoidance or shed combat")
+    expected_zones = (("forbidden_field",) * 4 + ("equipment_shed",) * 4 + ("forbidden_field",)) if route == "active" else (("forbidden_field",) * 4 + ("equipment_shed",) * 3 + ("forbidden_field",) * 2)
     for sample, frame in zip(data["frames"], frames):
         raw = frame.read_bytes()
         if raw[:8] != b"\x89PNG\r\n\x1a\n" or struct.unpack(">II", raw[16:24]) != size:
@@ -92,6 +96,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--out", type=Path, required=True)
     parser.add_argument("--tablet", action="store_true")
+    parser.add_argument("--route", choices=("retry", "active"), default="retry")
     args = parser.parse_args()
     destination = args.out.resolve()
     if destination.exists():
@@ -118,7 +123,8 @@ def main():
         env["COBIE_TEST_SAVE_ROOT"] = str(home / "saves")
         cmd = ["/opt/homebrew/bin/godot", "--path", str(ROOT), "--resolution", "%dx%d" % size,
                "--fixed-fps", "30", "--script", "res://tests/integration/salmon_creek_first_30_route_test.gd",
-               "--", "--capture-dir=" + str(frames_dir), "--capture-size=%dx%d" % size]
+               "--", "--capture-dir=" + str(frames_dir), "--capture-size=%dx%d" % size,
+               "--route=" + args.route]
         started = time.monotonic()
         process = None
         log = temporary / "engine.log"
@@ -140,14 +146,14 @@ def main():
             diagnostics = check_engine(log.read_text())
             data = json.loads((frames_dir / "captures.json").read_text())
             frames = sorted(frames_dir.glob("frame_*.png"))
-            validate(data, frames, size)
+            validate(data, frames, size, args.route)
             if identity() != source:
                 raise ValueError("source changed during native capture")
             shutil.copytree(frames_dir, destination)
             shutil.copy2(log, destination / "engine.log")
             (destination / "source.json").write_text(json.dumps(source, indent=2) + "\n")
-            receipt = {"status": "PASS", "kind": "sparse_native_input_route_stills", "source_sha256": source["content_sha256"],
-                       "source_head": source["head"], "viewport": list(size), "frames": list(FRAMES),
+            receipt = {"status": "PASS", "kind": "sparse_native_input_route_stills", "route": args.route, "source_sha256": source["content_sha256"],
+                       "source_head": source["head"], "viewport": list(size), "frames": list(ACTIVE_FRAMES if args.route == "active" else FRAMES),
                        "png_bytes": sum(p.stat().st_size for p in frames), "wall_seconds": time.monotonic() - started,
                        "engine_version": version, "known_engine_diagnostics": diagnostics,
                        "human_approval": False, "continuous_rendered_video": False, "movie_maker": False}
