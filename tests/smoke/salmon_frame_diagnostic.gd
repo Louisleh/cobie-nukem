@@ -6,8 +6,13 @@ extends SceneTree
 const LEVEL := preload("res://scenes/levels/episode_1_level_1.tscn")
 const WARMUP := 45
 const SAMPLES := 240
+var trace_file := ""
+var trace_rows: Array[Dictionary] = []
 
 func _initialize() -> void:
+	for argument in OS.get_cmdline_user_args():
+		if argument.begins_with("--trace-file="):
+			trace_file = argument.trim_prefix("--trace-file=")
 	call_deferred("_run")
 
 func _run() -> void:
@@ -45,11 +50,27 @@ func _run() -> void:
 		push_error("FRAME DIAGNOSTIC: mapped input did not drive player and weapon")
 		quit(1)
 		return
+	if not trace_file.is_empty():
+		var output := FileAccess.open(trace_file, FileAccess.WRITE)
+		if output == null:
+			push_error("FRAME DIAGNOSTIC: trace file could not be opened")
+			quit(1)
+			return
+		output.store_string(JSON.stringify({"source": "salmon_frame_diagnostic", "samples_per_stage": SAMPLES, "rows": trace_rows}))
+		output.close()
+		print("FRAME DIAGNOSTIC TRACE: %s rows=%d" % [trace_file, trace_rows.size()])
 	print("SALMON FRAME DIAGNOSTIC: MEASURED (NOT A PERFORMANCE PASS)")
 	quit(0)
 
 func _measure(label: String, active: bool) -> void:
 	for index in WARMUP: await process_frame
+	var quality := root.get_node_or_null("QualityManager")
+	var profile := String(quality.current.id) if quality != null and quality.current != null else "missing"
+	var mode := DisplayServer.window_get_vsync_mode()
+	if "--uncapped" in OS.get_cmdline_user_args():
+		Engine.max_fps = 0
+	var cap := Engine.max_fps
+	print("FRAME DIAGNOSTIC CONFIG: stage=%s profile=%s cap=%d vsync=%d backend=%s focused=%s physical=%s logical=%s" % [label, profile, cap, mode, DisplayServer.get_name(), DisplayServer.window_is_focused(), root.size, root.content_scale_size])
 	var frame_ms: Array[float] = []
 	var process_ms: Array[float] = []
 	var physics_ms: Array[float] = []
@@ -70,11 +91,17 @@ func _measure(label: String, active: bool) -> void:
 		if active and index == 120: Input.action_release(&"move_forward")
 		await process_frame
 		var now := Time.get_ticks_usec()
-		frame_ms.append(float(now - last_tick) / 1000.0)
+		var interval_ms := float(now - last_tick) / 1000.0
+		frame_ms.append(interval_ms)
 		last_tick = now
-		process_ms.append(Performance.get_monitor(Performance.TIME_PROCESS) * 1000.0)
-		physics_ms.append(Performance.get_monitor(Performance.TIME_PHYSICS_PROCESS) * 1000.0)
-		draw_calls.append(Performance.get_monitor(Performance.RENDER_TOTAL_DRAW_CALLS_IN_FRAME))
+		var process_value := Performance.get_monitor(Performance.TIME_PROCESS) * 1000.0
+		var physics_value := Performance.get_monitor(Performance.TIME_PHYSICS_PROCESS) * 1000.0
+		var draw_value := Performance.get_monitor(Performance.RENDER_TOTAL_DRAW_CALLS_IN_FRAME)
+		process_ms.append(process_value)
+		physics_ms.append(physics_value)
+		draw_calls.append(draw_value)
+		if not trace_file.is_empty():
+			trace_rows.append({"stage": label, "index": index, "tick_usec": now, "interval_ms": interval_ms, "process_monitor_ms": process_value, "physics_monitor_ms": physics_value, "draw_calls": draw_value})
 	print("FRAME DIAGNOSTIC: %s frame=%s process=%s physics=%s draw_calls=%s" % [label, _summary(frame_ms), _summary(process_ms), _summary(physics_ms), _summary(draw_calls)])
 
 func _summary(values: Array[float]) -> String:

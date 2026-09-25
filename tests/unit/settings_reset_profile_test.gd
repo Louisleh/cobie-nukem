@@ -206,6 +206,8 @@ func _validate_runtime_reapply() -> void:
 		failures.append("cannot determine expected quality profile")
 		return
 	_expect(is_instance_valid(_quality.current), "quality manager keeps a current runtime profile")
+	_expect(_quality.NATIVE.target_fps == 0, "native profile uses display sync instead of Godot's stuttering 60 FPS timer")
+	_expect(_quality.WEB.target_fps == 30, "Web/iPad frame budget stays at 30 FPS")
 	if not is_instance_valid(_quality.current):
 		return
 	_expect(_quality.current.id == expected_profile.id, "quality manager reselects the expected profile after reset")
