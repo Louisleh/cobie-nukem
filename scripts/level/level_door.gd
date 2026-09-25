@@ -5,6 +5,7 @@ signal opened(door: LevelDoor, actor: Node)
 signal access_denied(message: String)
 
 @export var interaction_label := "OPEN"
+@export var locked_interaction_label := ""
 @export var locked_message := "ACCESS DENIED. COLLAR REQUIRED."
 @export var requires_access_collar := false
 @export var starts_locked := false
@@ -27,7 +28,7 @@ func _ready() -> void:
 
 func get_interaction_label() -> String:
 	if is_open: return ""
-	if is_locked: return "LOCKED — FIND A SWITCH"
+	if is_locked: return locked_interaction_label if not locked_interaction_label.is_empty() else "LOCKED — FIND A SWITCH"
 	if requires_access_collar: return "SCAN ACCESS COLLAR"
 	return interaction_label
 

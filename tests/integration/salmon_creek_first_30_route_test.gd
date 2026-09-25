@@ -87,8 +87,9 @@ func _run() -> void:
 	for index in 12: await process_frame
 	var player := level.player as CobiePlayer
 	var gate := level.get_node_or_null("Interactables/ShedGate") as LevelDoor
-	if player == null or gate == null:
-		push_error("FIRST 30: missing real player or shed gate")
+	var tunnel_gate := level.get_node_or_null("Interactables/TunnelGate") as LevelDoor
+	if player == null or gate == null or tunnel_gate == null:
+		push_error("FIRST 30: missing real player or route gate")
 		quit(1)
 		return
 	var paused_at_start := paused
@@ -126,6 +127,8 @@ func _run() -> void:
 	var charge_warning_x: Array[float] = []
 	var charge_attack_x: Array[float] = []
 	var charge_warning_distance: Array[float] = []
+	var tunnel_denials: Array[String] = []
+	tunnel_gate.access_denied.connect(func(message: String) -> void: tunnel_denials.append(message))
 	var starting_process := Engine.get_process_frames()
 	var starting_physics := Engine.get_physics_frames()
 	weapon.fired.connect(func(_source: WeaponBase, _secondary: bool) -> void:
@@ -165,6 +168,8 @@ func _run() -> void:
 				if shed_frame == 120: _strafe(false, false)
 				if shed_frame == 125: Input.action_press(&"move_forward")
 				if shed_frame == 350: Input.action_release(&"move_forward")
+			if frame == 500: _key_use(true)
+			if frame == 503: _key_use(false)
 		if use_frame == -1 and player.global_position.z < -15.8 and (not active_route or frame >= 145):
 			use_frame = frame
 			_key_use(true)
@@ -185,6 +190,9 @@ func _run() -> void:
 			Input.action_release(&"move_forward")
 		if active_route and shed >= 0:
 			max_lateral = maxf(max_lateral, absf(player.global_position.x - shed_x))
+		if active_route and frame == 520:
+			if not hud.interaction_label.text.contains("SWITCH BACK LEFT") or tunnel_denials.is_empty() or not tunnel_denials[0].contains("BACK-LEFT WALL"):
+				failures.append("locked tunnel gate must point toward the existing back-left shed switch in prompt and denial")
 		if death == -1 and player.is_dead:
 			death = frame
 			var death_screen := level.find_children("*", "DeathScreen", true, false)

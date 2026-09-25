@@ -87,6 +87,11 @@ func _initialize() -> void:
 		elif child is LevelCheckpoint: checkpoints += 1
 		elif child is GoldenBallFinale: finale += 1
 	check(doors >= 4, "Expected four progression gates")
+	var tunnel_gate := level.get_node_or_null("Interactables/TunnelGate") as LevelDoor
+	var shed_switch := level.get_node_or_null("Interactables/LevelSwitch") as LevelSwitch
+	check(tunnel_gate != null and tunnel_gate.is_locked and tunnel_gate.get_interaction_label().contains("SWITCH BACK LEFT"), "Tunnel gate labels its existing switch from the approach")
+	if tunnel_gate != null and shed_switch != null:
+		check(shed_switch.position.x < tunnel_gate.position.x - 3.0 and shed_switch.position.z > tunnel_gate.position.z + 3.0, "Directional tunnel-gate hint points to a real back-left shed switch")
 	check(signs >= 7, "Environmental joke/sign density is below requirement")
 	check(checkpoints == 1, "Exactly one checkpoint expected")
 	check(finale == 1, "Golden Ball finale missing")
