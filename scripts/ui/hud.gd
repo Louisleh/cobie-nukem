@@ -157,7 +157,7 @@ func clear_captions() -> void:
 	_caption_visible = false
 	%CaptionLabel.visible = false
 
-func show_caption(message: String, category: int = CaptionCategory.NARRATIVE, seconds: float = CAPTION_DEFAULT_SECONDS, dedupe_key: String = "") -> void:
+func show_caption(message: String, category: int = CaptionCategory.NARRATIVE, seconds: float = CAPTION_DEFAULT_SECONDS, dedupe_key: String = "", valid_for_seconds: float = 0.0) -> void:
 	var settings := get_node_or_null("/root/SettingsManager")
 	if settings != null and not bool(settings.get_value(&"accessibility", &"subtitles", true)):
 		clear_captions()
@@ -173,18 +173,23 @@ func show_caption(message: String, category: int = CaptionCategory.NARRATIVE, se
 		"seconds": clampf(seconds, 0.05, 3.0),
 		"key": dedupe_key if not dedupe_key.is_empty() else _dedupe_key(cleaned),
 	}
-	if _caption_matches(payload, _active_caption):
+	if chosen_category == CaptionCategory.ENEMY_WARNING:
+		payload["expires_at_ms"] = Time.get_ticks_msec() + roundi(maxf(0.05, valid_for_seconds if valid_for_seconds > 0.0 else seconds) * 1000.0)
+	CaptionQueuePolicy.drop_expired_warnings(_caption_queue)
+	if CaptionQueuePolicy.matches(payload, _active_caption):
+		if CaptionQueuePolicy.expired(_active_caption):
+			_display_caption_payload(payload)
 		return
 	for queued in _caption_queue:
-		if _caption_matches(payload, queued):
+		if CaptionQueuePolicy.matches(payload, queued):
 			return
 	if _caption_visible and payload["priority"] > get_active_caption_priority():
-		_queue_caption(_active_caption)
+		CaptionQueuePolicy.enqueue(_caption_queue, _active_caption, CAPTION_QUEUE_LIMIT)
 		_active_caption = {}
 		_caption_visible = false
 		_display_caption_payload(payload)
 		return
-	_queue_caption(payload)
+	CaptionQueuePolicy.enqueue(_caption_queue, payload, CAPTION_QUEUE_LIMIT)
 	_display_next_caption()
 
 func show_objective_caption(message: String, seconds: float = CAPTION_DEFAULT_SECONDS) -> void:
@@ -257,24 +262,10 @@ func _sanitize_category(category: int, message: String) -> int:
 func _dedupe_key(message: String) -> String:
 	return "caption:%s" % [message.to_lower()]
 
-func _caption_matches(payload: Dictionary, target: Dictionary) -> bool:
-	if target.is_empty():
-		return false
-	return target["key"] == payload["key"] or target["message"] == payload["message"]
-
-func _queue_caption(payload: Dictionary) -> void:
-	var insertion_index := _caption_queue.size()
-	for index in range(_caption_queue.size()):
-		if _caption_queue[index]["priority"] < payload["priority"]:
-			insertion_index = index
-			break
-	_caption_queue.insert(insertion_index, payload)
-	if _caption_queue.size() > CAPTION_QUEUE_LIMIT:
-		_caption_queue.resize(CAPTION_QUEUE_LIMIT)
-
 func _display_next_caption() -> void:
 	if _caption_visible:
 		return
+	CaptionQueuePolicy.drop_expired_warnings(_caption_queue)
 	if _caption_queue.is_empty():
 		return
 	var next: Dictionary = _caption_queue.pop_front()

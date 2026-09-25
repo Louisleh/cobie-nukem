@@ -528,6 +528,35 @@ func _check_caption_contracts() -> void:
 	if hud.get_caption_queue_size() > 4:
 		failures.append("Caption queue must remain within hard cap")
 	hud.clear_captions()
+	hud.show_boss_phase_caption("BOSS PHASE", 0.3)
+	hud.show_caption("past attack warning", GameHUD.CaptionCategory.ENEMY_WARNING, 1.2, "past-attack", 0.05)
+	if hud.get_caption_queue_size() != 1:
+		failures.append("Warning queues behind a visible boss cue")
+	else:
+		hud._caption_queue[0]["expires_at_ms"] = Time.get_ticks_msec() - 1
+		hud._caption_visible = false
+		hud._display_next_caption()
+		if hud.get_caption_text().contains("PAST ATTACK") or hud.get_caption_queue_size() != 0:
+			failures.append("Expired queued attack warning must not replay after the attack")
+	hud.clear_captions()
+	hud.show_caption("old attack warning", GameHUD.CaptionCategory.ENEMY_WARNING, 1.2, "old-attack", 0.05)
+	hud.show_boss_phase_caption("BOSS PHASE", 0.3)
+	if hud.get_caption_queue_size() != 1:
+		failures.append("Preempted warning remains queued until its telegraph expires")
+	else:
+		hud._caption_queue[0]["expires_at_ms"] = Time.get_ticks_msec() - 1
+		hud._caption_visible = false
+		hud._display_next_caption()
+		if hud.get_caption_text().contains("OLD ATTACK"):
+			failures.append("Preempted warning must not replay after its telegraph")
+	hud.clear_captions()
+	hud.show_caption("repeat attack warning", GameHUD.CaptionCategory.ENEMY_WARNING, 1.2, "repeat-attack", 0.05)
+	var prior_expiry: int = int(hud._active_caption.get("expires_at_ms", 0))
+	hud._active_caption["expires_at_ms"] = Time.get_ticks_msec() - 1
+	hud.show_caption("repeat attack warning", GameHUD.CaptionCategory.ENEMY_WARNING, 1.2, "repeat-attack", 0.52)
+	if int(hud._active_caption.get("expires_at_ms", 0)) <= prior_expiry or hud.get_caption_queue_size() != 0:
+		failures.append("Fresh repeated telegraph must refresh an expired active warning without queuing a stale echo")
+	hud.clear_captions()
 	settings.set_value("accessibility", "subtitles", false, false)
 	hud.show_caption("subtitles disabled", 0, 0.05, "caption-disabled")
 	if hud.get_caption_queue_size() != 0 or hud.is_caption_visible():

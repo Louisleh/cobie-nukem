@@ -178,6 +178,8 @@ func _test_named_enemy_warning() -> void:
 	drone.telegraph_started.emit(&"compliance_bolt", 0.52)
 	var caption := presentation.get_hud().get_caption_text()
 	_expect(caption.contains("LEASH ENFORCEMENT DRONE") and caption.contains("COMPLIANCE BOLT WARNING"), "real opening drone caption names attacker and attack")
+	var remaining_ms: int = int(presentation.get_hud()._active_caption.get("expires_at_ms", 0)) - Time.get_ticks_msec()
+	_expect(remaining_ms > 0 and remaining_ms <= 520, "opening drone warning queue validity follows its 0.52-second telegraph, not the longer reading hold")
 	presentation.get_hud().clear_captions()
 	var anonymous := FakeEnemy.new()
 	actors.add_child(anonymous)
