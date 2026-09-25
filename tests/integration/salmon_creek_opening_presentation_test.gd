@@ -8,8 +8,10 @@ const OPENING_SIGN_SECRET_ID := &"optional_sign"
 const OPENING_SIGN_SECRET_TITLE := "SIGN SEEMS OPTIONAL"
 const OPENING_SIGN_POSITION := Vector3(-4.0, 1.4, 5.5)
 const OPENING_SIGN_SCALE := Vector3(0.95, 0.95, 1.0)
-const SHED_LABEL_TEXT := "EQUIPMENT SHED\nAUTHORIZED GOOD DOGS ONLY"
-const SHED_LABEL_POSITION := Vector3(-2.0, 3.15, -34.8)
+const SHED_LABEL_TEXT := "EQUIPMENT SHED"
+const SHED_LABEL_POSITION := Vector3(0.0, 5.18, -19.05)
+const SHED_JOKE_TEXT := "AUTHORIZED GOOD DOGS ONLY"
+const SHED_JOKE_POSITION := Vector3(-2.0, 3.15, -34.8)
 const SHED_LIGHT_NAME := "ShedWorkLight"
 const SHED_LIGHT_POSITION := Vector3(-2.0, 3.5, -33.8)
 const SHED_LIGHT_COLOR := Color("ffdc97")
@@ -97,23 +99,29 @@ func _test_shed_landmark_contracts() -> void:
 	shed_kit.call("_build_shed_landmarks")
 	await process_frame
 
-	_expect(shed_kit.get_child_count() == 21, "shed landmark-only construction has 21 direct children")
+	_expect(shed_kit.get_child_count() == 22, "shed landmark-only construction adds one field-facing destination label")
 
 	var matching_labels: Array[Label3D] = []
+	var matching_jokes: Array[Label3D] = []
 	var matching_lights: Array[OmniLight3D] = []
 	for child in shed_kit.get_children():
 		if child is Label3D and (child as Label3D).text == SHED_LABEL_TEXT:
 			matching_labels.append(child)
+		if child is Label3D and (child as Label3D).text == SHED_JOKE_TEXT:
+			matching_jokes.append(child)
 		if child is OmniLight3D and child.name == SHED_LIGHT_NAME:
 			matching_lights.append(child)
 
 	_expect(matching_labels.size() == 1, "exactly one shed label exists for equipment shed authorization")
 	if matching_labels.size() == 1:
 		var label := matching_labels[0]
-		_expect(label.text == SHED_LABEL_TEXT, "shed label text is unchanged")
-		_expect(label.position.is_equal_approx(SHED_LABEL_POSITION), "shed label position is unchanged")
-		_expect(is_equal_approx(label.font_size, 44.0), "shed label font size is unchanged")
-		_expect(is_equal_approx(label.pixel_size, 0.0028), "shed label pixel size is unchanged")
+		_expect(label.position.is_equal_approx(SHED_LABEL_POSITION), "shed label faces the field-facing crest")
+		_expect(is_equal_approx(label.font_size, 88.0) and is_equal_approx(label.pixel_size, 0.0073), "shed destination has distinct display size")
+		_expect(label.rotation_degrees.is_zero_approx() and not label.double_sided, "shed label faces the field only")
+		_expect(label.position.z > -19.5 and label.position.y > 4.725 and label.position.y < 6.55, "shed label is on field-facing gable, above roof and gate")
+	_expect(matching_jokes.size() == 1, "original authorization joke remains inside shed")
+	if matching_jokes.size() == 1:
+		_expect(matching_jokes[0].position.is_equal_approx(SHED_JOKE_POSITION), "shed authorization joke preserves interior position")
 
 	_expect(matching_lights.size() == 1, "exactly one ShedWorkLight exists")
 	if matching_lights.size() == 1:

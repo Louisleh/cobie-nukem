@@ -199,7 +199,7 @@ func _test_salmon_sign_faces() -> void:
 	kit.build(parent)
 	await process_frame
 	var labels := kit.find_children("*", "Label3D", true, false)
-	_expect(labels.size() == 5, "Salmon Creek presentation retains five authored landmark labels")
+	_expect(labels.size() == 6, "Salmon Creek presentation retains six authored landmark labels")
 	var scoreboard: Label3D
 	for candidate in labels:
 		var label := candidate as Label3D
