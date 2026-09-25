@@ -124,7 +124,7 @@ func on_objective_changed(text: String) -> void:
 	if _hud == null:
 		return
 	_hud.show_objective(text)
-	_hud.show_notification("OBJECTIVE: " + text)
+	_hud.show_notification("OBJECTIVE: " + text, -1)
 	_hud.show_objective_caption(text, 2.0)
 
 func on_secret_found(_id: StringName, title: String, found: int, total: int) -> void:
@@ -135,7 +135,7 @@ func on_secret_found(_id: StringName, title: String, found: int, total: int) -> 
 
 func on_narrative_message(text: String, duration: float) -> void:
 	if _hud != null:
-		_hud.show_notification(text)
+		_hud.show_notification(text, -1)
 		_hud.show_caption(text, GameHUD.CaptionCategory.NARRATIVE, duration)
 
 func on_checkpoint_caption(message: String) -> void:

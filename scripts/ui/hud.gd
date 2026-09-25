@@ -138,10 +138,10 @@ func bind_player(player: Node) -> void:
 	if aim != null and aim.has_signal("target_changed"):
 		aim.target_changed.connect(func(target: Node3D) -> void: crosshair.target_locked = target != null)
 
-func show_notification(message: String, cue := ProceduralAudio.Cue.PICKUP) -> void:
+func show_notification(message: String, cue: int = ProceduralAudio.Cue.PICKUP) -> void:
 	notification_label.text = message
 	notification_label.modulate.a = 1.0
-	sounds.play(cue)
+	if cue >= 0: sounds.play(cue as ProceduralAudio.Cue)
 	if _notification_tween != null:
 		_notification_tween.kill()
 	_notification_tween = create_tween()
