@@ -215,6 +215,13 @@ func _setup_interaction_runtime() -> void:
 func _check_route_recovery() -> void:
 	if not is_instance_valid(player):
 		return
+	# Advancing past midfield opts into contact; a player who waits at spawn
+	# retains the authored grace window, while the shed cannot be reached
+	# before the staged field actors wake. Firing remains the other early trigger.
+	if current_zone == &"forbidden_field" and not _opening_grace_timer.is_stopped():
+		var field_z := player.global_position.z
+		if checkpoint_position.z > -22.0 and field_z <= -5.0 and field_z > -22.0:
+			_activate_opening_encounter()
 	# Low-frequency indexed recovery keeps the route playable if a browser drops
 	# an Area3D transition without spending every physics frame scanning progress.
 	for milestone in ROUTE_PROGRESS:
@@ -336,6 +343,7 @@ func _on_encounter_actor_spawned(enemy: Node, definition: EncounterDefinition) -
 	_sync_spawn_runtime_state()
 
 func _activate_opening_encounter(_weapon: WeaponBase = null, _secondary := false) -> void:
+	_opening_grace_timer.stop()
 	_spawn_registry.activate_staged_enemies(player)
 	_sync_spawn_runtime_state()
 
