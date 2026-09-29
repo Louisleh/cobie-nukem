@@ -5,6 +5,7 @@ extends Control
 @export var episode_definition: EpisodeDefinition
 @export_file("*.tscn") var menu_scene_path := "res://scenes/menus/main_menu.tscn"
 @export var campaign_unlock_override := false
+# Legacy inspector/test switch; production now stages safe main-thread loads.
 @export var threaded_warmup_enabled := true
 
 @onready var card_row: HBoxContainer = %CardRow
@@ -35,7 +36,6 @@ var _warmup_failures: Dictionary = {}
 var _warmup_ready := false
 var _warmup_failed := false
 var _warmup_locked := false
-var _back_pending := false
 var _pending_launch_index := -1
 var _warmup_error_announced := false
 
@@ -69,37 +69,25 @@ func _process(_delta: float) -> void:
 	if _warmup_requests.is_empty():
 		if _pending_launch_index >= 0:
 			_commit_launch(_pending_launch_index)
-		elif _back_pending:
-			_finish_pending_back()
 		return
-	# Godot does not expose cancellation for threaded resource requests. Keep
-	# polling every request we started, including requests from a card the player
-	# previewed and then left, so each result is consumed exactly once rather than
-	# leaking a loader record across menu churn or scene teardown.
-	for path_variant in _warmup_requests.keys():
-		var path := String(path_variant)
-		var progress: Array = []
-		var status := ResourceLoader.load_threaded_get_status(path, progress)
-		if status == ResourceLoader.THREAD_LOAD_FAILED or status == ResourceLoader.THREAD_LOAD_INVALID_RESOURCE:
-			_warmup_requests.erase(path)
-			_warmup_failures[path] = true
-		if status == ResourceLoader.THREAD_LOAD_LOADED:
-			var resource := ResourceLoader.load_threaded_get(path)
-			_warmup_requests.erase(path)
-			if resource == null:
-				_warmup_failures[path] = true
-			else:
-				_warmup_cache[path] = resource
+	# Prepare at most one resource per frame so cards can change between loads.
+	# The pinned engine leaks LoadTokens from threaded menu loads, including with
+	# sub-threads disabled. No worker request survives scene replacement here.
+	var path := String(_warmup_requests.keys()[0])
+	var resource := load(path) as Resource if ResourceLoader.exists(path) else null
+	_warmup_requests.erase(path)
+	if resource == null:
+		_warmup_failures[path] = true
+	else:
+		_warmup_cache[path] = resource
 	_refresh_current_warmup()
 	if _warmup_requests.is_empty():
 		if _pending_launch_index >= 0:
 			_commit_launch(_pending_launch_index)
-		elif _back_pending:
-			_finish_pending_back()
 
 
 func _refresh_current_warmup() -> void:
-	if _launching or _back_pending or _warmup_paths.is_empty():
+	if _launching or _warmup_paths.is_empty():
 		return
 	var completed := 0.0
 	_warmup_failed = false
@@ -110,9 +98,7 @@ func _refresh_current_warmup() -> void:
 		if _warmup_cache.has(path):
 			completed += 1.0
 			continue
-		var progress: Array = []
-		ResourceLoader.load_threaded_get_status(path, progress)
-		completed += float(progress[0]) if not progress.is_empty() else 0.0
+		# Pending resources contribute only after their load completes.
 	if _warmup_failed:
 		_warmup_ready = false
 		play_button.disabled = true
@@ -140,26 +126,8 @@ func _refresh_current_warmup() -> void:
 	_refresh_selected_action()
 
 
-func _finish_pending_back() -> void:
-	_back_pending = false
-	_launching = true
-	_set_launch_controls_disabled(true)
-	var result := SceneRouter.go_to(menu_scene_path)
-	if result != OK:
-		_launching = false
-		_set_launch_controls_disabled(false)
-		status_label.text = "MENU ROUTE OFFLINE"
-		sounds.play(ProceduralAudio.Cue.ERROR)
-
-
 func _exit_tree() -> void:
-	# Consume requests that have already completed. Normal Back navigation drains
-	# all outstanding work before routing; this is the last-resort cleanup path for
-	# application shutdown or an external scene replacement.
-	for path_variant in _warmup_requests.keys():
-		var path := String(path_variant)
-		if ResourceLoader.load_threaded_get_status(path) == ResourceLoader.THREAD_LOAD_LOADED:
-			ResourceLoader.load_threaded_get(path)
+	# Unstarted queued loads can be discarded immediately; no loader worker owns them.
 	_warmup_requests.clear()
 	_warmup_cache.clear()
 	_warmup_resources.clear()
@@ -306,15 +274,13 @@ func _begin_warmup(data: LevelCardData) -> void:
 	_warmup_failed = false
 	_warmup_error_announced = false
 	# Loading a selected card must not trap the player on it. Other cards,
-	# difficulty, and Back stay responsive while prior requests finish in the
-	# background; Back itself drains those requests before leaving the scene.
+	# difficulty, and Back stay responsive between staged loads.
 	_set_warmup_controls_locked(false)
 	if not data.is_available(_campaign_progress, _development_unlock_override()):
 		_refresh_selected_action()
 		return
-	# Deterministic headless UI tests validate the same paths synchronously and
-	# disable the worker queue so Godot 4.7 does not leave ResourceLoader cleanup
-	# records alive while the short test process exits. Runtime builds keep this on.
+	# Focused layout fixtures validate paths without loading whole missions.
+	# The separate runtime preparation smoke test exercises the enabled queue.
 	if not threaded_warmup_enabled:
 		for path in _warmup_paths:
 			if not ResourceLoader.exists(path):
@@ -332,20 +298,7 @@ func _begin_warmup(data: LevelCardData) -> void:
 		_warmup_failures.erase(path)
 		if _warmup_cache.has(path) or _warmup_requests.has(path):
 			continue
-		var prior_status := ResourceLoader.load_threaded_get_status(path)
-		if prior_status == ResourceLoader.THREAD_LOAD_LOADED:
-			var loaded_resource := ResourceLoader.load_threaded_get(path)
-			if loaded_resource != null:
-				_warmup_cache[path] = loaded_resource
-				continue
-		var error := ResourceLoader.load_threaded_request(path, "", true)
-		if error == OK or error == ERR_BUSY:
-			_warmup_requests[path] = true
-		else:
-			_warmup_failed = true
-			_warmup_failures[path] = true
-			play_button.text = "LOAD FAILED"
-			status_label.text = "MISSION ASSETS OFFLINE // %s" % path.get_file()
+		_warmup_requests[path] = true
 	_refresh_current_warmup()
 	if _warmup_paths.is_empty():
 		_set_warmup_controls_locked(false)
@@ -451,15 +404,10 @@ func _set_warmup_controls_locked(value: bool) -> void:
 	%BackButton.disabled = value
 
 func _back() -> void:
-	if _launching or _back_pending:
+	if _launching:
 		return
-	if not _warmup_requests.is_empty():
-		_back_pending = true
-		_set_warmup_controls_locked(true)
-		play_button.disabled = true
-		play_button.focus_mode = Control.FOCUS_NONE
-		status_label.text = "FINISHING PREPARATION…"
-		return
+	# Back cancels unstarted preparation; loaded cache references release on exit.
+	_warmup_requests.clear()
 	_launching = true
 	_set_launch_controls_disabled(true)
 	if SceneRouter.go_to(menu_scene_path) != OK:
