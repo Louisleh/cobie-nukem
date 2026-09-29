@@ -137,6 +137,10 @@ func _go_main_menu() -> void:
 	if _restarting or _routing:
 		return
 	var router := get_node_or_null("/root/SceneRouter")
+	# An accepted scene change immediately detaches this pause menu. Retain
+	# the autoload/tree before routing so pause release cannot query a dead owner.
+	var game_state := get_node_or_null("/root/GameState")
+	var tree := get_tree()
 	if router == null or router.go_to("res://scenes/menus/main_menu.tscn") != OK:
 		return
 	_routing = true
@@ -149,7 +153,10 @@ func _go_main_menu() -> void:
 		_feedback_overlay.queue_free()
 		_feedback_overlay = null
 	visible = false
-	_set_paused(false)
+	if game_state != null:
+		game_state.set_paused(false)
+	else:
+		tree.paused = false
 
 func _open_options() -> void:
 	if is_instance_valid(_options_overlay):

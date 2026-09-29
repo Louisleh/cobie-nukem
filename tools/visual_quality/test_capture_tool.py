@@ -516,8 +516,7 @@ user_data.mkdir(parents=True, exist_ok=True)
             self.assertEqual(seen_env.get("CFFIXED_USER_HOME"), str(isolated_home))
 
     def test_capture_process_rejects_unexpected_engine_errors(self) -> None:
-        allowed = "\n".join(capture_tool._ALLOWED_CAPTURE_DIAGNOSTICS) + "\n"
-        allowed_result = subprocess.CompletedProcess(["godot"], 0, stdout=allowed)
+        allowed_result = subprocess.CompletedProcess(["godot"], 0, stdout="CAPTURE: PASS\n")
         with redirect_stdout(io.StringIO()):
             with patch.object(capture_tool.subprocess, "run", return_value=allowed_result):
                 capture_tool._run_capture_process(["godot"], {})
@@ -530,7 +529,8 @@ user_data.mkdir(parents=True, exist_ok=True)
             "WARNING: 2 resources still in use at exit.\n",
             "WARNING: 1 orphan node detected.\n",
             "WARNING: 1 orphan StringName detected.\n",
-            allowed.splitlines()[0] + "\n" + allowed.splitlines()[0] + "\n",
+            "ERROR: 1 shaders of type ParticlesShaderGLES3 were never freed\n",
+            "ERROR: 1 RID allocations of type 'N5GLES36ShaderE' were leaked at exit.\n",
             "ERROR: 2 shaders of type ParticlesShaderGLES3 were never freed\n",
         )
         for output in fatal_outputs:

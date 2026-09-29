@@ -13,10 +13,7 @@ import tempfile
 import time
 
 ROOT = Path(__file__).resolve().parents[2]
-ALLOWED = {
-    "ERROR: 1 shaders of type ParticlesShaderGLES3 were never freed",
-    "ERROR: 1 RID allocations of type 'N5GLES36ShaderE' were leaked at exit.",
-}
+ALLOWED: set[str] = set()
 
 
 def check_log(text):

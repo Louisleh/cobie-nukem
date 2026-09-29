@@ -33,6 +33,7 @@ func _initialize() -> void:
 	await _check_pause_restart_contract()
 	await _check_caption_contracts()
 	await _check_boss_hud_contract()
+	await _check_pause_main_menu_return_contract()
 	if failures.is_empty():
 		print("UI SCENE TESTS: PASS")
 		call_deferred("_quit_after_cleanup", 0)
@@ -48,6 +49,46 @@ func _quit_after_cleanup(exit_code: int) -> void:
 	# RefCounted alive during ObjectDB cleanup on Godot 4.7.
 	await process_frame
 	quit(exit_code)
+
+
+func _check_pause_main_menu_return_contract() -> void:
+	var game_state := root.get_node("GameState")
+	var mission := Node.new()
+	root.add_child(mission)
+	current_scene = mission
+	var pause := load("res://scenes/ui/pause_menu.tscn").instantiate() as PauseMenu
+	mission.add_child(pause)
+	game_state.begin_run(&"qa_pause_main_menu")
+	pause.open()
+	var router := root.get_node("SceneRouter")
+	router.is_transitioning = true
+	pause.get_node("Panel/VBox/MainMenuButton").pressed.emit()
+	if not paused or not pause.visible or current_scene != mission:
+		failures.append("Rejected Pause Main Menu routing must retain the paused mission")
+	router.is_transitioning = false
+	pause.get_node("Panel/VBox/MainMenuButton").pressed.emit()
+	if paused:
+		failures.append("Pause Main Menu must release tree pause after the real router detaches the old scene")
+	# Recover the red fixture so it can prove the destination is otherwise live.
+	paused = false
+	for frame in 3:
+		await process_frame
+	# Dynamic scene typing preserves autoload resolution during script bootstrap.
+	var menu := current_scene
+	if menu == null or menu.scene_file_path != "res://scenes/menus/main_menu.tscn":
+		failures.append("Pause Main Menu must reach the real main menu")
+	else:
+		menu.get_node("%NewGameButton").pressed.emit()
+		for frame in 3:
+			await process_frame
+		if current_scene == null or current_scene.scene_file_path != "res://scenes/menus/doghouse_hub.tscn":
+			failures.append("Returned main menu Play must route to Doghouse")
+	if current_scene != null:
+		current_scene.queue_free()
+		current_scene = null
+	await process_frame
+	await process_frame
+	await create_timer(0.25).timeout
 
 func _check_scene(path: String) -> void:
 	var packed := load(path) as PackedScene

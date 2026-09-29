@@ -17,10 +17,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
 
-_ALLOWED_CAPTURE_DIAGNOSTICS = {
-    "ERROR: 1 shaders of type ParticlesShaderGLES3 were never freed": 1,
-    "ERROR: 1 RID allocations of type 'N5GLES36ShaderE' were leaked at exit.": 1,
-}
+_ALLOWED_CAPTURE_DIAGNOSTICS: Dict[str, int] = {}
 _FATAL_CAPTURE_DIAGNOSTICS = (
     re.compile(r"^ERROR:"),
     re.compile(r"^SCRIPT ERROR:"),
