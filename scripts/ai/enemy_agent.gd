@@ -12,6 +12,7 @@ signal navigation_recovery_requested(enemy: EnemyAgent, reason: StringName)
 enum State { IDLE, ALERT, CHASE, ATTACK, HURT, STUNNED, DEAD }
 
 const EnemyDeathEffectScript := preload("res://scripts/ai/enemy_death_effect.gd")
+const HP_READOUT_SECONDS := 1.25
 @export var definition: EnemyDefinition
 @export var initial_target: Node3D
 @export var target_height := 1.0
@@ -37,6 +38,7 @@ var _health_bar: Node3D
 var _health_bar_fill_mesh: QuadMesh
 var _health_bar_fill_material: StandardMaterial3D
 var _health_label: Label3D
+var _health_label_time := 0.0
 var _health_bar_width := 1.4
 var _damage_scale := 1.0
 var _speed_scale := 1.0
@@ -79,6 +81,7 @@ func _physics_process(delta: float) -> void:
 		return
 	_stabilize_ground_height()
 	_update_locomotion_presentation()
+	_health_label_time = maxf(0.0, _health_label_time - delta)
 	_update_health_bar_presentation()
 	_state_time += delta
 	_cooldown = maxf(0.0, _cooldown - delta)
@@ -153,6 +156,7 @@ func apply_damage(amount: float, source: Node = null, hit_position := Vector3.ZE
 		return 0.0
 	var applied := minf(health, amount * _damage_multiplier(hit_position))
 	health -= applied
+	_health_label_time = HP_READOUT_SECONDS * (2.0 if definition.max_health >= 200.0 else 1.0)
 	_update_health_bar()
 	var actor := _actor_from(source)
 	if actor != null:
@@ -224,12 +228,13 @@ func _build_health_bar() -> void:
 	_health_label.name = "HealthPoints"
 	_health_label.position.y = 0.17
 	_health_label.billboard = BaseMaterial3D.BILLBOARD_ENABLED
-	_health_label.font_size = 32
+	_health_label.font_size = 22
 	_health_label.pixel_size = 0.0022
 	_health_label.outline_size = 4
 	_health_label.modulate = Color("f4f1de")
 	_health_label.no_depth_test = false
 	_health_label.fixed_size = true
+	_health_label.visible = false
 	_health_bar.add_child(_health_label)
 	_update_health_bar()
 func _health_bar_material(color: Color) -> StandardMaterial3D:
@@ -251,7 +256,7 @@ func _update_health_bar_presentation() -> void:
 	_health_bar.visible = distance >= 2.6 and distance <= 24.0
 	_health_bar.scale = Vector3.ONE * clampf(distance * 0.016, 0.08, 0.34)
 	if _health_label != null:
-		_health_label.visible = distance <= 16.0
+		_health_label.visible = _health_bar.visible and distance <= (16.0 if definition.max_health >= 200.0 else 10.0) and _health_label_time > 0.0
 func _update_health_bar() -> void:
 	if _health_bar_fill_mesh == null or _health_bar_fill_material == null:
 		return

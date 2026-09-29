@@ -1,0 +1,772 @@
+{
+	"direct_encounter_activation": false,
+	"end_physics_frame": 326,
+	"end_process_frame": 162,
+	"frames": 150,
+	"kind": "sampled_automated_native_motion",
+	"movie_maker": false,
+	"physics_tps": 60,
+	"render_fps": 30,
+	"sample_fps": 10,
+	"samples": [
+		{
+			"draw_calls": 568.0,
+			"elapsed_usec": 135652,
+			"frame": 0,
+			"physics_ticks": 2,
+			"png_sha256": "2e81315666fe29066ad784b159cd1ec9e6625c96f2c98ed2d025fe5b1be6d866",
+			"position": [
+				0.0,
+				0.0000519305467605591,
+				10.0
+			],
+			"process_frame": 13,
+			"simulation_seconds": 0.0333333333333333,
+			"zone": "forbidden_field"
+		},
+		{
+			"draw_calls": 568.0,
+			"elapsed_usec": 279775,
+			"frame": 3,
+			"physics_ticks": 8,
+			"png_sha256": "99efbeebfdd6889bb34ce825d4f1460faab427e9a84c05b6918b315701074ba5",
+			"position": [
+				0.0,
+				0.0000519305467605591,
+				10.0
+			],
+			"process_frame": 16,
+			"simulation_seconds": 0.133333333333333,
+			"zone": "forbidden_field"
+		},
+		{
+			"draw_calls": 568.0,
+			"elapsed_usec": 418537,
+			"frame": 6,
+			"physics_ticks": 14,
+			"png_sha256": "cb0db1b3eb54e84c2e54cce2808957742e36438dde13670f8199267c3e27a04b",
+			"position": [
+				0.0,
+				0.0000519305467605591,
+				10.0
+			],
+			"process_frame": 19,
+			"simulation_seconds": 0.233333333333333,
+			"zone": "forbidden_field"
+		},
+		{
+			"draw_calls": 568.0,
+			"elapsed_usec": 551663,
+			"frame": 9,
+			"physics_ticks": 20,
+			"png_sha256": "491d37436350693f55cc60eda87cc80ecf42e848223e88d2df82bc4dd8ab1004",
+			"position": [
+				0.0,
+				0.0000519305467605591,
+				10.0
+			],
+			"process_frame": 22,
+			"simulation_seconds": 0.333333333333333,
+			"zone": "forbidden_field"
+		},
+		{
+			"draw_calls": 568.0,
+			"elapsed_usec": 685337,
+			"frame": 12,
+			"physics_ticks": 26,
+			"png_sha256": "c965a631fba9ba13359e5ac1f61d7862d82ee901ead704be47385627a3650a08",
+			"position": [
+				0.0,
+				0.0000519305467605591,
+				10.0
+			],
+			"process_frame": 25,
+			"simulation_seconds": 0.433333333333333,
+			"zone": "forbidden_field"
+		},
+		{
+			"draw_calls": 568.0,
+			"elapsed_usec": 818120,
+			"frame": 15,
+			"physics_ticks": 32,
+			"png_sha256": "afd7af4996d8c42b27d69b6f7a9b0eb1bff82765fbf35c303bfa4ac1eb8c00d7",
+			"position": [
+				0.0,
+				0.0000519305467605591,
+				10.0
+			],
+			"process_frame": 28,
+			"simulation_seconds": 0.533333333333333,
+			"zone": "forbidden_field"
+		},
+		{
+			"draw_calls": 568.0,
+			"elapsed_usec": 952603,
+			"frame": 18,
+			"physics_ticks": 38,
+			"png_sha256": "936f700a0e2502fa279428aa249bdff832142303ddaf2e20a0d5a9a0f44da109",
+			"position": [
+				0.0,
+				0.0000519305467605591,
+				10.0
+			],
+			"process_frame": 31,
+			"simulation_seconds": 0.633333333333333,
+			"zone": "forbidden_field"
+		},
+		{
+			"draw_calls": 568.0,
+			"elapsed_usec": 1083860,
+			"frame": 21,
+			"physics_ticks": 44,
+			"png_sha256": "cce6c1ce1722c2e2201394b7a7aa01533687df9e29e28025a13ac56d46993866",
+			"position": [
+				0.0,
+				0.0000519305467605591,
+				10.0
+			],
+			"process_frame": 34,
+			"simulation_seconds": 0.733333333333333,
+			"zone": "forbidden_field"
+		},
+		{
+			"draw_calls": 568.0,
+			"elapsed_usec": 1212502,
+			"frame": 24,
+			"physics_ticks": 50,
+			"png_sha256": "68df40d0daaaae8148b4788b7b30f3a67034e19739d848fa4cb012bb5add67cb",
+			"position": [
+				0.0,
+				0.0000519305467605591,
+				10.0
+			],
+			"process_frame": 37,
+			"simulation_seconds": 0.833333333333333,
+			"zone": "forbidden_field"
+		},
+		{
+			"draw_calls": 568.0,
+			"elapsed_usec": 1341846,
+			"frame": 27,
+			"physics_ticks": 56,
+			"png_sha256": "0d53092e155311e871419320fbcdd677ca367070dde5e31f66ea492132d10da7",
+			"position": [
+				0.0,
+				0.0000519305467605591,
+				10.0
+			],
+			"process_frame": 40,
+			"simulation_seconds": 0.933333333333333,
+			"zone": "forbidden_field"
+		},
+		{
+			"draw_calls": 568.0,
+			"elapsed_usec": 1486830,
+			"frame": 30,
+			"physics_ticks": 62,
+			"png_sha256": "9515b2ff080a8cadeb987a918ea18390f7d84c547b5516b035a3a402695502c9",
+			"position": [
+				0.0,
+				0.0000519305467605591,
+				10.0
+			],
+			"process_frame": 43,
+			"simulation_seconds": 1.03333333333333,
+			"zone": "forbidden_field"
+		},
+		{
+			"draw_calls": 568.0,
+			"elapsed_usec": 1617741,
+			"frame": 33,
+			"physics_ticks": 68,
+			"png_sha256": "a7fc3108bc1b57534e0da694948e85bf891adafcfca8ffc0b96a8678841d28d3",
+			"position": [
+				0.0,
+				0.0000519305467605591,
+				10.0
+			],
+			"process_frame": 46,
+			"simulation_seconds": 1.13333333333333,
+			"zone": "forbidden_field"
+		},
+		{
+			"draw_calls": 568.0,
+			"elapsed_usec": 1752369,
+			"frame": 36,
+			"physics_ticks": 74,
+			"png_sha256": "f845ab8adbe342103fe48f68d8d795ec1fa548b7f83bac2ef58d69b303f7d8a5",
+			"position": [
+				0.0,
+				0.0000519305467605591,
+				10.0
+			],
+			"process_frame": 49,
+			"simulation_seconds": 1.23333333333333,
+			"zone": "forbidden_field"
+		},
+		{
+			"draw_calls": 568.0,
+			"elapsed_usec": 1885201,
+			"frame": 39,
+			"physics_ticks": 80,
+			"png_sha256": "2f7d3eff9b2a64c952cdf1fbd306449ea07212db8949e1fff72b8f606f514eb4",
+			"position": [
+				0.0,
+				0.0000519305467605591,
+				10.0
+			],
+			"process_frame": 52,
+			"simulation_seconds": 1.33333333333333,
+			"zone": "forbidden_field"
+		},
+		{
+			"draw_calls": 568.0,
+			"elapsed_usec": 2019712,
+			"frame": 42,
+			"physics_ticks": 86,
+			"png_sha256": "9bae35f8a7d1d266be0ae24507eee18d15737e17fd611da0ca1102af15e18a98",
+			"position": [
+				0.0,
+				0.0000519305467605591,
+				10.0
+			],
+			"process_frame": 55,
+			"simulation_seconds": 1.43333333333333,
+			"zone": "forbidden_field"
+		},
+		{
+			"draw_calls": 564.0,
+			"elapsed_usec": 2151299,
+			"frame": 45,
+			"physics_ticks": 92,
+			"png_sha256": "3b9c285b98b9d779110c8f1e1ceb97f3ba8704d6caaf6005510b17f5bab4cd2f",
+			"position": [
+				0.0,
+				0.0000519305467605591,
+				10.0
+			],
+			"process_frame": 58,
+			"simulation_seconds": 1.53333333333333,
+			"zone": "forbidden_field"
+		},
+		{
+			"draw_calls": 568.0,
+			"elapsed_usec": 2284426,
+			"frame": 48,
+			"physics_ticks": 98,
+			"png_sha256": "ca9d7b20b0a94ee307cb3c29157f688cf589ae41416a87ec1dd8260bee0ba132",
+			"position": [
+				0.0,
+				0.0000519305467605591,
+				10.0
+			],
+			"process_frame": 61,
+			"simulation_seconds": 1.63333333333333,
+			"zone": "forbidden_field"
+		},
+		{
+			"draw_calls": 568.0,
+			"elapsed_usec": 2419549,
+			"frame": 51,
+			"physics_ticks": 104,
+			"png_sha256": "4aafd6265b774824b15a9e711cec51c5caaaae6ea1223319b9abe8069aaa693c",
+			"position": [
+				0.0,
+				0.0000519305467605591,
+				10.0
+			],
+			"process_frame": 64,
+			"simulation_seconds": 1.73333333333333,
+			"zone": "forbidden_field"
+		},
+		{
+			"draw_calls": 568.0,
+			"elapsed_usec": 2551007,
+			"frame": 54,
+			"physics_ticks": 110,
+			"png_sha256": "527f995476aebbc4f9ca78f01ba55583adc73984569266522851ca90b7d62303",
+			"position": [
+				0.0,
+				0.0000519305467605591,
+				10.0
+			],
+			"process_frame": 67,
+			"simulation_seconds": 1.83333333333333,
+			"zone": "forbidden_field"
+		},
+		{
+			"draw_calls": 568.0,
+			"elapsed_usec": 2678784,
+			"frame": 57,
+			"physics_ticks": 116,
+			"png_sha256": "4b9dcc27365cc4b2b63faa9739ff023536ebbf46f538389df195d0ff4d7d980b",
+			"position": [
+				0.0,
+				0.0000519305467605591,
+				10.0
+			],
+			"process_frame": 70,
+			"simulation_seconds": 1.93333333333333,
+			"zone": "forbidden_field"
+		},
+		{
+			"draw_calls": 568.0,
+			"elapsed_usec": 2807108,
+			"frame": 60,
+			"physics_ticks": 122,
+			"png_sha256": "7ce6f55b3315b47eaec46b247c4f9e282a8be36f890930c9c336a333722692b9",
+			"position": [
+				0.0,
+				0.0000519305467605591,
+				9.96833324432373
+			],
+			"process_frame": 73,
+			"simulation_seconds": 2.03333333333333,
+			"zone": "forbidden_field"
+		},
+		{
+			"draw_calls": 568.0,
+			"elapsed_usec": 2934257,
+			"frame": 63,
+			"physics_ticks": 128,
+			"png_sha256": "0830437cbc0f3eb908f28917f718dcad533217f56bd9035e075ea91707cda90d",
+			"position": [
+				0.0,
+				0.0000519305467605591,
+				9.61999988555908
+			],
+			"process_frame": 76,
+			"simulation_seconds": 2.13333333333333,
+			"zone": "forbidden_field"
+		},
+		{
+			"draw_calls": 566.0,
+			"elapsed_usec": 3067927,
+			"frame": 66,
+			"physics_ticks": 134,
+			"png_sha256": "8e8a08941d1d8dd2140fc2d6d1ccc639f954a7ae05d3fcc22e4fdc2a740e36b7",
+			"position": [
+				0.0,
+				0.0000519305467605591,
+				9.02499771118164
+			],
+			"process_frame": 79,
+			"simulation_seconds": 2.23333333333333,
+			"zone": "forbidden_field"
+		},
+		{
+			"draw_calls": 567.0,
+			"elapsed_usec": 3201262,
+			"frame": 69,
+			"physics_ticks": 140,
+			"png_sha256": "c08088be8ae664e6df8f731358932b79495acfe10a2d3a9dc272d046626eba37",
+			"position": [
+				0.0,
+				0.0000519305467605591,
+				8.42499542236328
+			],
+			"process_frame": 82,
+			"simulation_seconds": 2.33333333333333,
+			"zone": "forbidden_field"
+		},
+		{
+			"draw_calls": 571.0,
+			"elapsed_usec": 3336492,
+			"frame": 72,
+			"physics_ticks": 146,
+			"png_sha256": "0a7f7852af08ee1737ebf0dfef47716318a5d63a068a9523a671ebe46d3ea232",
+			"position": [
+				0.0,
+				0.0000519305467605591,
+				7.82499408721924
+			],
+			"process_frame": 85,
+			"simulation_seconds": 2.43333333333333,
+			"zone": "forbidden_field"
+		},
+		{
+			"draw_calls": 567.0,
+			"elapsed_usec": 3525580,
+			"frame": 75,
+			"physics_ticks": 152,
+			"png_sha256": "8be71857195e09f1356a2e3033fa70128f1b4763a934041e2d4b665f4ead723d",
+			"position": [
+				0.0,
+				0.0000519305467605591,
+				7.22499465942383
+			],
+			"process_frame": 88,
+			"simulation_seconds": 2.53333333333333,
+			"zone": "forbidden_field"
+		},
+		{
+			"draw_calls": 568.0,
+			"elapsed_usec": 3672773,
+			"frame": 78,
+			"physics_ticks": 158,
+			"png_sha256": "6124c44a524bd49540cac366d21ca640c31bad6981fb2a09ffe218c371f8ff47",
+			"position": [
+				0.0,
+				0.0000519305467605591,
+				6.62499523162842
+			],
+			"process_frame": 91,
+			"simulation_seconds": 2.63333333333333,
+			"zone": "forbidden_field"
+		},
+		{
+			"draw_calls": 569.0,
+			"elapsed_usec": 3806609,
+			"frame": 81,
+			"physics_ticks": 164,
+			"png_sha256": "45edcfaa2eb5443f04237710f1bbc2cd4a60bb2046145ad8e1456e1b894e8aa0",
+			"position": [
+				0.0,
+				0.0000519305467605591,
+				6.02499580383301
+			],
+			"process_frame": 94,
+			"simulation_seconds": 2.73333333333333,
+			"zone": "forbidden_field"
+		},
+		{
+			"draw_calls": 568.0,
+			"elapsed_usec": 3942064,
+			"frame": 84,
+			"physics_ticks": 170,
+			"png_sha256": "573e7a2e86de5e8eaf9fd9a4a8f44d1e8ae3125e2c9d1ae21989a3bfe7c43818",
+			"position": [
+				0.0,
+				0.0000519305467605591,
+				5.4249963760376
+			],
+			"process_frame": 97,
+			"simulation_seconds": 2.83333333333333,
+			"zone": "forbidden_field"
+		},
+		{
+			"draw_calls": 566.0,
+			"elapsed_usec": 4075985,
+			"frame": 87,
+			"physics_ticks": 176,
+			"png_sha256": "118d796a48450ac98cd92c26ec0079d30e9ba968e026f0b4865e1a6542049cf1",
+			"position": [
+				0.0,
+				0.0000519305467605591,
+				4.82499694824219
+			],
+			"process_frame": 100,
+			"simulation_seconds": 2.93333333333333,
+			"zone": "forbidden_field"
+		},
+		{
+			"draw_calls": 563.0,
+			"elapsed_usec": 4209446,
+			"frame": 90,
+			"physics_ticks": 182,
+			"png_sha256": "fa9d0573416a65f38f591b1e78de5108d2c11d9291e6034977847772eec57670",
+			"position": [
+				0.0,
+				0.0000519305467605591,
+				4.22499752044678
+			],
+			"process_frame": 103,
+			"simulation_seconds": 3.03333333333333,
+			"zone": "forbidden_field"
+		},
+		{
+			"draw_calls": 566.0,
+			"elapsed_usec": 4341446,
+			"frame": 93,
+			"physics_ticks": 188,
+			"png_sha256": "aa2c3ed3b0deca1f899e08d7fc302f6d3f13343ea1a2044fb063f513c4abe04d",
+			"position": [
+				0.0,
+				0.0000519305467605591,
+				3.62499809265137
+			],
+			"process_frame": 106,
+			"simulation_seconds": 3.13333333333333,
+			"zone": "forbidden_field"
+		},
+		{
+			"draw_calls": 566.0,
+			"elapsed_usec": 4474580,
+			"frame": 96,
+			"physics_ticks": 194,
+			"png_sha256": "e29ce10df208a5777fd0ea09769caa98857132c240ec376f2133ea73a05fd36b",
+			"position": [
+				0.0,
+				0.0000519305467605591,
+				3.02499866485596
+			],
+			"process_frame": 109,
+			"simulation_seconds": 3.23333333333333,
+			"zone": "forbidden_field"
+		},
+		{
+			"draw_calls": 565.0,
+			"elapsed_usec": 4607504,
+			"frame": 99,
+			"physics_ticks": 200,
+			"png_sha256": "7f7ddb7d7b7539654ddeb60a8fd9679a5c8262b1aec172fc4a6f068b75ce586d",
+			"position": [
+				0.0,
+				0.0000519305467605591,
+				2.42499923706055
+			],
+			"process_frame": 112,
+			"simulation_seconds": 3.33333333333333,
+			"zone": "forbidden_field"
+		},
+		{
+			"draw_calls": 561.0,
+			"elapsed_usec": 4738395,
+			"frame": 102,
+			"physics_ticks": 206,
+			"png_sha256": "285aa98117a9cf63d948b9ace5fe137970909e6c88f45d86ae16a5c02f532db2",
+			"position": [
+				0.0,
+				0.0000519305467605591,
+				1.82499957084656
+			],
+			"process_frame": 115,
+			"simulation_seconds": 3.43333333333333,
+			"zone": "forbidden_field"
+		},
+		{
+			"draw_calls": 560.0,
+			"elapsed_usec": 4880015,
+			"frame": 105,
+			"physics_ticks": 212,
+			"png_sha256": "fc51c73b6eeee5f3767d69f2c7f0521e0736f27564c423c8a36c4f4f49285350",
+			"position": [
+				0.0,
+				0.0000519305467605591,
+				1.22499942779541
+			],
+			"process_frame": 118,
+			"simulation_seconds": 3.53333333333333,
+			"zone": "forbidden_field"
+		},
+		{
+			"draw_calls": 559.0,
+			"elapsed_usec": 5009222,
+			"frame": 108,
+			"physics_ticks": 218,
+			"png_sha256": "9d4baa100939357895a1ecbee030366bbb0a9bae7a8e343d36831966a760bb28",
+			"position": [
+				0.0,
+				0.0000519305467605591,
+				0.624999284744263
+			],
+			"process_frame": 121,
+			"simulation_seconds": 3.63333333333333,
+			"zone": "forbidden_field"
+		},
+		{
+			"draw_calls": 563.0,
+			"elapsed_usec": 5137454,
+			"frame": 111,
+			"physics_ticks": 224,
+			"png_sha256": "8ea650dfaf372bf354a8f25d08afcb9e0afebb0cb5d5e141adc62d778a4a3401",
+			"position": [
+				0.0,
+				0.0000519305467605591,
+				0.0249991863965988
+			],
+			"process_frame": 124,
+			"simulation_seconds": 3.73333333333333,
+			"zone": "forbidden_field"
+		},
+		{
+			"draw_calls": 563.0,
+			"elapsed_usec": 5277032,
+			"frame": 114,
+			"physics_ticks": 230,
+			"png_sha256": "b979f7c2709e394ce05d765c87764e6f15c1e40f8460d53baed0ce9f92417cc5",
+			"position": [
+				0.0,
+				0.0000519305467605591,
+				-0.574998497962952
+			],
+			"process_frame": 127,
+			"simulation_seconds": 3.83333333333333,
+			"zone": "forbidden_field"
+		},
+		{
+			"draw_calls": 562.0,
+			"elapsed_usec": 5405110,
+			"frame": 117,
+			"physics_ticks": 236,
+			"png_sha256": "f049405844002cd0a0f9a457e4bcfcea3b10bd872b59f5a06ca006ce47515cf9",
+			"position": [
+				0.0,
+				0.0000519305467605591,
+				-1.1749986410141
+			],
+			"process_frame": 130,
+			"simulation_seconds": 3.93333333333333,
+			"zone": "forbidden_field"
+		},
+		{
+			"draw_calls": 556.0,
+			"elapsed_usec": 5543984,
+			"frame": 120,
+			"physics_ticks": 242,
+			"png_sha256": "a66f35c680908c908919ea72f0cf07ecd364c7b77eef888fcedf9d50a31a381c",
+			"position": [
+				0.0,
+				0.0000519305467605591,
+				-1.73833203315735
+			],
+			"process_frame": 133,
+			"simulation_seconds": 4.03333333333333,
+			"zone": "forbidden_field"
+		},
+		{
+			"draw_calls": 559.0,
+			"elapsed_usec": 5672691,
+			"frame": 123,
+			"physics_ticks": 248,
+			"png_sha256": "1582bb05c157a990a0b8d2992d8c0490f44ee6ff5adc81e33d079d1a6019487a",
+			"position": [
+				0.0,
+				0.0000519305467605591,
+				-1.93499875068665
+			],
+			"process_frame": 136,
+			"simulation_seconds": 4.13333333333333,
+			"zone": "forbidden_field"
+		},
+		{
+			"draw_calls": 559.0,
+			"elapsed_usec": 5799692,
+			"frame": 126,
+			"physics_ticks": 254,
+			"png_sha256": "1af64e807db727c8b9550666b5dcc02db16bba1a2c6e9862b0eed33abd5f6936",
+			"position": [
+				0.0,
+				0.0000519305467605591,
+				-1.93499875068665
+			],
+			"process_frame": 139,
+			"simulation_seconds": 4.23333333333333,
+			"zone": "forbidden_field"
+		},
+		{
+			"draw_calls": 559.0,
+			"elapsed_usec": 5927480,
+			"frame": 129,
+			"physics_ticks": 260,
+			"png_sha256": "e2911ce054cd760c085ebcdcd52e92b608f835c55070cc3368261eb26e3eab7f",
+			"position": [
+				0.0,
+				0.0000519305467605591,
+				-1.93499875068665
+			],
+			"process_frame": 142,
+			"simulation_seconds": 4.33333333333333,
+			"zone": "forbidden_field"
+		},
+		{
+			"draw_calls": 559.0,
+			"elapsed_usec": 6055218,
+			"frame": 132,
+			"physics_ticks": 266,
+			"png_sha256": "1825cad0c048926bb763d751b8cc7a3c0b23ef17dcc55e74ecc1475e4fd6e0ed",
+			"position": [
+				0.0,
+				0.0000519305467605591,
+				-1.93499875068665
+			],
+			"process_frame": 145,
+			"simulation_seconds": 4.43333333333333,
+			"zone": "forbidden_field"
+		},
+		{
+			"draw_calls": 559.0,
+			"elapsed_usec": 6195371,
+			"frame": 135,
+			"physics_ticks": 272,
+			"png_sha256": "889800491f395461af1255702ac2410bb4d58ec99facaf8b1c707d7ecf8cdae7",
+			"position": [
+				0.0,
+				0.0000519305467605591,
+				-1.93499875068665
+			],
+			"process_frame": 148,
+			"simulation_seconds": 4.53333333333333,
+			"zone": "forbidden_field"
+		},
+		{
+			"draw_calls": 555.0,
+			"elapsed_usec": 6324845,
+			"frame": 138,
+			"physics_ticks": 278,
+			"png_sha256": "e189a8de11ea6139b3eac4be9503ec068380544fbd5a9d0b9e3d68eda05af399",
+			"position": [
+				0.0,
+				0.0000519305467605591,
+				-1.93499875068665
+			],
+			"process_frame": 151,
+			"simulation_seconds": 4.63333333333333,
+			"zone": "forbidden_field"
+		},
+		{
+			"draw_calls": 551.0,
+			"elapsed_usec": 6452506,
+			"frame": 141,
+			"physics_ticks": 284,
+			"png_sha256": "1416fa52a59a4b6cfa43849274b8f14be0138f817c8bcdbd0d9a37c7132b8a36",
+			"position": [
+				0.0,
+				0.0000519305467605591,
+				-1.93499875068665
+			],
+			"process_frame": 154,
+			"simulation_seconds": 4.73333333333333,
+			"zone": "forbidden_field"
+		},
+		{
+			"draw_calls": 551.0,
+			"elapsed_usec": 6583370,
+			"frame": 144,
+			"physics_ticks": 290,
+			"png_sha256": "b3efd2a4b6fce4cb9a96c15b397c7903f73d1ac5fc8511370142c8e3d09d8caf",
+			"position": [
+				0.0,
+				0.0000519305467605591,
+				-1.93499875068665
+			],
+			"process_frame": 157,
+			"simulation_seconds": 4.83333333333333,
+			"zone": "forbidden_field"
+		},
+		{
+			"draw_calls": 551.0,
+			"elapsed_usec": 6710986,
+			"frame": 147,
+			"physics_ticks": 296,
+			"png_sha256": "ec59eeecb632835690da97190839d651ee3765dd5ee60e6e0e7b6ea5045cd0db",
+			"position": [
+				0.0,
+				0.0000519305467605591,
+				-1.93499875068665
+			],
+			"process_frame": 160,
+			"simulation_seconds": 4.93333333333333,
+			"zone": "forbidden_field"
+		}
+	],
+	"save_directory": "/var/folders/dy/05pk38515m51wkpphq8__lh80000gn/T/cobie-opening-probe-qrzl5ams/home/saves",
+	"start_physics_frame": 26,
+	"start_process_frame": 12,
+	"teleports": false,
+	"user_data_dir": "/var/folders/dy/05pk38515m51wkpphq8__lh80000gn/T/cobie-opening-probe-qrzl5ams/home/Library/Application Support/Godot/app_userdata/Cobie Nukem- Retro Mayhem 3D",
+	"viewport": [
+		1024,
+		768
+	]
+}

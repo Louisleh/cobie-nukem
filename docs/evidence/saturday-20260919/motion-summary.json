@@ -1,0 +1,162 @@
+{
+  "before-desktop": {
+    "programs": [],
+    "stream_groups": [],
+    "streams": [
+      {
+        "width": 1280,
+        "height": 720,
+        "r_frame_rate": "10/1",
+        "nb_frames": "50"
+      }
+    ],
+    "format": {
+      "duration": "5.000000",
+      "size": "365274"
+    },
+    "process_frame_delta": 150,
+    "physics_frame_delta": 300,
+    "start_position": [
+      0.0,
+      5.19305467605591e-05,
+      10.0
+    ],
+    "end_position": [
+      0.0,
+      5.19305467605591e-05,
+      -1.93499875068665
+    ],
+    "draw_calls_min_max": [
+      555.0,
+      572.0
+    ]
+  },
+  "before-tablet": {
+    "programs": [],
+    "stream_groups": [],
+    "streams": [
+      {
+        "width": 1024,
+        "height": 768,
+        "r_frame_rate": "10/1",
+        "nb_frames": "50"
+      }
+    ],
+    "format": {
+      "duration": "5.000000",
+      "size": "316536"
+    },
+    "process_frame_delta": 150,
+    "physics_frame_delta": 300,
+    "start_position": [
+      0.0,
+      5.19305467605591e-05,
+      10.0
+    ],
+    "end_position": [
+      0.0,
+      5.19305467605591e-05,
+      -1.93499875068665
+    ],
+    "draw_calls_min_max": [
+      551.0,
+      571.0
+    ]
+  },
+  "after-desktop": {
+    "programs": [],
+    "stream_groups": [],
+    "streams": [
+      {
+        "width": 1280,
+        "height": 720,
+        "r_frame_rate": "10/1",
+        "nb_frames": "50"
+      }
+    ],
+    "format": {
+      "duration": "5.000000",
+      "size": "390997"
+    },
+    "process_frame_delta": 150,
+    "physics_frame_delta": 300,
+    "start_position": [
+      0.0,
+      5.19305467605591e-05,
+      10.0
+    ],
+    "end_position": [
+      0.0,
+      5.19305467605591e-05,
+      -1.93499875068665
+    ],
+    "draw_calls_min_max": [
+      555.0,
+      572.0
+    ]
+  },
+  "after-tablet": {
+    "programs": [],
+    "stream_groups": [],
+    "streams": [
+      {
+        "width": 1024,
+        "height": 768,
+        "r_frame_rate": "10/1",
+        "nb_frames": "50"
+      }
+    ],
+    "format": {
+      "duration": "5.000000",
+      "size": "335842"
+    },
+    "process_frame_delta": 150,
+    "physics_frame_delta": 300,
+    "start_position": [
+      0.0,
+      5.19305467605591e-05,
+      10.0
+    ],
+    "end_position": [
+      0.0,
+      5.19305467605591e-05,
+      -1.93499875068665
+    ],
+    "draw_calls_min_max": [
+      551.0,
+      571.0
+    ]
+  },
+  "files_sha256": {
+    "comparison-desktop.jpg": "87f203e0a3748beeda1d6c9d9c7d6047b320c535787fa449a33d3651ed848374",
+    "comparison-tablet.jpg": "86f3e42fdcb482ba3b58bd1a1b2ee96ed61c4855c1138f4e3d092e012a29facf",
+    "after-tablet/frame_0000.png": "1bae7cb5832ecf81670e0876cc858d784df382f68294cb05cc2f8823dee138cd",
+    "after-tablet/runtime.json": "6310046690fa31453218d6910317011a5b0ff6f0d1ac8ec2025b8e1fd6719b02",
+    "after-tablet/source.json": "229b157b0d8b6b2772e39dba4d7ed64bffc660fe379f9e88329892b4d0735768",
+    "after-tablet/sampled-motion.mp4": "1100ed21204a8460dd096f9bf8a0a0d6b8352f2c12266d4b01573dc97e8617d7",
+    "after-tablet/frame_0120.png": "96be93b99e185f196bebcd62f47bf0c6171ee1e9f281a6aa1456c2e01e2419c4",
+    "after-tablet/engine.log": "b625e4b63734048e656bb9ac113a74e05ffc999281445f7220386d7c02e539fc",
+    "after-tablet/receipt.json": "3fff9f9097d0ad7c0564f6c82b8845065e64445f15c19eac114ec64801710243",
+    "after-desktop/frame_0000.png": "3c37ee5e55a1679f90b2754cb1466754c8e8d2f66ec8bcd98974852154f9a125",
+    "after-desktop/runtime.json": "d3a975a961689dc25b4f33c2b76769234a917482751e4502415dc9e97e1251b0",
+    "after-desktop/source.json": "229b157b0d8b6b2772e39dba4d7ed64bffc660fe379f9e88329892b4d0735768",
+    "after-desktop/sampled-motion.mp4": "8484239294767f4cb41a71f182b769d3eaf9d938f2eee60588bffe6e7ff913a3",
+    "after-desktop/frame_0120.png": "aca800413fa6f8178d77e1b40cdb8fec53047ca9b4b3f15843831251b3014986",
+    "after-desktop/engine.log": "b625e4b63734048e656bb9ac113a74e05ffc999281445f7220386d7c02e539fc",
+    "after-desktop/receipt.json": "580cd5382f36e429ca4cae217a84e617786734e423d93b25e476aaab787963b6",
+    "before-tablet/frame_0000.png": "2e81315666fe29066ad784b159cd1ec9e6625c96f2c98ed2d025fe5b1be6d866",
+    "before-tablet/runtime.json": "ef655b8be81f8824d461762fc6206241f31be207137a989f9f2bbf8103f1ff9f",
+    "before-tablet/source.json": "067cd609816fa30f7d6526d53a1d6c3197543c3019362baa15a66f2b75666143",
+    "before-tablet/sampled-motion.mp4": "77e0ea05c79ae5ee2fd70dc8793b77a2001bea7a21b9ed8683f3d73c45451f19",
+    "before-tablet/frame_0120.png": "a66f35c680908c908919ea72f0cf07ecd364c7b77eef888fcedf9d50a31a381c",
+    "before-tablet/engine.log": "b625e4b63734048e656bb9ac113a74e05ffc999281445f7220386d7c02e539fc",
+    "before-tablet/receipt.json": "7f9c64de90227616f167325471b5dc113adb1a59204b2aaa27acd8f8aac1f500",
+    "before-desktop/frame_0000.png": "6f0a08a8777b8998ca19b2f952ddcbca65e787b64bcad6c381bf5be240d54005",
+    "before-desktop/runtime.json": "32216199f5fa1a381ffee3561c516ce66a7636a16a6a3258c641d14a86fcc09b",
+    "before-desktop/source.json": "067cd609816fa30f7d6526d53a1d6c3197543c3019362baa15a66f2b75666143",
+    "before-desktop/sampled-motion.mp4": "be61962208cfa46ca047e3b5a6d1223aa71e5c4c0c690c058ffba22bd4080566",
+    "before-desktop/frame_0120.png": "1b4b1d9e4b2fdbbc06813aa06441ce4cb13a5c82ab9abf20fd65c720190f873e",
+    "before-desktop/engine.log": "14484637aaa7fe6bc35e4097d9706e6521b44e79de7a4a472a38e7b2d570e77a",
+    "before-desktop/receipt.json": "ff48eb28adecec31de8867ac222c12eb1ddcc7700f3fd670efb9b52d7fad5632"
+  }
+}

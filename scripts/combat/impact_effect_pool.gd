@@ -378,7 +378,11 @@ func _reparent_if_needed(node: Node, parent: Node) -> void:
 func _remove_entry(node: Node) -> void:
 	if node == null or node.is_queued_for_deletion():
 		return
-	node.free()
+	# clear() can run while an owning player is leaving the tree. Immediate
+	# free() removes the node synchronously while SceneTree is already mutating,
+	# which aborts headless evidence runs. Queueing preserves cleanup without
+	# re-entering the parent add/remove phase.
+	node.queue_free()
 
 
 func _create_unshaded_material(color: Color, energy: float) -> StandardMaterial3D:

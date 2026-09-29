@@ -86,17 +86,18 @@ func _build_lighting() -> void:
 	env.sky = sky
 	env.ambient_light_source = Environment.AMBIENT_SOURCE_SKY
 	env.ambient_light_color = Color("8da399")
-	env.ambient_light_energy = 0.55
+	env.ambient_light_energy = 0.48
 	env.fog_enabled = true
 	env.fog_light_color = Color("667a78")
-	env.fog_density = 0.012
-	env.fog_aerial_perspective = 0.7
+	# Preserve storm depth without washing out the field-to-shed threat lane.
+	env.fog_density = 0.0045
+	env.fog_aerial_perspective = 0.35
 	environment.environment = env
 	_build_parent.add_child(environment)
 	var moon := DirectionalLight3D.new()
 	moon.rotation_degrees = Vector3(-58, -25, 0)
 	moon.light_color = Color("a9c5d6")
-	moon.light_energy = 1.1
+	moon.light_energy = 1.25
 	moon.shadow_enabled = true
 	_build_parent.add_child(moon)
 

@@ -1,0 +1,76 @@
+{
+  "status": "WARN",
+  "scope": "prerequisites, not release acceptance",
+  "checks": [
+    {
+      "check": "Godot",
+      "status": "PASS",
+      "detail": "4.7.1.stable.official.a13da4feb"
+    },
+    {
+      "check": "template version",
+      "status": "PASS",
+      "detail": "/Users/orion/Library/Application Support/Godot/export_templates/4.7.1.stable"
+    },
+    {
+      "check": "web_nothreads_debug.zip",
+      "status": "PASS",
+      "detail": "ZIP integrity only; fresh export required"
+    },
+    {
+      "check": "web_nothreads_release.zip",
+      "status": "PASS",
+      "detail": "ZIP integrity only; fresh export required"
+    },
+    {
+      "check": "macos.zip",
+      "status": "PASS",
+      "detail": "ZIP integrity only; fresh export required"
+    },
+    {
+      "check": "ios.zip",
+      "status": "PASS",
+      "detail": "ZIP integrity only; fresh export required"
+    },
+    {
+      "check": "scratch headroom",
+      "status": "WARN",
+      "detail": "16.97 GiB free; 6 GiB minimum, 20 GiB recommended"
+    },
+    {
+      "check": "export bridge exclusion",
+      "status": "PASS",
+      "detail": "Source boundary only; package inspection still required"
+    },
+    {
+      "check": "blender",
+      "status": "PASS",
+      "detail": "/opt/homebrew/bin/blender"
+    },
+    {
+      "check": "ffmpeg",
+      "status": "PASS",
+      "detail": "/opt/homebrew/bin/ffmpeg"
+    },
+    {
+      "check": "codex",
+      "status": "PASS",
+      "detail": "/opt/homebrew/bin/codex"
+    },
+    {
+      "check": "iPhoneOS SDK",
+      "status": "PASS",
+      "detail": "26.5"
+    },
+    {
+      "check": "iOS delivery",
+      "status": "WARN",
+      "detail": "Template/SDK are not an iOS preset, signed build, or physical-device result"
+    },
+    {
+      "check": "optional editor MCPs",
+      "status": "INFO",
+      "detail": "Run tools/game_dev_health.sh for the separate privileged-tool gate; missing MCPs do not block CLI work"
+    }
+  ]
+}
