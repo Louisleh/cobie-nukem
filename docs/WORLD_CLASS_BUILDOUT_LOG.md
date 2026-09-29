@@ -767,6 +767,13 @@ Decision and remaining gate:
 - Active nine-still input-route captures pass at 1280×720 twice and 1024×768 once without diagnostics and without relaxed assertions or changed balance. Death/Retry is 796/829 in the first desktop receipt. The previous survival-only capture remains rejected; its complete timing cause is not claimed from these newer passes. Evidence is in current task `work/engineering/active-clean-*`, `native-profile-fixed.log`, `particle-pool-fixed.log` and combat/mod logs.
 - Disposition: bounded trail native acceptance PASS; complete release matrix, packaged-browser input and motion/visual review remain next before main integration. No BETA removal, stamp or deployment.
 
+## 2026-09-29 — WCB-008 full-matrix lifecycle follow-through
+
+- Baseline `8e75809`; capture cleanup's mixer drain used an unowned SceneTreeTimer, which the architecture gate correctly rejected after all gameplay tests passed. `eb246b8` replaces it with a one-shot child Timer; the failure code and 0.25-second drain remain unchanged. Architecture now passes.
+- The next full-matrix attempt exposed another intermittent WAV/playback retention in `mission_presentation_test.gd`. Eight verbose baseline runs reproduced one leak of the real Pawstol empty-fire sample from mapped touch firing. This fixture now retains all real input/audio assertions and allows the same bounded mixer drain before deferred quit. Twenty consecutive verbose runs pass without engine diagnostics. This is test shutdown lifetime, not reduced audio coverage or changed gameplay.
+- Both full attempts remain rejected evidence. A complete fresh matrix and exports are next; no pass is inferred from focused repetitions or a green prior CI run.
+- Local tooling: existing Godot inspection helper registered with the established twelve-tool allowlist; pinned Chrome DevTools MCP 1.10.1 registered with isolated profile, usage statistics and CrUX disabled. Both stdio initialize/list-tools handshakes pass. Newly registered tools are unavailable in this active session; packaged Web trace acceptance stays open until a fresh session. CLI Blender 5.2.0 LTS and Material Maker 1.7 remain available; no permanent Blender execution bridge installed. Godot 4.7.2 is a verified side-by-side diagnostic download only; project/CI remain 4.7.1.
+
 ## Resume protocol
 
 1. Read `AGENTS.md`, `docs/PRD.md` §1.5, `docs/IMPLEMENTATION_PLAN.md`, and this current-state section.

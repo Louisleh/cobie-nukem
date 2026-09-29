@@ -44,10 +44,12 @@ func _run() -> void:
 func _finish(exit_code: int) -> void:
 	# Let the async test stack unwind before SceneTree exits. This gives queued
 	# presentation nodes, audio resources, particles, and signal closures two
-	# complete frames to release instead of racing process shutdown in CI.
+	# complete frames to release. Live touch fire can also start an empty-weapon
+	# WAV voice; give AudioServer its bounded mix drain before deferred exit.
 	await process_frame
 	await process_frame
-	quit(exit_code)
+	await create_timer(0.25).timeout
+	quit.call_deferred(exit_code)
 
 
 func _make_level() -> FakeLevel:
