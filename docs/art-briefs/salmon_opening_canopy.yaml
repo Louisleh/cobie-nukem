@@ -1,0 +1,27 @@
+work_id: wcb-008k-opening-canopy-20260929
+target: Field-facing opening silhouette and boundary presentation in the existing Salmon Creek foundry.
+baseline_revision: 721bb25 # matched captures; b065465 pause-only successor is visually identical
+canonical_views: [salmon_opening, salmon_sports_field, salmon_shed]
+gameplay_readability: Groundskeeper and drones stay warmer and higher contrast than the quiet perimeter; tennis pickups and the eight-metre gate remain unobstructed. Shed crest remains the central destination.
+silhouette_goal: Layered asymmetric PNW evergreen crowns rise above the existing four-metre boundary; damp timber breaks the unarticulated side-wall planes. Preserve the five-part pitched shed crest and its open doorway.
+visual_story: An ordinary rainy community sports complex has been enclosed by municipal compliance infrastructure; practical timber panels and floodlights support the place identity.
+mission_identity: Salmon Creek — rain-soaked Pacific Northwest sports complex and municipal animal-control facility.
+palette: Existing storm charcoal, wet evergreen, damp cedar and cream. No new material family or emissive danger-color accent.
+value_hierarchy: Threats and pickups first, shed destination second, fence and quieter tree layers last. Canopy stays beyond field walls and below floodlight prominence.
+materials: Reuse existing eight opaque foundry materials; low-poly geometric surfaces, no textures or transparency. Existing Material Maker turf and concrete untouched.
+lighting_and_fog: Preserve production environment, weather and lights; no additional dynamic light, fog or post-process.
+animation_or_state_vocabulary: Static opaque presentation; no runtime script or animation addition.
+platform_budgets: Eight single-surface material batches, no added draw surfaces; GLB growth <=250 KiB; <=11500 exported triangles (baseline 8064); requested native 1080p opening p95 <=20 ms / p99 <=33.3 ms and zero ordinary >100 ms samples. Web p95 <=33.3 ms / p99 <=50 ms remains measured acceptance, not inferred from native. Four-aspect review includes 1024x768; geometry has no device-specific variant.
+source_and_license: Original deterministic Blender primitives and built-in materials only, Blender 5.2.0 LTS; editable blend and reproducible generator committed with runtime GLB and SHA-256 manifest.
+owned_paths:
+  - tools/blender/build_salmon_opening_foundry.py
+  - assets/source/blender/salmon_creek_opening_foundry.blend
+  - assets/models/environment/salmon_creek_opening_foundry.glb
+  - tests/unit/asset_contract_test.gd
+  - docs/art-briefs/salmon_opening_canopy.yaml
+  - docs/ASSET_MANIFEST.md
+  - docs/WORLD_CLASS_BUILDOUT_LOG.md
+preserved_gameplay_contracts: World builder, collision, navigation, route gates, checkpoints, combat, spawn/balance, HUD and wrapper are byte-frozen. Tree crowns outside x +/-14 and added wall skins overlap the existing boundary face by at most 3cm to prevent z-fighting; no new geometry in the playable gate or travel lane.
+acceptance_evidence: Before/candidate/difference at matching staging and four aspect families, import and geometry/collision contracts, mapped first-30 route at desktop and tablet, rendered native profiler, fresh exports and packaged browser smoke. Web trace remains explicitly open if new MCP is unavailable in this session. No approved baseline overwrite.
+human_review_questions: Does this read as a rainy PNW park rather than a test arena? Is the shed still the first destination? Do the trees remain quiet behind live threats? Is the change clearly better at desktop and tablet size?
+out_of_scope: Shed interior, Rain City art expansion, new missions/weapons/enemies, progression changes, balance, billboard enemy replacement, HUD redesign, public deployment or BETA graduation.

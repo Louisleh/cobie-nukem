@@ -97,13 +97,15 @@ func _test_opening_foundry_asset() -> void:
 	get_root().add_child(instance)
 	await process_frame
 	var meshes := instance.find_children("*", "MeshInstance3D", true, false)
-	_expect(meshes.size() == 8, "opening foundry consolidates 193 authored parts into eight material batches")
+	_expect(meshes.size() == 8, "opening foundry consolidates 251 authored parts into eight material batches")
 	var crest_parts: Array[String] = []
 	var crest_batches := 0
 	var apex_present := false
 	var front_face_present := false
 	var left_eave_present := false
 	var right_eave_present := false
+	var canopy_height := 0.0
+	var high_canopy_clear_of_field := true
 	for mesh_node in meshes:
 		var mesh_instance := mesh_node as MeshInstance3D
 		_expect(mesh_instance.mesh != null and mesh_instance.mesh.get_surface_count() == 1, "each opening foundry material batch exports as exactly one draw surface")
@@ -123,6 +125,9 @@ func _test_opening_foundry_asset() -> void:
 		var normals := arrays[Mesh.ARRAY_NORMAL] as PackedVector3Array
 		for index in points.size():
 			var world_point := mesh_instance.global_transform * points[index]
+			canopy_height = maxf(canopy_height, world_point.y)
+			if world_point.y > 8.4 and absf(world_point.x) <= 14.0:
+				high_canopy_clear_of_field = false
 			if absf(world_point.z + 19.38) > 0.05:
 				continue
 			if absf(world_point.x) < 0.03 and absf(world_point.y - 6.55) < 0.03:
@@ -138,7 +143,8 @@ func _test_opening_foundry_asset() -> void:
 	for child in instance.find_children("*", "", true, false):
 		var extras := child.get_meta(&"extras", {}) as Dictionary
 		source_parts += int(extras.get("source_part_count", 0))
-	_expect(source_parts == 193, "opening foundry retains all 193 source parts in import metadata")
+	_expect(source_parts == 251, "opening foundry retains all 251 source parts in import metadata")
+	_expect(canopy_height >= 11.9 and canopy_height <= 12.2 and high_canopy_clear_of_field, "layered evergreen crowns rise above the perimeter while staying outside the playable field")
 	crest_parts.sort()
 	_expect(crest_batches == 3 and crest_parts == ["ShedCrestCedarUprightLeft", "ShedCrestCedarUprightRight", "ShedCrestCharcoalInfill", "ShedCrestPitchedBeamLeft", "ShedCrestPitchedBeamRight"], "five crest parts reuse exactly the charcoal, cream, and cedar batches")
 	_expect(apex_present and left_eave_present and right_eave_present and front_face_present, "imported pitched charcoal infill has a field-facing front above the gate: apex=%s left=%s right=%s front=%s" % [apex_present, left_eave_present, right_eave_present, front_face_present])
