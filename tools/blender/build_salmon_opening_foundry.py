@@ -226,13 +226,42 @@ def build_evergreens(target: bpy.types.Collection, mats: dict[str, bpy.types.Mat
         cone(target, f"EvergreenUpper_{index}", (x, 3.2, z), 1.25, 3.4, green, 11)
 
 
+def build_shed_crest(target: bpy.types.Collection, mats: dict[str, bpy.types.Material]) -> None:
+    """Five original, non-colliding parts at the existing shed's field-facing lip.
+
+    The gameplay roof spans x +/-7.5, y 4.275..4.725, with its front at
+    z=-19.5; the gate is at z=-19. The crest sits above that roof, leaving
+    the full eight-metre-wide gate and the entire ground-level lane open.
+    """
+    # Solid, opaque gable infill, slightly behind the exposed pitched rafters.
+    outline = [(-6.25, 4.78, -19.38), (6.25, 4.78, -19.38),
+               (0.0, 6.55, -19.38), (-6.25, 4.78, -19.61),
+               (6.25, 4.78, -19.61), (0.0, 6.55, -19.61)]
+    vertices = [godot_position(*point) for point in outline]
+    faces = [(0, 1, 2), (3, 5, 4), (0, 1, 4, 3),
+             (1, 2, 5, 4), (2, 0, 3, 5)]
+    mesh = bpy.data.meshes.new("ShedCrestCharcoalInfill")
+    mesh.from_pydata(vertices, [], faces)
+    mesh.update()
+    infill = bpy.data.objects.new("ShedCrestCharcoalInfill", mesh)
+    target.objects.link(infill)
+    mesh.materials.append(mats["charcoal"])
+    for side, x in (("Left", -6.4), ("Right", 6.4)):
+        cylinder_between(target, f"ShedCrestPitchedBeam{side}",
+                         (x, 4.79, -19.18), (0.0, 6.69, -19.18),
+                         0.135, mats["cream"], 8)
+        box(target, f"ShedCrestCedarUpright{side}",
+            (x, 4.64, -19.18), (0.26, 1.18, 0.3), mats["cedar"], 0.025)
+
+
 def consolidate_by_material(target: bpy.types.Collection) -> None:
     groups: dict[str, list[bpy.types.Object]] = {}
-    for obj in list(target.objects):
+    for obj in sorted(target.objects, key=lambda item: item.name):
         if obj.type != "MESH" or not obj.data.materials:
             continue
         groups.setdefault(obj.data.materials[0].name, []).append(obj)
-    for material_name, objects in groups.items():
+    for material_name, objects in sorted(groups.items()):
+        crest_names = sorted(obj.name for obj in objects if obj.name.startswith("ShedCrest"))
         bpy.ops.object.select_all(action="DESELECT")
         for obj in objects:
             obj.select_set(True)
@@ -249,6 +278,9 @@ def consolidate_by_material(target: bpy.types.Collection) -> None:
         joined.data.materials.append(bpy.data.materials[material_name])
         joined["source_part_count"] = len(objects)
         joined["presentation_only"] = True
+        if crest_names:
+            joined["shed_crest_parts"] = ",".join(crest_names)
+            joined["shed_crest_bounds_godot"] = "x=-6.55..6.55;y=4.05..6.83;z=-19.61..-19.03"
 
 
 def main() -> None:
@@ -271,6 +303,7 @@ def main() -> None:
     build_scoreboard_and_lights(target, mats)
     build_dugout_and_props(target, mats)
     build_evergreens(target, mats)
+    build_shed_crest(target, mats)
     source_parts = len([obj for obj in target.objects if obj.type == "MESH"])
     consolidate_by_material(target)
     target["cobie_asset_id"] = "salmon_creek_opening_foundry"

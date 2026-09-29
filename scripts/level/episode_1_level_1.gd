@@ -215,6 +215,13 @@ func _setup_interaction_runtime() -> void:
 func _check_route_recovery() -> void:
 	if not is_instance_valid(player):
 		return
+	# Advancing past midfield opts into contact; a player who waits at spawn
+	# retains the authored grace window, while the shed cannot be reached
+	# before the staged field actors wake. Firing remains the other early trigger.
+	if current_zone == &"forbidden_field" and not _opening_grace_timer.is_stopped():
+		var field_z := player.global_position.z
+		if checkpoint_position.z > -22.0 and field_z <= -5.0 and field_z > -22.0:
+			_activate_opening_encounter()
 	# Low-frequency indexed recovery keeps the route playable if a browser drops
 	# an Area3D transition without spending every physics frame scanning progress.
 	for milestone in ROUTE_PROGRESS:
@@ -336,8 +343,11 @@ func _on_encounter_actor_spawned(enemy: Node, definition: EncounterDefinition) -
 	_sync_spawn_runtime_state()
 
 func _activate_opening_encounter(_weapon: WeaponBase = null, _secondary := false) -> void:
+	_opening_grace_timer.stop()
 	_spawn_registry.activate_staged_enemies(player)
 	_sync_spawn_runtime_state()
+	if _opening_encounter_active and _mission_presentation != null:
+		_mission_presentation.on_staged_encounter_activated(&"forbidden_field")
 
 func _on_enemy_died(enemy: Node, zone_id: StringName) -> void:
 	# Checkpoint retries rebuild an authored encounter without increasing its
@@ -417,6 +427,17 @@ func restart_from_checkpoint() -> void:
 			player.global_position = checkpoint_position
 			if player.has_method("restore_full"): player.restore_full()
 			if "velocity" in player: player.velocity = Vector3.ZERO
+	var respawn_zone: StringName = &"forbidden_field"
+	var respawn_title := "FORBIDDEN FIELD"
+	for milestone in ROUTE_PROGRESS:
+		if checkpoint_position.z <= float(milestone[0]):
+			respawn_zone = milestone[1]
+			respawn_title = milestone[2]
+	current_zone = respawn_zone
+	zone_entered.emit(respawn_zone, respawn_title)
+	var game_state := get_node_or_null("/root/GameState")
+	if game_state != null:
+		game_state.run_stats["last_zone"] = String(respawn_zone)
 
 func _reset_active_encounter_for_checkpoint() -> void:
 	if _encounter_runner == null or _last_combat_zone == &"" or not _encounter_runner.definitions.has(_last_combat_zone): return
@@ -482,7 +503,7 @@ func _spawn_player() -> void:
 		for weapon in player.weapons:
 			weapon.fired.connect(_activate_opening_encounter)
 		if player.has_signal("died"): player.died.connect(func(_source):
-			narrative_message.emit("GOOD DOG DOWN. PRESS FIRE TO RESTART.", 3.0)
+			narrative_message.emit("GOOD DOG DOWN. SELECT RETRY TO GET BACK UP.", 3.0)
 			var game_state := get_node_or_null("/root/GameState")
 			if game_state: game_state.run_stats["deaths"] = int(game_state.run_stats.get("deaths", 0)) + 1
 		)

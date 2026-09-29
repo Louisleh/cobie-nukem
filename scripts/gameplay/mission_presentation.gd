@@ -124,7 +124,7 @@ func on_objective_changed(text: String) -> void:
 	if _hud == null:
 		return
 	_hud.show_objective(text)
-	_hud.show_notification("OBJECTIVE: " + text)
+	_hud.show_notification("OBJECTIVE: " + text, -1)
 	_hud.show_objective_caption(text, 2.0)
 
 func on_secret_found(_id: StringName, title: String, found: int, total: int) -> void:
@@ -135,7 +135,7 @@ func on_secret_found(_id: StringName, title: String, found: int, total: int) -> 
 
 func on_narrative_message(text: String, duration: float) -> void:
 	if _hud != null:
-		_hud.show_notification(text)
+		_hud.show_notification(text, -1)
 		_hud.show_caption(text, GameHUD.CaptionCategory.NARRATIVE, duration)
 
 func on_checkpoint_caption(message: String) -> void:
@@ -186,7 +186,15 @@ func on_actor_spawned(enemy: Node, definition: EncounterDefinition) -> void:
 	if zone_id == _boss_zone_id:
 		_request_audio_state(&"boss")
 		return
+	# A grace-staged opening has spawned actors, but none can threaten the player
+	# until its level owner wakes them by contact, firing, or the timeout.
+	if zone_id == _initial_zone_id and definition.opening_grace_seconds > 0.0:
+		return
 	if zone_id == _last_zone and _current_audio_state in [&"exploration", &"tension"]:
+		_request_audio_state(&"combat")
+
+func on_staged_encounter_activated(zone_id: StringName) -> void:
+	if zone_id == _last_zone and int(_zone_actor_counts.get(zone_id, 0)) > 0:
 		_request_audio_state(&"combat")
 
 func on_actor_defeated(_enemy: Node, definition: EncounterDefinition) -> void:
@@ -232,6 +240,9 @@ func bind_restart_requests(callback: Callable) -> void:
 		restart_requested.connect(callback)
 
 func reset_for_checkpoint() -> void:
+	if _hud != null:
+		_hud.clear_captions()
+		_hud.show_notification("", -1)
 	if _combat_audio != null:
 		_combat_audio.reset_gameplay_audio()
 	if _pause_menu != null:

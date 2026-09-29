@@ -53,9 +53,14 @@ func is_enemy_bound(enemy: Node) -> bool:
 	return enemy != null and enemy.has_meta(&"mission_presentation_warning_bound")
 
 
-func _on_enemy_telegraph(kind: StringName, _duration: float, _enemy_ref: WeakRef) -> void:
-	if _hud != null:
-		_hud.show_caption("%s WARNING" % String(kind).replace("_", " "), GameHUD.CaptionCategory.ENEMY_WARNING, 1.2)
+func _on_enemy_telegraph(kind: StringName, duration: float, enemy_ref: WeakRef) -> void:
+	if _hud == null:
+		return
+	var warning := "%s WARNING" % String(kind).replace("_", " ")
+	var enemy := enemy_ref.get_ref() as EnemyAgent if enemy_ref != null else null
+	if enemy != null and enemy.definition != null and not enemy.definition.display_name.is_empty():
+		warning = "%s: %s" % [enemy.definition.display_name, warning]
+	_hud.show_caption(warning, GameHUD.CaptionCategory.ENEMY_WARNING, 1.2, "", duration)
 
 
 func _on_gull_target_marked(_target: Node3D, _duration: float, enemy_ref: WeakRef) -> void:

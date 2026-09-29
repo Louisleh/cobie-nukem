@@ -12,4 +12,4 @@ visibility_distance = 90.0
 dynamic_light_budget = 5
 maximum_attackers = 4
 distant_animation_hz = 20.0
-target_fps = 60
+target_fps = 0

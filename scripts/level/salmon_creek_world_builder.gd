@@ -228,6 +228,8 @@ func _build_story_objects() -> void:
 	tunnel_gate.position = Vector3(0, 2, -44)
 	tunnel_gate.size = Vector3(8, 4, 0.6)
 	tunnel_gate.starts_locked = true
+	tunnel_gate.locked_interaction_label = "LOCKED — SWITCH BACK LEFT"
+	tunnel_gate.locked_message = "TUNNEL POWER OFF. SWITCH ON THE SHED'S BACK-LEFT WALL."
 	tunnel_gate.access_denied.connect(_on_narrative_request)
 	interactables.add_child(tunnel_gate)
 	var shed_switch := SwitchScene.instantiate() as LevelSwitch

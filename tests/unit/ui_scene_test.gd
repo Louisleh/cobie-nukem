@@ -528,6 +528,35 @@ func _check_caption_contracts() -> void:
 	if hud.get_caption_queue_size() > 4:
 		failures.append("Caption queue must remain within hard cap")
 	hud.clear_captions()
+	hud.show_boss_phase_caption("BOSS PHASE", 0.3)
+	hud.show_caption("past attack warning", GameHUD.CaptionCategory.ENEMY_WARNING, 1.2, "past-attack", 0.05)
+	if hud.get_caption_queue_size() != 1:
+		failures.append("Warning queues behind a visible boss cue")
+	else:
+		hud._caption_queue[0]["expires_at_ms"] = Time.get_ticks_msec() - 1
+		hud._caption_visible = false
+		hud._display_next_caption()
+		if hud.get_caption_text().contains("PAST ATTACK") or hud.get_caption_queue_size() != 0:
+			failures.append("Expired queued attack warning must not replay after the attack")
+	hud.clear_captions()
+	hud.show_caption("old attack warning", GameHUD.CaptionCategory.ENEMY_WARNING, 1.2, "old-attack", 0.05)
+	hud.show_boss_phase_caption("BOSS PHASE", 0.3)
+	if hud.get_caption_queue_size() != 1:
+		failures.append("Preempted warning remains queued until its telegraph expires")
+	else:
+		hud._caption_queue[0]["expires_at_ms"] = Time.get_ticks_msec() - 1
+		hud._caption_visible = false
+		hud._display_next_caption()
+		if hud.get_caption_text().contains("OLD ATTACK"):
+			failures.append("Preempted warning must not replay after its telegraph")
+	hud.clear_captions()
+	hud.show_caption("repeat attack warning", GameHUD.CaptionCategory.ENEMY_WARNING, 1.2, "repeat-attack", 0.05)
+	var prior_expiry: int = int(hud._active_caption.get("expires_at_ms", 0))
+	hud._active_caption["expires_at_ms"] = Time.get_ticks_msec() - 1
+	hud.show_caption("repeat attack warning", GameHUD.CaptionCategory.ENEMY_WARNING, 1.2, "repeat-attack", 0.52)
+	if int(hud._active_caption.get("expires_at_ms", 0)) <= prior_expiry or hud.get_caption_queue_size() != 0:
+		failures.append("Fresh repeated telegraph must refresh an expired active warning without queuing a stale echo")
+	hud.clear_captions()
 	settings.set_value("accessibility", "subtitles", false, false)
 	hud.show_caption("subtitles disabled", 0, 0.05, "caption-disabled")
 	if hud.get_caption_queue_size() != 0 or hud.is_caption_visible():
@@ -548,6 +577,9 @@ func _check_caption_contracts() -> void:
 		var viewport_rect := Rect2(Vector2.ZERO, viewport)
 		if not viewport_rect.encloses(bounds):
 			failures.append("Caption label must stay within viewport in bounds %s: x=%s y=%s w=%s h=%s" % [viewport, bounds.position.x, bounds.position.y, bounds.size.x, bounds.size.y])
+		var actual_viewport := hud.get_viewport().get_visible_rect().size
+		if actual_viewport.x / actual_viewport.y <= 1.5 and bounds.position.x < actual_viewport.x * 0.25 - 1.0:
+			failures.append("Tablet captions must reserve the portrait lane: %s x=%s" % [actual_viewport, bounds.position.x])
 	root.size = Vector2i(1280, 720)
 	hud.queue_free()
 	await process_frame
@@ -569,6 +601,18 @@ func _check_death_screen_contract() -> void:
 	screen.show_death(authored)
 	if screen.get_node("Panel/VBox/QuipLabel").text != "TEST QUIP":
 		failures.append("Authored death quips must retain their typed-array contract")
+	var saved_size := root.size
+	for size in [Vector2i(640, 360), Vector2i(480, 360)]:
+		root.size = size
+		await process_frame
+		screen._layout_panel()
+		var viewport_bounds := Rect2(Vector2.ZERO, size)
+		for path in ["Panel", "Panel/VBox/Buttons/RetryButton", "Panel/VBox/Buttons/MainMenuButton"]:
+			var control := screen.get_node(path) as Control
+			if not viewport_bounds.encloses(control.get_global_rect()):
+				failures.append("Death %s must fit the %s logical canvas" % [path, size])
+	root.size = saved_size
+	await process_frame
 	var retry_count := [0]
 	screen.retry_requested.connect(func() -> void: retry_count[0] += 1)
 	PointerCaptureController._launch_capture_requested_msec = -1
