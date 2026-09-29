@@ -106,12 +106,18 @@ func _test_opening_foundry_asset() -> void:
 	var right_eave_present := false
 	var canopy_height := 0.0
 	var high_canopy_clear_of_field := true
+	var preserved_bevel_batches := 0
 	for mesh_node in meshes:
 		var mesh_instance := mesh_node as MeshInstance3D
 		_expect(mesh_instance.mesh != null and mesh_instance.mesh.get_surface_count() == 1, "each opening foundry material batch exports as exactly one draw surface")
 		if mesh_instance.mesh == null or mesh_instance.mesh.get_surface_count() != 1:
 			continue
 		var extras := mesh_instance.get_meta(&"extras", {}) as Dictionary
+		var bevel_owner := String(extras.get("bevel_source_part", ""))
+		if bevel_owner == "BleacherSeat_0" or bevel_owner == "DugoutRoof":
+			var expected_width := 0.035 if bevel_owner == "BleacherSeat_0" else 0.05
+			_expect(is_equal_approx(float(extras.get("bevel_width", 0.0)), expected_width), "opening batch preserves its baseline bevel width")
+			preserved_bevel_batches += 1
 		var names := String(extras.get("shed_crest_parts", ""))
 		if not names.is_empty():
 			crest_batches += 1
@@ -145,6 +151,7 @@ func _test_opening_foundry_asset() -> void:
 		source_parts += int(extras.get("source_part_count", 0))
 	_expect(source_parts == 251, "opening foundry retains all 251 source parts in import metadata")
 	_expect(canopy_height >= 11.9 and canopy_height <= 12.2 and high_canopy_clear_of_field, "layered evergreen crowns rise above the perimeter while staying outside the playable field")
+	_expect(preserved_bevel_batches == 2, "new perimeter parts must not replace the existing cedar/charcoal bevel owners")
 	crest_parts.sort()
 	_expect(crest_batches == 3 and crest_parts == ["ShedCrestCedarUprightLeft", "ShedCrestCedarUprightRight", "ShedCrestCharcoalInfill", "ShedCrestPitchedBeamLeft", "ShedCrestPitchedBeamRight"], "five crest parts reuse exactly the charcoal, cream, and cedar batches")
 	_expect(apex_present and left_eave_present and right_eave_present and front_face_present, "imported pitched charcoal infill has a field-facing front above the gate: apex=%s left=%s right=%s front=%s" % [apex_present, left_eave_present, right_eave_present, front_face_present])

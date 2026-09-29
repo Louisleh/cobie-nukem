@@ -260,7 +260,7 @@ def build_boundary_timber(target: bpy.types.Collection, mats: dict[str, bpy.type
         for z in range(-17, 19, 3):
             box(target, f"BoundaryTimberJoint_{side}_{z}",
                 (side * 12.685, 3.1, float(z)),
-                (0.03, 1.7, 0.035), mats["charcoal"])
+                (0.03, 1.7, 0.035), mats["steel"])
 
 
 def build_shed_crest(target: bpy.types.Collection, mats: dict[str, bpy.types.Material]) -> None:
@@ -292,6 +292,13 @@ def build_shed_crest(target: bpy.types.Collection, mats: dict[str, bpy.types.Mat
 
 
 def consolidate_by_material(target: bpy.types.Collection) -> None:
+    # Join retains the active object's modifiers. Preserve the baseline bevel
+    # owners explicitly so an alphabetically earlier added prop cannot change
+    # every existing object in its material batch.
+    modifier_owners = {
+        "Rain Darkened Cedar": "BleacherSeat_0",
+        "Storm Charcoal": "DugoutRoof",
+    }
     groups: dict[str, list[bpy.types.Object]] = {}
     for obj in sorted(target.objects, key=lambda item: item.name):
         if obj.type != "MESH" or not obj.data.materials:
@@ -302,7 +309,9 @@ def consolidate_by_material(target: bpy.types.Collection) -> None:
         bpy.ops.object.select_all(action="DESELECT")
         for obj in objects:
             obj.select_set(True)
-        bpy.context.view_layer.objects.active = objects[0]
+        owner_name = modifier_owners.get(material_name, objects[0].name)
+        owner = next(obj for obj in objects if obj.name == owner_name)
+        bpy.context.view_layer.objects.active = owner
         bpy.ops.object.join()
         joined = bpy.context.object
         joined.name = "OpeningKit_" + material_name.replace(" ", "_")
@@ -315,12 +324,18 @@ def consolidate_by_material(target: bpy.types.Collection) -> None:
         joined.data.materials.append(bpy.data.materials[material_name])
         joined["source_part_count"] = len(objects)
         joined["presentation_only"] = True
+        if material_name in modifier_owners:
+            joined["bevel_source_part"] = owner_name
+            joined["bevel_width"] = float(owner.modifiers["EdgeSoftening"].width)
         if crest_names:
             joined["shed_crest_parts"] = ",".join(crest_names)
             joined["shed_crest_bounds_godot"] = "x=-6.55..6.55;y=4.05..6.83;z=-19.61..-19.03"
 
 
 def main() -> None:
+    # This batch process uses Git for source history. Do not leave unmanifested
+    # .blend1 backups alongside source assets when rebuilding the kit.
+    bpy.context.preferences.filepaths.save_version = 0
     SOURCE.parent.mkdir(parents=True, exist_ok=True)
     OUTPUT.parent.mkdir(parents=True, exist_ok=True)
     target = reset_scene()
