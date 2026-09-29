@@ -220,4 +220,8 @@ func _expect(condition: bool, message: String) -> void:
 func _finish(exit_code: int) -> void:
 	await process_frame
 	await process_frame
-	quit(exit_code)
+	# Victory plays real bark/procedural voices even with mission music disabled.
+	# Scene teardown stops them, but AudioServer retires playback on its next mix
+	# boundary. Process frames alone can race that boundary in short headless runs.
+	await create_timer(0.25).timeout
+	quit.call_deferred(exit_code)
