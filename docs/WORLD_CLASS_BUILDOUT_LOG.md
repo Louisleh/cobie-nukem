@@ -812,3 +812,8 @@ Decision and remaining gate:
 4. Inspect its latest commit/diff and rerun the smallest applicable verification before continuing.
 5. Update this log before each milestone commit.
 6. If context becomes crowded, stop at a describable verified state and resume from this file—not from an inferred chat summary.
+
+## 2026-09-29 — WCB-008 packaged Web evidence intake
+
+- Baseline verified clean main/origin `3c27b3c`; PR #69 merged, CI `36638381961` success. Root packet ownership and acceptance frozen in `docs/work_packets/web_evidence/20260929.md` before runtime edits.
+- Inspection Godot MCP and isolated Chrome DevTools MCP now callable. Canonical scene read succeeds; Chrome page inventory succeeds. Config retains pinned 1.10.1, `--isolated`, `--no-usage-statistics`, `--no-performance-crux`. No bridge enabled. Optional Blender MCP/Context7 remain unavailable; headless editor import passes and CLI Blender 5.2.0 LTS is available. Native/Web evidence remain separate.
