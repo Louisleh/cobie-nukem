@@ -2,6 +2,7 @@ extends SceneTree
 
 const MANIFEST := preload("res://resources/content/salmon_creek_manifest.tres")
 const PLAYER_SCENE := preload("res://scenes/player/cobie_player.tscn")
+const FIELD_DRONE := preload("res://resources/enemies/leash_enforcement_drone.tres")
 
 class FakeLevel extends Node:
 	signal zone_entered(zone_id: StringName, title: String)
@@ -27,6 +28,7 @@ func _run() -> void:
 	await _test_null_player()
 	await _test_ui_and_audio_ownership()
 	await _test_enemy_binding_current_and_future()
+	await _test_named_enemy_warning()
 	await _test_state_and_zone_transitions()
 	await _test_checkpoint_reset()
 	await _test_death_touch_release_and_pause_suppression()
@@ -42,10 +44,12 @@ func _run() -> void:
 func _finish(exit_code: int) -> void:
 	# Let the async test stack unwind before SceneTree exits. This gives queued
 	# presentation nodes, audio resources, particles, and signal closures two
-	# complete frames to release instead of racing process shutdown in CI.
+	# complete frames to release. Live touch fire can also start an empty-weapon
+	# WAV voice; give AudioServer its bounded mix drain before deferred exit.
 	await process_frame
 	await process_frame
-	quit(exit_code)
+	await create_timer(0.25).timeout
+	quit.call_deferred(exit_code)
 
 
 func _make_level() -> FakeLevel:
@@ -164,6 +168,34 @@ func _test_enemy_binding_current_and_future() -> void:
 	await process_frame
 
 
+func _test_named_enemy_warning() -> void:
+	var level := _make_level()
+	var actors := Node.new(); actors.name = "Actors"; level.add_child(actors)
+	await process_frame
+	var presentation := _make_presentation(level, actors)
+	var drone := EnemyAgent.new()
+	drone.definition = FIELD_DRONE
+	actors.add_child(drone)
+	presentation.bind_warning_enemy(drone)
+	drone.telegraph_started.emit(&"compliance_bolt", 0.52)
+	var caption := presentation.get_hud().get_caption_text()
+	_expect(caption.contains("LEASH ENFORCEMENT DRONE") and caption.contains("COMPLIANCE BOLT WARNING"), "real opening drone caption names attacker and attack")
+	var remaining_ms: int = int(presentation.get_hud()._active_caption.get("expires_at_ms", 0)) - Time.get_ticks_msec()
+	_expect(remaining_ms > 0 and remaining_ms <= 520, "opening drone warning queue validity follows its 0.52-second telegraph, not the longer reading hold")
+	presentation.get_hud().clear_captions()
+	var anonymous := FakeEnemy.new()
+	actors.add_child(anonymous)
+	presentation.bind_warning_enemy(anonymous)
+	anonymous.telegraph_started.emit(&"generic_attack", 0.5)
+	_expect(presentation.get_hud().get_caption_text().contains("GENERIC ATTACK WARNING"), "non-agent telegraph retains generic warning")
+	presentation.get_hud().clear_captions()
+	presentation._enemy_cues._on_enemy_telegraph(&"lost_target", 0.5, null)
+	_expect(presentation.get_hud().get_caption_text().contains("LOST TARGET WARNING"), "expired enemy reference retains generic warning")
+	drone.queue_free()
+	presentation.queue_free()
+	level.queue_free()
+	await process_frame
+
 func _test_state_and_zone_transitions() -> void:
 	var level := _make_level()
 	var actors := Node.new(); actors.name = "Actors"; level.add_child(actors)
@@ -171,6 +203,15 @@ func _test_state_and_zone_transitions() -> void:
 	var presentation := _make_presentation(level, actors)
 	var director := presentation.get_audio_director()
 	_expect(director.current_state() == &"exploration", "presentation initializes mission music state to exploration")
+	presentation.on_zone_entered(&"forbidden_field", "FORBIDDEN FIELD")
+	var staged_enemy := FakeEnemy.new()
+	var staged_definition := _definition(&"forbidden_field")
+	staged_definition.opening_grace_seconds = 12.0
+	presentation.on_encounter_started(staged_definition)
+	presentation.on_actor_spawned(staged_enemy, staged_definition)
+	_expect(director.current_state() == &"tension", "spawned but dormant opening enemies retain tension cue")
+	presentation.on_staged_encounter_activated(&"forbidden_field")
+	_expect(director.current_state() == &"combat", "opening wake advances to combat cue")
 	presentation.on_zone_entered(&"equipment_shed", "EQUIPMENT SHED")
 	_expect(director.current_ambience_cue() == &"salmon_ambience_exterior", "zone ambience tracks Salmon shed as exterior")
 	var regular_enemy := FakeEnemy.new()
@@ -193,6 +234,7 @@ func _test_state_and_zone_transitions() -> void:
 	_expect(director.current_state() == &"victory", "victory event sets victory music")
 	_expect(combat_audio.samples.voice_count(&"cobie_bark") >= 1, "victory presentation retains bounded Cobie celebration family")
 	regular_enemy.free()
+	staged_enemy.free()
 	boss_enemy.free()
 	presentation.queue_free()
 	level.queue_free()
@@ -210,8 +252,11 @@ func _test_checkpoint_reset() -> void:
 	if audio.sounds != null:
 		audio.sounds.play(ProceduralAudio.Cue.PAWSTOL)
 	presentation.on_player_died(player)
+	presentation.on_narrative_message("GOOD DOG DOWN. SELECT RETRY TO GET BACK UP.", 3.0)
+	_expect(presentation.get_hud().notification_label.text.contains("GOOD DOG DOWN"), "death instruction is present before Retry")
 	presentation.reset_for_checkpoint()
 	await process_frame
+	_expect(presentation.get_hud().notification_label.text.is_empty() and not presentation.get_hud().is_caption_visible(), "Retry clears stale death instruction and caption")
 	_expect(not presentation.is_pause_suppressed(), "checkpoint reset clears pause suppression")
 	_expect(presentation.get_death_screen().visible == false, "checkpoint reset hides death UI")
 	_expect(_count_playing_audio(audio.sounds) == 0, "checkpoint reset stops procedural combat audio")

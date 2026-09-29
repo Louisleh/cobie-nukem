@@ -1,0 +1,27 @@
+{
+  "status": "PASS",
+  "kind": "sampled_automated_native_motion",
+  "seconds": 5,
+  "source_sha256": "b7c1a2be5314b938bd6ae2cef1e75031c3f520c5e390da29a22fd1433b13253d",
+  "samples": 50,
+  "png_bytes": 32904312,
+  "wall_seconds": 9.601147959008813,
+  "command": [
+    "/opt/homebrew/bin/godot",
+    "--path",
+    "/Users/orion/Desktop/Hermes Files/projects/cobie-nukem",
+    "--resolution",
+    "1280x720",
+    "--fixed-fps",
+    "30",
+    "--script",
+    "res://tools/evidence/salmon_opening_probe.gd",
+    "--",
+    "--output=/var/folders/dy/05pk38515m51wkpphq8__lh80000gn/T/cobie-opening-probe-xotx9csq/frames",
+    "--seconds=5"
+  ],
+  "engine_version": "4.7.1.stable.official.a13da4feb",
+  "user_data_and_save_roots_isolated": true,
+  "human_acceptance": false,
+  "canonical_WCB008L_evidence": false
+}

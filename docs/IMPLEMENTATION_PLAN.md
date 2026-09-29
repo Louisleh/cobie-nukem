@@ -43,6 +43,24 @@ WCB-000 governance/PRD
 
 WCB-002, WCB-003, and the non-overlapping halves of WCB-004 may run in parallel after WCB-001. WCB-006–008 may use isolated writers only after WCB-005 freezes route/collision ownership.
 
+## WCB-ENV — 2026-09 workstation recovery and iteration environment
+
+Owner-approved setup program, started 2026-09-15. This repairs the environment before resuming the existing game packets; it does not replace the PRD, approve art, or reopen the rejected Movie Maker attempt implicitly. Actual results remain in `docs/WORLD_CLASS_BUILDOUT_LOG.md`.
+
+| Phase | Scope | Exit evidence |
+| --- | --- | --- |
+| ENV-1 | Safe storage recovery, exact templates, read-only workstation doctor, fresh functional/export baseline, reconcile continuation state | Doctor tests, real import/release tests, fresh Web/macOS exports and hashes; storage warnings and protected-instruction approval reported separately |
+| ENV-2 | Scoped Hermes/Codex access to existing Blender/Godot/Material Maker workflows; optional audited local editor/browser bridges | Real Python asset probe, Godot import/runtime inspection, named input and screenshot probe, console readback, shutdown and export exclusion; no unrelated global model/profile changes |
+| ENV-3 | New bounded non-Movie-Maker evidence strategy for WCB-008L | Short non-evidence probe first; independent wall-time/frame/byte/disk/process limits; source-bound continuous run and durable matched captures only after clean probe |
+| ENV-4 | One existing Rain City encounter quality pilot | Matched before/after environment, Pawstol and existing-enemy evidence; preserved collision/navigation/balance; source/provenance and native/Web budget checks |
+| ENV-5 | Browser-first plus native iPhone/iPad preparation and device acceptance | Explicit iOS preset and signing setup, fresh native build, desktop/mobile Safari tests, physical device model/OS/thermal/touch evidence; human review remains mandatory |
+
+ENV-1 remains partially closed by the 2026-09-15 receipt and its Telegram-authorized ownership follow-up. The protected `AGENTS.md` migration now assigns orchestration, review and integration to Astra (`gpt-6-astra` through Hermes), superseding historical GPT-5.6/Sol ownership references only; worker restrictions and all safety, provenance and human/device gates remain unchanged. The earlier Desktop approval timeout is retained in the ledger as history. Storage headroom remains open. Native iOS setup is owner-approved; minimum physical device models and Apple signing identity remain unknown.
+
+Use `python3 tools/workstation_doctor.py --ios` for read-only prerequisites. `--require-headroom` fails below the chosen 20 GiB high-workload reserve; ordinary mode warns below that reserve and fails below 6 GiB. This check does not replace fresh tests, exports, browser inspection, or physical devices. Optional MCP health remains a separate gate.
+
+ENV-2A is verified by `docs/evidence/environment-20260915/ENV-2A.md`: restored/audited Godot bridge, bounded synthetic editor/runtime probe and narrow Hermes registration. ENV-2B still owns Codex/ChatGPT discovery and Blender workflow verification. Do not confuse the synthetic probe with game or device evidence.
+
 ## Work packets
 
 ### WCB-000 — PRD, governance, and continuity
@@ -216,12 +234,13 @@ The 2026-07-27 owner direction makes the startup screen plus Levels 1–2 the op
 - **Owned paths:** exact Salmon Creek pacing/presentation resources, first-30-second test/capture adapters, and their focused tests, frozen in the buildout log before a writer starts.
 - **Acceptance:** one reproducible 0–30 second run exposes the hero, immediate weapon affordance, the rule-break joke, first enemy contact, and the equipment-shed route cue while preserving mission identity, enemy/weapon breadth, route topology, save/progression semantics, and native/Web budgets. Human learning, humor, combat, and art judgment remain open.
 
-**WCB-008L — Rain City wetness/readability completion**
+**WCB-008L — Rain City 90-second production gauntlet**
 
-- **Status:** Pending WCB-008J; retains `a1e51c2` as an unapproved parameter-only candidate.
-- **Owner:** One visual/presentation writer.
-- **Owned paths:** the exact Rain City material/presentation families and focused tests named in the packet freeze. WCB-007 boss, route collision/navigation, progression, and other missions remain frozen.
-- **Acceptance:** selective wetness and readable value separation improve the five bound non-boss views at all four canonical aspects without universal gloss, route/HUD clipping, native performance regression, or weakening capture receipts. District identity, enemy/viewmodel readability, humor, motion, photosensitivity, target-Mac, and physical-iPad quality remain human gates.
+- **Status:** **Blocked at M1R and stopped** on clean canonical source `21b406f`; contract remains frozen in `docs/work_packets/wcb008l/PRODUCTION_GAUNTLET.md` and the fail-closed receipt is `docs/work_packets/wcb008l/M1R_CAPTURE_BLOCKER.md`. Two bounded rendered probes proved process/disk containment but retained Movie Maker shader/RID teardown diagnostics, so the additive candidate was rejected, the canonical 90-second run was not launched, and M2–M5 remain frozen. WCB-008K remains honestly open for its rejected continuous-evidence continuation; no concurrent writer may run.
+- **Owner:** GPT-5.6-sol/high architect, reviewer, integrator, art director, and final claimant; explicitly pinned GPT-5.3-Codex-Spark workers receive bounded, sequential, non-overlapping packets.
+- **Milestones:** contract/baseline freeze; truthful 90-second input-driven baseline evidence; authored Downtown-to-waterfront environment/material/light uplift; bounded Pawstol/combat-feedback uplift; one existing enemy's deterministic Blender-to-directional-atlas and debug-only runtime-3D A/B; integrated native/Web evidence and human-review packet. GPT/Spark capacity is checked after every two major milestones.
+- **Owned paths:** exact paths are frozen per milestone in the gauntlet. Environment presentation, combat presentation, and one-enemy source/runtime paths never have concurrent writers. WCB-007 boss, route collision/navigation, progression, damage/balance, enemy/weapon breadth, other missions, release identity, and BETA status remain frozen.
+- **Acceptance:** the production candidate scores at least 82/100 with no category below 70%, passes milestone mechanical/performance/provenance gates, produces source-bound matched four-aspect stills plus a truthful 90-second automated moving run, and is a clear bounded improvement under fresh artifact criticism. Selective wetness avoids universal gloss; combat feedback preserves authoritative aim/damage; production retains high-resolution 2.5D. Human identity, art taste, humor, feel, mix, comfort, photosensitivity, target-Mac, browser, iPad, and controller approval remain open.
 
 ### WCB-009 — Rain City integrated evidence and replication selection
 

@@ -56,7 +56,7 @@ func _run() -> void:
 	var projectile := preload("res://scenes/weapons/fetch_projectile.tscn").instantiate() as FetchProjectile
 	root.add_child(projectile)
 	projectile.set_golden_trail(second_fetch.golden_trail_enabled)
-	_expect((projectile.get_node("GoldenTrail") as GPUParticles3D).emitting, "Golden Fetch Trail emits bounded projectile particles")
+	_expect((projectile.get_node("GoldenTrail") as CPUParticles3D).emitting, "Golden Fetch Trail emits bounded projectile particles")
 	projectile.queue_free()
 	player.queue_free(); second_player.queue_free()
 	await process_frame

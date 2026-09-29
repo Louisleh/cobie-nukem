@@ -87,6 +87,11 @@ func _initialize() -> void:
 		elif child is LevelCheckpoint: checkpoints += 1
 		elif child is GoldenBallFinale: finale += 1
 	check(doors >= 4, "Expected four progression gates")
+	var tunnel_gate := level.get_node_or_null("Interactables/TunnelGate") as LevelDoor
+	var shed_switch := level.get_node_or_null("Interactables/LevelSwitch") as LevelSwitch
+	check(tunnel_gate != null and tunnel_gate.is_locked and tunnel_gate.get_interaction_label().contains("SWITCH BACK LEFT"), "Tunnel gate labels its existing switch from the approach")
+	if tunnel_gate != null and shed_switch != null:
+		check(shed_switch.position.x < tunnel_gate.position.x - 3.0 and shed_switch.position.z > tunnel_gate.position.z + 3.0, "Directional tunnel-gate hint points to a real back-left shed switch")
 	check(signs >= 7, "Environmental joke/sign density is below requirement")
 	check(checkpoints == 1, "Exactly one checkpoint expected")
 	check(finale == 1, "Golden Ball finale missing")
@@ -112,6 +117,18 @@ func _initialize() -> void:
 		check(is_equal_approx(float(v5_checkpoint.get("player_state", {}).get("armor", 0.0)), 17.0), "Salmon checkpoint persists player armor")
 	player.health_armor.health = 1.0
 	level.restart_from_checkpoint()
+	check(level.current_zone == &"forbidden_field", "Start checkpoint Retry restores field zone identity")
+	var reset_actors: Array = level._encounter_runner.active.get(&"forbidden_field", {}).get("actors", [])
+	check(reset_actors.size() == 3, "Checkpoint restart does not respawn the active encounter")
+	var authored_positions: Array[Vector3] = [Vector3(-5, 2, -4), Vector3(5, 2, -9), Vector3(0, 0, -14)]
+	for actor in reset_actors:
+		var at_authored_spawn := false
+		for authored in authored_positions:
+			if actor.position.distance_to(authored) < 0.05:
+				at_authored_spawn = true
+				break
+		check(at_authored_spawn and actor.process_mode == Node.PROCESS_MODE_DISABLED,
+			"Restarted enemy must begin staged within 5 cm of its authored spawn: %s" % actor.position)
 	var runtime_loot_interaction := _find_interaction_by_kind(level, WorldInteractionDefinition.Kind.LOOT_CONTAINER)
 	var actor_children_before := level.get_node("Actors").get_children()
 	if runtime_loot_interaction != null:
@@ -163,11 +180,6 @@ func _initialize() -> void:
 	await process_frame
 	check(player.health_armor.health == player.health_armor.max_health, "Checkpoint restart does not restore player health")
 	check(player.health_armor.invulnerable_remaining > 0.0, "Checkpoint restart lacks immediate spawn protection")
-	var reset_actors: Array = level._encounter_runner.active.get(&"forbidden_field", {}).get("actors", [])
-	check(reset_actors.size() == 3, "Checkpoint restart does not respawn the active encounter")
-	var authored_positions: Array[Vector3] = [Vector3(-5, 2, -4), Vector3(5, 2, -9), Vector3(0, 0, -14)]
-	for actor in reset_actors:
-		check(actor.position in authored_positions, "Restarted enemy did not return to an authored spawn")
 	var compliance_trigger: LevelZoneTrigger
 	for child in level.get_node("Interactables").get_children():
 		if child is LevelZoneTrigger and child.zone_id == &"compliance_lab":
@@ -223,13 +235,16 @@ func _initialize() -> void:
 		check(not game_state.continue_requested, "Continue request flag is consumed during checkpoint restore")
 		check(game_state.run_stats.get("checkpoint_id", "") == "lab_entry", "Continue restore applies sanitized checkpoint identity to run stats")
 		check(continue_level.checkpoint_position.is_equal_approx(EpisodeOneLevel.CHECKPOINT_POSITIONS[&"lab_entry"]), "Legacy Salmon checkpoint remaps obsolete coordinates to its authored anchor")
+		continue_level.restart_from_checkpoint()
+		check(continue_level.current_zone == &"compliance_lab", "Lab checkpoint Retry restores lab zone identity")
 		continue_level.queue_free()
 		save_manager.delete_slot(&"checkpoint")
 	else:
 		check(false, "SaveManager and GameState are available for continue checkpoint identity coverage")
-	level.free()
-	await process_frame
-	await process_frame
+	for audio in level.find_children("*", "ProceduralAudio", true, false):
+		audio.stop_all()
+	level.queue_free()
+	for frame in 12: await process_frame
 	finish()
 
 

@@ -1,0 +1,57 @@
+{
+  "status": "PASS",
+  "kind": "sampled_automated_native_motion",
+  "seconds": 5,
+  "source_sha256": "087579b407e684de6685a0c29059c9158650d3735a0bb2e0e29cb195cf5b2dff",
+  "samples": 50,
+  "fire_input": {
+    "action": "fire_primary",
+    "events": [
+      {
+        "button_index": 1,
+        "frame": 90,
+        "pressed": true
+      },
+      {
+        "button_index": 1,
+        "frame": 93,
+        "pressed": false
+      }
+    ],
+    "method": "Input.parse_input_event"
+  },
+  "primary_fire": {
+    "ammo_cost": 1,
+    "final_ammo": 14,
+    "fired_events": [
+      {
+        "ammo_after": 14,
+        "process_frame": 103,
+        "weapon_id": "pawstol"
+      }
+    ],
+    "initial_ammo": 15,
+    "weapon_id": "pawstol"
+  },
+  "png_bytes": 29494708,
+  "wall_seconds": 8.364170375,
+  "command": [
+    "/opt/homebrew/bin/godot",
+    "--path",
+    "/Users/orion/Desktop/Hermes Files/projects/cobie-nukem",
+    "--resolution",
+    "1280x720",
+    "--fixed-fps",
+    "30",
+    "--script",
+    "res://tools/evidence/salmon_opening_probe.gd",
+    "--",
+    "--output=/var/folders/dy/05pk38515m51wkpphq8__lh80000gn/T/cobie-opening-probe-6bdyfhcd/frames",
+    "--seconds=5",
+    "--tablet"
+  ],
+  "engine_version": "4.7.1.stable.official.a13da4feb",
+  "user_data_and_save_roots_isolated": true,
+  "human_acceptance": false,
+  "canonical_WCB008L_evidence": false
+}

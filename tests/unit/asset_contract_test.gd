@@ -97,16 +97,64 @@ func _test_opening_foundry_asset() -> void:
 	get_root().add_child(instance)
 	await process_frame
 	var meshes := instance.find_children("*", "MeshInstance3D", true, false)
-	_expect(meshes.size() == 8, "opening foundry consolidates 188 authored parts into eight material batches")
+	_expect(meshes.size() == 8, "opening foundry consolidates 251 authored parts into eight material batches")
+	var crest_parts: Array[String] = []
+	var crest_batches := 0
+	var apex_present := false
+	var front_face_present := false
+	var left_eave_present := false
+	var right_eave_present := false
+	var canopy_height := 0.0
+	var high_canopy_clear_of_field := true
+	var preserved_bevel_batches := 0
 	for mesh_node in meshes:
 		var mesh_instance := mesh_node as MeshInstance3D
 		_expect(mesh_instance.mesh != null and mesh_instance.mesh.get_surface_count() == 1, "each opening foundry material batch exports as exactly one draw surface")
-	_expect(instance.find_children("*", "StaticBody3D", true, false).is_empty(), "opening foundry remains presentation-only and cannot replace gameplay collision")
+		if mesh_instance.mesh == null or mesh_instance.mesh.get_surface_count() != 1:
+			continue
+		var extras := mesh_instance.get_meta(&"extras", {}) as Dictionary
+		var bevel_owner := String(extras.get("bevel_source_part", ""))
+		if bevel_owner == "BleacherSeat_0" or bevel_owner == "DugoutRoof":
+			var expected_width := 0.035 if bevel_owner == "BleacherSeat_0" else 0.05
+			_expect(is_equal_approx(float(extras.get("bevel_width", 0.0)), expected_width), "opening batch preserves its baseline bevel width")
+			preserved_bevel_batches += 1
+		var names := String(extras.get("shed_crest_parts", ""))
+		if not names.is_empty():
+			crest_batches += 1
+			_expect(String(extras.get("shed_crest_bounds_godot", "")) == "x=-6.55..6.55;y=4.05..6.83;z=-19.61..-19.03", "crest metadata documents its field-facing roof-lip envelope")
+			for name in names.split(",", false):
+				crest_parts.append(name)
+			var surface_material := mesh_instance.mesh.surface_get_material(0) as BaseMaterial3D
+			_expect(surface_material != null and surface_material.transparency == BaseMaterial3D.TRANSPARENCY_DISABLED, "crest reuses an opaque material batch")
+		var arrays := mesh_instance.mesh.surface_get_arrays(0)
+		var points := arrays[Mesh.ARRAY_VERTEX] as PackedVector3Array
+		var normals := arrays[Mesh.ARRAY_NORMAL] as PackedVector3Array
+		for index in points.size():
+			var world_point := mesh_instance.global_transform * points[index]
+			canopy_height = maxf(canopy_height, world_point.y)
+			if world_point.y > 8.4 and absf(world_point.x) <= 14.0:
+				high_canopy_clear_of_field = false
+			if absf(world_point.z + 19.38) > 0.05:
+				continue
+			if absf(world_point.x) < 0.03 and absf(world_point.y - 6.55) < 0.03:
+				apex_present = true
+				if index < normals.size() and (mesh_instance.global_transform.basis * normals[index]).normalized().dot(Vector3.BACK) > 0.9:
+					front_face_present = true
+			if world_point.x < -5.9 and world_point.x > -6.4 and absf(world_point.y - 4.78) < 0.05:
+				left_eave_present = true
+			if world_point.x > 5.9 and world_point.x < 6.4 and absf(world_point.y - 4.78) < 0.05:
+				right_eave_present = true
+	_expect(instance.find_children("*", "CollisionObject3D", true, false).is_empty(), "opening foundry remains presentation-only, with no collision object of any type")
 	var source_parts := 0
 	for child in instance.find_children("*", "", true, false):
 		var extras := child.get_meta(&"extras", {}) as Dictionary
 		source_parts += int(extras.get("source_part_count", 0))
-	_expect(source_parts == 188, "opening foundry retains its complete source-part vocabulary in import metadata")
+	_expect(source_parts == 251, "opening foundry retains all 251 source parts in import metadata")
+	_expect(canopy_height >= 11.9 and canopy_height <= 12.2 and high_canopy_clear_of_field, "layered evergreen crowns rise above the perimeter while staying outside the playable field")
+	_expect(preserved_bevel_batches == 2, "new perimeter parts must not replace the existing cedar/charcoal bevel owners")
+	crest_parts.sort()
+	_expect(crest_batches == 3 and crest_parts == ["ShedCrestCedarUprightLeft", "ShedCrestCedarUprightRight", "ShedCrestCharcoalInfill", "ShedCrestPitchedBeamLeft", "ShedCrestPitchedBeamRight"], "five crest parts reuse exactly the charcoal, cream, and cedar batches")
+	_expect(apex_present and left_eave_present and right_eave_present and front_face_present, "imported pitched charcoal infill has a field-facing front above the gate: apex=%s left=%s right=%s front=%s" % [apex_present, left_eave_present, right_eave_present, front_face_present])
 	instance.queue_free()
 	await process_frame
 
@@ -164,7 +212,7 @@ func _test_salmon_sign_faces() -> void:
 	kit.build(parent)
 	await process_frame
 	var labels := kit.find_children("*", "Label3D", true, false)
-	_expect(labels.size() == 5, "Salmon Creek presentation retains five authored landmark labels")
+	_expect(labels.size() == 6, "Salmon Creek presentation retains six authored landmark labels")
 	var scoreboard: Label3D
 	for candidate in labels:
 		var label := candidate as Label3D

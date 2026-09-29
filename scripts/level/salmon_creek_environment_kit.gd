@@ -41,7 +41,10 @@ func _build_shed_landmarks() -> void:
 	for index in 3:
 		_cylinder("VentStack", Vector3(-5.4 + index * 1.0, 2.0, -36.5), 0.12, 2.4, &"metal", Color("839095"))
 	_box("ShedSafetyStripe", Vector3(0, 0.035, -39.6), Vector3(12.0, 0.04, 0.16), &"hazard", Color("e0a632"))
-	_label("EQUIPMENT SHED\nAUTHORIZED GOOD DOGS ONLY", Vector3(-2.0, 3.15, -34.8), Vector3.ZERO, 44, Color("f4dda0"))
+	# Name the destination on the field-facing charcoal gable. Keep the smaller
+	# authorization joke inside, where it can be read after reaching the gate.
+	_label("EQUIPMENT SHED", Vector3(0.0, 5.18, -19.05), Vector3.ZERO, 88, Color("f4dda0"), 0.0073)
+	_label("AUTHORIZED GOOD DOGS ONLY", Vector3(-2.0, 3.15, -34.8), Vector3.ZERO, 44, Color("f4dda0"))
 	_omni_light("ShedWorkLight", Vector3(-2.0, 3.5, -33.8), Color("ffdc97"), 2.8, 12.0)
 	_omni_light("GeneratorStatusLight", Vector3(-4.7, 1.8, -36.5), Color("ff8a38"), 1.3, 5.0)
 
@@ -109,8 +112,8 @@ func _sphere(node_name: String, position_value: Vector3, radius: float, surface:
 	var mesh := SphereMesh.new(); mesh.radius = radius; mesh.height = radius * 2.0; mesh.radial_segments = 16; mesh.rings = 8; mesh.material = _material(surface, color); node.mesh = mesh; add_child(node)
 
 
-func _label(text: String, position_value: Vector3, rotation_value: Vector3, font_size: int, color: Color) -> void:
-	var label := Label3D.new(); label.text = text; label.position = position_value; label.rotation_degrees = rotation_value; label.font_size = font_size; label.pixel_size = 0.0028; label.modulate = color; label.outline_size = 6; label.double_sided = false; add_child(label)
+func _label(text: String, position_value: Vector3, rotation_value: Vector3, font_size: int, color: Color, pixel_size := 0.0028) -> void:
+	var label := Label3D.new(); label.text = text; label.position = position_value; label.rotation_degrees = rotation_value; label.font_size = font_size; label.pixel_size = pixel_size; label.modulate = color; label.outline_size = 6; label.double_sided = false; add_child(label)
 
 
 func _omni_light(node_name: String, position_value: Vector3, color: Color, energy: float, range_value: float) -> void:

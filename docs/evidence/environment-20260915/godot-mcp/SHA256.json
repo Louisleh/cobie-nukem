@@ -1,0 +1,10 @@
+{
+  "tools/godot_mcp.py": "fcdbad49ac811f61818c581e783ca9e7bfc05ae4305cc10addd05b139a9c74ea",
+  "tools/godot_mcp_probe.mjs": "5b44750730d978b08f4ffc1224fcae6c156c4f54183fe44f962aa17b6e18837e",
+  "tools/tests/test_godot_mcp.py": "410e14898e0716ff748c5987a5d95d75366cde1745998de28549c8e598482ea3",
+  "docs/evidence/environment-20260915/godot-mcp/client.log": "6437be51537949c0c143a9c771cc9c69307bd9d5112233cc4458a1db00b0d23e",
+  "docs/evidence/environment-20260915/godot-mcp/mcp-result.json": "0e6845564ab81e3627dfd4c838a709b3fe6af0b086d8cde265abf1d8da1a0e9c",
+  "docs/evidence/environment-20260915/godot-mcp/probe.png": "23068312f41336f9ba09594b372f45bbb9a9e72c824523f0b4214fba92f5ec70",
+  "docs/evidence/environment-20260915/godot-mcp/editor.log": "9cfa643ed56f92cf5d471e05a5fac610a857ab1b4282c073ecc318d9098dfdab",
+  "docs/evidence/environment-20260915/godot-mcp/import.log": "c81ad326eaf3f21c93c627457a48c8c635d3f1c45eb355d70e80e2981e8a17dd"
+}

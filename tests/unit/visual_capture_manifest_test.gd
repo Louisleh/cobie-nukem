@@ -44,9 +44,15 @@ var safe_filename_pattern: RegEx = RegEx.new()
 
 
 func _initialize() -> void:
+	call_deferred("_run")
+
+
+func _run() -> void:
 	safe_filename_pattern.compile("^[a-z0-9_]+_[0-9]+x[0-9]+\\.png$")
 	_validate_manifest_json()
 	_validate_route_actor_cleanup()
+	await _validate_route_pose_stability()
+	await process_frame
 	if failures.is_empty():
 		print("VISUAL CAPTURE MANIFEST TEST: PASS")
 		quit(0)
@@ -311,3 +317,32 @@ func _validate_route_actor_cleanup() -> void:
 		failures.append("Route actor cleanup must queue non-player actors for deletion")
 	target.queue_free()
 	capture.free()
+
+
+func _validate_route_pose_stability() -> void:
+	var target := CaptureTarget.new()
+	var player := preload("res://scenes/player/cobie_player.tscn").instantiate() as CobiePlayer
+	target.player = player
+	target.add_child(player)
+	root.add_child(target)
+	await process_frame
+	var capture := VISUAL_DIRECT_CAPTURE_SCRIPT.new()
+	capture.set("_target", target)
+	var pose := VISUAL_DIRECT_CAPTURE_SCRIPT.rain_city_route_stage_pose("rain_city_downtown")
+	var stage := [pose.player_origin, pose.look_target, &"downtown_alley", "DOWNTOWN", "SEAWALL"]
+	capture.call("_stage_rain_city_route", player, stage)
+	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+	var original_forward := -player.camera.global_basis.z.normalized()
+	var motion := InputEventMouseMotion.new()
+	motion.relative = Vector2(160.0, 30.0)
+	root.push_input(motion, true)
+	await process_frame
+	var forward := -player.camera.global_basis.z.normalized()
+	if forward.dot(original_forward) < 0.999:
+		failures.append("Staged Rain City camera must ignore desktop mouse motion after pose freeze")
+	if player.is_processing_input() or player.is_processing_unhandled_input():
+		failures.append("Staged route player must stop live input delivery while preserving its rendered children")
+	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+	target.queue_free()
+	capture.free()
+	await process_frame

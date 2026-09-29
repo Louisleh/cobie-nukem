@@ -7,8 +7,20 @@ var _routing := false
 
 func _ready() -> void:
 	visible = false
+	get_viewport().size_changed.connect(_layout_panel)
+	_layout_panel()
 	%RetryButton.pressed.connect(_retry)
 	%MainMenuButton.pressed.connect(func() -> void: _route("res://scenes/menus/main_menu.tscn"))
+
+func _layout_panel() -> void:
+	var viewport := get_viewport()
+	var physical_size := Vector2(viewport.size)
+	if physical_size.y <= 0.0:
+		return
+	var panel := $Panel as Control
+	var canvas_height := float(viewport.content_scale_size.y)
+	var visible_width := minf(float(viewport.content_scale_size.x), canvas_height * physical_size.x / physical_size.y)
+	panel.position.x = maxf(0.0, (visible_width - panel.size.x) * 0.5)
 
 func show_death(quips: Array[String] = []) -> void:
 	_retrying = false

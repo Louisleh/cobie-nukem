@@ -107,6 +107,7 @@ run_godot_test res://tests/integration/mission_runtime_contract_test.gd
 run_godot_test res://tests/integration/off_leash_mode_test.gd
 run_godot_test res://tests/integration/test_episode_1_level.gd
 run_godot_test res://tests/integration/salmon_creek_encounter_pacing_test.gd
+run_godot_test res://tests/integration/groundskeeper_charge_counterplay_test.gd
 run_godot_test res://tests/integration/vancouver_content_contract_test.gd
 run_godot_test res://tests/integration/vancouver_route_foundation_test.gd
 run_godot_test res://tests/integration/vancouver_interaction_catalog_test.gd

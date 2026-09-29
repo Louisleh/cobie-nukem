@@ -112,7 +112,10 @@ func _difficulty_profile() -> DifficultyProfile:
 func _consume() -> void:
 	_available = false
 	visible = false
-	monitoring = false
+	# Collection may occur inside Area3D.body_entered, where changing the
+	# physics monitoring state synchronously is forbidden. _available is the
+	# immediate guard until the deferred state change is applied.
+	set_deferred("monitoring", false)
 	if definition.respawns:
 		var timer := Timer.new()
 		timer.name = "RespawnTimer"
