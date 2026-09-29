@@ -1,6 +1,7 @@
 extends Node
 
 var _target: Node
+var _finishing := false
 var _frame := 0
 var _cleanup_frame := 60
 var _staging_id := ""
@@ -51,12 +52,12 @@ func _ready() -> void:
 			Engine.physics_ticks_per_second = clampi(int(argument.trim_prefix("--physics-tps=")), 10, 240)
 	if not target_path.begins_with("res://"):
 		push_error("Visual direct capture requires --target-scene=res://...")
-		get_tree().quit(1)
+		_request_exit(1)
 		return
 	var packed := load(target_path) as PackedScene
 	if packed == null:
 		push_error("Visual direct capture could not load %s" % target_path)
-		get_tree().quit(1)
+		_request_exit(1)
 		return
 	_target = packed.instantiate()
 	if target_path.ends_with("/title_screen.tscn"):
@@ -82,6 +83,8 @@ func _apply_capture_size(size_value: String) -> void:
 
 
 func _process(_delta: float) -> void:
+	if _finishing:
+		return
 	if get_tree().paused:
 		get_tree().paused = false
 	_suppress_focus_pause()
@@ -93,7 +96,7 @@ func _process(_delta: float) -> void:
 		_stop_target_audio()
 		_target.queue_free()
 	if _frame >= _cleanup_frame + 12:
-		get_tree().quit(0)
+		_request_exit(0)
 	_frame += 1
 
 
@@ -109,9 +112,10 @@ func _stop_target_audio() -> void:
 		return
 	for sound in _target.find_children("*", "ProceduralAudio", true, false):
 		sound.stop_all()
-	for player in _target.find_children("*", "AudioStreamPlayer", true, false):
-		player.stop()
-		player.stream = null
+	for type_name in ["AudioStreamPlayer", "AudioStreamPlayer2D", "AudioStreamPlayer3D"]:
+		for player in _target.find_children("*", type_name, true, false):
+			player.stop()
+			player.stream = null
 
 
 func _stage_target_when_ready() -> void:
@@ -126,7 +130,7 @@ func _stage_target_when_ready() -> void:
 		if _stage_rain_city_towmaster(player):
 			_staged = true
 		else:
-			get_tree().quit(1)
+			_request_exit(1)
 
 
 func _stage_rain_city_route(player: Node3D, stage: Array) -> void:
@@ -139,6 +143,10 @@ func _stage_rain_city_route(player: Node3D, stage: Array) -> void:
 		(player as CollisionObject3D).collision_mask = 0
 	player.set_process(false)
 	player.set_physics_process(false)
+	# Freezing simulation does not disable event callbacks. A captured desktop
+	# mouse can otherwise rotate the staged camera between setup and receipt.
+	player.set_process_input(false)
+	player.set_process_unhandled_input(false)
 	player.physics_interpolation_mode = Node.PHYSICS_INTERPOLATION_MODE_OFF
 	var head := player.get_node_or_null("Head") as Node3D
 	if head != null:
@@ -146,7 +154,7 @@ func _stage_rain_city_route(player: Node3D, stage: Array) -> void:
 	var camera := player.get_node_or_null("Head/Camera") as Camera3D
 	if camera == null:
 		push_error("Rain City route capture requires the production player camera")
-		get_tree().quit(1)
+		_request_exit(1)
 		return
 	camera.physics_interpolation_mode = Node.PHYSICS_INTERPOLATION_MODE_OFF
 	var look_target: Vector3 = stage[1]
@@ -154,7 +162,7 @@ func _stage_rain_city_route(player: Node3D, stage: Array) -> void:
 	flat_direction.y = 0.0
 	if flat_direction.length_squared() <= 0.0001:
 		push_error("Rain City route capture has an invalid look target")
-		get_tree().quit(1)
+		_request_exit(1)
 		return
 	player.rotation = Vector3(0.0, -atan2(flat_direction.x, -flat_direction.z), 0.0)
 	camera.look_at(look_target, Vector3.UP)
@@ -190,7 +198,7 @@ func _queue_route_frame_receipt() -> void:
 		return
 	if not _receipt_image_path.is_absolute_path():
 		push_error("Rain City route capture requires an absolute --receipt-image path")
-		get_tree().quit(1)
+		_request_exit(1)
 		return
 	_route_capture_requested = true
 	RenderingServer.frame_post_draw.connect(_capture_route_frame_receipt.bind(_frame), CONNECT_ONE_SHOT)
@@ -202,7 +210,7 @@ func _capture_route_frame_receipt(script_frame: int) -> void:
 	var image := get_viewport().get_texture().get_image()
 	if image == null or image.is_empty():
 		push_error("Rain City route capture could not read the rendered viewport")
-		get_tree().quit(1)
+		_request_exit(1)
 		return
 	var window_size := get_window().size
 	var image_size := image.get_size()
@@ -212,18 +220,18 @@ func _capture_route_frame_receipt(script_frame: int) -> void:
 			"Rain City route capture dimensions drifted (requested=%s window=%s image=%s borderless=%s)"
 			% [_capture_size, window_size, image_size, window_borderless]
 		)
-		get_tree().quit(1)
+		_request_exit(1)
 		return
 	var save_error := image.save_png(_receipt_image_path)
 	if save_error != OK:
 		push_error("Rain City route capture could not save receipt image: %s" % error_string(save_error))
-		get_tree().quit(1)
+		_request_exit(1)
 		return
 	var player := _target.get("player") as Node3D
 	var camera := player.get_node_or_null("Head/Camera") as Camera3D if player != null else null
 	if player == null or camera == null or not player.is_ancestor_of(camera):
 		push_error("Rain City route capture lost the production player camera")
-		get_tree().quit(1)
+		_request_exit(1)
 		return
 	var player_transform := player.get_global_transform_interpolated()
 	var camera_transform := camera.get_global_transform_interpolated()
@@ -241,7 +249,7 @@ func _capture_route_frame_receipt(script_frame: int) -> void:
 			"Rain City route capture camera pose mismatch for %s (player_error=%.6f camera_error=%.6f direction_dot=%.6f fov=%.3f active=%s)"
 			% [_staging_id, position_error, camera_position_error, direction_dot, camera.fov, active_camera_under_player]
 		)
-		get_tree().quit(1)
+		_request_exit(1)
 		return
 	var receipt := {
 		"staging_id": _staging_id,
@@ -357,3 +365,22 @@ func _stage_rain_city_towmaster(player: Node3D) -> bool:
 	hud.set_boss_state("MUNICIPAL TOWMASTER", &"case_closed", 0.25)
 	hud.show_boss_phase_caption("CASE CLOSED // CITATION CORE EXPOSED", 3.0)
 	return true
+
+
+func _request_exit(exit_code: int) -> void:
+	if _finishing:
+		return
+	_finishing = true
+	_finish.call_deferred(exit_code)
+
+
+func _finish(exit_code: int) -> void:
+	# Failed pose/image receipts need the same cleanup as successful captures.
+	# Defer out of frame_post_draw before removing the scene and draining audio.
+	if is_instance_valid(_target):
+		_stop_target_audio()
+		_target.queue_free()
+	for frame in 2:
+		await get_tree().process_frame
+	await get_tree().create_timer(0.25).timeout
+	get_tree().quit.call_deferred(exit_code)
