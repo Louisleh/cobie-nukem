@@ -34,6 +34,7 @@ func _initialize() -> void:
 	await _test_opening_foundry_asset()
 	await _test_mount_hood_foundry_asset()
 	await _test_rain_city_runtime_materials()
+	await _test_slice_material_warmup()
 	await _test_salmon_sign_faces()
 	await _test_weapon_viewmodels()
 	await _test_production_pipeline_pilot()
@@ -288,3 +289,22 @@ func _test_production_pipeline_pilot() -> void:
 func _expect(condition: bool, message: String) -> void:
 	if not condition:
 		failures.append(message)
+
+
+func _test_slice_material_warmup() -> void:
+	var prewarmer := RuntimePipelinePrewarmer.new()
+	root.add_child(prewarmer)
+	prewarmer.warm(PackedStringArray(["res://assets/models/environment/rain_city_slice_landmark.glb"]))
+	var viewport := prewarmer.get_node("PipelineWarmupViewport") as SubViewport
+	var camera := viewport.get_camera_3d()
+	var meshes := viewport.find_children("*", "MeshInstance3D", true, false)
+	_expect(meshes.size() == 6 and camera != null, "Slice warmup submits all six material batches to its render viewport")
+	for candidate in meshes:
+		var mesh_instance := candidate as MeshInstance3D
+		var bounds: AABB = mesh_instance.global_transform * mesh_instance.get_aabb()
+		_expect(camera.is_position_in_frustum(bounds.get_center()), "World-coordinate Slice batches are framed in the warmup camera")
+	await prewarmer.completed
+	await process_frame
+	_expect(not prewarmer.has_node("PipelineWarmupViewport"), "Slice warmup releases its temporary viewport before gameplay")
+	prewarmer.queue_free()
+	await process_frame

@@ -49,6 +49,7 @@ func _warm_runtime_pipelines() -> void:
 		"res://scenes/enemies/umbrella_shield_enforcer.tscn",
 		"res://scenes/enemies/compliance_gull.tscn",
 		"res://scenes/set_pieces/citation_convoy.tscn",
+		"res://assets/models/environment/rain_city_slice_landmark.glb",
 	]))
 	await prewarmer.completed
 	prewarmer.queue_free()
