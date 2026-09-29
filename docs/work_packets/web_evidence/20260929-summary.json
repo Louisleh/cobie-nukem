@@ -1,0 +1,325 @@
+{
+  "baseline": "3c27b3cc61ff7f79fac4ae83e13af0465ac0d08c",
+  "browser": "Chrome 154.0.8037.59",
+  "device": "Apple M4 Mac mini",
+  "css": [
+    1280,
+    800
+  ],
+  "canvas": [
+    2560,
+    1600
+  ],
+  "dpr": 2,
+  "fps_target": 30,
+  "input": "DOM keyboard/mouse plus trusted CDP keys/canvas click; no pointer lock",
+  "phases": {
+    "after-combat-1": {
+      "samples": 2253,
+      "p95_ms": 34.09999999997672,
+      "p99_ms": 50,
+      "max_ms": 716.7999999999884,
+      "over100ms": 1
+    },
+    "combat-1": {
+      "samples": 872,
+      "p95_ms": 34.29999999998836,
+      "p99_ms": 34.30000000001746,
+      "max_ms": 34.39999999999418,
+      "over100ms": 0
+    },
+    "combat-2": {
+      "samples": 651,
+      "p95_ms": 33.600000000034925,
+      "p99_ms": 34,
+      "max_ms": 34.29999999998836,
+      "over100ms": 0
+    },
+    "entry": {
+      "samples": 1056,
+      "p95_ms": 33.89999999999418,
+      "p99_ms": 34.29999999998836,
+      "max_ms": 5749.100000000006,
+      "over100ms": 4
+    },
+    "entry-2": {
+      "samples": 1687,
+      "p95_ms": 33.40000000002328,
+      "p99_ms": 33.70000000001164,
+      "max_ms": 500,
+      "over100ms": 2
+    },
+    "entry-3": {
+      "samples": 2557,
+      "p95_ms": 34.79999999998836,
+      "p99_ms": 34.90000000002328,
+      "max_ms": 615.4000000000233,
+      "over100ms": 2
+    },
+    "menu": {
+      "samples": 3534,
+      "p95_ms": 33.69999999998254,
+      "p99_ms": 34.10000000000582,
+      "max_ms": 400.1000000000058,
+      "over100ms": 2
+    },
+    "reset-2": {
+      "samples": 839,
+      "p95_ms": 33.70000000001164,
+      "p99_ms": 34.20000000001164,
+      "max_ms": 550.2000000000116,
+      "over100ms": 1
+    }
+  },
+  "longtasks": [
+    {
+      "start": 172392.89999985695,
+      "duration": 335,
+      "phase": "menu"
+    },
+    {
+      "start": 197697.79999995232,
+      "duration": 5754,
+      "phase": "entry"
+    },
+    {
+      "start": 216440.19999980927,
+      "duration": 156,
+      "phase": "entry"
+    },
+    {
+      "start": 216596.29999995232,
+      "duration": 141,
+      "phase": "entry"
+    },
+    {
+      "start": 217104.19999980927,
+      "duration": 130,
+      "phase": "entry"
+    },
+    {
+      "start": 330677.39999985695,
+      "duration": 496,
+      "phase": "entry-2"
+    },
+    {
+      "start": 351391.09999990463,
+      "duration": 180,
+      "phase": "entry-2"
+    },
+    {
+      "start": 417378.5,
+      "duration": 490,
+      "phase": "entry-3"
+    }
+  ],
+  "heaps": {
+    "cobie-menu-after1.heapsnapshot": {
+      "self_bytes": 256651981,
+      "buffer_bytes": 186161406,
+      "wasm_native_bytes": 55043213,
+      "sha256": "831416e4a609fd20ec128c8d315b042af397b7cd4df74fe0a0e044d1318948e2"
+    },
+    "cobie-clean-warm.heapsnapshot": {
+      "self_bytes": 251607106,
+      "buffer_bytes": 181852966,
+      "wasm_native_bytes": 55017689,
+      "sha256": "703a7b956a7898956d93781e1c2261ace1548fca43c97d07feba4c114ee7aeb2"
+    },
+    "cobie-menu-before.heapsnapshot": {
+      "self_bytes": 222979593,
+      "buffer_bytes": 156911480,
+      "wasm_native_bytes": 54346371,
+      "sha256": "ab69231a324b99e2f89196015a476ac3d4289e6de037bc3b2271af2586177d8c"
+    },
+    "cobie-menu-after2.heapsnapshot": {
+      "self_bytes": 278627529,
+      "buffer_bytes": 206388478,
+      "wasm_native_bytes": 55054632,
+      "sha256": "93fb2d8bc9d5ae671be7c8e1db1ce03173604cb7609d4314ba28b46fd2f96fa0"
+    },
+    "cobie-menu-after3.heapsnapshot": {
+      "self_bytes": 279840328,
+      "buffer_bytes": 206388478,
+      "wasm_native_bytes": 55056003,
+      "sha256": "fab2f675df778d189ab5f68f9ac722bbd6a866339d0c9004c20f675e83abadb7"
+    }
+  },
+  "loading": {
+    "loading": {
+      "start": 124.59999990463257,
+      "longTasks": [
+        {
+          "start": 469.5,
+          "duration": 900
+        },
+        {
+          "start": 1636.5999999046326,
+          "duration": 846
+        }
+      ],
+      "frames": [],
+      "canvasReady": 1369.8999998569489
+    },
+    "resources": [
+      {
+        "name": "http://127.0.0.1:8060/index.png",
+        "start": 118.79999995231628,
+        "duration": 2.9000000953674316,
+        "transferSize": 21743,
+        "encoded": 21443
+      },
+      {
+        "name": "http://127.0.0.1:8060/index.js",
+        "start": 118.89999985694885,
+        "duration": 4.1000001430511475,
+        "transferSize": 280115,
+        "encoded": 279815
+      },
+      {
+        "name": "http://127.0.0.1:8060/index.wasm",
+        "start": 146.39999985694885,
+        "duration": 208.60000014305115,
+        "transferSize": 39513391,
+        "encoded": 39513091
+      },
+      {
+        "name": "http://127.0.0.1:8060/index.pck",
+        "start": 146.59999990463257,
+        "duration": 314.60000014305115,
+        "transferSize": 69917500,
+        "encoded": 69917200
+      },
+      {
+        "name": "http://127.0.0.1:8060/index.icon.png",
+        "start": 162.59999990463257,
+        "duration": 5.400000095367432,
+        "transferSize": 6000,
+        "encoded": 5700
+      }
+    ],
+    "wasm": 83689472,
+    "viewport": {
+      "css": [
+        1280,
+        800
+      ],
+      "canvas": [
+        2560,
+        1600
+      ],
+      "dpr": 2
+    },
+    "gpu": "WebKit WebGL"
+  },
+  "packages": {
+    "index.apple-touch-icon.png": {
+      "bytes": 11944,
+      "sha256": "01d4f63e525941e06ce74f5187dad030d20a8d52a07ce365ae4e94af97a3b1f5"
+    },
+    "index.wasm": {
+      "bytes": 39513091,
+      "sha256": "35116f68540ac41acf7d71ea457added91b5e960a9cca3e2acc72918eaf01277"
+    },
+    "index.icon.png": {
+      "bytes": 5700,
+      "sha256": "ad3c35ad0facf487c618204bd98db543034fc95224eadc7f08c7a9ff38d5b3b5"
+    },
+    "index.html": {
+      "bytes": 6605,
+      "sha256": "4e1ab678d6ef8d2bf44c932e82d7fa47249ba67ee22dcd8bc406d0a17db5e031"
+    },
+    "index.png": {
+      "bytes": 21443,
+      "sha256": "3cb4495c0b98dfbe4b663cbf2b6836473572339beb66d902367893162a70be0e"
+    },
+    "index.audio.worklet.js": {
+      "bytes": 7298,
+      "sha256": "5b476a9c9ce642c0ee4256436d1bc31d9c38f868aca0f9a8e2a57c18d2dec2a3"
+    },
+    "index.js": {
+      "bytes": 279815,
+      "sha256": "68586d6daafc93c6e697b3fb258976874aa7459b8931165ebb1dc3c9614cc42c"
+    },
+    "index.audio.position.worklet.js": {
+      "bytes": 2973,
+      "sha256": "be33985bc7160d6bf9646f259cd86b259cd67b02ccb297ee5c44f8ac84327bc8"
+    },
+    "index.pck": {
+      "bytes": 69917200,
+      "sha256": "a0704580922e9244b92fad618aa61a011caec376ebfaac66a4a1db87ad18c060"
+    }
+  },
+  "evidence": {
+    "cobie-menu-after1.heapsnapshot": "831416e4a609fd20ec128c8d315b042af397b7cd4df74fe0a0e044d1318948e2",
+    "cobie-menu.png": "6ac27a9b51949a6926b45a38b10962aa18ed5499e47a43c989e23358f771289e",
+    "cobie-touch-trace.json.gz": "a4aa006792d99fe6a6f35a01f9dcf013fd386176eff668d6f29da4e6a3228704",
+    "cobie-combat-1.png": "274e814cac87c17e35a85f9a68da9fba366444b8c94432ce12d8db83cdf42c7b",
+    "cobie-selector.png": "fae3bf50bcb9abc35f6929095986e3fb949d7aea777c026e141060091b2ad051",
+    "cobie-cold-entry.json.gz": "24306cc74038ba928fab318ccda9f5cfccb9e6ae638445be1c4b1f491d4a3e46",
+    "cobie-clean-warm.heapsnapshot": "703a7b956a7898956d93781e1c2261ace1548fca43c97d07feba4c114ee7aeb2",
+    "cobie-menu-before.heapsnapshot": "ab69231a324b99e2f89196015a476ac3d4289e6de037bc3b2271af2586177d8c",
+    "cobie-cold-loading.json": "ec69fa8f19c0fc5f3bef1c1855a47e0a1f2e18a76757f77aeadc6d22d3220ea7",
+    "cobie-touch-evidence.json": "99608dfdff714832eb28fd5c500e525f48a53b078badd0b461a7a4a86b182c6a",
+    "cobie-combat2.png": "5bfd4fd71e9a24cb1be1119ff70ac931e42536ae38e5db0dc550a0a94e47b3e6",
+    "cobie-evidence2.json": "8e89341164545cca6224593c7b56a2d77f446259e19cbb1851a6680647c5592b",
+    "cobie-tablet-opening.png": "476e00dcc522758856781973d17ff94fbe86e5370e390ccd12a1540ee3327597",
+    "cobie-opening-web.png": "2a004cc82e115798d6f824be07c79e9af73847f6a2521920f2efc9bb3882da76",
+    "cobie-final-baseline.json": "ced628ef68edb08553b4d4f5b8b5f1d91d1ec81eae7d88070309c91918cf89be",
+    "cobie-cold-entry.json": "603c294520eec706bca03633af7dcb2df899a252250a51d1bd3cea76fdcd10e8",
+    "cobie-tablet-hub.png": "951bba041d7aec213e10b82e3e632ae871b06ef193ee220eafb335ce18d8e220",
+    "cobie-combat-1.json.gz": "05c0e44922027fb52cb01ad274d2bcd84f997876616d76efd71893838982db2b",
+    "cobie-tablet-selector.png": "804c033d9683c6891ee0566786e81dafe1038230ef33107145786d316cd0ebff",
+    "cobie-pause2.png": "2fe33d0039cd179519cfaa0603677dd62265d8705c9777ebf126c8a3d87f465e",
+    "cobie-launch.png": "6ac27a9b51949a6926b45a38b10962aa18ed5499e47a43c989e23358f771289e",
+    "cobie-tablet-live.png": "7d2af3d6db937c383ccb244da639cccc240b35e2922fdd362035503cad89a084",
+    "cobie-pause3.png": "7fdc5de394735381de9b72e97a2fd4d5e3adf8d9b55f90a429b16d40ce18a255",
+    "cobie-menu-after2.heapsnapshot": "93fb2d8bc9d5ae671be7c8e1db1ce03173604cb7609d4314ba28b46fd2f96fa0",
+    "cobie-reset1.png": "b9eb6113a6dcc10b039575d5fa2780b0c6f0f852dc7ef5eaabd6157367f8797b",
+    "cobie-tablet-combat.png": "54b34c1c07d93833940bee1bd9c95ec00cad6e478d414f7b09f1ee94d03566fb",
+    "cobie-tablet-map.png": "f3bb0efaec1a19d0b2c88d72205fb34aa8cb4b292c5c761260fd02a7d7006b4c",
+    "cobie-touch-final.json": "7600bf8900c79bad8baea848cb69553a4caff3300dedb9658304ce5e1703d6a1",
+    "cobie-contact2.png": "bed6bd3a3f333000cd2ddae8657d2db448d1868e3326ec1d902eed32f44749a0",
+    "cobie-frames-1.json": "326f563c9f23c757a5429bcde1146db350565b7e0edd3154ae041572edc41ca4",
+    "cobie-menu-after3.heapsnapshot": "fab2f675df778d189ab5f68f9ac722bbd6a866339d0c9004c20f675e83abadb7",
+    "cobie-map.png": "1fd0889a5f66f7df3acd86f82e4da88de9e939fcc16cba406635822f99ef638c"
+  },
+  "touch": {
+    "css": [
+      1024,
+      768
+    ],
+    "canvas": [
+      2048,
+      1536
+    ],
+    "dpr": 2,
+    "physical_device": false,
+    "console_errors_warnings": 0,
+    "frames": {
+      "touch-combat": {
+        "samples": 674,
+        "p95_ms": 18.5,
+        "p99_ms": 18.69999999999709,
+        "max_ms": 18.70000000001164,
+        "over100ms": 0
+      },
+      "verified-live": {
+        "samples": 271,
+        "p95_ms": 18,
+        "p99_ms": 18.60000000000582,
+        "max_ms": 18.70000000001164,
+        "over100ms": 0
+      }
+    }
+  },
+  "limitations": [
+    "rAF observes browser frame opportunity, not Godot render/GPU frame time",
+    "desktop combat phases include death-screen time; short verified-live touch sample proves firing while alive",
+    "background isolated Chrome never acquired pointer lock; desktop console includes autoplay warning and unhandled promises",
+    "first opening entry had 5749.1ms rAF gap and 5754ms long task; unresolved",
+    "heap buffers plateau after second/third menu return; observer allocation prevents leak acceptance; clean reload is not a comparable reset",
+    "localhost timings do not establish network/thermal/mobile/human acceptance",
+    "No release readiness or human taste approval claimed"
+  ]
+}
