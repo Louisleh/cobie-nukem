@@ -382,5 +382,11 @@ func _finish(exit_code: int) -> void:
 		_target.queue_free()
 	for frame in 2:
 		await get_tree().process_frame
-	await get_tree().create_timer(0.25).timeout
+	var drain_timer := Timer.new()
+	drain_timer.one_shot = true
+	drain_timer.wait_time = 0.25
+	add_child(drain_timer)
+	drain_timer.start()
+	await drain_timer.timeout
+	drain_timer.queue_free()
 	get_tree().quit.call_deferred(exit_code)
