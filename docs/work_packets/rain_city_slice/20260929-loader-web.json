@@ -76,7 +76,7 @@
       "phase": "six-shots"
     }
   ],
-  "trace_seconds": 1317303.216666,
+  "trace_seconds": 53.364697,
   "raw_function_call_urls": [
     "http://127.0.0.1:8062/index.audio.position.worklet.js",
     "http://127.0.0.1:8062/index.audio.worklet.js",
@@ -116,5 +116,6 @@
     "cobie-loader-rain-ready.png": "4a41776680769e77b1b005620b7fa4a2480cfbb9b306453b3ad7f88cbf6acc09",
     "cobie-loader-hub.png": "b480c1f4bb3ff73a9740b90ddf685c2dfcf7fbbd0687a7b4ea3c7215771deda7",
     "cobie-loader-paused.png": "37fd13e280f977caf900095ebf1a41eaa5e09f822f1e8e9b71d5149305389c18"
-  }
+  },
+  "trace_duration_method": "positive-duration X events; metadata timestamp0 excluded"
 }
