@@ -49,6 +49,7 @@ func _warm_runtime_pipelines() -> void:
 		"res://scenes/enemies/umbrella_shield_enforcer.tscn",
 		"res://scenes/enemies/compliance_gull.tscn",
 		"res://scenes/set_pieces/citation_convoy.tscn",
+		"res://assets/models/environment/rain_city_slice_landmark.glb",
 	]))
 	await prewarmer.completed
 	prewarmer.queue_free()
@@ -63,6 +64,7 @@ func _profile_menu() -> void:
 	var menu := packed.instantiate()
 	var instantiate_ms := float(Time.get_ticks_usec() - instantiate_started) / 1000.0
 	root.add_child(menu)
+	current_scene = menu
 	print("ZONE LOAD: main_menu load=%.3fms instantiate=%.3fms" % [load_ms, instantiate_ms])
 	await _measure("main_menu")
 	menu.queue_free()
@@ -77,6 +79,8 @@ func _profile_mission() -> void:
 	var level := packed.instantiate() as EpisodeOneLevel
 	var instantiate_ms := float(Time.get_ticks_usec() - instantiate_started) / 1000.0
 	root.add_child(level)
+	# Match real scene routing so spawned actors belong to the measured mission.
+	current_scene = level
 	print("ZONE LOAD: salmon_creek load=%.3fms instantiate=%.3fms" % [load_ms, instantiate_ms])
 	for _frame in 4:
 		await process_frame
@@ -121,6 +125,8 @@ func _profile_rain_city() -> void:
 	level.start_run_automatically = false
 	var instantiate_ms := float(Time.get_ticks_usec() - instantiate_started) / 1000.0
 	root.add_child(level)
+	# Match real scene routing so spawned actors belong to the measured mission.
+	current_scene = level
 	print("ZONE LOAD: rain_city load=%.3fms instantiate=%.3fms" % [load_ms, instantiate_ms])
 	for _frame in 4:
 		await process_frame

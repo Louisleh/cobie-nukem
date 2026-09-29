@@ -117,6 +117,7 @@ func _start_pipeline_warmup() -> void:
 		"res://scenes/enemies/compliance_hound.tscn",
 		"res://scenes/enemies/squirrel_trooper.tscn",
 		"res://scenes/enemies/animal_control_walker.tscn",
+		"res://assets/models/environment/rain_city_slice_landmark.glb",
 	]))
 
 

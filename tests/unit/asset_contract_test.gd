@@ -34,6 +34,7 @@ func _initialize() -> void:
 	await _test_opening_foundry_asset()
 	await _test_mount_hood_foundry_asset()
 	await _test_rain_city_runtime_materials()
+	await _test_slice_material_warmup()
 	await _test_salmon_sign_faces()
 	await _test_weapon_viewmodels()
 	await _test_production_pipeline_pilot()
@@ -201,6 +202,29 @@ func _test_rain_city_runtime_materials() -> void:
 		var skyline_material := skyline_batch.get_surface_override_material(0) as StandardMaterial3D
 		_expect(skyline_material != null and skyline_material.resource_name == "rain_city_skyline_silhouette", "Rain City skyline uses its dedicated distance-readable material")
 	_expect(instance.find_children("*", "CollisionObject3D", true, false).is_empty(), "Rain City production presentation remains independent from gameplay collision")
+	var landmark := instance.get_node_or_null("SliceLandmark") as Node3D
+	_expect(landmark != null, "Slice landmark is installed in the playable presentation wrapper")
+	if landmark != null:
+		var batches := landmark.find_children("*", "MeshInstance3D", true, false)
+		_expect(batches.size() <= 6 and batches.size() >= 4, "Slice landmark stays inside its six-batch rendering budget")
+		var triangles := 0
+		var warm_surfaces := 0
+		for candidate in batches:
+			var mesh_instance := candidate as MeshInstance3D
+			var bounds: AABB = mesh_instance.global_transform * mesh_instance.get_aabb()
+			_expect(bounds.end.x <= -4.1 and bounds.position.z >= -45.0 and bounds.end.z <= -29.0 and bounds.end.y <= 8.1, "Slice dressing stays outside the playable lane and inside the roof envelope")
+			for surface_index in mesh_instance.mesh.get_surface_count():
+				var arrays := mesh_instance.mesh.surface_get_arrays(surface_index)
+				var indices: PackedInt32Array = arrays[Mesh.ARRAY_INDEX]
+				triangles += indices.size() / 3
+				var mat := mesh_instance.mesh.surface_get_material(surface_index) as StandardMaterial3D
+				_expect(mat != null and mat.transparency == BaseMaterial3D.TRANSPARENCY_DISABLED, "Slice landmark uses opaque materials on Web")
+				if mat != null and mat.resource_name == "SL_ShelterGlow" and mat.emission_enabled:
+					warm_surfaces += 1
+		_expect(triangles <= 6000, "Slice landmark stays inside its six-thousand-triangle budget")
+		_expect(warm_surfaces == 1, "Slice service bays retain one shared emissive shelter material")
+		_expect(landmark.find_children("*", "Light3D", true, false).is_empty(), "Slice warmth adds no dynamic light cost")
+		_expect(FileAccess.get_file_as_bytes("res://assets/models/environment/rain_city_slice_landmark.glb").size() <= 350 * 1024, "Slice GLB stays inside its 350 KiB download budget")
 	instance.queue_free()
 	await process_frame
 
@@ -265,3 +289,22 @@ func _test_production_pipeline_pilot() -> void:
 func _expect(condition: bool, message: String) -> void:
 	if not condition:
 		failures.append(message)
+
+
+func _test_slice_material_warmup() -> void:
+	var prewarmer := RuntimePipelinePrewarmer.new()
+	root.add_child(prewarmer)
+	prewarmer.warm(PackedStringArray(["res://assets/models/environment/rain_city_slice_landmark.glb"]))
+	var viewport := prewarmer.get_node("PipelineWarmupViewport") as SubViewport
+	var camera := viewport.get_camera_3d()
+	var meshes := viewport.find_children("*", "MeshInstance3D", true, false)
+	_expect(meshes.size() == 6 and camera != null, "Slice warmup submits all six material batches to its render viewport")
+	for candidate in meshes:
+		var mesh_instance := candidate as MeshInstance3D
+		var bounds: AABB = mesh_instance.global_transform * mesh_instance.get_aabb()
+		_expect(camera.is_position_in_frustum(bounds.get_center()), "World-coordinate Slice batches are framed in the warmup camera")
+	await prewarmer.completed
+	await process_frame
+	_expect(not prewarmer.has_node("PipelineWarmupViewport"), "Slice warmup releases its temporary viewport before gameplay")
+	prewarmer.queue_free()
+	await process_frame

@@ -34,6 +34,8 @@ func warm(scene_paths: PackedStringArray) -> void:
 			instance.collision_mask = 0
 		_viewport.add_child(instance)
 		instance.position = Vector3(float(column) * 0.45 - 0.25, 0.0, -2.0)
+		if path.ends_with(".glb"):
+			_frame_static_model(instance)
 		# Telegraphs, health bars, and fallback geometry are intentionally hidden
 		# during ordinary idle presentation. Rendering them here compiles those
 		# material variants while the title still says WARMING, not on first fire.
@@ -53,3 +55,25 @@ func _process(_delta: float) -> void:
 		_viewport.queue_free()
 		_viewport = null
 	completed.emit()
+
+
+func _frame_static_model(instance: Node3D) -> void:
+	# Environment GLBs retain world coordinates. Merely placing their root at
+	# the enemy warmup slot leaves every surface outside the tiny viewport.
+	# Fit static presentation meshes in front of the camera so first mission draw
+	# does not pay for their new material variants during active play.
+	var bounds := AABB()
+	var has_bounds := false
+	for candidate in instance.find_children("*", "MeshInstance3D", true, false):
+		var mesh_instance := candidate as MeshInstance3D
+		var relative := instance.global_transform.affine_inverse() * mesh_instance.global_transform
+		var mesh_bounds: AABB = relative * mesh_instance.get_aabb()
+		bounds = bounds.merge(mesh_bounds) if has_bounds else mesh_bounds
+		has_bounds = true
+	if not has_bounds:
+		return
+	var longest := maxf(bounds.size.x, maxf(bounds.size.y, bounds.size.z))
+	var fit := 0.8 / maxf(longest, 0.001)
+	instance.rotation.y = -PI * 0.5
+	instance.scale = Vector3.ONE * fit
+	instance.position = Vector3(0.0, 0.0, -1.8) - instance.basis * bounds.get_center()

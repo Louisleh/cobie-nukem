@@ -1,9 +1,13 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene load_steps=4 format=3]
 
 [ext_resource type="PackedScene" path="res://assets/models/environment/rain_city_run_foundry.glb" id="1_foundry"]
 [ext_resource type="Script" path="res://scripts/level/rain_city_material_applier.gd" id="2_materials"]
+
+[ext_resource type="PackedScene" path="res://assets/models/environment/rain_city_slice_landmark.glb" id="3_slice"]
 
 [node name="Presentation" type="Node3D"]
 script = ExtResource("2_materials")
 
 [node name="RainCityFoundry" parent="." instance=ExtResource("1_foundry")]
+
+[node name="SliceLandmark" parent="." instance=ExtResource("3_slice")]
