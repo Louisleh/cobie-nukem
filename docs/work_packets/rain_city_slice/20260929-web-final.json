@@ -1,0 +1,116 @@
+{
+  "source": "fc7be026d03467a9d0adc493e9bd13437aefb833",
+  "art_source": "0ed32bc7c947a19f487375b182dae1a1d496f562",
+  "url": "http://127.0.0.1:8060/?touch=1&candidate=fc7be02",
+  "css": [
+    1024,
+    768
+  ],
+  "canvas": [
+    2048,
+    1536
+  ],
+  "browser": "Chrome154.0.8037.59",
+  "hardware": "AppleM4Macmini",
+  "cpu_throttling": 1,
+  "network": "unthrottledlocalhost;drivercachewarm",
+  "trace_seconds": 7.047952,
+  "console_errors_warnings": 0,
+  "first_entry_longtask_ms": 945,
+  "ordinary_live": {
+    "samples": 148,
+    "p95_raf_gap_ms": 35.19999999999709,
+    "p99_raf_gap_ms": 35.30000000000291,
+    "max_raf_gap_ms": 81.29999999999563,
+    "over100ms": 0,
+    "screenshot": "cobie-warm-live.png",
+    "health": 100,
+    "ammo_after_six_shots": 9
+  },
+  "heaps": {
+    "cobie-warm-paused.heapsnapshot": {
+      "self_bytes": 257424815,
+      "buffer_bytes": 185842021
+    },
+    "cobie-warm-menu.heapsnapshot": {
+      "self_bytes": 257277099,
+      "buffer_bytes": 185842021
+    }
+  },
+  "limits": [
+    "rAF measuresbrowserframeopportunitynotGodotGPUframe",
+    "sixshots/shortalivewindowisnotcontinuoushumanorsustaineddeviceacceptance",
+    "945msentryvs2310mspre-warm/828msarchivearecache-order-confoundedsingleobservations;nofreshGPUcoldcomparisonclaimed",
+    "titleslongtask1247msretainedinthepreparationstage;legacyopening5.75secstillopen",
+    "pairedpaused/menuheapstatesdifferent;retentionobservationnotleakverdict",
+    "MCPstopsummaryincorrectlyreported8061URL;rawFunctionCallURLanddirectlocationverified8060candidate"
+  ],
+  "longTasks": [
+    {
+      "start": 22,
+      "duration": 66,
+      "phase": "title"
+    },
+    {
+      "start": 726.2999999523163,
+      "duration": 783,
+      "phase": "title"
+    },
+    {
+      "start": 1776.7999999523163,
+      "duration": 1247,
+      "phase": "title"
+    },
+    {
+      "start": 31505.299999952316,
+      "duration": 294,
+      "phase": "title"
+    },
+    {
+      "start": 32032.799999952316,
+      "duration": 137,
+      "phase": "title"
+    },
+    {
+      "start": 32430.799999952316,
+      "duration": 325,
+      "phase": "menu"
+    },
+    {
+      "start": 32989.299999952316,
+      "duration": 125,
+      "phase": "menu"
+    },
+    {
+      "start": 35031.40000009537,
+      "duration": 945,
+      "phase": "entry"
+    },
+    {
+      "start": 36855.299999952316,
+      "duration": 93,
+      "phase": "ordinary-live"
+    }
+  ],
+  "resources": [
+    {
+      "name": "http://127.0.0.1:8060/index.wasm",
+      "bytes": 39513091,
+      "duration": 440.7000000476837
+    },
+    {
+      "name": "http://127.0.0.1:8060/index.pck",
+      "bytes": 70039744,
+      "duration": 621.7000000476837
+    }
+  ],
+  "hashes": {
+    "cobie-warm-title.png": "9c1794c5526ae161e6fa620904d80fee83b05c7ed8a77409adad55d321f52964",
+    "cobie-warm-live.png": "94dbbb66d51f56827a83b39818e0fe55cdb9379f75633617b971cdaf0c919c40",
+    "cobie-warm-trace.json.gz": "c26f27fa21ec9cb4852be1f44ac59797335281f724d8335ac5784d190f9a4a23",
+    "cobie-warm-observation.json": "c3546e1b5957bc401d405af874fb66279a19e1bf30a55685a23703a63c7c5508",
+    "cobie-warm-paused.heapsnapshot": "a9768fba2b40c8cbdfe890b7c62da9354c399e98659df2bd6a64104c97bacbed",
+    "cobie-warm-menu.png": "6733f540d19aaee1d68fb2d507008fd4b0146d82890671394a040659db91b3d6",
+    "cobie-warm-menu.heapsnapshot": "09f13e90b95b62c83680d9afd7055ec5df39bbd9bfef4a5707ddc719004a2cd7"
+  }
+}
