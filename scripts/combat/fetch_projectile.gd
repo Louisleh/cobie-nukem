@@ -26,7 +26,7 @@ var _is_active := false
 var _shot_token := 0
 
 @onready var _ball := get_node_or_null("Ball") as MeshInstance3D
-@onready var _trail := get_node_or_null("GoldenTrail") as GPUParticles3D
+@onready var _trail := get_node_or_null("GoldenTrail") as CPUParticles3D
 @onready var _glow := get_node_or_null("Glow") as OmniLight3D
 @onready var _collision_shape := get_node_or_null("CollisionShape3D") as CollisionShape3D
 

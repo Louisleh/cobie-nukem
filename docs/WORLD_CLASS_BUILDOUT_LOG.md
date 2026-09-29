@@ -758,6 +758,15 @@ Decision and remaining gate:
 - Evidence: current task `work/engineering/camera-regression-{red,native-red,green}.log`, `camera-fixed/downtown/`, `camera-capture-fixed.log`. Collision/navigation/gameplay source unchanged. The separate active opening route intentionally retains real mapped gameplay input and is not repaired by canonical-view freezing.
 - Disposition: camera pose functional acceptance PASS; particle lifetime and active-route determinism remain next. No merge, release or human/device acceptance.
 
+## 2026-09-29 — WCB-008 resident Fetch trail shader-lifetime repair
+
+- Baseline `c71a0f3`. Root owns the bounded combat/presentation seam: `scenes/weapons/fetch_projectile.tscn`, `scripts/combat/fetch_projectile.gd`, `tests/unit/weapon_mod_applicator_test.gd`, asset manifest and this ledger. Acceptance: golden trail count/lifetime/material/motion and pool/damage contracts are preserved, while ordinary native shutdown and zone profiler emit no engine errors/leaks and retain timing budgets.
+- Attribution: the first supposed minimal probe ran Cobie autoloads and was not engine-isolated. Standalone runtime-GPU/CPU/empty probes pass; a standalone resident autoload pool reproduces the pair even when children are freed from `_exit_tree`. Full-project 4.7.2 still fails. Keeping the small resident cosmetic emitter on GPU is the lifetime trigger, not rain weather or unbounded gameplay growth.
+- Repair: replace only the eighteen-particle, 0.4-second Fetch cosmetic trail with equivalent CPU particle properties. Rain/snow and gameplay collision, damage, recall, fuse, pool capacities remain unchanged. Original editable sphere/material and palette are preserved; no imported assets or engine migration. CPU effect budget is at most eight pooled trails × eighteen particles.
+- Focused combat and weapon-mod suites pass; native production-camera regression is engine-clean. Target-Mac requested borderless 1920×1080 zone profile PASS with no engine errors/leaks: opening p95/p99 10.397/10.636 ms; Rain City p95 9.866–10.825 ms, p99 10.121–11.490 ms; zero >100 ms samples. Requested size is not independently image-verified. This closes the reproduced shutdown pair for these runs, not every platform or a sustained human performance claim.
+- Active nine-still input-route captures pass at 1280×720 twice and 1024×768 once without diagnostics and without relaxed assertions or changed balance. Death/Retry is 796/829 in the first desktop receipt. The previous survival-only capture remains rejected; its complete timing cause is not claimed from these newer passes. Evidence is in current task `work/engineering/active-clean-*`, `native-profile-fixed.log`, `particle-pool-fixed.log` and combat/mod logs.
+- Disposition: bounded trail native acceptance PASS; complete release matrix, packaged-browser input and motion/visual review remain next before main integration. No BETA removal, stamp or deployment.
+
 ## Resume protocol
 
 1. Read `AGENTS.md`, `docs/PRD.md` §1.5, `docs/IMPLEMENTATION_PLAN.md`, and this current-state section.
