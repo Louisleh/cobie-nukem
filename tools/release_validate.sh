@@ -67,6 +67,8 @@ echo "==> visual capture user-data isolation"
 python3 tools/visual_quality/test_capture_tool.py
 run_godot_test res://tests/run_tests.gd
 run_godot_test res://tests/unit/input_system_test.gd
+run_godot_test res://tests/integration/input_profile_service_boundary_test.gd
+run_godot_test res://tests/integration/input_focus_release_test.gd
 run_godot_test res://tests/unit/combat_test_runner.gd
 run_godot_test res://tests/unit/enemy_contract_tests.gd
 run_godot_test res://tests/unit/enemy_sprite_presentation_test.gd
