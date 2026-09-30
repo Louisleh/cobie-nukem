@@ -19,7 +19,7 @@ def slab(target, name, outline, x, depth, mat, planar_uv=False):
         # The hood is production-textured after Godot material remapping. Map
         # its broad end faces in the Y/Z plane at uniform spatial scale, and
         # unwrap edge faces along the perimeter/depth before beveling. Keep
-        # legacy untextured pizza slabs on their original UV path.
+        # legacy pizza slabs on their original UV path.
         uv=mesh.uv_layers.new(name='UVMap')
         min_y=min(y for y,z in outline);max_y=max(y for y,z in outline)
         min_z=min(z for y,z in outline);max_z=max(z for y,z in outline)
@@ -63,6 +63,10 @@ def main():
         back=m['steel'] if i == 0 else m['brick']
         box(target,f'ServiceBack{i}',(-5.0,1.4,z),(.08,1.75,3.45),back,.04)
         box(target,f'ShelterStrip{i}',(-4.93,2.19,z),(.06,.11,3.25),m['warm'],.012)
+        if i != 1:
+            # Partial lower warmth supports the counters without restoring
+            # full luminous panels; upper walls and asymmetric props stay quiet.
+            box(target,f'CounterShelterBand{i}',(-4.94,1.28,z),(.025,.40,2.65),m['warm'],0)
         for zz in (z-1.8,z+1.8):
             box(target,f'BayPier{i}_{zz}',(-5.1,1.4,zz),(.45,2.4,.22),m['cream'],.055)
         for yy in (.35,2.4):
@@ -71,17 +75,17 @@ def main():
         for zz in (z-.9,z+.9):
             box(target,f'WindowMullion{i}_{zz}',(-4.86,1.65,zz),(.15,1.42,.075),m['steel'],.012)
     # Bake bay: broad hood/throat above a deep dark chamber, raised hearth below.
-    # These large shapes read at route distance; the narrow heat strip is the
+    # These large shapes target route-distance read; the hot lower floor is the
     # only chamber glow, sharing the existing warm material and no live light.
     box(target,'OvenSurround',(-4.91,1.48,-37),(.10,1.48,2.65),m['brick'],.045)
     hood=[(1.86,-38.17),(2.23,-37.85),(2.23,-36.15),(1.86,-35.83)]
     slab(target,'OvenHood',hood,-4.72,.34,m['steel'],planar_uv=True)
     box(target,'OvenThroat',(-4.76,1.84,-37),(.28,.15,1.82),m['steel'],.025)
-    box(target,'OvenMouth',(-4.82,1.35,-37),(.12,.68,1.62),m['pepper'],.08)
+    box(target,'OvenMouth',(-4.91,1.35,-37),(.12,.68,1.62),m['pepper'],.08)
     for z in (-37.94,-36.06):
         box(target,f'OvenJamb{z}',(-4.73,1.34,z),(.22,.77,.18),m['cream'],.025)
     box(target,'OvenLintel',(-4.72,1.76,-37),(.22,.14,2.02),m['cream'],.025)
-    box(target,'OvenHeat',(-4.73,1.105,-37),(.06,.06,1.45),m['warm'],.012)
+    box(target,'OvenHeat',(-4.78,1.135,-37),(.06,.13,1.45),m['warm'],.012)
     box(target,'OvenHearth',(-4.66,.99,-37),(.64,.16,2.17),m['cream'],.03)
     box(target,'HearthUnderlip',(-4.38,.895,-37),(.09,.07,2.04),m['steel'],.01)
     # Prep bay: one board, short stock shelf and a broad uncluttered worktop.
@@ -123,6 +127,13 @@ def main():
         cylinder_between(target,f'Pepperoni{i}',(-4.73,y,z),(-4.62,y,z),.23,m['pepper'],16)
     for z in (-38.2,-36.6):
         cylinder_between(target,f'EmblemSupport{z}',(-5.35,4.6,z),(-5.35,6.45,z),.09,m['steel'],8)
+    # Thin enamel construction trim exposes the hood's dark trapezoid against
+    # its quiet background. The production-textured steel front/UVs stay intact.
+    # Author after the existing palette parts so consolidation keeps their pivots.
+    for i,(a,b) in enumerate((((1.86,-38.17),(2.23,-37.85)),
+                              ((2.23,-37.85),(2.23,-36.15)),
+                              ((2.23,-36.15),(1.86,-35.83)))):
+        cylinder_between(target,f'OvenHoodTrim{i}',(-4.51,*a),(-4.51,*b),.035,m['orange'],6)
     for obj in target.objects:
         for modifier in obj.modifiers:
             if modifier.type == 'BEVEL': modifier.segments = 1
