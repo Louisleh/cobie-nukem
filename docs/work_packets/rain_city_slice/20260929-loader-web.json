@@ -1,0 +1,121 @@
+{
+  "source": "d5f835ace6a32169b2684ef7d2fd983016ef8df6",
+  "url": "http://127.0.0.1:8062/?touch=1&candidate=d5f835a",
+  "css": [
+    1024,
+    768
+  ],
+  "canvas": [
+    2048,
+    1536
+  ],
+  "hardware": "Apple M4 Mac mini",
+  "browser": "Chrome154.0.8037.59",
+  "route": "title\u2192menu\u2192Doghouse\u2192mission map\u2192Rain City (Best Friend)\u2192six primary shots\u2192pause\u2192main menu",
+  "final_live_health": 64,
+  "ammo_before": 15,
+  "ammo_after": 9,
+  "console_errors_warnings": 0,
+  "mac_archive_route": "title\u2192menu\u2192Doghouse\u2192mission map\u2192Rain City\u2192pause\u2192main menu\u2192Quit",
+  "mac_archive_exit_code": 0,
+  "mac_archive_engine_diagnostics": 0,
+  "tasks": [
+    {
+      "start": 614,
+      "duration": 327,
+      "phase": "title"
+    },
+    {
+      "start": 996.7000000476837,
+      "duration": 64,
+      "phase": "title"
+    },
+    {
+      "start": 2305.100000143051,
+      "duration": 1393,
+      "phase": "title"
+    },
+    {
+      "start": 3965.2000000476837,
+      "duration": 1363,
+      "phase": "title"
+    },
+    {
+      "start": 133575.10000014305,
+      "duration": 308,
+      "phase": "menu"
+    },
+    {
+      "start": 146948,
+      "duration": 151,
+      "phase": "menu"
+    },
+    {
+      "start": 161706,
+      "duration": 311,
+      "phase": "selector"
+    },
+    {
+      "start": 176819.40000009537,
+      "duration": 146,
+      "phase": "selector"
+    },
+    {
+      "start": 187299.60000014305,
+      "duration": 51,
+      "phase": "selector"
+    },
+    {
+      "start": 187437.90000009537,
+      "duration": 1075,
+      "phase": "entry"
+    },
+    {
+      "start": 204957.79999995232,
+      "duration": 143,
+      "phase": "six-shots"
+    }
+  ],
+  "trace_seconds": 53.364697,
+  "raw_function_call_urls": [
+    "http://127.0.0.1:8062/index.audio.position.worklet.js",
+    "http://127.0.0.1:8062/index.audio.worklet.js",
+    "http://127.0.0.1:8062/index.js",
+    "pptr:evaluateHandle;WaitForHelper.waitForStableDom%20(file%3A%2F%2F%2FUsers%2Forion%2F.codex%2Fgame-dev-tools%2Fchrome-devtools%2Fnode_modules%2Fchrome-devtools-mcp%2Fbuild%2Fsrc%2Futils%2FWaitForHelper.js%3A90%3A28)"
+  ],
+  "resources": [
+    {
+      "name": "http://127.0.0.1:8062/index.wasm",
+      "duration": 347.90000009536743,
+      "bytes": 39513091
+    },
+    {
+      "name": "http://127.0.0.1:8062/index.pck",
+      "duration": 1307.7999999523163,
+      "bytes": 70041316
+    }
+  ],
+  "limits": [
+    "Unthrottled localhost, driver/cache warm; title was initially concurrent with archive UI check",
+    "Entry 1075ms; title tasks1393/1363ms and a143ms six-shot task remain",
+    "Bounded rAF array filled during idle before gameplay; no gameplay quantile claims",
+    "No new heap-soak result; prior paired states remain limited retention evidence",
+    "MCP trace summary URL stale fc7/8060; direct location and raw FunctionCall URLs bind actual d5/8062",
+    "Scripted route is not sustained-combat, physical-device or human approval"
+  ],
+  "hashes": {
+    "cobie-loader-live.png": "b442ab4ab79a582a69ea1f86d064bc752a89e48a12f057801f242eb080877556",
+    "cobie-loader-ready.png": "410534c0523fde93d7a3a0fcfcdb4ce14615d5679fc3268b796fca1efd1ae920",
+    "cobie-loader-fired.png": "19f26d0fa2bfaed184157ca426d6e1d9164291418ebd18a8ec85e7bbf94d0b30",
+    "cobie-loader-title.png": "6c4978325246af112bced549580ca3fe9f48f2da1108d0adf1b6b5508199cf35",
+    "cobie-loader-trace.json.gz": "46a6eb43c7ee42c3db505ef19da5e33caaaf6064307b431103aab77278cdc5bc",
+    "cobie-loader-selector.png": "f3bb0efaec1a19d0b2c88d72205fb34aa8cb4b292c5c761260fd02a7d7006b4c",
+    "cobie-loader-menu.png": "804c033d9683c6891ee0566786e81dafe1038230ef33107145786d316cd0ebff",
+    "cobie-loader-observation.json": "ac66d55ecacffa4cdfb7dd17e7c3c795f35e19c5dd07c9f2acf595d70fdf9467",
+    "cobie-loader-returned.png": "6733f540d19aaee1d68fb2d507008fd4b0146d82890671394a040659db91b3d6",
+    "cobie-loader-rain-ready.png": "4a41776680769e77b1b005620b7fa4a2480cfbb9b306453b3ad7f88cbf6acc09",
+    "cobie-loader-hub.png": "b480c1f4bb3ff73a9740b90ddf685c2dfcf7fbbd0687a7b4ea3c7215771deda7",
+    "cobie-loader-paused.png": "37fd13e280f977caf900095ebf1a41eaa5e09f822f1e8e9b71d5149305389c18"
+  },
+  "trace_duration_method": "positive-duration X events; metadata timestamp0 excluded"
+}

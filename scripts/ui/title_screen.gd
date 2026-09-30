@@ -60,17 +60,13 @@ func _process(delta: float) -> void:
 	if _pipeline_warmup_started:
 		return
 	_warmup_elapsed += delta
-	var progress: Array = []
-	var status := ResourceLoader.load_threaded_get_status(menu_scene_path, progress)
-	var fraction := float(progress[0]) if not progress.is_empty() else 0.0
-	%LoadingBar.value = fraction * 100.0
-	%Prompt.text = "PREPARING COBIE… %d%%" % roundi(fraction * 100.0)
-	if status == ResourceLoader.THREAD_LOAD_FAILED or status == ResourceLoader.THREAD_LOAD_INVALID_RESOURCE:
-		_set_failed()
-	elif status == ResourceLoader.THREAD_LOAD_LOADED and _warmup_elapsed >= minimum_warmup_seconds:
-		_stable_frames += 1
-		if _stable_frames >= 2:
-			_start_pipeline_warmup()
+	# Wait for the title to paint before preparing its resident menu. Godot 4.7.1
+	# threaded loading leaves zero-reference LoadTokens alive even after get().
+	if _warmup_elapsed < minimum_warmup_seconds or _layout_frames_remaining > 0:
+		return
+	_stable_frames += 1
+	if _stable_frames >= 2:
+		_start_pipeline_warmup()
 
 
 func _start_warmup() -> void:
@@ -89,15 +85,10 @@ func _start_warmup() -> void:
 		else:
 			call_deferred("_set_failed")
 		return
-	var error := ResourceLoader.load_threaded_request(menu_scene_path, "PackedScene", true)
-	if error != OK:
-		_set_failed()
 
 
 func _start_pipeline_warmup() -> void:
-	# Finalize the threaded request. Polling LOADED without retrieving the
-	# Resource leaves its loader request alive through SceneTree teardown.
-	_preloaded_menu = ResourceLoader.load_threaded_get(menu_scene_path) as PackedScene
+	_preloaded_menu = load(menu_scene_path) as PackedScene if ResourceLoader.exists(menu_scene_path) else null
 	if _preloaded_menu == null:
 		_set_failed()
 		return
