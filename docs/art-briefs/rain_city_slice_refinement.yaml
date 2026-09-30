@@ -1,0 +1,58 @@
+work_id: CN-GAUNTLET-20260929-G3-SLICE-REFINEMENT-PROPOSAL
+status: Root-approved bounded authoring candidate; acceptance pending source-bound runtime review.
+target: Rain City Slice service-front construction and bake/prep/collection differentiation; a readable working pizza shop rather than three uniformly glowing display panels.
+baseline_revision: e84f94c78796490ae29b9819d06f6dfda4ab5363
+baseline_art_revision: 0ed32bc7c947a19f487375b182dae1a1d496f562
+baseline_glb_sha256: ac1dee8a46910a4ba2119d43c41eb5bbc9a953e609be43d6b9a2601081d3921d
+canonical_views:
+  - rain_city_slice at 1280x720, 1680x1050, 1024x768, 3440x1440
+  - rain_city_downtown and vancouver_waterfront as unaffected-region checks at the same four aspects
+  - Source-bound native approach and packaged Web approach/firing/interaction for live readability, separately recorded
+mission_identity: Rain City Run, dense fictional Vancouver waterfront under steady rain; warm neighborhood shelter against slate rain, rain brick, harbour steel and cold municipal infrastructure.
+dominant_landmark: Existing tilted original pizza wedge, striped folded canopy and Rain City Slice two-line sign remain the distant identity.
+gameplay_readability: Threats, progression/pickup and interactable prompts retain priority. At the canonical shop view notice wedge/name, then a hot center oven, then a quieter preparation/collection bay. All route, collision, navigation, objectives and interaction IDs remain unchanged. No new affordance implies a usable door or safe passage.
+silhouette_goal: Keep roof wedge/canopy silhouette and add a unmistakable hood/throat/hearth hierarchy inside the center bay; outer bays differ in prop rhythm and occupied versus quiet space. Emblem silhouette is not replaced.
+visual_story: A neighborhood pizza shop remains a warm practical refuge beneath officious municipal rain. Existing HOT PIZZA - COLD COMPLIANCE joke remains readable; no new copy or borrowed brand is needed.
+palette: Existing six palette materials only. Harbour steel recesses frame cream counters, restrained baked-orange props and selective shelter warmth. Pepper enamel provides a dark baking opening. No new shader/material variant, alpha or vertex-color mode.
+value_hierarchy: Highest local ornament contrast remains the roof sign, lettering and center hearth. Side bays gain opaque shadow panels and less uniformly luminous area. Existing golden pickups, warm hostile telegraphs, HUD and captions must retain their current separation.
+materials: Preserve RC_HarbourSteel, RC_RainBrick, SL_BakedEnamel, SL_CreamEnamel, SL_ShelterGlow and SL_PepperEnamel. Preserve their current node graph/surface flags. Use geometry masking and existing opaque colors to differentiate bays; do not introduce new textures. Existing production material-family source graphs remain unchanged.
+lighting_and_fog: Preserve global rain/fog and static scene lighting. Reuse the existing shared warm material for small center hearth/coals/undershelf strips instead of adding new dynamic lights or per-frame pulsing. Dark planes and real depth create construction read.
+authoring_priorities:
+  - Center bake bay first: give the oven a wide shallow steel hood, a narrowing throat or lintel, a dark opening and a raised projecting hearth lip. A small sheltered warm strip inside the opening replaces the current maroon-block ambiguity. Limit any added faceting to a readable large shape; no intricate decoration.
+  - Prep bay second: retain a short shelf/order-board language but change its rhythm from three mirrored tins to a low preparation counter with at most one or two large original kitchen silhouettes. Steel wall/undershelf planes obscure part of the currently full warm backplane.
+  - Collection bay third: remove the duplicate tin arrangement and use two restrained stacked boxes/trays and one small task shelf. The empty shadow area should make it recognizably quieter than the oven and prep bay at route distance.
+  - Cornice optional after center/bays read: a narrow brick fascia or steel soffit may tie cream steps to the retained dark mass. Source currently overlaps the shell, so do not claim a physical gap is repaired. Avoid thickening the roof into a more dominant cream slab.
+animation_or_state_vocabulary: Static opaque presentation only. No animation, gameplay state, interaction script, particle, audio or per-frame allocation is added. Existing motion/accessibility settings remain unaffected.
+platform_budgets:
+  - Preserve exactly the same six opaque material/mesh batches and zero new textures, alpha surfaces, dynamic lights, collisions and navigation nodes.
+  - Hard cap <=6000 triangulated faces and <=350KiB runtime GLB; baseline4252triangles/319440bytes. Prefer redistribution/removal of duplicated geometry and target <=5000triangles if feasible. Do not widen hard budgets to fit decoration.
+  - Keep authored Godot-space geometry inside x<=-4.1, z=-45..-29 and y<=8.1; prefer existing tighter x<=-4.2 design envelope. No new walkable/collision semantics.
+  - Shader warmup still frames all six batches; no additional warmup path should be necessary.
+  - Native1080p p95<=20ms/p99<=33.3ms and existing zone profile thresholds; Web/tablet p95<=33.3ms/p99<=50ms remain goals measured with the recorded evidence class. No causal speed claim from a single cached entry.
+  - Node/material/draw-call delta explained; no persistent per-frame resource cost expected. Web transfer delta comes from actual fresh PCK bytes, not GLB size alone.
+source_and_license: Project-original deterministic Blender primitives and existing palette node materials only; preserve editable .blend and source builder. No external asset, protected layout, logo, dialogue or photography. Manifest exact hashes and tooling versions.
+proposed_owned_paths:
+  - tools/blender/build_rain_city_slice_landmark.py
+  - assets/source/blender/rain_city_slice_landmark.blend
+  - assets/models/environment/rain_city_slice_landmark.glb
+  - tests/unit/asset_contract_test.gd, only if a meaningful geometric regression is justified; retain existing hard budgets
+  - docs/ASSET_MANIFEST.md, root manifest update after verified rebuild
+  - docs/art-briefs/rain_city_slice_refinement.yaml, root decision-complete brief copied from this proposal as appropriate
+forbidden_paths: gameplay layout, foundry base builder/assets, presentation wrapper unless root separately transfers a proven requirement, runtime/AI/combat/input/save scripts, materials/textures, UI, approved captures, frozen M1R/M2-M5/boss/release/stamp/public files.
+preserved_gameplay_contracts: Identical mission/zone/objective/interaction/checkpoint/save/input/combat/nav/collision/weather ownership. Presentation remains replaceable and progression recoverable without it. No true door/passage is added.
+acceptance_evidence:
+  - Root verifies fresh baseline source/GLB hashes and records actual camera/FOV/seed/frame/FPS/quality before changing source. Existing historical PNGs are inspected and hash-matched but do not replace a fresh source-bound baseline.
+  - Two serialized Blender builds produce byte-identical runtime GLB. Preserve both complete logs and hashes. Editable source may carry tool metadata; source provenance/hash remains recorded separately.
+  - Safe Godot import, asset_contract_test and core suite pass without attributable warnings/errors/leaks. Do not alter tests to accept a failing candidate.
+  - Four-aspect exact matched Slice captures pass validity and receipts; actual PNG critic verifies distinct bake/prep/collection compositions and reads hood/hearth as an oven while wedge/name/joke/HUD remain clear. These qualitative observations are provisional, not human approval.
+  - Downtown/waterfront captures preserve unaffected identity and have explained image deltas. Approved baselines remain untouched.
+  - 30/60/120FPS captures and actual approach/firing/interaction prove no newly introduced occlusion/flicker/z-fighting or covered health/ammo/prompts. Static captures alone do not count as live gameplay.
+  - Native rendered zone profile and fresh packaged Web inspection record budgets, entry/firing and empty attributable error/warning console. Separate instrumented attribution from uninstrumented acceptance. Compare matched control where a regression is claimed.
+  - Serialized full QA_EXPORTS=1 release validation, artifact/source hashes and independent full-diff critic before root integration. Root may defer/reject art if technical gates remain unresolved or attributable regressions appear.
+human_review_questions:
+  - Does the storefront now read as a believable, welcoming working pizza shop rather than a luminous lightbox?
+  - Does the hood/hearth read as a hot oven at route distance in both 16:9 and 4:3?
+  - Does bay asymmetry add neighborhood personality without becoming noisy or obscuring threats and prompts?
+  - Are wedge, canopy and compliance joke still the memorable first read?
+  - Are contrast, rain, close interaction and touch view comfortable during continuous play?
+out_of_scope: Whole-route art closure, marketing-art parity, character/enemy/weapon changes, new encounters, lighting/fog/audio/UI overhaul, physics/route edits, new material families, new missions, BETA removal, public release and human/device acceptance.

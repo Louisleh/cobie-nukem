@@ -209,6 +209,7 @@ func _test_rain_city_runtime_materials() -> void:
 		_expect(batches.size() <= 6 and batches.size() >= 4, "Slice landmark stays inside its six-batch rendering budget")
 		var triangles := 0
 		var warm_surfaces := 0
+		var mapped_uv_surfaces := 0
 		for candidate in batches:
 			var mesh_instance := candidate as MeshInstance3D
 			var bounds: AABB = mesh_instance.global_transform * mesh_instance.get_aabb()
@@ -221,6 +222,18 @@ func _test_rain_city_runtime_materials() -> void:
 				_expect(mat != null and mat.transparency == BaseMaterial3D.TRANSPARENCY_DISABLED, "Slice landmark uses opaque materials on Web")
 				if mat != null and mat.resource_name == "SL_ShelterGlow" and mat.emission_enabled:
 					warm_surfaces += 1
+				if mat != null and mat.resource_name in ["RC_RainBrick", "RC_HarbourSteel"]:
+					mapped_uv_surfaces += 1
+					# Raw palette materials are replaced with textured production
+					# families. Reproducible export must preserve spatial mapping.
+					var uvs: PackedVector2Array = arrays[Mesh.ARRAY_TEX_UV]
+					var minimum_uv := Vector2(INF, INF)
+					var maximum_uv := Vector2(-INF, -INF)
+					for uv in uvs:
+						minimum_uv = minimum_uv.min(uv)
+						maximum_uv = maximum_uv.max(uv)
+					_expect(not uvs.is_empty() and (maximum_uv - minimum_uv).length() > 0.05, "Textured Slice brick and steel retain spatial UV variation")
+		_expect(mapped_uv_surfaces == 2, "Slice retains both mapped brick and steel material surfaces")
 		_expect(triangles <= 6000, "Slice landmark stays inside its six-thousand-triangle budget")
 		_expect(warm_surfaces == 1, "Slice service bays retain one shared emissive shelter material")
 		_expect(landmark.find_children("*", "Light3D", true, false).is_empty(), "Slice warmth adds no dynamic light cost")
