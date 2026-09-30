@@ -152,3 +152,7 @@ scene.
   changes, per the PRD nonfunctional requirement. Hosted-only remains a
   hardware fact, not a preference: TRELLIS.2 requires Linux plus an NVIDIA GPU
   with at least 24 GB VRAM.
+
+## D-021 — Focus loss retires only locally owned physical input
+
+The input service delegates its existing keyboard/mouse event cache to `PhysicalInputState` and clears that owner on application focus loss. Only a discrete action whose removed physical source was its last held source is rearmed. Shared touch/controller/engine action state, profile/device/calibration, axis latches and player momentum are not reset. This keeps recovery local without a global input release; deterministic service/player regression evidence remains separate from OS/hardware acceptance.

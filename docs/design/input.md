@@ -12,3 +12,7 @@
 bash tools/run_godot_safe.sh --timeout 300 -- --headless --path . --script res://tests/unit/input_system_test.gd
 bash tools/run_godot_safe.sh --timeout 300 -- --headless --path . --script res://tests/integration/input_profile_service_boundary_test.gd
 ```
+
+## Focus-loss ownership
+
+On application focus loss, the service discards its local keyboard/mouse event cache and rearms only discrete actions that lose their last held source. Independently held engine actions, touch and joystick sources retain their strength and edge latches, including mixed sources mapped to the same action. Profile, device, calibration and axis-event ownership remain unchanged; pause/mobile controls retain their separate cancellation contract. The regression is `tests/integration/input_focus_release_test.gd`, using omitted releases and the real player consumer. This deterministic boundary evidence does not verify OS event delivery or physical devices.

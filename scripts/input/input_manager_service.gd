@@ -23,8 +23,7 @@ var active_profile: InputProfile
 var active_device_id := -1
 var last_input_timestamp_ms := 0
 var last_input_description := "none"
-var _pressed_keys: Dictionary = {}
-var _pressed_mouse_buttons: Dictionary = {}
+var _physical_input := PhysicalInputState.new()
 var _discrete_action_pressed: Dictionary = {}
 var _axis_event_latch := InputAxisEventLatch.new()
 var _capture_action := StringName()
@@ -57,12 +56,13 @@ func _process(_delta: float) -> void:
 	_poll_calibration()
 
 
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_APPLICATION_FOCUS_OUT:
+		_physical_input.release_on_focus(active_profile, _discrete_action_pressed, get_action_strength)
+
+
 func _input(event: InputEvent) -> void:
-	if event is InputEventKey:
-		_pressed_keys[event.physical_keycode] = event.pressed
-		_pressed_keys[event.keycode] = event.pressed
-	elif event is InputEventMouseButton:
-		_pressed_mouse_buttons[event.button_index] = event.pressed
+	_physical_input.observe(event)
 
 	if event.is_pressed() or event is InputEventJoypadMotion:
 		last_input_timestamp_ms = Time.get_ticks_msec()
@@ -378,10 +378,8 @@ func _binding_strength(binding: Dictionary) -> float:
 			return 1.0 if active_device_id >= 0 and Input.is_joy_button_pressed(
 				active_device_id, int(binding.get("index", 0))
 			) else 0.0
-		"key":
-			return 1.0 if bool(_pressed_keys.get(int(binding.get("index", 0)), false)) else 0.0
-		"mouse_button":
-			return 1.0 if bool(_pressed_mouse_buttons.get(int(binding.get("index", 0)), false)) else 0.0
+		"key", "mouse_button":
+			return _physical_input.strength(binding)
 	return 0.0
 
 
