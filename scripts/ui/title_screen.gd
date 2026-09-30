@@ -99,7 +99,7 @@ func _start_pipeline_warmup() -> void:
 	_pipeline_prewarmer = PipelinePrewarmer.new()
 	_pipeline_prewarmer.name = "RuntimePipelinePrewarmer"
 	add_child(_pipeline_prewarmer)
-	_pipeline_prewarmer.completed.connect(_set_ready, CONNECT_ONE_SHOT)
+	_pipeline_prewarmer.completed.connect(_pipeline_warmup_completed, CONNECT_ONE_SHOT)
 	_pipeline_prewarmer.warm(PackedStringArray([
 		"res://scenes/enemies/enemy_bolt.tscn",
 		"res://scenes/weapons/fetch_projectile.tscn",
@@ -109,7 +109,23 @@ func _start_pipeline_warmup() -> void:
 		"res://scenes/enemies/squirrel_trooper.tscn",
 		"res://scenes/enemies/animal_control_walker.tscn",
 		"res://assets/models/environment/rain_city_slice_landmark.glb",
+		"res://assets/models/environment/salmon_creek_opening_foundry.glb",
+		"res://scenes/weapons/pawstol.tscn",
+		"res://scenes/weapons/barkshot.tscn",
+		"res://scenes/weapons/fetch_launcher.tscn",
+		"res://scenes/enemies/compliance_gull.tscn",
+		"res://scenes/enemies/umbrella_shield_enforcer.tscn",
 	]))
+
+
+func _pipeline_warmup_completed() -> void:
+	if _pipeline_prewarmer != null and _pipeline_prewarmer.succeeded:
+		_set_ready()
+	else:
+		if _pipeline_prewarmer != null:
+			_pipeline_prewarmer.queue_free()
+			_pipeline_prewarmer = null
+		_set_failed()
 
 
 func _set_ready() -> void:
