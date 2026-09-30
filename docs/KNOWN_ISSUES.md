@@ -82,3 +82,10 @@ This file distinguishes confirmed product limitations from unperformed validatio
 ## Reporting policy
 
 Open Blocker/Critical defects cannot ship. Any Major issue retained for a candidate must be added here with its owner-approved disposition and workaround. Automated tests, browser automation, and debug-assisted route checks must not be described as a human full playthrough.
+
+## September 29/30 gauntlet continuation — current limits
+
+- Source `86e6535` has clean62-entrypoint local validation and fresh unstamped Web/unsigned Mac exports. Render-only warmup avoids gameplay actor construction; active-plus-retired Sky lifetime is bounded and native cancellation cleanup passes. Coverage is scoped to current title resources: CPU particle trails, arbitrary inherited SceneState overrides and a never-arriving post-draw timeout are not solved by this packet.
+- One matched packaged-Web observation records849ms Rain City entry and70ms first Paw firing long tasks (prior package1026/107ms). Order/cache/art differences and one pair prevent a causal warmup-speedup claim. Startup performance acceptance stays open.
+- Actual synthetic-touch Web play verifies weapons/reload, damage/death/retry and post-retry firing. The route attempt stopped at a closed downtown combat gate. Ordinary Slice approach/stock interaction, blur/focus recovery, keyboard/pointer capture, standalone native mission play and longer sustained combat remain open.
+- Short retention attribution and clean headless unload do not establish longer Web/whole-GPU memory boundedness. Native profile uses exported PCK under pinned editor; direct standalone acceptance currently covers title boot only. Static and sampled scripted motion reviews cannot substitute for human taste, continuous route, flicker/comfort, audio or physical-device acceptance.

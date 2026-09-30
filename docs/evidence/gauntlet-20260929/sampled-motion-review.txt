@@ -1,0 +1,18 @@
+Independent sampled-motion visual review — source86e6535
+Disposition: scoped sampled-angle visual PASS. No new storefront read failure is visible in the nine inspected samples; this does not close continuous motion or ordinary-gameplay gates.
+
+Actually viewed nine1280x720 PNGs: early/mid/late for30/60/120FPS seeded staged sweeps. Read complete three native logs and scratch harness. Independently verified clip/log SHA256s against motion-receipt and queried actual ffprobe stream dimensions,rate,duration and frame count. Recorded clips contain105frames/3.5s at30FPS,195frames/3.25s at60FPS,375frames/3.125s at120FPS; commanded sweep covers90/180/360frames,with15additionalsetup/cleanupframes.60physicsTPS and fixed-FPS movie mode are explicit. Those output frame rates and CPU render summaries are not measured ordinary-play/GPU performance.
+
+Sampled visual observations:
+- Left-angle,front and right-angle views retain hood outline,localized warm oven floor/projecting hearth and asymmetric collection/preparation shapes. Restored partial warm bands remain distinct from dark upper-bay areas; no repeated fully luminous panels return.
+- Name/compliance joke/canopy stay legible at sampled approach angles. Pizza wedge remains identifiable,although the closer frontal sample naturally crops its top edge at the image boundary; that close framing is not a newly missing/invalid model.
+- Health100,armor000,ammo15/∞ and weapon state remain clear in every sample. Lower shop warmth and foregroundgoldenpickups stay separable. No captured angle shows new shop geometry obscuring HUD or eliminating route sightline. No missing/malformed static parts seen.
+- Samples cannot rule out flicker,z-fighting,transient occlusion,interpolation jitter or uncomfortable motion between those frames. Full videos were not watched and no continuous frame-by-frame check was run; do not infer those broader results.
+
+Evidence clarifications from actual images/harness:
+The scratch log phrase simulation frozen is overbroad. Player processing is disabled by the existing staging director and actor-clearing is requested each iteration,but Area/checkpoint/encounter systems remain responsive to tool-driven transforms during awaited frames.30FPSearly and120FPSearly images visibly show a flying enemy with green healthbar;60FPSearly does not. Thus actorscleared is not an invariant actor-free scene. This is a fixture/evidence limitation,not proof of an ordinary encounter or new art runtime defect.
+Tool-triggered checkpoint banners are visible in early/mid samples and overlap part of the pizza wedge/top sky. Their appearance does not prove ordinary checkpoint activation or completed progression. The bracketed lateSlice label is a staged focus output,not an exercised stock interaction. The images must retain their staged classification.
+
+Ordinary Web acceptance remains incomplete per root report: current ordinary input reached a closed authored combat gate but did not clear it; Slice approach/firing/stockinteraction were not achieved. These staged sweeps do not substitute,teleport past the gate for acceptance,or relabel that incomplete gate as passed. Root must keep that limitation in finalhandoff.
+
+No engine/browser/Blender jobs,source edits or delegation performed. Only lightweightmetadata/hash checks and actual existingPNGinspection. Prior provisional static art disposition stands at its boundedscope; human taste,recognition,comfort and physicaldevices remain OPEN.
