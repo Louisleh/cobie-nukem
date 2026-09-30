@@ -104,6 +104,37 @@ func _run() -> void:
 	await process_frame
 	await process_frame
 	_expect(not is_instance_id_valid(cancelled_id), "Parent cancellation releases the live viewport")
+	# A fresh owner can disappear before its first rendered boundary. Its Sky
+	# must still drain safely without depending on that owner's tree lifetime.
+	var early := RuntimePipelinePrewarmer.new()
+	root.add_child(early)
+	early.warm(PackedStringArray(["res://scenes/enemies/mutant_groundskeeper.tscn"]))
+	var early_viewport_id := early._viewport.get_instance_id()
+	early.queue_free()
+	await process_frame
+	await process_frame
+	_expect(not is_instance_id_valid(early_viewport_id), "First-use parent destruction releases its viewport")
+	_expect(RuntimePipelinePrewarmer._retired_skies.is_empty(), "Rendered cancellation drains owned Sky resources after owner destruction")
+	if DisplayServer.get_name() != "headless":
+		var burst := RuntimePipelinePrewarmer.new()
+		root.add_child(burst)
+		for request in RuntimePipelinePrewarmer.MAX_SCENES + 2:
+			burst.warm(PackedStringArray(["res://scenes/weapons/pawstol.tscn"]))
+			_expect(RuntimePipelinePrewarmer._retired_skies.size() <= RuntimePipelinePrewarmer.MAX_SCENES, "Repeated requests never exceed the owned Sky retirement cap")
+		_expect(not burst.succeeded and burst._viewport == null, "Saturated render retirement rejects readiness without another viewport")
+		await process_frame
+		await process_frame
+		_expect(RuntimePipelinePrewarmer._retired_skies.is_empty(), "Burst retirement drains at the actual rendered boundary")
+		burst.warm(PackedStringArray(["res://scenes/weapons/pawstol.tscn"]))
+		for frame in 100:
+			await process_frame
+			if not burst._running:
+				break
+		_expect(burst.succeeded, "A new request completes after saturated retirement drains")
+		burst.queue_free()
+		await process_frame
+	else:
+		_expect(RuntimePipelinePrewarmer._retired_skies.is_empty(), "Headless lifecycle has no renderer retirement queue")
 	await process_frame
 	if failures.is_empty():
 		print("RUNTIME PIPELINE PREPARATION: PASS (rendered boundaries are separate from headless lifecycle)")
