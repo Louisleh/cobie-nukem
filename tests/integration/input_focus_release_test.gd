@@ -85,6 +85,7 @@ func _run() -> void:
 		_expect(not service.get_action_just_pressed(action), "Released physical action is not just-pressed: " + String(action))
 	await _external_owner_guard()
 	await _mixed_source_guard()
+	await _paused_notification_guard()
 	await _finish()
 
 func _external_owner_guard() -> void:
@@ -132,10 +133,17 @@ func _mixed_source_guard() -> void:
 	root.add_child(mixed)
 	mixed.set_process(false)
 	mixed.set_process_input(false)
+	mixed.active_device_id = 73
+	_expect(_axis_edge(mixed, 73, 1.0), "Real axis-event latch emits its first matching device/action/axis edge")
+	_expect(not _axis_edge(mixed, 73, 1.0), "Real axis-event latch suppresses a repeated held edge")
 	_expect(mixed.get_action_just_pressed(&"move_forward"), "Mixed-source joystick action edge is primed")
 	_key(mixed, KEY_W, true)
 	_expect(is_equal_approx(mixed.get_action_strength(&"move_forward"), 1.0), "Physical W raises mixed-source strength")
 	mixed.notification(NOTIFICATION_APPLICATION_FOCUS_OUT)
+	_expect(not _axis_edge(mixed, 73, 1.0), "Local physical focus cleanup does not clear held REAL axis-event latch in place")
+	_expect(not _axis_edge(mixed, 73, 0.0), "Real axis release rearms without emitting a press")
+	_expect(_axis_edge(mixed, 73, 1.0), "Real axis repress after release emits a new edge")
+	_expect(not _axis_edge(mixed, 73, 1.0), "Real axis repress remains latched after its first edge")
 	_expect(is_equal_approx(mixed.get_action_strength(&"move_forward"), 0.75), "Focus removes W while preserving SAME-action joystick strength")
 	_expect(not mixed.get_action_just_pressed(&"move_forward"), "Focus does not retrigger SAME-action held joystick edge")
 	mixed.axis_strength = 0.0
@@ -164,6 +172,48 @@ func _mixed_source_guard() -> void:
 	_key(mixed, KEY_W, false)
 	mixed.queue_free()
 	await process_frame
+
+
+func _paused_notification_guard() -> void:
+	var paused_service := InputManagerService.new()
+	paused_service.name = "PausedFocusNotificationFixture"
+	paused_service.starting_profile = _keyboard_profile()
+	root.add_child(paused_service)
+	paused_service.set_process(false)
+	paused_service.set_process_input(false)
+	_expect(paused_service.process_mode == Node.PROCESS_MODE_ALWAYS, "Real service remains ALWAYS while tree is paused")
+	_key(paused_service, KEY_W, true)
+	_key(paused_service, KEY_SHIFT, true)
+	_mouse(paused_service, MOUSE_BUTTON_LEFT, true)
+	for action in CHECK_ACTIONS:
+		_expect(paused_service.get_action_just_pressed(action), "Paused fixture initial edge: " + String(action))
+	var paused_before := paused
+	paused = true
+	# Actual Node propagation on this dedicated fixture only. No PauseMenu,
+	# OS focus injection or claim of whole-tree/platform dispatch ordering.
+	paused_service.propagate_notification(NOTIFICATION_APPLICATION_FOCUS_OUT)
+	observations["paused_focus_strengths"] = _strengths(paused_service)
+	_expect(_strengths(paused_service) == [0.0, 0.0, 0.0], "Paused notification propagation neutralizes local physical strengths")
+	_key(paused_service, KEY_W, true)
+	_key(paused_service, KEY_SHIFT, true)
+	_mouse(paused_service, MOUSE_BUTTON_LEFT, true)
+	for action in CHECK_ACTIONS:
+		_expect(paused_service.get_action_just_pressed(action), "Fresh edge rearms while paused: " + String(action))
+	_key(paused_service, KEY_W, false)
+	_key(paused_service, KEY_SHIFT, false)
+	_mouse(paused_service, MOUSE_BUTTON_LEFT, false)
+	_expect(_strengths(paused_service) == [0.0, 0.0, 0.0], "Fresh releases remain neutral while paused")
+	paused = paused_before
+	paused_service.queue_free()
+	await process_frame
+
+
+func _axis_edge(owner: InputManagerService, device: int, value: float) -> bool:
+	var event := InputEventJoypadMotion.new()
+	event.device = device
+	event.axis = JOY_AXIS_LEFT_X
+	event.axis_value = value
+	return owner.is_action_event_pressed(event, &"move_forward")
 
 
 func _keyboard_profile() -> InputProfile:
