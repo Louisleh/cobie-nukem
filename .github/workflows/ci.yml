@@ -41,6 +41,12 @@ jobs:
           python3 --version | tee python-version.txt
           python3 -c "import PIL, numpy; print('pillow', PIL.__version__, 'numpy', numpy.__version__)" | tee python-deps.txt
 
+      - name: Browser measurement and menu URL regressions
+        run: |
+          node --version
+          node tools/performance/test_web_evidence_probe.js
+          node tools/performance/test_menu_return_url.js
+
       - name: Workstation prerequisite regression and report
         run: |
           python3 -m unittest discover -s tools/tests -p test_workstation_doctor.py -v

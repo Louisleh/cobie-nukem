@@ -188,6 +188,14 @@ The first-player experience is part of this quality tranche, not a competing cam
 - If validation is blocked, the packet remains blocked with the exact command/error recorded. Documentation or generated output is never counted as gameplay completion.
 - Ambitious quality loops use separate authors, harsh critics, and matched blind comparisons where practical. An aspirational reference is a direction, not an acceptance oracle: finite packets still stop on frozen ownership, objective budgets, reproducible evidence, and named human gates. Agents may not chase an unreachable score by expanding scope or weakening evidence.
 
+### 1.5.6 September 29 vision and owner-facing milestones
+
+Build a compact, original first-person action game with Cobie's swagger: immediate readable combat, inventive dog-themed weapon expression, authored places worth exploring, and playful municipal-compliance satire. Duke-like immediacy and irreverence and early Ratchet-inspired world/weapon personality inform design grammar, never copied assets or dialogue. High-resolution retro 2.5D remains authoritative. AAA-worthy means deliberate craft, coherence and enjoyable real play within a realistic indie production scope, not photorealism or uncontrolled content growth.
+
+Rain City proves the complete quality standard; Salmon Creek sells that promise in the opening minutes. Louis tracks eight major outcomes: dependable play; Rain City's signature world; combat with swagger; a memorable Rain City mission; a compelling opening; one definitive slice proven in real play; replication to one existing mission; an honest release candidate. Dependency/brief mapping is in IMPLEMENTATION_PLAN and `docs/work_packets/vision/20260929.md`; actual status is in WORLD_CLASS_BUILDOUT_LOG. These outcomes restate the existing WCB program and do not create a competing roadmap or reopen frozen work.
+
+Louis authorizes root to own ordinary detailed design/engineering decisions aligned with this vision. Progress is judged by player-visible outcomes and evidence, not test/asset counts or invented percentages. Human feel/taste/comprehension/fairness/humor/mix/comfort and physical-device approval remain actual review gates. Scope changes and public release actions remain governed by existing authority and acceptance conditions.
+
 ---
 
 # 2. Research Conclusions and Technical Decisions

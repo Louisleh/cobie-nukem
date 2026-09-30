@@ -107,6 +107,6 @@ func _quit() -> void:
 		# Derive the game landing page from the deployed path. This works for the
 		# public /play/ subdirectory, previews, and custom mount points without a
 		# hard-coded production URL.
-		JavaScriptBridge.eval("(() => { const here = new URL(window.location.href); const parts = here.pathname.split('/').filter(Boolean); if (parts.at(-1) === 'play') parts.pop(); const target = '/' + parts.join('/') + '/'; if (window.top !== window) window.top.location.href = target; else window.location.href = target; })();", true)
+		JavaScriptBridge.eval("(() => { const here = new URL(window.location.href); const parts = here.pathname.split('/').filter(Boolean); if (parts.at(-1) === 'play') parts.pop(); const target = new URL('/' + parts.join('/') + (parts.length ? '/' : ''), here).href; if (window.top !== window) window.top.location.href = target; else window.location.href = target; })();", true)
 		return
 	get_tree().quit()

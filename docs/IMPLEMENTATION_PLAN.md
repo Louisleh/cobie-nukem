@@ -8,6 +8,23 @@
 
 This plan replaces the historical scaffold milestones with an evidence-gated program for turning the existing five-mission public alpha into a polished original retro 2.5D shooter. It is deliberately quality-first: one definitive mission and one proven replication are more valuable than five superficially different betas.
 
+## Eight milestones Louis can track
+
+These V labels summarize the existing WCB dependency graph; they are not a parallel roadmap. Detailed engineering briefs are in `docs/work_packets/vision/20260929.md`; current status belongs to WORLD_CLASS_BUILDOUT_LOG.
+
+| ID | Major outcome | Completion signal | Existing packets |
+| --- | --- | --- | --- |
+| V1 | Dependable play from launch to retry | Reliable responsive launch, combat, pause and retry with sustained native/Web/reset evidence | WCB-001–004, WCB-008 performance |
+| V2 | Rain City's signature world | Coherent authored neighborhoods, landmarks, materials and environmental personality in real gameplay | WCB-008 |
+| V3 | Combat with Cobie's swagger | Existing weapons feel distinct, enemy tells/counters read clearly, impact/audio/animation earn human approval | WCB-006/008 |
+| V4 | A Rain City mission worth remembering | Exploration, escalating encounters, secrets and the existing finale form one approved complete mission | WCB-005–008 |
+| V5 | An opening that makes players want more | Salmon Creek's first minutes communicate the fantasy and hook unfamiliar players | WCB-008J/K |
+| V6 | One definitive slice, proven in real play | Integrated Rain City and opening satisfy technical, continuous human and physical-device gates | WCB-009 |
+| V7 | Prove the quality can travel | Exactly one other existing mission reaches comparable quality at a measured production cost | WCB-010 |
+| V8 | An honest release candidate | Approved reproducible packages/deployment with accurate identity, platform claims and remaining-campaign scope | WCB-011 |
+
+V1 starts first and remains a cross-cutting gate. V2/V3/V5 can advance through non-overlapping bounded packets; V4 requires explicit transfers for frozen encounter/boss paths. V6 integrates their evidence. V7 waits for V6; V8 waits for the applicable accepted slice/replication/release gates. Nothing here lifts the frozen new mission/weapon/enemy/economy/meta breadth. Historical 3/6/9 timing is not a fresh deadline promise.
+
 ## Operating rules
 
 1. `docs/PRD.md` defines product intent and acceptance criteria.
