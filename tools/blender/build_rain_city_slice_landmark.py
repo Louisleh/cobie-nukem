@@ -9,12 +9,39 @@ ROOT = Path(__file__).resolve().parents[2]
 SOURCE = ROOT / 'assets/source/blender/rain_city_slice_landmark.blend'
 OUTPUT = ROOT / 'assets/models/environment/rain_city_slice_landmark.glb'
 
-def slab(target, name, outline, x, depth, mat):
+def slab(target, name, outline, x, depth, mat, planar_uv=False):
     n=len(outline)
     vertices=[gp(xx,y,z) for xx in (x-depth/2,x+depth/2) for y,z in outline]
     faces=[tuple(reversed(range(n))),tuple(range(n,2*n))]
     faces += [(i,(i+1)%n,(i+1)%n+n,i+n) for i in range(n)]
     mesh=bpy.data.meshes.new(name);mesh.from_pydata(vertices,[],faces);mesh.materials.append(mat);mesh.update()
+    if planar_uv:
+        # The hood is production-textured after Godot material remapping. Map
+        # its broad end faces in the Y/Z plane at uniform spatial scale, and
+        # unwrap edge faces along the perimeter/depth before beveling. Keep
+        # legacy untextured pizza slabs on their original UV path.
+        uv=mesh.uv_layers.new(name='UVMap')
+        min_y=min(y for y,z in outline);max_y=max(y for y,z in outline)
+        min_z=min(z for y,z in outline);max_z=max(z for y,z in outline)
+        scale=max(max_y-min_y,max_z-min_z)
+        distances=[0.0]
+        for i in range(n):
+            y,z=outline[i];yy,zz=outline[(i+1)%n]
+            distances.append(distances[-1]+math.hypot(yy-y,zz-z))
+        for polygon in mesh.polygons:
+            if polygon.index<2:
+                for corner in polygon.loop_indices:
+                    vertex=mesh.loops[corner].vertex_index
+                    y,z=outline[vertex%n]
+                    uv.data[corner].uv=((max_z-z)/scale,(y-min_y)/scale)
+            else:
+                edge=polygon.index-2
+                coords=((distances[edge]/scale,0.0),
+                        (distances[edge+1]/scale,0.0),
+                        (distances[edge+1]/scale,depth/scale),
+                        (distances[edge]/scale,depth/scale))
+                for corner,coord in zip(polygon.loop_indices,coords):
+                    uv.data[corner].uv=coord
     obj=bpy.data.objects.new(name,mesh);target.objects.link(obj)
     bevel=obj.modifiers.new('EnamelRoundedEdge','BEVEL');bevel.width=.045;bevel.segments=2
     return obj
@@ -48,7 +75,7 @@ def main():
     # only chamber glow, sharing the existing warm material and no live light.
     box(target,'OvenSurround',(-4.91,1.48,-37),(.10,1.48,2.65),m['brick'],.045)
     hood=[(1.86,-38.17),(2.23,-37.85),(2.23,-36.15),(1.86,-35.83)]
-    slab(target,'OvenHood',hood,-4.72,.34,m['steel'])
+    slab(target,'OvenHood',hood,-4.72,.34,m['steel'],planar_uv=True)
     box(target,'OvenThroat',(-4.76,1.84,-37),(.28,.15,1.82),m['steel'],.025)
     box(target,'OvenMouth',(-4.82,1.35,-37),(.12,.68,1.62),m['pepper'],.08)
     for z in (-37.94,-36.06):
