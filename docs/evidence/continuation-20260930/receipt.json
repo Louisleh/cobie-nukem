@@ -1,0 +1,29 @@
+{
+  "run_id": "CN-CONTINUATION-20260930-2H",
+  "status": "tested_candidate_integration_blocked",
+  "runtime_export_source": "a4431029abaaac9ca73cd5ea46ebe85432bccf90",
+  "pr": "https://github.com/Louisleh/cobie-nukem/pull/75",
+  "ci_before_final_docs": "36686985394 PASS",
+  "full_matrix": {
+    "entrypoints": 65,
+    "tests": 64,
+    "warnings": 13,
+    "expected_warnings_only": true,
+    "elapsed_seconds": 149.952,
+    "sha256": "e3a50ef0a52453329b41ea8924355adbff9845d11e24fd45af82fb239b74ebaa"
+  },
+  "acceptance": {
+    "focus_fixture": "negative17/positivePASS; physicalOSdeliveryOPEN",
+    "touch_fixture": "negative4/positivePASS",
+    "public_web_controls": "PASS narrow",
+    "ordinary_Slice_stock": "PASS access/use/pickups; encounteractive",
+    "final_native_mouse": "PASS narrow",
+    "final_native_shutdown": "OPEN original4ObjectDB",
+    "native20min_retention": "PLATEAU_OPEN",
+    "longer_web_pair": "DEFERRED",
+    "human_device_release": "OPEN"
+  },
+  "evidence_root": "/Users/orion/Documents/Codex/2026-09-29/files-pasted-by-the-user-continue/outputs/continuation-20260930-2h",
+  "next": "owner-specific originalnativeverbose reproduction before merge",
+  "recorded_utc": "2026-09-30T08:53:19.996776+00:00"
+}
