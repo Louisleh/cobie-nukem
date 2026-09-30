@@ -135,6 +135,36 @@ func _run() -> void:
 		await process_frame
 	else:
 		_expect(RuntimePipelinePrewarmer._retired_skies.is_empty(), "Headless lifecycle has no renderer retirement queue")
+	var owners: Array[RuntimePipelinePrewarmer] = []
+	for request in RuntimePipelinePrewarmer.MAX_SCENES + 1:
+		var owner := RuntimePipelinePrewarmer.new()
+		root.add_child(owner)
+		owner.warm(PackedStringArray(["res://scenes/weapons/pawstol.tscn"]))
+		owners.append(owner)
+	_expect(RuntimePipelinePrewarmer._active_sky_count == RuntimePipelinePrewarmer.MAX_SCENES, "Concurrent owners reserve only the shared Sky capacity")
+	_expect(not owners.back().succeeded and owners.back()._viewport == null, "Excess concurrent owner reports failed readiness without a viewport")
+	for owner in owners:
+		owner.free()
+	owners.clear()
+	_expect(RuntimePipelinePrewarmer._active_sky_count == 0, "Each destroyed owner releases its active reservation exactly once")
+	if DisplayServer.get_name() != "headless":
+		_expect(RuntimePipelinePrewarmer._retired_skies.size() == RuntimePipelinePrewarmer.MAX_SCENES, "Concurrent cancellation remains within shared retirement capacity")
+	else:
+		_expect(RuntimePipelinePrewarmer._retired_skies.is_empty(), "Headless concurrent cancellation releases without render retirement")
+	await process_frame
+	await process_frame
+	_expect(RuntimePipelinePrewarmer._retired_skies.is_empty(), "Concurrent cancelled Sky resources drain after the render boundary")
+	var recovery := RuntimePipelinePrewarmer.new()
+	root.add_child(recovery)
+	recovery.warm(PackedStringArray(["res://scenes/weapons/pawstol.tscn"]))
+	for frame in 100:
+		await process_frame
+		if not recovery._running:
+			break
+	_expect(recovery.succeeded, "Shared capacity recovers after concurrent-owner cancellation")
+	recovery.queue_free()
+	await process_frame
+	_expect(RuntimePipelinePrewarmer._active_sky_count == 0, "Completion and parent destruction leave no active reservation")
 	await process_frame
 	if failures.is_empty():
 		print("RUNTIME PIPELINE PREPARATION: PASS (rendered boundaries are separate from headless lifecycle)")

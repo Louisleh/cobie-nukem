@@ -15,6 +15,7 @@ var prepared_visuals := 0
 # our retired resources alive through that boundary, independently of a Node
 # which may leave the tree. Admission below caps this shared retirement queue.
 static var _retired_skies: Array[Sky] = []
+static var _active_sky_count := 0
 var _sky: Sky
 var _viewport: SubViewport
 var _light: OmniLight3D
@@ -36,7 +37,7 @@ func warm(scene_paths: PackedStringArray) -> void:
 	rendered_boundaries = 0
 	functional_boundaries = 0
 	prepared_visuals = 0
-	_failure = scene_paths.size() > MAX_SCENES or _retired_skies.size() >= MAX_SCENES
+	_failure = scene_paths.size() > MAX_SCENES or _active_sky_count + _retired_skies.size() >= MAX_SCENES
 	if _failure:
 		completed.emit()
 		return
@@ -57,6 +58,7 @@ func warm(scene_paths: PackedStringArray) -> void:
 	# Match both first missions' sky ambient shader state, not a color-only fill.
 	atmosphere.environment.background_mode = Environment.BG_SKY
 	_sky = Sky.new()
+	_active_sky_count += 1
 	atmosphere.environment.sky = _sky
 	atmosphere.environment.sky.sky_material = ProceduralSkyMaterial.new()
 	atmosphere.environment.ambient_light_source = Environment.AMBIENT_SOURCE_SKY
@@ -298,10 +300,12 @@ static func _release_skies() -> void:
 
 
 func _cancel() -> void:
-	if _sky != null and DisplayServer.get_name() != "headless":
-		_retired_skies.append(_sky)
-		if not RenderingServer.frame_post_draw.is_connected(_release_skies):
-			RenderingServer.frame_post_draw.connect(_release_skies, CONNECT_ONE_SHOT)
+	if _sky != null:
+		_active_sky_count -= 1
+		if DisplayServer.get_name() != "headless":
+			_retired_skies.append(_sky)
+			if not RenderingServer.frame_post_draw.is_connected(_release_skies):
+				RenderingServer.frame_post_draw.connect(_release_skies, CONNECT_ONE_SHOT)
 	_sky = null
 	_running = false
 	set_process(false)
