@@ -39,12 +39,19 @@ done < <(git ls-files 'assets/**')
 # Gameplay callbacks must be owned by a node that disappears with the scene.
 # SceneTreeTimer continuations can resume after their actor or captured locals
 # are freed, producing teardown errors and state changes in the next scene.
-if rg -n 'get_tree\(\)\.create_timer' scripts >/tmp/cobie-unowned-timers.txt; then
-	cat /tmp/cobie-unowned-timers.txt
-	rm -f /tmp/cobie-unowned-timers.txt
-	fail "gameplay scripts contain unowned SceneTreeTimer callbacks"
+timer_log=$(mktemp)
+trap 'rm -f "$timer_log"' EXIT
+search_status=0
+if command -v rg >/dev/null 2>&1; then
+  rg -n 'get_tree\(\)\.create_timer' scripts >"$timer_log" || search_status=$?
+else
+  grep -REn 'get_tree\(\)\.create_timer' scripts >"$timer_log" || search_status=$?
 fi
-rm -f /tmp/cobie-unowned-timers.txt
+case "$search_status" in
+  0) cat "$timer_log"; fail "gameplay scripts contain unowned SceneTreeTimer callbacks" ;;
+  1) ;; # A completed search found no prohibited callbacks.
+  *) fail "unowned timer search failed (exit $search_status)" ;;
+esac
 
 # A release source tree may contain package instructions, but never a stale
 # hard-coded public artifact outside the canonical BuildInfo file.

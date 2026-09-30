@@ -132,6 +132,7 @@ run_godot_test res://tests/smoke/performance_smoke.gd
 # The zone profiler is a rendered/native evidence command and is intentionally
 # not run headlessly here. See docs/AGENTIC_GAMEDEV_WORKFLOW.md.
 bash tools/asset_ip_scan.sh
+python3 -m unittest discover -s tools/tests -p test_architecture_check.py -v
 bash tools/architecture_check.sh
 run_godot_test res://tools/validate_content.gd
 
