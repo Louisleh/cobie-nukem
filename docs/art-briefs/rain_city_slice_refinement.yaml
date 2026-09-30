@@ -56,3 +56,13 @@ human_review_questions:
   - Are wedge, canopy and compliance joke still the memorable first read?
   - Are contrast, rain, close interaction and touch view comfortable during continuous play?
 out_of_scope: Whole-route art closure, marketing-art parity, character/enemy/weapon changes, new encounters, lighting/fog/audio/UI overhaul, physics/route edits, new material families, new missions, BETA removal, public release and human/device acceptance.
+
+visual_revision_20260929_rendered_review:
+  evidence_source: 6d0e38d171ce08070efae752d8d4c29d41324a0f
+  disposition: REVISE after actual paired four-aspect native PNG review by root and independent critic; source contracts pass but art brief read fails.
+  observed_failure: Hood and throat disappear into the dark backplane; center reads as a cream-framed maroon hatch rather than a hot oven. Reduced full-panel glow and distinct bay props work, but the outer bays lose too much welcoming shelter warmth.
+  dominant_correction: Preserve the textured steel hood and its corrected broad front UVs. Expose its trapezoid with two thin sloped and one thin top enamel trim pieces; retain a dark chamber and an unmistakable localized hot lower interior read, separated from the cream jambs/hearth by shape and warm value.
+  chamber_correction: Recess the existing pepper opening slightly behind its frame. Use a modestly thicker existing shelter-glow heat floor or two to three large restrained original coal forms inside it; no new lights, alpha, textures or material families. Avoid a uniformly red closed rectangle.
+  shelter_correction: Restore small partial warm backplane bands behind the two side counters, approximately a quarter or less of their former full-panel warm area. Keep upper background quiet, silhouettes distinct and the side bays asymmetric; do not restore mirrored lightboxes.
+  protected_contract: Existing hood front positions/geometry and spatial UV regression; wedge, canopy, sign and joke; six batches/palette; collision/nav/gameplay/objectives/interactions. Preferred <=5000 triangles, hard <=6000 triangles and <=350KiB GLB. Remove excess small detail if needed rather than widen budgets.
+  acceptance: Two byte-identical rebuilds, exact provenance, meaningful UV and asset tests, fresh matched four-aspect and unaffected-region PNGs, independently visible hood and hot chamber read with shelter warmth, no new clutter or obscured threats/prompts; runtime motion/live/performance/full export gates remain required. Automated design verdict remains provisional and human review open.
