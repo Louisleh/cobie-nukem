@@ -209,6 +209,7 @@ func _test_rain_city_runtime_materials() -> void:
 		_expect(batches.size() <= 6 and batches.size() >= 4, "Slice landmark stays inside its six-batch rendering budget")
 		var triangles := 0
 		var warm_surfaces := 0
+		var mapped_uv_surfaces := 0
 		for candidate in batches:
 			var mesh_instance := candidate as MeshInstance3D
 			var bounds: AABB = mesh_instance.global_transform * mesh_instance.get_aabb()
@@ -221,12 +222,53 @@ func _test_rain_city_runtime_materials() -> void:
 				_expect(mat != null and mat.transparency == BaseMaterial3D.TRANSPARENCY_DISABLED, "Slice landmark uses opaque materials on Web")
 				if mat != null and mat.resource_name == "SL_ShelterGlow" and mat.emission_enabled:
 					warm_surfaces += 1
+				if mat != null and mat.resource_name == "RC_HarbourSteel":
+					_test_slice_hood_uv(mesh_instance, arrays)
+				if mat != null and mat.resource_name in ["RC_RainBrick", "RC_HarbourSteel"]:
+					mapped_uv_surfaces += 1
+					# Raw palette materials are replaced with textured production
+					# families. Reproducible export must preserve spatial mapping.
+					var uvs: PackedVector2Array = arrays[Mesh.ARRAY_TEX_UV]
+					var minimum_uv := Vector2(INF, INF)
+					var maximum_uv := Vector2(-INF, -INF)
+					for uv in uvs:
+						minimum_uv = minimum_uv.min(uv)
+						maximum_uv = maximum_uv.max(uv)
+					_expect(not uvs.is_empty() and (maximum_uv - minimum_uv).length() > 0.05, "Textured Slice brick and steel retain spatial UV variation")
+		_expect(mapped_uv_surfaces == 2, "Slice retains both mapped brick and steel material surfaces")
 		_expect(triangles <= 6000, "Slice landmark stays inside its six-thousand-triangle budget")
 		_expect(warm_surfaces == 1, "Slice service bays retain one shared emissive shelter material")
 		_expect(landmark.find_children("*", "Light3D", true, false).is_empty(), "Slice warmth adds no dynamic light cost")
 		_expect(FileAccess.get_file_as_bytes("res://assets/models/environment/rain_city_slice_landmark.glb").size() <= 350 * 1024, "Slice GLB stays inside its 350 KiB download budget")
 	instance.queue_free()
 	await process_frame
+
+
+func _test_slice_hood_uv(mesh_instance: MeshInstance3D, arrays: Array) -> void:
+	# The authored hood faces +X above the oven. Joined steel elsewhere must
+	# not mask collapsed UVs on these two large textured front triangles.
+	var vertices: PackedVector3Array = arrays[Mesh.ARRAY_VERTEX]
+	var indices: PackedInt32Array = arrays[Mesh.ARRAY_INDEX]
+	var uvs: PackedVector2Array = arrays[Mesh.ARRAY_TEX_UV]
+	var front_faces := 0
+	for offset in range(0, indices.size(), 3):
+		var a := indices[offset]
+		var b := indices[offset + 1]
+		var c := indices[offset + 2]
+		var points := [mesh_instance.global_transform * vertices[a], mesh_instance.global_transform * vertices[b], mesh_instance.global_transform * vertices[c]]
+		var inside_front := true
+		for point: Vector3 in points:
+			if point.x < -4.56 or point.x > -4.54 or point.y < 1.85 or point.y > 2.24 or point.z < -38.2 or point.z > -35.8:
+				inside_front = false
+		var area := (Vector3(points[1]) - Vector3(points[0])).cross(Vector3(points[2]) - Vector3(points[0])).length() * 0.5
+		if not inside_front or area < 0.1:
+			continue
+		front_faces += 1
+		var uv_area := 0.0
+		if uvs.size() == vertices.size():
+			uv_area = absf((uvs[b] - uvs[a]).cross(uvs[c] - uvs[a])) * 0.5
+		_expect(uv_area > 0.0001, "Each broad oven hood front face retains nondegenerate texture UVs")
+	_expect(front_faces == 2, "Slice oven retains both broad textured hood front faces")
 
 
 func _test_salmon_sign_faces() -> void:

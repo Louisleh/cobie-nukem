@@ -203,16 +203,14 @@ func _build_health_bar() -> void:
 	_health_bar.name = "EnemyHealthBar"
 	_health_bar.position.y = maxf(target_height + 0.65, 1.15)
 	add_child(_health_bar)
-
 	var background := MeshInstance3D.new()
 	background.name = "Background"
 	var background_mesh := QuadMesh.new()
 	background_mesh.size = Vector2(_health_bar_width + 0.12, 0.18)
 	background.mesh = background_mesh
 	background.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-	background.material_override = _health_bar_material(Color("101416"))
+	background.material_override = create_health_bar_material(Color("101416"))
 	_health_bar.add_child(background)
-
 	var fill := MeshInstance3D.new()
 	fill.name = "Fill"
 	fill.position.z = 0.008
@@ -220,24 +218,26 @@ func _build_health_bar() -> void:
 	_health_bar_fill_mesh.size = Vector2(_health_bar_width, 0.10)
 	fill.mesh = _health_bar_fill_mesh
 	fill.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-	_health_bar_fill_material = _health_bar_material(Color("65d36e"))
+	_health_bar_fill_material = create_health_bar_material(Color("65d36e"))
 	fill.material_override = _health_bar_fill_material
 	_health_bar.add_child(fill)
-
-	_health_label = Label3D.new()
-	_health_label.name = "HealthPoints"
-	_health_label.position.y = 0.17
-	_health_label.billboard = BaseMaterial3D.BILLBOARD_ENABLED
-	_health_label.font_size = 22
-	_health_label.pixel_size = 0.0022
-	_health_label.outline_size = 4
-	_health_label.modulate = Color("f4f1de")
-	_health_label.no_depth_test = false
-	_health_label.fixed_size = true
-	_health_label.visible = false
+	_health_label = create_health_points_label()
 	_health_bar.add_child(_health_label)
 	_update_health_bar()
-func _health_bar_material(color: Color) -> StandardMaterial3D:
+static func create_health_points_label() -> Label3D:
+	var label := Label3D.new()
+	label.name = "HealthPoints"
+	label.position.y = 0.17
+	label.billboard = BaseMaterial3D.BILLBOARD_ENABLED
+	label.font_size = 22
+	label.pixel_size = 0.0022
+	label.outline_size = 4
+	label.modulate = Color("f4f1de")
+	label.no_depth_test = false
+	label.fixed_size = true
+	label.visible = false
+	return label
+static func create_health_bar_material(color: Color) -> StandardMaterial3D:
 	var material := StandardMaterial3D.new()
 	material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
 	material.billboard_mode = BaseMaterial3D.BILLBOARD_ENABLED

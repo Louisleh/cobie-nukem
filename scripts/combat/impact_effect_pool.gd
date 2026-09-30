@@ -102,6 +102,21 @@ func prewarm() -> void:
 	_prewarmed = true
 
 
+func create_pipeline_samples() -> Array[Node3D]:
+	# Share gameplay construction without activation, pool ownership or RNG use.
+	# The caller owns these detached render-only roots and must free them.
+	var enemy := _create_marker(true)
+	var world := _create_marker(false)
+	var pop := _create_pop()
+	enemy.node.visible = true
+	world.node.visible = true
+	pop.node.visible = true
+	for index in pop.sparks.size():
+		pop.sparks[index].visible = true
+		pop.sparks[index].position = Vector3(float(index - 3) * 0.08, 0.15, 0.0)
+	return [enemy.node, world.node, pop.node]
+
+
 func update(delta: float) -> void:
 	_update_markers(delta)
 	_update_pops(delta)

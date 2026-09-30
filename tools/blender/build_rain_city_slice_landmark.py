@@ -9,12 +9,39 @@ ROOT = Path(__file__).resolve().parents[2]
 SOURCE = ROOT / 'assets/source/blender/rain_city_slice_landmark.blend'
 OUTPUT = ROOT / 'assets/models/environment/rain_city_slice_landmark.glb'
 
-def slab(target, name, outline, x, depth, mat):
+def slab(target, name, outline, x, depth, mat, planar_uv=False):
     n=len(outline)
     vertices=[gp(xx,y,z) for xx in (x-depth/2,x+depth/2) for y,z in outline]
     faces=[tuple(reversed(range(n))),tuple(range(n,2*n))]
     faces += [(i,(i+1)%n,(i+1)%n+n,i+n) for i in range(n)]
     mesh=bpy.data.meshes.new(name);mesh.from_pydata(vertices,[],faces);mesh.materials.append(mat);mesh.update()
+    if planar_uv:
+        # The hood is production-textured after Godot material remapping. Map
+        # its broad end faces in the Y/Z plane at uniform spatial scale, and
+        # unwrap edge faces along the perimeter/depth before beveling. Keep
+        # legacy pizza slabs on their original UV path.
+        uv=mesh.uv_layers.new(name='UVMap')
+        min_y=min(y for y,z in outline);max_y=max(y for y,z in outline)
+        min_z=min(z for y,z in outline);max_z=max(z for y,z in outline)
+        scale=max(max_y-min_y,max_z-min_z)
+        distances=[0.0]
+        for i in range(n):
+            y,z=outline[i];yy,zz=outline[(i+1)%n]
+            distances.append(distances[-1]+math.hypot(yy-y,zz-z))
+        for polygon in mesh.polygons:
+            if polygon.index<2:
+                for corner in polygon.loop_indices:
+                    vertex=mesh.loops[corner].vertex_index
+                    y,z=outline[vertex%n]
+                    uv.data[corner].uv=((max_z-z)/scale,(y-min_y)/scale)
+            else:
+                edge=polygon.index-2
+                coords=((distances[edge]/scale,0.0),
+                        (distances[edge+1]/scale,0.0),
+                        (distances[edge+1]/scale,depth/scale),
+                        (distances[edge]/scale,depth/scale))
+                for corner,coord in zip(polygon.loop_indices,coords):
+                    uv.data[corner].uv=coord
     obj=bpy.data.objects.new(name,mesh);target.objects.link(obj)
     bevel=obj.modifiers.new('EnamelRoundedEdge','BEVEL');bevel.width=.045;bevel.segments=2
     return obj
@@ -30,10 +57,16 @@ def main():
       'warm':material('SL_ShelterGlow',(1,.48,.13,1),0,.7,.8),
       'pepper':material('SL_PepperEnamel',(.32,.028,.019,1),.12,.5,.18),
     }
-    # Window inserts sit proud of the retained gameplay shell, recessed behind
-    # a dimensional frame; opaque backplanes avoid costly glass overdraw.
+    # Opaque service planes sit proud of the retained shell. Warmth is localized
+    # beneath the shelves/hood; dark planes preserve recess depth without glass.
     for i,z in enumerate((-41,-37,-33)):
-        box(target,f'WarmBay{i}',(-5.0,1.4,z),(.08,1.75,3.45),m['warm'],.04)
+        back=m['steel'] if i == 0 else m['brick']
+        box(target,f'ServiceBack{i}',(-5.0,1.4,z),(.08,1.75,3.45),back,.04)
+        box(target,f'ShelterStrip{i}',(-4.93,2.19,z),(.06,.11,3.25),m['warm'],.012)
+        if i != 1:
+            # Partial lower warmth supports the counters without restoring
+            # full luminous panels; upper walls and asymmetric props stay quiet.
+            box(target,f'CounterShelterBand{i}',(-4.94,1.28,z),(.025,.40,2.65),m['warm'],0)
         for zz in (z-1.8,z+1.8):
             box(target,f'BayPier{i}_{zz}',(-5.1,1.4,zz),(.45,2.4,.22),m['cream'],.055)
         for yy in (.35,2.4):
@@ -41,20 +74,37 @@ def main():
         box(target,f'Counter{i}',(-4.96,.86,z),(.62,.17,3.55),m['cream'],.035)
         for zz in (z-.9,z+.9):
             box(target,f'WindowMullion{i}_{zz}',(-4.86,1.65,zz),(.15,1.42,.075),m['steel'],.012)
-    # Hand-built service silhouettes break up the opaque warm backplanes.
-    # A central oven and two shelf bays read from the route without cluttering it.
-    box(target,'OvenRecess',(-4.9,1.48,-37),(.08,1.08,1.65),m['steel'],.16)
-    box(target,'OvenMouth',(-4.82,1.35,-37),(.08,.48,1.23),m['pepper'],.12)
-    box(target,'OvenHearth',(-4.72,1.1,-37),(.28,.12,1.68),m['cream'],.025)
-    for bay in (-41,-33):
-        box(target,f'ServiceShelf{bay}',(-4.82,1.35,bay),(.24,.10,2.6),m['steel'],.015)
-        for i in range(3):
-            z=bay-.82+i*.82
-            cylinder_between(target,f'ServiceTin{bay}_{i}',(-4.8,1.4,z),(-4.8,1.75,z),.17,m['orange'],10)
-            box(target,f'TinLabel{bay}_{i}',(-4.61,1.58,z),(.045,.13,.17),m['cream'],.01)
-        box(target,f'OrderBoard{bay}',(-4.83,2.06,bay),(.10,.38,1.2),m['steel'],.02)
-        for i in range(3):
-            box(target,f'MenuStroke{bay}_{i}',(-4.75,2.15-i*.09,bay),(.04,.025,.76-i*.12),m['cream'],0)
+    # Bake bay: broad hood/throat above a deep dark chamber, raised hearth below.
+    # These large shapes target route-distance read; the hot lower floor is the
+    # only chamber glow, sharing the existing warm material and no live light.
+    box(target,'OvenSurround',(-4.91,1.48,-37),(.10,1.48,2.65),m['brick'],.045)
+    hood=[(1.86,-38.17),(2.23,-37.85),(2.23,-36.15),(1.86,-35.83)]
+    slab(target,'OvenHood',hood,-4.72,.34,m['steel'],planar_uv=True)
+    box(target,'OvenThroat',(-4.76,1.84,-37),(.28,.15,1.82),m['steel'],.025)
+    box(target,'OvenMouth',(-4.91,1.35,-37),(.12,.68,1.62),m['pepper'],.08)
+    for z in (-37.94,-36.06):
+        box(target,f'OvenJamb{z}',(-4.73,1.34,z),(.22,.77,.18),m['cream'],.025)
+    box(target,'OvenLintel',(-4.72,1.76,-37),(.22,.14,2.02),m['cream'],.025)
+    box(target,'OvenHeat',(-4.78,1.135,-37),(.06,.13,1.45),m['warm'],.012)
+    box(target,'OvenHearth',(-4.66,.99,-37),(.64,.16,2.17),m['cream'],.03)
+    box(target,'HearthUnderlip',(-4.38,.895,-37),(.09,.07,2.04),m['steel'],.01)
+    # Prep bay: one board, short stock shelf and a broad uncluttered worktop.
+    box(target,'PrepShelf',(-4.82,1.61,-41),(.24,.10,2.6),m['steel'],.015)
+    for i,z in enumerate((-41.68,-40.95)):
+        cylinder_between(target,f'PrepTin{i}',(-4.8,1.66,z),(-4.8,1.98,z),.17,m['orange'],10)
+        box(target,f'PrepTinLabel{i}',(-4.61,1.81,z),(.045,.13,.17),m['cream'],.01)
+    box(target,'PrepWorktop',(-4.78,1.02,-41),(.40,.11,2.75),m['cream'],.025)
+    box(target,'PrepBoard',(-4.55,1.1,-41.20),(.16,.06,1.12),m['orange'],.015)
+    box(target,'PrepOrderBoard',(-4.83,2.03,-41),(.10,.31,1.20),m['steel'],.02)
+    for i in range(2):
+        box(target,f'PrepMenuStroke{i}',(-4.75,2.10-i*.10,-41),(.04,.025,.76-i*.18),m['cream'],0)
+    # Collection bay: quiet brick wall, off-center stacked takeaway boxes and a
+    # short tray shelf. It intentionally does not mirror the preparation bay.
+    box(target,'CollectionShelf',(-4.82,1.29,-33),(.32,.11,2.6),m['steel'],.018)
+    for i in range(2):
+        box(target,f'CollectionBox{i}',(-4.73,1.42+i*.18,-33.65+i*.08),(.34,.16,.96),m['cream'],.02)
+        box(target,f'CollectionBoxLid{i}',(-4.72,1.505+i*.18,-33.65+i*.08),(.36,.035,1.0),m['orange'],.008)
+    box(target,'CollectionTray',(-4.74,1.40,-32.42),(.34,.08,.62),m['orange'],.015)
     # Roof cornice and shallow stepped pediment replace the slab's silhouette.
     for y,width in ((4.35,14.9),(4.62,13.5),(4.87,8.2)):
         box(target,f'Cornice{y}',(-5.22,y,-37),(.8,.24,width),m['cream'],.07)
@@ -77,12 +127,26 @@ def main():
         cylinder_between(target,f'Pepperoni{i}',(-4.73,y,z),(-4.62,y,z),.23,m['pepper'],16)
     for z in (-38.2,-36.6):
         cylinder_between(target,f'EmblemSupport{z}',(-5.35,4.6,z),(-5.35,6.45,z),.09,m['steel'],8)
+    # Thin enamel construction trim exposes the hood's dark trapezoid against
+    # its quiet background. The production-textured steel front/UVs stay intact.
+    # Author after the existing palette parts so consolidation keeps their pivots.
+    for i,(a,b) in enumerate((((1.86,-38.17),(2.23,-37.85)),
+                              ((2.23,-37.85),(2.23,-36.15)),
+                              ((2.23,-36.15),(1.86,-35.83)))):
+        cylinder_between(target,f'OvenHoodTrim{i}',(-4.51,*a),(-4.51,*b),.035,m['orange'],6)
     for obj in target.objects:
         for modifier in obj.modifiers:
             if modifier.type == 'BEVEL': modifier.segments = 1
     parts=len([o for o in target.objects if o.type=='MESH']);batches=consolidate_by_material(target)
     for obj in target.objects:
-        if obj.type=='MESH':obj.name=obj.name.replace('RainCity_','Slice_')
+        if obj.type=='MESH':
+            obj.name=obj.name.replace('RainCity_','Slice_')
+            # Bevel UVs vary slightly across processes. Bounded precision
+            # preserves their spatial projection: RC_* batches are remapped to
+            # textured production materials by Godot, so UVs must not collapse.
+            for layer in obj.data.uv_layers:
+                for corner in layer.data:
+                    corner.uv=(round(corner.uv.x,4),round(corner.uv.y,4))
     triangles=sum(len(o.data.polygons) for o in target.objects if o.type=='MESH')
     bpy.context.scene['presentation_only']=True;bpy.context.scene['source_parts']=parts;bpy.context.scene['material_batches']=batches
     SOURCE.parent.mkdir(parents=True,exist_ok=True);OUTPUT.parent.mkdir(parents=True,exist_ok=True)

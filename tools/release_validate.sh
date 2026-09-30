@@ -74,6 +74,7 @@ run_godot_test res://tests/unit/enemy_presentation_profile_test.gd
 run_godot_test res://tests/unit/navigation_contract_test.gd
 run_godot_test res://tests/unit/ui_scene_test.gd
 run_godot_test res://tests/smoke/menu_resource_warmup_test.gd
+run_godot_test res://tests/smoke/runtime_pipeline_prewarmer_test.gd
 run_godot_test res://tests/unit/asset_contract_test.gd
 run_godot_test res://tests/unit/visual_capture_manifest_test.gd
 run_godot_test res://tests/unit/gameplay_foundation_test.gd

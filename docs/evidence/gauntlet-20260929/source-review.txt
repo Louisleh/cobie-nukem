@@ -1,0 +1,40 @@
+Final read-only integration review
+Head: 86e6535a2585fb88480a0fd5c4f2eeddf60a5ec2
+Baseline: 0cb1e2dd31d3e4fe7642819ec95cac9e613a81e1
+Reviewer: /root/gauntlet_cleanup_critic; inherited model identifier unavailable
+
+Disposition: conditional PR code readiness. No blocking production code finding in the complete fifteen-path change. Revised full QA/export, actual native/package/Web acceptance and the final ledger update remain integration-owner gates. I ran no engine, browser or heavy jobs and edited no canonical source.
+
+Production scope
+
+Runtime changes are confined to render preparation, the title inventory/readiness handler and pure healthbar/impact sample factories. Mission scenes, collision/navigation, checkpoints/save schema, input, weapon timing/damage, enemy behavior, project settings, export presets and build stamp are unchanged. This advances bounded V1 reliability/preparation and V2 Slice presentation; it does not close the definitive slice or reopen frozen campaign/boss/economy breadth.
+
+EnemyAgent extracts existing label/material construction with identical name, position, billboard, font size, pixel size, outline, colors, depth/fixed-size and visibility values. Production call sites use the shared factories. Impact samples use existing mesh/material constructors without pool acquisition, activation, RNG, gameplay parenting or audio. Their detached roots are freed after script-free mesh proxies are copied. Scene preparation instantiates no gameplay actors or native particles; SceneState inspection supplies native visual properties and existing presentation-profile textures. These changes remove the earlier actor-ready/global-RNG side effects.
+
+Ownership and failure semantics
+
+Canonical prewarmer and fixture hashes exactly match reviewed f763516. The previous focused review applies without hidden source drift. Preparation admits at most 16 scenes, 192 visuals, 16 active proxies per stage and 16 active plus retired Sky resources across owners. Rendered staging awaits actual post-draw; headless functional ticks are separate. Missing resources, extraction-depth/visual overflow or saturated shared capacity prevent success. Completion releases temporary ownership; the title accepts READY only on succeeded and uses its existing FAILED retry path otherwise.
+
+Sky retirement holds only owned resources until a real renderer boundary, independently of the owner's Node lifetime. Repeated cancellation, parent destruction and concurrent owners transfer reservations exactly once and drain retirement afterward. No global cache purge or permanent showcase is introduced. The installed Compatibility renderer source and focused full logs support this repair, as recorded in the previous review. No new ownership hole was found in the combined diff.
+
+Limitations remain explicit. Extraction supports the current fourteen title paths rather than a generic inherited-scene evaluator. Parent overrides on nested visual instances and inherited base-scene traversal are not generally proved. Native proxies and their centers inside a frustum do not prove every surface compiles, CPU-particle trail variants are warmed, or temporary shader programs remain resident into gameplay. No elapsed-time watchdog handles a rendered warmup without post-draw. Actual fresh title, entry and first-fire measurements must determine the benefit.
+
+Art and provenance
+
+Independent GLB parsing confirms 353468 bytes, below the 350 KiB cap; 4672 triangles, below the 6000 hard cap and preferred 5000; six meshes/six opaque primitives and the original six material names. The GLB contains no textures, images, animations or light extensions. The deterministic builder uses original primitives and the existing palette. No route, collision, navigation, gameplay interaction or external IP is added. Exact GLB, editable Blender and builder hashes match the manifest.
+
+The frozen repository gauntlet brief is byte-identical to e84f94c. The art brief records the rejected first actual visual read and bounded correction without claiming human approval. Taste, affected/unaffected views, live approach readability and fresh performance still require root and visual-critic dispositions.
+
+Regression quality
+
+The smoke fixture exercises enabled preparation, missing-resource failure, replacement, early owner destruction, burst saturation/drain/recovery and seventeen concurrent owners against sixteen-resource capacity. It inspects actual proxies, production mapped materials/sprites, lighting states/orientations, freed viewport IDs, unchanged run stats/groups/RNG and rendered versus headless boundaries. This is substantive behavior coverage, registered in the release matrix.
+
+Asset checks preserve the existing budgets, require spatial UV variation on both production mapped surfaces and locate the two large oven-hood front triangles to reject degenerate UV area. The localized check prevents unrelated steel UVs from hiding the reproduced hood failure. Its authored coordinates express an existing asset contract; it does not establish visual taste or texel-density quality. Additional meaningful tests for scene-count/visual-overflow inputs can follow when those cases evolve; tests that merely restate constants are unnecessary.
+
+EnemyAgent remains exactly 500 lines, within its architecture ceiling; the prewarmer is 336 lines. Cross-system additions stay small and pure, with no autoload or thread dependency. git diff --check is clean. Export exclusions are unchanged, so fresh artifact inspection remains required: source review cannot establish package hygiene.
+
+Documentation and remaining gates
+
+The ledger header still describes the old 319440-byte/4252-triangle storefront and previous 60-entrypoint matrix. The gauntlet entry ends at its initial no-implementation-accepted state. These need root updates before merge. Preserve earlier dated evidence and add the exact accepted runtime/art/integration heads, commands, receipts, rejected attempts and open human/device/performance gates. Do not promote provisional work or a raw zero exit to full acceptance.
+
+PR readiness requires revised QA_EXPORTS=1 with full diagnostics reviewed; independent final native and fresh packaged Web/macOS title/menu/selector/mission/fire/retry/pause/reset/shutdown checks; art-capture and performance dispositions; actual package hashes; updated ledger; and green CI. A draft PR can be reviewed while these run. This technical review proves no causal startup speedup, whole-engine/GPU leak freedom, physical-device pass or human approval.

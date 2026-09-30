@@ -1,0 +1,52 @@
+{
+  "run_id": "CN-GAUNTLET-20260929",
+  "as_of_utc": "2026-09-30T05:39:39.276321+00:00",
+  "runtime_art_export_source": "86e6535a2585fb88480a0fd5c4f2eeddf60a5ec2",
+  "baseline_main": "0cb1e2dd31d3e4fe7642819ec95cac9e613a81e1",
+  "prompt_sha256": "abe4178a6dbd83a1c6daedfcc25454fe420dc4a74713903ec9705b9748968653",
+  "asset": {
+    "bytes": 353468,
+    "triangles": 4672,
+    "opaque_materials": 6,
+    "sha256": "cbac4184412798fd8553e548d1c812ea2eba5e3677c7531f9764f03e18af706f"
+  },
+  "validation": {
+    "entrypoints": 62,
+    "elapsed_seconds": 155.949,
+    "expected_warnings": 13,
+    "unattributed_diagnostics": 0,
+    "log_sha256": "71c6e17a7dcc99af1032ab7041168d6811a5a9ed5ccc1328903f7155d692adce"
+  },
+  "web_pck_sha256": "22a0d5272691362bf9cc4427d1440b9a5ed06c0ac060a6c4ea98fd802973cc0d",
+  "mac_zip_sha256": "16a307e51f244dc926bfd0f504db1997fa214d8561cf48143ddf943711610e39",
+  "technical_acceptance": [
+    "render-only resource preparation and bounded active/retired Sky lifecycle",
+    "meaningful global/spatial hood UV negative and positive regression",
+    "current full local matrix and fresh packages",
+    "12 actual static captures provisional PASS",
+    "nine motion samples provisional visual PASS only",
+    "12 native PCK-under-editor zone budgets PASS; standalone title clean",
+    "ordinary synthetic-touch Web weapons/reload/damage/death/retry/firing"
+  ],
+  "open": [
+    "849ms observed Web entry stall; causal speed benefit unproven",
+    "longer whole-Web/GPU memory boundedness",
+    "ordinary Slice approach/gate clearance/stock interaction",
+    "ordinary standalone native mission/focus and keyboard/pointer recovery",
+    "continuous clip/flicker, full mission and human/device acceptance"
+  ],
+  "web_paired_observation_ms": {
+    "baseline_entry": 1026,
+    "candidate_entry": 849,
+    "baseline_first_fire": 107,
+    "candidate_first_fire": 70,
+    "causal": false
+  },
+  "native_profile_scope": "actual native exported PCK under pinned editor executable; separate standalone title boot",
+  "motion_scope": "scripted camera; callbacks and brief enemies remain; sampled angle review only",
+  "interruptions": "roughly76min service outage recorded; not continuous active engineering",
+  "release_identity": "unstamped local previews retain historical footer; no public release/BETA change",
+  "evidence_root": "task outputs/gauntlet/evidence; detailed raw logs hash-indexed outside Git",
+  "next_brief": "docs/work_packets/gauntlet/next-pass-20260930.txt",
+  "integration_identity": "See Git PR/checks and final task outputs/gauntlet/receipt.json; documentation descendants do not alter exported runtime/art bytes."
+}
