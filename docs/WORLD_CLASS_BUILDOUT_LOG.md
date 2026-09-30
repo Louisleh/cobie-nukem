@@ -12,6 +12,21 @@ This is the durable continuation ledger for the Cobie Nukem 3/6/9 quality progra
 - **Next dependency-safe packet:** attribute first-entry resource/shader costs and collect a clean same-state sustained Web reset/soak; refine Slice cornice attachment, oven identity and warm-bay material hierarchy after continuous gameplay review. New mission/weapon/enemy/economy/meta breadth stays frozen. Historical rejected WCB-008L M1R stays rejected; M2–M5/boss implementation is not reopened. WCB-009 remains human-gated.
 - **Toolchain:** Godot4.7.1 stays pinned;4.7.2 is diagnostic-only. Godot inspection MCP and isolated Chrome DevTools MCP1.10.1 are callable; usage statistics/CrUX disabled. Blender5.2 LTS/Material Maker1.7 production CLI works. Optional Blender MCP/Context7 are absent; requested Spark model is unavailable without substituted worker. Storage below preferred20GiB reserve but above minimum; serial bounded jobs used. No permanent execution bridge, Hermes-job migration or physical-device approval.
 
+## Vision milestone tracker — September 29
+
+Track IDs are the owner-facing view of the existing packets, defined in PRD §1.5.6 and IMPLEMENTATION_PLAN. Louis authorized root-owned detailed decisions and continued implementation; no new human playtest or subjective approval is implied.
+
+| ID | Status | Evidence and next gate |
+| --- | --- | --- |
+| V1 Dependable play | Active | Foundation fixes/PR #69–72 pass; first-entry and sustained Web/reset/heap gate remains partial. Bounded attribution + six short menu-return cycles collected; shader checks still stall entry and JS heap retention remains unresolved. |
+| V2 Rain City world | Active | Original Slice storefront and production pipeline verified; coherent whole-route art/motion/human taste still open. |
+| V3 Combat swagger | Technical foundations in place | Existing kit/feedback contracts pass; authored timing, animation/audio response and human feel/fairness still open. |
+| V4 Memorable mission | Technical foundations in place | Routes/encounters/finale function; authored pacing/spectacle/human review remain open. Frozen paths need separate ownership before changes. |
+| V5 Compelling opening | Active | Title and Salmon Creek perimeter/encounter pilots verified; continuous unfamiliar-player hook/comprehension still unverified. |
+| V6 Definitive slice | Human/device review open | Requires integrated V1–V5 and actual subjective/device acceptance; no BETA removal. |
+| V7 Replication | Not started; gated by V6 | Exactly one existing mission, selected on measured quality/cost after accepted pipeline. |
+| V8 Release candidate | Not started; gated | Source/package/public identity, actual approvals and honest scope required before release actions. |
+
 ## Milestone dashboard
 
 | Packet | State | Owner | Integrated commit | Verification | Honest boundary |
@@ -852,3 +867,18 @@ Decision and remaining gate:
 Runtime `d5f835ace6a32169b2684ef7d2fd983016ef8df6`: full local release/export matrix and Linux CI `36646982755` PASS. Actual unsigned Mac archive title→menu→Doghouse→mission map→Rain City→pause→main menu→Quit exits0 with no engine errors/warnings/leaks. Fresh forced-touch packaged Web repeats launch, six shots while alive (health64/ammo15→9) and pause→main menu with empty error/warning console. No human playthrough claimed.
 
 Source/package/raw-bound summary `20260929-loader-web.json` retains title1393/1363ms, entry1075ms and143ms live six-shot task. rAF array filled during prior idle and is excluded from live quantile claims. MCP trace summary URL is stale; direct page location/raw FunctionCall URLs bind d5 candidate8062. Preparation leak repair is accepted, smooth loading/sustained Web performance is not. Art, collider/navigation and render receipts remain unchanged0ed32bc. Root accepts technical integration via PR #72 after its documentation-head CI passes; no human/device/release gates promoted.
+
+## September 29 — Vision tracking and Web attribution continuation
+
+- Root owns vision sections/brief/ledger plus new browser-only observation/analysis tools and tests. Current source main `fe8fb04` is clean, source CI `36648141138` PASS. Import passes. Legacy game_dev_health reports absent optional Blender MCP and a stale configuration-policy mismatch; installed Blender CLI and actual Godot/Chrome inspection workflows remain usable. No runtime bridge enabled.
+- V1–V8 map the existing WCB program to major player-visible outcomes, with engineering decompositions in `docs/work_packets/vision/20260929.md`. User delegates ordinary detail decisions; human/device gates remain honest. No competing roadmap, percentage completion, content expansion or implicit reopening of frozen work.
+- Next bounded packet: new standard-browser observers separate bounded phase/frame/long-task storage, WebGL call waits and matching menu-return heap samples. No production runtime transfer until attribution supports a specific fix. Prior observer that filled during idle remains rejected for live quantiles.
+
+### V1 continuation: bounded Web attribution and menu navigation
+
+- Measurement source remains `d5f835a`; PCK SHA-256 `d1bfb0c5942d048d42a5b6a9b36de3b717a095b03fd2c9c34b24b1229291d2b2`. Chrome 154.0.8037.59/M4, localhost, CSS 1024×768/DPR2, forced touch, existing disk/driver caches. Browser-only probe is capped at 16 phases, 4096 rolling frame gaps and 256 task/slow-call entries per phase; GL objects are weakly referenced; reset clears observation buffers. This is attribution instrumentation, not uninstrumented acceptance.
+- First observed Salmon Creek entry: 1213 ms long task; shader/program status checks total 645.6 ms across its recorded phase (124 compile calls; phase also includes subsequent play). Verified first Rain City entry: 653 ms maximum long task and 231.7 ms shader/program checks; first verified firing: 83 ms task and 61.5 ms checks. Warm repeated Rain City entry still has 427–452 ms maximum tasks. These totals are call attribution, not GPU timings or proof of one exclusive cause.
+- Six short Rain City entry → six shots → pause → main-menu cycles completed; each end capture shows health 100 and ammo 9. Firing phase rAF p95 33.9–35.0 ms, maxima 48.2–66.7 ms, no >100 ms gaps in these short retained windows. They do not prove sustained/full-route combat, physical touch or a frame-budget pass.
+- Comparable both-loaded baseline → cycle six: WASM/ArrayBuffer data remains 447,917,758 bytes, but total heap self size grows 536,135,763 → 541,089,958 bytes. Largest type deltas are object elements/properties/arrays; WebGL locations/programs also grow. Retention attribution remains OPEN; no no-leak acceptance. Pre-Rain-City heap and initial misrouted Rain City selection/firing labels are rejected from comparisons.
+- Pre-cycle mistaken Enter activated Return to Site and exposed an actual navigation SyntaxError: empty root path produced `//`. Root transfers only the Web `_quit` URL expression in `scripts/ui/menu_controller.gd`; resolve an absolute landing URL and avoid doubled root slash. Exact shipping expression passes ten root/play/nested/query/fragment/frame cases with `node tools/performance/test_menu_return_url.js`; observer boundedness/phase isolation/original-return-and-exception preservation passes `node tools/performance/test_web_evidence_probe.js`. Native Quit is unaffected.
+- Full raw phase records, heap snapshots, screenshots and SHA receipts are task outputs under `outputs/next-milestone/`; raw heaps stay out of Git. This packet accepts a narrow navigation repair only after fresh exports/browser verification, while startup and retention investigation stays partial. Next: retained-object paths/ownership analysis and measured material warmup coverage, then uninstrumented repeated-entry and sustained actual play; no art/content breadth expansion.
