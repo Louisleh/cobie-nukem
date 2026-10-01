@@ -27,6 +27,11 @@ The accepted narrower renderer/Sky/art work and existing functional foundations 
 
 History sequence2 binds clean candidate and fresh packaged runtime `de59ece1382d9c0009abc8b8ef27a7cffe4a33bf`, full65-entrypoint QA/exports, independent raw review and finite native/play dispositions. Package-marker early-match/producer-failure false passes are repaired. Touch ammo has a tested dedicated lane, guarded parent-owned layout helper and live combat captures; the initial four-file implementation failed the500-line architecture budget and was repaired before the final PASS. Native short driver and525.141-second idle control closed cleanly; the damaged comparison paused at10health instead46 and is INVALID. G1 remained at the first barrier and resumed after its20:56UTC bound; no Slice/checkpoint completion is inferred. New packages are unsigned/unstamped. Fresh draft CI is separately receipt-bound after push. Sequence3 corrects stale dimension explanations without rewriting sequence2. All eight indices and acceptance flags remain unchanged. This is intentional: narrower technical repairs do not complete the frozen player-quality targets.
 
+
+## Original-deadline follow-up
+
+Sequence4 binds current de59 standalone title/menu/normalQuit: exit0 in127.746s, menu-to-Quit-focus observed56.44s; no raw error/warning/ObjectDB/orphan match. This short package observation is not a D2 long retry or original damaged-history closure. Independent review finds15/16 ownership scripts unchanged froma443; some director/presentation tests disable playback and others drain frames before exit. They do not prove immediate packagedQuit cleanup. Obtain verbose survivor class/instance identity first, then test exactly one falsifiable owner hypothesis with scalar/WeakRef observation. No speculative patch or score/cap/acceptance lift. Prior seals are untouched; separate follow-up outputs/continuation-20261001-owner-review owns new evidence.
+
 ## Frozen assessment anchors
 
 - **0**: No applicable valid evidence, not performed, or failed target; record which, never infer product is bad from unknown. Plans/prompts/reports alone earn no delivered-outcome credit.
