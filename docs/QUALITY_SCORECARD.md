@@ -10,18 +10,22 @@ Candidate documentation/tooling source: `84e0430509653fedaacb54873988117128a8a37
 
 | Milestone | Index | Supporting subtotal | Binding cap / state | Next evidence gate |
 |---|---:|---:|---|---|
-| V1 — Dependable play | 25 | 35 | 25; BLOCKED; technically functional candidate | Qualify native driver, attribute original shutdown survivors; preserve strict retention and OS gates. |
+| V1 — Dependable play | 25 | 35 | 25; BLOCKED; technically functional candidate | Qualified driver; attribute original shutdown survivors; preserve strict retention and OS gates. |
 | V2 — Rain City signature world | 35 | 35 | 50; PROVISIONAL WORLD PILOT | Continuous normal approach and measured HUD safe area, then named ten-second human recognition; bounded context pilot only if gap persists. |
 | V3 — Combat with Cobie swagger | 25 | 25 | 50; TECHNICAL FOUNDATIONS; PLAYER QUALITY UNPROVED | Record one Barkshot/shield pairing with hit/miss/counter/reload, audition audio and collect named fairness/role feedback. |
 | V4 — Memorable complete Rain City mission | 30 | 33.75 | 50; MECHANICAL MISSION; ORDINARY COMPLETION UNPROVED | Finish Slice two waves → gate two → waterfront → ordinary checkpoint recovery, then full route/finale within frozen existing scope. |
 | V5 — Opening that earns attention | 15 | 18.75 | 25; OPENING PILOT; HOOK UNPROVED | Capture/review real 0–30 seconds with sound, then unfamiliar-player 3–5 minutes protocol; no extra title content as substitute. |
 | V6 — One definitive slice proven in real play | 15 | 18.75 | 15; BLOCKED BY V1–V5 AND HUMAN/DEVICE GATES | Close native/ordinary route gates; assemble complete real-play bundle and obtain actual named owner/device decisions. |
 | V7 — Prove quality can travel | 0 | 0 | 0; GATED; NOT STARTED | Accept V6 before selecting exactly one existing mission; no automatic boss/M2–M5 transfer. |
-| V8 — Honest release candidate | 0 | 18.75 | 0; GATED; RELEASE NOT STARTED | After accepted dependencies, close package marker and public identity/platform/IP/signing gates; publication stays separate authorized action. |
+| V8 — Honest release candidate | 0 | 18.75 | 0; GATED; RELEASE NOT STARTED | Package-marker gate repaired; after accepted dependencies, close public identity/platform/IP/signing gates; publication stays separate authorized action. |
 
 The V6 cap of 15 is the **observed minimum of current V1–V5 indices**, recalculated every snapshot; 15 is not a policy constant. V7 and V8 remain at zero until factual dependency approval, even when supporting release infrastructure has partial credit. No numerical score activates replication, removes BETA or authorizes publication.
 
 The accepted narrower renderer/Sky/art work and existing functional foundations remain useful progress. Candidate public-input fixes have bounded negative/positive regressions, and ordinary touch play reached the first gate and stock interaction. That is not full Slice two-wave, waterfront, checkpoint recovery or complete mission acceptance. Native strict 20-minute retention is `PLATEAU_OPEN`; the browser long pair was invalid. Clean short shutdown comparisons and invalid long replays do not resolve the original four ObjectDB warning. Timing comparisons remain confounded; no causal speed improvement is claimed. Human listening, feel, fairness, recognition, pacing, physical devices and release approvals remain open.
+
+## Continuation assessment: 1 October 2026
+
+History sequence2 binds clean candidate and fresh packaged runtime `de59ece1382d9c0009abc8b8ef27a7cffe4a33bf`, full65-entrypoint QA/exports, independent raw review and finite native/play dispositions. Package-marker early-match/producer-failure false passes are repaired. Touch ammo has a tested dedicated lane, guarded parent-owned layout helper and live combat captures; the initial four-file implementation failed the500-line architecture budget and was repaired before the final PASS. Native short driver and525.141-second idle control closed cleanly; the damaged comparison paused at10health instead46 and is INVALID. G1 remained at the first barrier and resumed after its20:56UTC bound; no Slice/checkpoint completion is inferred. New packages are unsigned/unstamped. Fresh draft CI is separately receipt-bound after push. Sequence3 corrects stale dimension explanations without rewriting sequence2. All eight indices and acceptance flags remain unchanged. This is intentional: narrower technical repairs do not complete the frozen player-quality targets.
 
 ## Frozen assessment anchors
 
@@ -112,7 +116,7 @@ Each row retains its frozen acceptance target. “Next” describes evidence to 
 | Dimension | Weight | Assessment | Frozen acceptance target | Next evidence gate |
 |---|---:|---:|---|---|
 | V8.1 Source→package→public byte identity | 25 | 25 | Reviewed source/stamp/packages/site/deployed/downloadedPCK chain exact with honest later-BETA and remaining scope. | After required approvals, verify reviewed-source/stamp/export/public/downloaded-byte identity and truthful remaining scope. |
-| V8.2 Clean reproducible release and ordinary validation | 25 | 50 | Clean checkout all required regressions/exports plus ordinary released-artifact route, save/retry/focus/shutdown and console checks pass. | Close package-marker negative-case risk and validate clean exports plus ordinary released-artifact behavior. |
+| V8.2 Clean reproducible release and ordinary validation | 25 | 50 | Clean checkout all required regressions/exports plus ordinary released-artifact route, save/retry/focus/shutdown and console checks pass. | Package-marker negative cases and current local exports pass; complete ordinary released-artifact behavior and integration remain open. |
 | V8.3 Platform, IP and signing gates | 20 | 0 | Required title/IP/provenance decisions, targetplatform/distribution signing/notarization/compatibility recorded for intended release. | Record actual applicable platform/IP/signing/notarization and compatibility approval evidence for intended distribution. |
 | V8.4 Applicable slice/replication/human approvals | 20 | 0 | Actual accepted V6 and required V7 plus owner release scope/platform approvals, not inferred from index. | Obtain factual V6, required V7 and named release scope/platform approval; the index grants none. |
 | V8.5 Distribution, rollback and honest roadmap | 10 | 0 | Authorized publication with tested rollback/download integrity, honest campaign remaining work and privacy/offline behavior. | After separate publication authorization, verify distributed bytes, tested rollback and honest privacy/offline/remaining-roadmap behavior. |
@@ -121,9 +125,9 @@ Each row retains its frozen acceptance target. “Next” describes evidence to 
 
 Select two or three explicit evidence gates, with finite stop conditions and unchanged scope:
 
-1. Qualify the native measurement driver with a short focus/geometry/PID/normal-Quit run before one preregistered original-history verbose replay. Attribute the four survivors before a focused repair; an invalid replay earns no closure. Preserve strict retention criteria.
-2. Validate and, if needed, repair the inherited package-marker fail-open check with a meaningful negative case, then verify reviewed-source/package identity. Tooling closure earns only its specific release-infrastructure credit.
-3. Complete ordinary Slice two waves → gate two → waterfront/checkpoint recovery, or a continuous 0–30-second opening with sound and required aspect/HUD evidence. Pick one bounded ordinary-play target after serialized tool qualification; do not broaden into new content.
+1. Attribute the original four native shutdown survivors using separately bounded scalar diagnostics and a prospectively valid replay. The short driver and long idle control now pass; the damaged matched replay remains invalid. Do not repeat exact-health races or add a speculative cache/audio patch.
+2. Complete the existing ordinary Slice waves → second gate → waterfront/checkpoint chain in a new preregistered public-input run. Preserve deaths and observer overruns. Extend the now-tested touch-ammo fix only for concrete new occlusion evidence.
+3. Record the continuous 0–30-second opening with sound and the required aspects, then prepare named unfamiliar-player and physical-device review. Keep strict native/Web retention separate and unaccepted until valid paired evidence closes it.
 
 Choose gate closure, not points. Before starting, write the source/package, frozen target, observer controls, success/failure/invalid criteria, time bound and reviewer. After actual closure, append a new assessment with evidence identities, changed dimension/cap facts, computed score deltas and a plain explanation of why. Equal scores after substantial useful validation are legitimate; do not manufacture gain. Human-only credit waits for a named actual review.
 

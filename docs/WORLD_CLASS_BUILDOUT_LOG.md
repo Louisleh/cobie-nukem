@@ -2,7 +2,17 @@
 
 This is the durable continuation ledger for the Cobie Nukem 3/6/9 quality program. New Hermes, Codex, or human sessions read this file after `AGENTS.md`, `docs/PRD.md` §1.5, and `docs/IMPLEMENTATION_PLAN.md`. Chat history is not a source of truth.
 
-## Current state
+## Current state — October 1 continuation
+
+- **Source/integration:** local reviewed runtime/tooling `de59ece1382d9c0009abc8b8ef27a7cffe4a33bf`; clean full local65-entrypoint QA plus fresh Web/macOS exports PASS. Main remains5fdfe771, accepted renderer/art86e6535. Documentation descendant/fresh draft CI are separately receipt-bound. PR75 stays DRAFT/unmerged, original native four-ObjectDB owner gate OPEN.
+- **Delivered:** fail-closed package scanner with meaningful old false-pass reproduction/seven regressions; touch-only ammo lane with guarded parent-owned layout helper, aspect/handedness/pressed-state tests and actual live combat captures. Initial missing-Pillow and HUD544>500 failures preserved; final corrected code passes without weakening architecture or hiding diagnostics.
+- **Native:** short state-first ordinary Quit qualification and525.141s idle control close cleanly. Damaged replay is INVALID at10HP rather than46; no third long retry or speculative owner repair. Original C5 warning, strict native PLATEAU_OPEN and invalid prior long Web comparison remain unresolved.
+- **Ordinary play:** older N4 first gate/stock evidence retained. New G1 reaches first drone combat/reload on fresh source but first barrier remains closed, eventual death; no Slice/full-route acceptance. G1-02 stale title excluded. Resume21:10 after20:56 bound is recorded as protocol overrun; later death is exploratory only. Owned touch helper, Chrome page and HTTP process closed.
+- **Readiness:** [quality scorecard](QUALITY_SCORECARD.md) has frozen40dimension policy and three append-only source-bound assessments;19 frozen inputs rehash. V1–V8 indices25/35/25/30/15/15/0/0, all unaccepted, zero closure deltas. This is editorial readiness, not percentage complete or AAA certification. Scores do not activate replication or release.
+- **Next:** [October1 engineering packet](work_packets/gauntlet/20261001-continuation.md): bounded scalar native-owner evidence, ordinary Slice waves→second gate→waterfront/checkpoint, continuous opening/audio then actual unfamiliar-player/physical-device review. WCB-008 stays IN PROGRESS. All breadth, human/device, later-mission/boss and public-release/BETA freezes persist.
+- **Continuity:** original gauntlet, Sep30 two/four-hour runs and5am review remain closed historical evidence. This new authorized run owns only `outputs/continuation-20261001`/`work/continuation-20261001`; old seals and prefix semantics unchanged. See final receipt for exact fresh Git/CI/package/raw identities and finite invalid/passed distinctions.
+
+### Previous September30 review state (historical)
 
 - **Integration/source:** PR #74 merged at main `5fdfe771437b4ae3874a234c4af3880a50ffb5ab`, accepted runtime/art `86e6535a2585fb88480a0fd5c4f2eeddf60a5ec2`. Closed four-hour candidate `16a0ee751d60955b48836030df11d3de9f0d917c` on `codex/cn-focus-release` preserves packaged runtime `a4431029abaaac9ca73cd5ea46ebe85432bccf90`. The 5am review adds documentation only; its descendant identity will be bound in the external review receipt after closure. PR #75 remains DRAFT/unmerged, blocked by the original actual native four-ObjectDB shutdown warning.
 - **Validation identity:** full local C5 65-entrypoint release/export matrix and closed four-hour exact-tree CI `36706714955` pass; 13 deliberate Godot warnings, distinct ancillary workflow notices. Synthetic checkout `3779eb7b7e47f4823dc03b84b6bfb1b2d4e2e503` matches candidate16a0 tree `c1a1004ca440a21d77a0291ca7c51a61b6c2c113`; not an actual merge. Four-hour local S3 used bundled Python and explicitly skipped exports. Historical PR74 CI36674664957, merged-main36675101221 and 97be15e36692791321 all had missing-rg false architecture PASS; other matrix/export scope remains supported. C7 subsequently fixes search/fallback errors: four CI fixtures pass/optional real-rg skipped, all five local pass. New inherited static `strings|grep -Fq`/pipefail marker-rejection risk requires targeted reproduction/repair; no contaminated package alleged.
@@ -17,7 +27,7 @@ This is the durable continuation ledger for the Cobie Nukem 3/6/9 quality progra
 
 ## Vision milestone tracker — September 29/30
 
-These eight player-visible outcomes map PRD §1.5.6 and IMPLEMENTATION_PLAN. Accepted merged foundations, tested unmerged candidates, provisional critic review and actual human/device approval remain distinct. No whole milestone is newly accepted, and no percentage is inferred from tests or assets.
+These eight player-visible outcomes map PRD §1.5.6 and IMPLEMENTATION_PLAN. Accepted merged foundations, tested unmerged candidates, provisional critic review and actual human/device approval remain distinct. No whole milestone is newly accepted. The owner-authorized readiness index is tracked separately in QUALITY_SCORECARD.md; it is not a percentage inferred from tests or assets.
 
 | ID | Status | Evidence and next gate |
 | --- | --- | --- |
