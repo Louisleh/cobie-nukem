@@ -29,7 +29,7 @@ var _caption_visible := false
 var _base_label_font_sizes: Dictionary[NodePath, int] = {}
 var _base_label_colors: Dictionary[NodePath, Color] = {}
 var _caption_viewport: Viewport
-var _mobile_controls: MobileControls
+var _touch_ammo_layout: Node
 
 enum CaptionCategory {
 	NARRATIVE,
@@ -353,57 +353,12 @@ func _apply_bottom_bar_layout(viewport_size: Vector2) -> void:
 	_apply_control_rect(weapon_label, layout[&"weapon"])
 	_apply_control_rect(ammo_label, layout[&"ammo"])
 	_apply_control_rect(reload_hint, layout[&"reload"])
-	_apply_touch_ammo_layout(viewport_size)
+	if is_instance_valid(_touch_ammo_layout):
+		_touch_ammo_layout.call(&"apply", viewport_size)
 
 
 func bind_mobile_controls(controls: MobileControls) -> void:
-	_disconnect_mobile_controls()
-	_mobile_controls = controls
-	if is_instance_valid(_mobile_controls):
-		_mobile_controls.visibility_changed.connect(_on_mobile_controls_layout_changed)
-		_mobile_controls.resized.connect(_on_mobile_controls_layout_changed)
-		_mobile_controls.layout_settings_changed.connect(_on_mobile_controls_layout_changed)
-		_mobile_controls.tree_exiting.connect(_on_mobile_controls_tree_exiting)
-	_on_mobile_controls_layout_changed()
-
-
-func _disconnect_mobile_controls() -> void:
-	if not is_instance_valid(_mobile_controls):
-		_mobile_controls = null
-		return
-	for binding in [
-		[_mobile_controls.visibility_changed, _on_mobile_controls_layout_changed],
-		[_mobile_controls.resized, _on_mobile_controls_layout_changed],
-		[_mobile_controls.layout_settings_changed, _on_mobile_controls_layout_changed],
-		[_mobile_controls.tree_exiting, _on_mobile_controls_tree_exiting],
-	]:
-		var source: Signal = binding[0]
-		var callback: Callable = binding[1]
-		if source.is_connected(callback):
-			source.disconnect(callback)
-	_mobile_controls = null
-
-
-func _on_mobile_controls_tree_exiting() -> void:
-	_disconnect_mobile_controls()
-	_on_mobile_controls_layout_changed()
-
-
-func _on_mobile_controls_layout_changed() -> void:
-	if not is_inside_tree() or not is_node_ready(): return
-	_apply_bottom_bar_layout(get_viewport().get_visible_rect().size)
-
-
-func _apply_touch_ammo_layout(viewport_size: Vector2) -> void:
-	if not is_instance_valid(_mobile_controls) or not _mobile_controls.is_visible_in_tree(): return
-	# Keep every touch target in place. The lower middle lane between the
-	# sticks stays clear even for the largest fully deflected stick knobs.
-	var left := viewport_size.x * 0.25
-	if _mobile_controls.left_handed:
-		left = viewport_size.x - left - 148.0
-	var viewport_rect := Rect2(left, viewport_size.y * (5.0 / 9.0), 148.0, 40.0)
-	var bottom_bar := ammo_label.get_parent() as Control
-	_apply_control_rect(ammo_label, Rect2(viewport_rect.position - bottom_bar.position, viewport_rect.size))
+	_touch_ammo_layout = preload("res://scripts/ui/touch_ammo_layout.gd").bind_to_hud(self, _touch_ammo_layout, controls)
 
 
 func _apply_control_rect(control: Control, rect: Rect2) -> void:
@@ -539,6 +494,7 @@ func _on_setting_changed(section: StringName, key: StringName, value: Variant) -
 			pass
 
 func _exit_tree() -> void:
-	_disconnect_mobile_controls()
+	if is_instance_valid(_touch_ammo_layout):
+		_touch_ammo_layout.call(&"shutdown")
 	if _caption_viewport != null and _caption_viewport.size_changed.is_connected(_update_caption_layout):
 		_caption_viewport.size_changed.disconnect(_update_caption_layout)

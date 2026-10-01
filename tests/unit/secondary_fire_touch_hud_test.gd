@@ -83,6 +83,9 @@ func _test_secondary_fire_lifecycle(controls: MobileControls, fire_secondary_cen
 
 
 func _test_ammo_reservation(player: CobiePlayer) -> void:
+	var detached_hud := preload("res://scenes/ui/hud.tscn").instantiate() as GameHUD
+	_expect(detached_hud._touch_ammo_layout == null, "detached pre-ready HUD allocates no touch helper")
+	detached_hud.free()
 	var original_targets := {
 		&"fire_primary": Vector3(292, 111, 20), &"fire_secondary": Vector3(292, 152, 11),
 		&"use": Vector3(257, 92, 12), &"jump": Vector3(291, 71, 13),
@@ -111,6 +114,7 @@ func _test_ammo_reservation(player: CobiePlayer) -> void:
 	initial_alt.position += controls.global_position
 	_expect(hud.ammo_label.get_global_rect().intersects(initial_alt), "unreserved instantiated footer reproduces ALT/ammo overlap")
 	hud.bind_mobile_controls(controls)
+	_expect(hud._touch_ammo_layout.get_parent() == hud, "bound touch helper is parented to HUD")
 	var protected_paths := [
 		"Root/BottomBar/HealthLabel", "Root/BottomBar/ArmorLabel", "Root/ObjectiveLabel",
 		"Root/CaptionLabel", "Root/BossPanel", "Root/NotificationLabel", "Root/InteractionLabel",
@@ -164,16 +168,18 @@ func _test_ammo_reservation(player: CobiePlayer) -> void:
 	# bound controls restores the desktop layout without stale references.
 	hud.bind_mobile_controls(null)
 	_expect_desktop_ammo(hud, Vector2(861, 360), "unbind restores desktop")
-	_expect(not controls.layout_settings_changed.is_connected(hud._on_mobile_controls_layout_changed), "unbind disconnects layout settings signal")
+	_expect(not controls.layout_settings_changed.is_connected(Callable(hud._touch_ammo_layout, &"_on_layout_changed")), "unbind disconnects layout settings signal")
 	controls._on_setting_changed(&"gameplay", &"left_handed_touch", true)
 	_expect_desktop_ammo(hud, Vector2(861, 360), "old controls cannot update unbound HUD")
 	hud.bind_mobile_controls(controls)
 	controls.queue_free()
 	await process_frame
-	_expect(hud._mobile_controls == null, "control teardown clears HUD binding")
+	_expect(not bool(hud._touch_ammo_layout.call(&"has_bound_controls")), "control teardown clears HUD binding")
 	_expect_desktop_ammo(hud, Vector2(861, 360), "control teardown restores desktop")
+	var owned_helper := hud._touch_ammo_layout
 	viewport.queue_free()
 	await process_frame
+	_expect(not is_instance_valid(owned_helper), "HUD teardown frees its owned touch helper")
 
 
 func _check_ammo_geometry(hud: GameHUD, controls: MobileControls, viewport: SubViewport, protected_paths: Array, label: String) -> void:
