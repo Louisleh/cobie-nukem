@@ -20,6 +20,10 @@ static func resolve_service(current: Node, owner: Node) -> Node:
 
 
 static func event_action(service: Node, event: InputEvent) -> StringName:
+	# Touch controls already emit named actions; their GUI mouse emulation must
+	# not also become a player action. Genuine mouse input remains available.
+	if event is InputEventMouseButton and event.device == InputEvent.DEVICE_ID_EMULATION:
+		return &""
 	if service == null or not service.has_method("is_action_event_pressed"):
 		return &""
 	for action in EVENT_ACTIONS:

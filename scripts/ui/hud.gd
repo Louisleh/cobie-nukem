@@ -29,6 +29,7 @@ var _caption_visible := false
 var _base_label_font_sizes: Dictionary[NodePath, int] = {}
 var _base_label_colors: Dictionary[NodePath, Color] = {}
 var _caption_viewport: Viewport
+var _touch_ammo_layout: Node
 
 enum CaptionCategory {
 	NARRATIVE,
@@ -352,6 +353,12 @@ func _apply_bottom_bar_layout(viewport_size: Vector2) -> void:
 	_apply_control_rect(weapon_label, layout[&"weapon"])
 	_apply_control_rect(ammo_label, layout[&"ammo"])
 	_apply_control_rect(reload_hint, layout[&"reload"])
+	if is_instance_valid(_touch_ammo_layout):
+		_touch_ammo_layout.call(&"apply", viewport_size)
+
+
+func bind_mobile_controls(controls: MobileControls) -> void:
+	_touch_ammo_layout = preload("res://scripts/ui/touch_ammo_layout.gd").bind_to_hud(self, _touch_ammo_layout, controls)
 
 
 func _apply_control_rect(control: Control, rect: Rect2) -> void:
@@ -487,5 +494,7 @@ func _on_setting_changed(section: StringName, key: StringName, value: Variant) -
 			pass
 
 func _exit_tree() -> void:
+	if is_instance_valid(_touch_ammo_layout):
+		_touch_ammo_layout.call(&"shutdown")
 	if _caption_viewport != null and _caption_viewport.size_changed.is_connected(_update_caption_layout):
 		_caption_viewport.size_changed.disconnect(_update_caption_layout)

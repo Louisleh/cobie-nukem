@@ -196,6 +196,8 @@ Rain City proves the complete quality standard; Salmon Creek sells that promise 
 
 Louis authorizes root to own ordinary detailed design/engineering decisions aligned with this vision. Progress is judged by player-visible outcomes and evidence, not test/asset counts or invented percentages. Human feel/taste/comprehension/fairness/humor/mix/comfort and physical-device approval remain actual review gates. Scope changes and public release actions remain governed by existing authority and acceptance conditions.
 
+On October 1 Louis authorizes evidence-backed 0–100 readiness indices per milestone and category. `docs/QUALITY_SCORECARD.md` and its frozen rubric/append-only assessments quantify the existing eight outcomes; these are editorial readiness assessments, never percentages complete, probabilities of AAA quality or a substitute for PRD approval. Unsupported outcomes receive no credit, critical gates cap readiness, human/device approval stays explicit, and V6 cannot exceed its weakest V1–V5 foundation. Freeze weights/targets/anchors within a comparison series, preserve invalid/failed evidence, re-score downward on regressions, and record zero score change when useful work does not cross an acceptance anchor. Future gauntlets close named gates rather than chase points.
+
 ---
 
 # 2. Research Conclusions and Technical Decisions

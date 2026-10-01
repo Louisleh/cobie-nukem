@@ -1,0 +1,585 @@
+{
+  "schema_version": "1.0",
+  "rubric_version": "readiness-v1",
+  "adopted_utc": "2026-10-01",
+  "authority": [
+    "docs/PRD.md §1.5",
+    "docs/IMPLEMENTATION_PLAN.md",
+    "docs/WORLD_CLASS_BUILDOUT_LOG.md"
+  ],
+  "purpose": "Editorial evidence assessment of readiness in the existing eight milestones. Not measured completion, statistical confidence, AAA probability or a global average.",
+  "scope_policy": "Existing Rain City/Salmon opening and current kit only; PRD and buildout ledger remain authoritative. No additional mission, boss or system is authorized by this rubric.",
+  "dimension_score_values": [
+    0,
+    25,
+    50,
+    75,
+    100
+  ],
+  "formula": {
+    "weighted_subtotal": "sum(weight * assessment_score) / 100",
+    "readiness_index": "floor(min(weighted_subtotal, applicable_caps) / 5) * 5",
+    "rounding_step": 5
+  },
+  "general_anchors": {
+    "0": "No applicable valid evidence, not performed, or failed target; record which, never infer product is bad from unknown. Plans/prompts/reports alone earn no delivered-outcome credit.",
+    "25": "Meaningful source/component/isolated technical contract or bounded authored pilot supported; human-only row requires actual limited named human check.",
+    "50": "Representative normal current-package behavior in declared pilot scope with source/observer limits; human-only row requires actual representative named review. Partial coverage is explicit.",
+    "75": "Frozen dimension target substantially proven in its entire declared scope, clean actual integration/appropriate ordinary controls and independent validation; unresolved blocker in that same target prevents75. For narrow pipeline rows scope stays narrow.",
+    "100": "Every frozen dimension acceptance condition and applicable named human/physical/release approval met, independent evidence review and no unresolved critical defect in that scope. Means approved scoped target, not perfection or permanent safety."
+  },
+  "confidence_policy": {
+    "evidence_support": [
+      "low",
+      "medium",
+      "high"
+    ],
+    "human_quality": "low until named human/device evidence; these labels are editorial judgments, not statistical intervals.",
+    "current": "medium calibration and scoped technical support; high in known blocker/dependency status; low in unperformed experiential quality."
+  },
+  "human_credit_policy": "Every human-only dimension above zero requires a named reviewer, hashed approval record, linked evidence identity and declared actual scope. No agent, screenshot or simulated device substitutes.",
+  "unsupported_credit_policy": "Plans, unperformed work, invalid runs and unsupported claims earn zero outcome credit. Partial valid component work may earn credit only for its explicit narrower scope; blockers remain caps.",
+  "acceptance_policy": "Acceptance is a separately evidenced decision, never derived from score. V6/V7 factual acceptance requires named approval plus accepted dependencies; scope approval is not permission to publish.",
+  "history_policy": "Append-only canonical-JSON SHA256 parent chain; changing weights, targets, anchors or cap policy requires a new rubric version retaining prior rubric and records. Dynamic observed caps and scores live only in history.",
+  "gate_definitions": {
+    "native_shutdown_blocker_open": "native shutdown blocker open",
+    "native_retention_accepted": "native retention accepted",
+    "web_retention_accepted": "web retention accepted",
+    "ordinary_os_recovery_accepted": "ordinary os recovery accepted",
+    "whole_route_visual_readability_accepted": "whole route visual readability accepted",
+    "named_world_review_accepted": "named world review accepted",
+    "whole_existing_combat_review_accepted": "whole existing combat review accepted",
+    "named_combat_mix_review_accepted": "named combat mix review accepted",
+    "ordinary_complete_mission_accepted": "ordinary complete mission accepted",
+    "named_mission_pacing_accepted": "named mission pacing accepted",
+    "continuous_opening_accepted": "continuous opening accepted",
+    "unfamiliar_player_hook_accepted": "unfamiliar player hook accepted",
+    "candidate_integration_accepted": "candidate integration accepted",
+    "complete_ordinary_bundle_accepted": "complete ordinary bundle accepted",
+    "named_owner_slice_accepted": "named owner slice accepted",
+    "physical_platform_review_accepted": "physical platform review accepted"
+  },
+  "milestones": [
+    {
+      "id": "V1",
+      "name": "Dependable play",
+      "stage_anchors": {
+        "0": "No valid player-boundary/runtime proof",
+        "25": "Meaningful component/lifecycle fixes, but critical integration failure may still block",
+        "50": "Representative normal package controls/reset; ordinary native shutdown blocker must be resolved before crossing its25cap",
+        "75": "All declared ordinary routes, OS recovery, sustained native/Web and rendered budgets supported; no critical defect",
+        "100": "Applicable physical-device/accessibility/reliability approvals and clean release identity accepted"
+      },
+      "dimensions": [
+        {
+          "id": "V1.1",
+          "name": "Responsive real-player controls",
+          "weight": 25,
+          "claim_type": "mechanical",
+          "acceptance_target": "Saved non-default mapping plus real move/look/jump/fire/alt/reload/use/pause/switch; ordinary OS focus and malformed-mapping recovery on declared targets."
+        },
+        {
+          "id": "V1.2",
+          "name": "Launch, save, retry and reset integrity",
+          "weight": 25,
+          "claim_type": "mechanical",
+          "acceptance_target": "Fresh boot→mission→death/retry→checkpoint/continue→menu routes preserve correct profile/state on clean candidate."
+        },
+        {
+          "id": "V1.3",
+          "name": "Rendered responsiveness and first use",
+          "weight": 20,
+          "claim_type": "mechanical",
+          "acceptance_target": "Clean source-bound native/Web entry/first fire and sustained rendered play meet frozen budgets, with frame scope/order/settings/control documented."
+        },
+        {
+          "id": "V1.4",
+          "name": "Sustained ownership and ordinary teardown",
+          "weight": 20,
+          "claim_type": "mechanical",
+          "acceptance_target": "Preregistered same-state/native/Web sustained controls close strict lifetime criteria and attributable ordinary Quit warning is resolved with a meaningful regression."
+        },
+        {
+          "id": "V1.5",
+          "name": "Physical-device reliability and comfort",
+          "weight": 10,
+          "claim_type": "human",
+          "acceptance_target": "Named target Mac/iPad/Safari/controller/flight-stick sessions, applicable reconnect/focus and accessibility checks actually pass."
+        }
+      ],
+      "cap_rules": [
+        {
+          "id": "native-integration",
+          "cap": 25,
+          "condition": {
+            "any_true": [
+              "native_shutdown_blocker_open"
+            ]
+          },
+          "reason": "Confirmed ordinary native shutdown failure blocks candidate integration."
+        },
+        {
+          "id": "sustained-os",
+          "cap": 50,
+          "condition": {
+            "any_false": [
+              "native_retention_accepted",
+              "web_retention_accepted",
+              "ordinary_os_recovery_accepted"
+            ]
+          },
+          "reason": "Sustained ownership or ordinary OS recovery remains unproved."
+        }
+      ]
+    },
+    {
+      "id": "V2",
+      "name": "Rain City signature world",
+      "stage_anchors": {
+        "0": "No current source-bound authored-world evidence",
+        "25": "One original bounded cluster with valid source/static evidence",
+        "50": "Representative ordinary route approaches demonstrate consistent identity/landmarks/interaction with budget-safe assets",
+        "75": "Complete critical-route continuous multi-aspect reads, loops/elevations/sightlines and independent technical visual review",
+        "100": "Named human recognizes landmarks/place/oven and approves world/humor/taste in accepted ordinary route"
+      },
+      "dimensions": [
+        {
+          "id": "V2.1",
+          "name": "Original authored identity",
+          "weight": 20,
+          "claim_type": "artifact",
+          "acceptance_target": "Current in-engine critical route has coherent original silhouettes/material/lighting/joke grammar; concept images are labeled and do not substitute."
+        },
+        {
+          "id": "V2.2",
+          "name": "Spatial route and landmarks",
+          "weight": 20,
+          "claim_type": "mechanical",
+          "acceptance_target": "Canonical entrances at16:9/4:3 expose opening/mid/finale landmarks; declared loops/elevations/sightlines and route-state changes work in normal play."
+        },
+        {
+          "id": "V2.3",
+          "name": "Continuous gameplay readability",
+          "weight": 20,
+          "claim_type": "mechanical",
+          "acceptance_target": "Full ordinary approaches/fights preserve landmark/threat/interaction/HUD reads across required aspects/pressed states; no critical occlusion."
+        },
+        {
+          "id": "V2.4",
+          "name": "Bounded original asset production",
+          "weight": 20,
+          "claim_type": "mechanical",
+          "acceptance_target": "Transferred Slice pilot retains editable/provenanced deterministic source, protected geometry/UVs, negative regression and actual import/render budgets. Broader assets need their own scope."
+        },
+        {
+          "id": "V2.5",
+          "name": "Human world/oven/humor recognition",
+          "weight": 20,
+          "claim_type": "human",
+          "acceptance_target": "Named unfamiliar reviewer recognizes place/landmarks within PRD10sec, understands oven/service bays and judges coherent environmental humor from ordinary play."
+        }
+      ],
+      "cap_rules": [
+        {
+          "id": "whole-world-review",
+          "cap": 50,
+          "condition": {
+            "any_false": [
+              "whole_route_visual_readability_accepted",
+              "named_world_review_accepted"
+            ]
+          },
+          "reason": "Complete ordinary world readability or named human interpretation remains unproved."
+        }
+      ]
+    },
+    {
+      "id": "V3",
+      "name": "Combat with Cobie swagger",
+      "stage_anchors": {
+        "0": "No valid observed weapon/enemy behavior",
+        "25": "Component weapon/enemy/animation/audio contracts and authored cues",
+        "50": "Representative ordinary pairing shows actual hit/miss/shield/counter/reload feedback with source-bound sound/motion",
+        "75": "Whole existing kit/role encounters and accessibility/bounded feedback proven; actual representative human/listening checks",
+        "100": "Named human confirms role clarity, satisfying response, readable counters/fairness/mix on applicable platforms"
+      },
+      "dimensions": [
+        {
+          "id": "V3.1",
+          "name": "Existing weapon tactical mechanics",
+          "weight": 20,
+          "claim_type": "mechanical",
+          "acceptance_target": "All three weapons deliver observable cadence/ammo/reload/alt/hit/miss/kill/weakpoint contracts in normal real-player play, not input intent alone."
+        },
+        {
+          "id": "V3.2",
+          "name": "Enemy tells and counterplay",
+          "weight": 20,
+          "claim_type": "mechanical",
+          "acceptance_target": "Existing roles telegraph/counter correctly, pressure/nav/reset/difficulty bounded; ordinary multi-role encounters preserve recovery and environment decisions."
+        },
+        {
+          "id": "V3.3",
+          "name": "Animation and visual impact language",
+          "weight": 20,
+          "claim_type": "artifact",
+          "acceptance_target": "Bounded anticipation/action/recovery, viewmodel/reactions/shield/kill/VFX and reduced-motion/flash variants actually read in continuous ordinary captures."
+        },
+        {
+          "id": "V3.4",
+          "name": "Audio event and mix evidence",
+          "weight": 20,
+          "claim_type": "mechanical",
+          "acceptance_target": "Existing authored weapon/enemy/surface/mission cue events are correct; actual listening establishes distinct transient/hierarchy and no repetition/masking issue."
+        },
+        {
+          "id": "V3.5",
+          "name": "Human weight, role clarity and fairness",
+          "weight": 20,
+          "claim_type": "human",
+          "acceptance_target": "Named playtesters distinguish weapon roles, identify counters and approve responsiveness/fairness/impact/mix in real fights without coaching."
+        }
+      ],
+      "cap_rules": [
+        {
+          "id": "combat-review",
+          "cap": 50,
+          "condition": {
+            "any_false": [
+              "whole_existing_combat_review_accepted",
+              "named_combat_mix_review_accepted"
+            ]
+          },
+          "reason": "Complete ordinary combat or actual human feel/fairness/mix review remains unproved."
+        }
+      ]
+    },
+    {
+      "id": "V4",
+      "name": "Memorable complete Rain City mission",
+      "stage_anchors": {
+        "0": "No valid route/encounter/checkpoint evidence",
+        "25": "Mechanical route/choreography/boss foundations",
+        "50": "Representative ordinary gates/interactions/recovery and authored transitions; full mission still explicitly open",
+        "75": "Complete normal mission/finale/reward/continue plus spatial/secret/reset contract and independent technical review",
+        "100": "Named human15–22min first route approves pacing/navigation/meaningful exploration/finale without padding"
+      },
+      "dimensions": [
+        {
+          "id": "V4.1",
+          "name": "Ordinary complete route",
+          "weight": 30,
+          "claim_type": "mechanical",
+          "acceptance_target": "Fresh normal title→full Rain City route→finale→reward/continuation, no cheat/warp; required interactions and critical gates observed alive."
+        },
+        {
+          "id": "V4.2",
+          "name": "Authored encounter/environment progression",
+          "weight": 20,
+          "claim_type": "artifact",
+          "acceptance_target": "Major fights combine3roles/2directions/recovery, authored transitions and environment choice; full normal sequence demonstrates escalation."
+        },
+        {
+          "id": "V4.3",
+          "name": "Checkpoint, revisit and secrets",
+          "weight": 20,
+          "claim_type": "mechanical",
+          "acceptance_target": "All required state/reset/transaction invariants pass; normal death/retry/continue preserves route/loadout; observation-led secrets and meaningful revisit proven."
+        },
+        {
+          "id": "V4.4",
+          "name": "Existing Towmaster payoff",
+          "weight": 15,
+          "claim_type": "mechanical",
+          "acceptance_target": "Original silhouette,3attacks/4phases/2arena changes, escalation and10sec defeat payoff plus reward/reset all work and read in ordinary play."
+        },
+        {
+          "id": "V4.5",
+          "name": "Human mission pacing and memory",
+          "weight": 15,
+          "claim_type": "human",
+          "acceptance_target": "Named target-Mac first-play15–22min without padding meets navigation, pressure/release, secret and memorable finale review."
+        }
+      ],
+      "cap_rules": [
+        {
+          "id": "complete-mission",
+          "cap": 50,
+          "condition": {
+            "any_false": [
+              "ordinary_complete_mission_accepted",
+              "named_mission_pacing_accepted"
+            ]
+          },
+          "reason": "Ordinary complete mission or named pacing review remains unproved."
+        }
+      ]
+    },
+    {
+      "id": "V5",
+      "name": "Opening that earns attention",
+      "stage_anchors": {
+        "0": "No accepted normal front-end/opening foundation",
+        "25": "Title/onboarding/opening artifact pilot; continuous hook still open",
+        "50": "Continuous0–30sec normal opening with actual action/audio and representative unfamiliar-player observation",
+        "75": "Complete first3–5min cohort/protocol delivers goal/input/role comprehension, settings and runtime/title promise",
+        "100": "Named owner/unfamiliar-player results approve hook, clarity, comfort and desire to continue against frozen protocol"
+      },
+      "dimensions": [
+        {
+          "id": "V5.1",
+          "name": "Front-end promise and entry",
+          "weight": 20,
+          "claim_type": "mechanical",
+          "acceptance_target": "Normal title/menu/profile/options/map enter intended opening reliably, with truthful identity and bounded entry."
+        },
+        {
+          "id": "V5.2",
+          "name": "Continuous first30seconds",
+          "weight": 25,
+          "claim_type": "mechanical",
+          "acceptance_target": "Current normal0–30sec opening at16:9/4:3 reviewed continuously with actual move/look/fire and legible threats/settings; pause is excluded."
+        },
+        {
+          "id": "V5.3",
+          "name": "Onboarding delivery and readability",
+          "weight": 20,
+          "claim_type": "mechanical",
+          "acceptance_target": "Instructions appear at need, controls/HUD avoid overlap, accessibility/settings work; actual first actions acknowledged without forcing hidden tutorial state."
+        },
+        {
+          "id": "V5.4",
+          "name": "Authored fantasy and early consequence",
+          "weight": 15,
+          "claim_type": "artifact",
+          "acceptance_target": "Opening runtime communicates original Cobie/compliance identity and an authored action-consequence sequence matching the title promise."
+        },
+        {
+          "id": "V5.5",
+          "name": "Unfamiliar-player comprehension and hook",
+          "weight": 20,
+          "claim_type": "human",
+          "acceptance_target": "Uncoached first3–5min player states immediate goal/controls/weapon role and records desire to continue, confusion and timing against frozen protocol."
+        }
+      ],
+      "cap_rules": [
+        {
+          "id": "opening-pilot",
+          "cap": 25,
+          "condition": {
+            "any_false": [
+              "continuous_opening_accepted",
+              "unfamiliar_player_hook_accepted"
+            ]
+          },
+          "reason": "Continuous opening and unfamiliar-player hook are not both accepted."
+        }
+      ]
+    },
+    {
+      "id": "V6",
+      "name": "One definitive slice proven in real play",
+      "stage_anchors": {
+        "0": "No integrated reviewable artifact",
+        "25": "Partial source-bound candidate and bundle; native/complete-route gates open",
+        "50": "Representative integrated V1–V5 and actual partial human/device reviews; dependencies cap score independently",
+        "75": "All technical/ordinary scope plus substantive named human/device evaluation complete; outstanding decisions explicitly listed",
+        "100": "All applicable PRD mechanical, human, device and integration gates factually accepted; score itself grants noBETA removal"
+      },
+      "dimensions": [
+        {
+          "id": "V6.1",
+          "name": "Integrated V1–V5 candidate",
+          "weight": 25,
+          "claim_type": "mechanical",
+          "acceptance_target": "One accepted source/package integrates applicable foundations with no blocking lifecycle/input/state issues."
+        },
+        {
+          "id": "V6.2",
+          "name": "Complete ordinary review bundle",
+          "weight": 20,
+          "claim_type": "artifact",
+          "acceptance_target": "Source-bound full Rain City/Salmon opening, settings, audio/motion and honest failed cases support all PRD review questions."
+        },
+        {
+          "id": "V6.3",
+          "name": "Named owner experience approval",
+          "weight": 25,
+          "claim_type": "human",
+          "acceptance_target": "Actual named human approves feel, art, humor, route/pacing, fairness, mix, oven interpretation and comfort under PRD."
+        },
+        {
+          "id": "V6.4",
+          "name": "Physical target/platform approval",
+          "weight": 20,
+          "claim_type": "human",
+          "acceptance_target": "Actual targetMac15–22min and applicable physicaliPad/Safari/controller/flash/motion/device checks recorded against candidate."
+        },
+        {
+          "id": "V6.5",
+          "name": "Truthful reproducible evidence chain",
+          "weight": 10,
+          "claim_type": "mechanical",
+          "acceptance_target": "Current artifact/source/observer/camera/process/closedlog identities verified; negative/invalid histories preserved and limitations carried into review."
+        }
+      ],
+      "cap_rules": [
+        {
+          "id": "integrated-slice",
+          "cap": 25,
+          "condition": {
+            "any_false": [
+              "candidate_integration_accepted",
+              "complete_ordinary_bundle_accepted"
+            ]
+          },
+          "reason": "Integration or complete ordinary review bundle remains unproved."
+        },
+        {
+          "id": "human-device",
+          "cap": 50,
+          "condition": {
+            "any_false": [
+              "named_owner_slice_accepted",
+              "physical_platform_review_accepted"
+            ]
+          },
+          "reason": "Named owner or applicable physical-platform approval remains absent."
+        },
+        {
+          "id": "weakest-foundation",
+          "dynamic": "minimum_readiness",
+          "dependencies": [
+            "V1",
+            "V2",
+            "V3",
+            "V4",
+            "V5"
+          ],
+          "reason": "Definitive slice cannot exceed its weakest foundation; recompute each snapshot."
+        }
+      ]
+    },
+    {
+      "id": "V7",
+      "name": "Prove quality can travel",
+      "stage_anchors": {
+        "0": "V6 dependency not accepted; no authorized selected replication",
+        "25": "After V6: one bounded selected-mission contract and actual transferred pilot",
+        "50": "Representative ordinary selected-mission identity/route plus measured actual production cost",
+        "75": "Entire selected existing mission reaches comparable technical/ordinary and human/device review scope",
+        "100": "Named reviewers approve comparable distinct quality and realistic repeatable cost; no inherited approval"
+      },
+      "dimensions": [
+        {
+          "id": "V7.1",
+          "name": "Exactly-one mission selection and bounded transfer",
+          "weight": 20,
+          "claim_type": "artifact",
+          "acceptance_target": "After V6 acceptance, record comparison of quality opportunity/cost/risk and select exactly one existing mission."
+        },
+        {
+          "id": "V7.2",
+          "name": "Distinct mission identity",
+          "weight": 25,
+          "claim_type": "artifact",
+          "acceptance_target": "Transferred mission owns clear hero/world/audio/weapon-role context, declared reuse and source-bound ordinary captures."
+        },
+        {
+          "id": "V7.3",
+          "name": "Comparable real-play reliability and mission",
+          "weight": 25,
+          "claim_type": "mechanical",
+          "acceptance_target": "Selected mission meets same applicable ordinary route/reset/performance/lifecycle checks as definitive slice."
+        },
+        {
+          "id": "V7.4",
+          "name": "Human/device comparable quality",
+          "weight": 20,
+          "claim_type": "human",
+          "acceptance_target": "Named reviewer/device sessions approve distinct identity/feel/pacing/fairness against accepted pipeline."
+        },
+        {
+          "id": "V7.5",
+          "name": "Measured repeatable production cost",
+          "weight": 10,
+          "claim_type": "mechanical",
+          "acceptance_target": "Actual bounded transfer times/iteration/quality evidence demonstrate realistic cost without hiding failures or broadening scope."
+        }
+      ],
+      "cap_rules": [
+        {
+          "id": "accepted-slice-dependency",
+          "cap": 0,
+          "condition": {
+            "any_unaccepted": [
+              "V6"
+            ]
+          },
+          "reason": "Replication requires factual V6 acceptance; index cannot grant it."
+        }
+      ]
+    },
+    {
+      "id": "V8",
+      "name": "Honest release candidate",
+      "stage_anchors": {
+        "0": "Required V6/V7 dependencies not accepted; release not activated",
+        "25": "After dependencies: actual reproducible local release candidate and explicit approval checklist",
+        "50": "Actual package/platform/IP/signing/identity and ordinary artifact pilot evidence",
+        "75": "All intended platform/release artifacts and applicable approvals verified; authorized distribution/rollback prepared and tested",
+        "100": "Authorized published/downloaded byte identity, rollback, truthful scope and applicable human/device/IP/signing gates accepted"
+      },
+      "dimensions": [
+        {
+          "id": "V8.1",
+          "name": "Source→package→public byte identity",
+          "weight": 25,
+          "claim_type": "mechanical",
+          "acceptance_target": "Reviewed source/stamp/packages/site/deployed/downloadedPCK chain exact with honest later-BETA and remaining scope."
+        },
+        {
+          "id": "V8.2",
+          "name": "Clean reproducible release and ordinary validation",
+          "weight": 25,
+          "claim_type": "mechanical",
+          "acceptance_target": "Clean checkout all required regressions/exports plus ordinary released-artifact route, save/retry/focus/shutdown and console checks pass."
+        },
+        {
+          "id": "V8.3",
+          "name": "Platform, IP and signing gates",
+          "weight": 20,
+          "claim_type": "mechanical",
+          "acceptance_target": "Required title/IP/provenance decisions, targetplatform/distribution signing/notarization/compatibility recorded for intended release."
+        },
+        {
+          "id": "V8.4",
+          "name": "Applicable slice/replication/human approvals",
+          "weight": 20,
+          "claim_type": "human",
+          "acceptance_target": "Actual accepted V6 and required V7 plus owner release scope/platform approvals, not inferred from index."
+        },
+        {
+          "id": "V8.5",
+          "name": "Distribution, rollback and honest roadmap",
+          "weight": 10,
+          "claim_type": "mechanical",
+          "acceptance_target": "Authorized publication with tested rollback/download integrity, honest campaign remaining work and privacy/offline behavior."
+        }
+      ],
+      "cap_rules": [
+        {
+          "id": "accepted-slice-replication-dependencies",
+          "cap": 0,
+          "condition": {
+            "any_unaccepted": [
+              "V6",
+              "V7"
+            ]
+          },
+          "reason": "Release requires factual V6 and selected V7 acceptance; index cannot grant either."
+        }
+      ]
+    }
+  ]
+}

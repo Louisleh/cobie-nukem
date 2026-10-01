@@ -10,7 +10,7 @@ This plan replaces the historical scaffold milestones with an evidence-gated pro
 
 ## Eight milestones Louis can track
 
-These V labels summarize the existing WCB dependency graph; they are not a parallel roadmap. Detailed engineering briefs are in `docs/work_packets/vision/20260929.md`; current status belongs to WORLD_CLASS_BUILDOUT_LOG.
+These V labels summarize the existing WCB dependency graph; they are not a parallel roadmap. Detailed engineering briefs are in `docs/work_packets/vision/20260929.md`; current status belongs to WORLD_CLASS_BUILDOUT_LOG. Evidence-backed readiness indices and category targets live in [QUALITY_SCORECARD](QUALITY_SCORECARD.md); use the unchanged dependency order and explicit acceptance gates when selecting a scored gauntlet.
 
 | ID | Major outcome | Completion signal | Existing packets |
 | --- | --- | --- | --- |

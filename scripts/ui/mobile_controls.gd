@@ -1,6 +1,8 @@
 class_name MobileControls
 extends Control
 
+signal layout_settings_changed
+
 @export var force_visible := false
 
 var player: CobiePlayer
@@ -19,6 +21,9 @@ var _onboarding_remaining := 6.0
 const DESIGN_SIZE := Vector2(320, 180)
 const BASE_STICK_RADIUS := 25.0
 const STICK_DEAD_ZONE := 0.04
+const STICK_KNOB_TRAVEL := 0.68
+const STICK_KNOB_SIZE := 0.38
+const ACTION_ICON_SCALE := 1.08
 const STICK_SIZE_SCALE := {&"small": 0.85, &"medium": 1.0, &"large": 1.18}
 const STICK_CENTERS := {
 	&"compact": [Vector2(42, 103), Vector2(215, 103)],
@@ -80,6 +85,7 @@ func _on_setting_changed(section: StringName, key: StringName, value: Variant) -
 		&"touch_stick_size": stick_size = _validated_choice(value, STICK_SIZE_SCALE, &"medium"); release_all()
 		&"touch_stick_position": stick_position = _validated_choice(value, STICK_CENTERS, &"standard"); release_all()
 	queue_redraw()
+	layout_settings_changed.emit()
 
 func bind_player(value: CobiePlayer) -> void: player = value
 func is_touch_enabled() -> bool: return _touch_enabled
@@ -194,7 +200,7 @@ func _portrait_viewport() -> bool:
 
 func _draw() -> void:
 	if not visible: return
-	var scale_value := minf(size.x / DESIGN_SIZE.x, size.y / DESIGN_SIZE.y); var centers := _stick_centers()
+	var scale_value := _draw_scale(); var centers := _stick_centers()
 	if _portrait_viewport():
 		draw_rect(Rect2(Vector2.ZERO, size), Color(0.01, 0.02, 0.025, 0.9), true)
 		var rotate_font := ThemeDB.fallback_font; var rotate_text := "ROTATE IPAD TO LANDSCAPE"; var rotate_size := maxi(16, roundi(11.0 * scale_value)); var rotate_measure := rotate_font.get_string_size(rotate_text, HORIZONTAL_ALIGNMENT_LEFT, -1, rotate_size)
@@ -206,17 +212,16 @@ func _draw() -> void:
 	if _onboarding_remaining > 0.0:
 		_draw_onboarding_hint(font, scale_value)
 	for action in BUTTONS:
-		var data: Dictionary = BUTTONS[action]; var center := _from_design(data.center); var radius := float(data.radius) * scale_value
+		var center := _action_center(action); var radius := _action_radius(action)
 		var active: bool = action in _button_fingers.values()
 		draw_circle(center, radius, Color(0.95, 0.45, 0.12, control_opacity) if active else Color(0.05, 0.08, 0.09, 0.65 * control_opacity))
-		draw_arc(center, radius, 0.0, TAU, 32, Color(1.0, 0.75, 0.24, 0.9), maxf(1.0, scale_value))
+		draw_arc(center, radius, 0.0, TAU, 32, Color(1.0, 0.75, 0.24, 0.9), _outline_width())
 		var icon := ACTION_ICONS.get(action) as Texture2D
 		if icon != null:
-			var icon_size := Vector2.ONE * radius * 1.08
-			draw_texture_rect(icon, Rect2(center - icon_size * 0.5, icon_size), false, Color(1.0, 0.86, 0.48) if active else Color.WHITE)
+			draw_texture_rect(icon, _action_icon_rect(action), false, Color(1.0, 0.86, 0.48) if active else Color.WHITE)
 
 
-func _draw_onboarding_hint(font: Font, scale_value: float) -> void:
+func _onboarding_layout(font: Font, scale_value: float) -> Dictionary:
 	var font_size := maxi(7, roundi(7.0 * scale_value))
 	var max_width := size.x * 0.68
 	var line_widths: Array[float] = []
@@ -227,25 +232,90 @@ func _draw_onboarding_hint(font: Font, scale_value: float) -> void:
 		line_widths.clear()
 		for line in ONBOARDING_LINES:
 			line_widths.append(font.get_string_size(line, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size).x)
-	var line_height := font.get_height(font_size)
-	# Keep the transient help below the objective/capture banner. At 4:3 and
-	# 16:9 the previous y=15 position allowed two independently valid labels to
-	# read as a single garbled line.
-	var hint_center := _from_design(Vector2(160, 39))
-	var panel_size := Vector2(line_widths.max() + 12.0 * scale_value, line_height * 2.35)
+	return {
+		"font_size": font_size, "line_widths": line_widths,
+		"line_height": font.get_height(font_size),
+		"center": _from_design(Vector2(160, 39)),
+		"panel_size": Vector2(line_widths.max() + 12.0 * scale_value, font.get_height(font_size) * 2.35),
+	}
+
+
+func _draw_onboarding_hint(font: Font, scale_value: float) -> void:
+	var layout := _onboarding_layout(font, scale_value)
+	var hint_center: Vector2 = layout.center
+	var panel_size: Vector2 = layout.panel_size
 	draw_rect(Rect2(hint_center - panel_size * 0.5, panel_size), Color(0.02, 0.04, 0.04, 0.78 * control_opacity), true)
 	var color := Color(1.0, 0.82, 0.32, minf(1.0, _onboarding_remaining))
 	for index in ONBOARDING_LINES.size():
 		var line: String = ONBOARDING_LINES[index]
-		var baseline := hint_center.y - line_height * 0.58 + line_height * float(index)
-		draw_string(font, Vector2(hint_center.x - line_widths[index] * 0.5, baseline), line, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size, color)
+		var baseline: float = hint_center.y - float(layout.line_height) * 0.58 + float(layout.line_height) * float(index)
+		draw_string(font, Vector2(hint_center.x - float(layout.line_widths[index]) * 0.5, baseline), line, HORIZONTAL_ALIGNMENT_LEFT, -1, int(layout.font_size), color)
+
+
+func _draw_scale() -> float:
+	return minf(size.x / DESIGN_SIZE.x, size.y / DESIGN_SIZE.y)
+
+
+func _outline_width() -> float:
+	return maxf(1.0, _draw_scale())
+
+
+func _action_center(action: StringName) -> Vector2:
+	return _from_design(BUTTONS[action].center)
+
+
+func _action_radius(action: StringName) -> float:
+	return float(BUTTONS[action].radius) * _draw_scale()
+
+
+func _action_icon_rect(action: StringName) -> Rect2:
+	var icon_size := Vector2.ONE * _action_radius(action) * ACTION_ICON_SCALE
+	return Rect2(_action_center(action) - icon_size * 0.5, icon_size)
+
+
+func _draw_stick_radius() -> float:
+	return _stick_radius() * _draw_scale()
+
+
+func _circle_bounds(center: Vector2, radius: float) -> Rect2:
+	return Rect2(center - Vector2.ONE * radius, Vector2.ONE * radius * 2.0)
+
+
+func get_paint_bounds() -> Dictionary:
+	# Local-space conservative envelopes shared with production drawing. Idle
+	# and held states retain the same envelope; the knob can reach1.06radius.
+	var bounds: Dictionary = {}
+	for action in BUTTONS:
+		bounds[action] = _circle_bounds(_action_center(action), _action_radius(action) + _outline_width() * 0.5).merge(_action_icon_rect(action))
+	var font := ThemeDB.fallback_font
+	var font_size := maxi(6, roundi(7.0 * _draw_scale()))
+	var radius := _draw_stick_radius()
+	for index in 2:
+		var center := _from_design(_stick_centers()[index])
+		var label := "MOVE" if index == 0 else "AIM"
+		var width := font.get_string_size(label, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size).x
+		var label_rect := Rect2(center + Vector2(-width * 0.5, radius * 0.72 - font.get_ascent(font_size)), Vector2(width, font.get_height(font_size)))
+		bounds[&"move" if index == 0 else &"look"] = _circle_bounds(center, maxf(radius * (STICK_KNOB_TRAVEL + STICK_KNOB_SIZE), radius + _outline_width() * 0.5)).merge(label_rect)
+	if _onboarding_remaining > 0.0:
+		var layout := _onboarding_layout(font, _draw_scale())
+		var center: Vector2 = layout.center
+		var panel_size: Vector2 = layout.panel_size
+		var hint_bounds := Rect2(center - panel_size * 0.5, panel_size)
+		for index in ONBOARDING_LINES.size():
+			var line_height := float(layout.line_height)
+			var width := float(layout.line_widths[index])
+			var baseline := center.y - line_height * 0.58 + line_height * float(index)
+			hint_bounds = hint_bounds.merge(Rect2(Vector2(center.x - width * 0.5, baseline - font.get_ascent(int(layout.font_size))), Vector2(width, line_height)))
+		bounds[&"onboarding"] = hint_bounds
+	return bounds
+
 
 func _draw_stick(center: Vector2, value: Vector2, label: String, scale_value: float) -> void:
-	var radius := _stick_radius() * scale_value
+	var radius := _draw_stick_radius()
 	draw_circle(center, radius, Color(0.03, 0.06, 0.07, 0.48 * control_opacity))
 	draw_circle(center, radius * STICK_DEAD_ZONE, Color(0.95, 0.7, 0.18, 0.12 * control_opacity))
-	draw_arc(center, radius, 0.0, TAU, 40, Color(0.78, 0.72, 0.42, 0.8), maxf(1.0, scale_value))
-	var knob := center + value * radius * 0.68
-	draw_circle(knob, radius * 0.38, Color(0.95, 0.7, 0.18, 0.82 * control_opacity))
+	draw_arc(center, radius, 0.0, TAU, 40, Color(0.78, 0.72, 0.42, 0.8), _outline_width())
+	var knob := center + value * radius * STICK_KNOB_TRAVEL
+	draw_circle(knob, radius * STICK_KNOB_SIZE, Color(0.95, 0.7, 0.18, 0.82 * control_opacity))
 	var font := ThemeDB.fallback_font; var font_size := maxi(6, roundi(7.0 * scale_value)); var text_size := font.get_string_size(label, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size)
 	draw_string(font, center + Vector2(-text_size.x * 0.5, radius * 0.72), label, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size, Color(1, 1, 1, 0.75))

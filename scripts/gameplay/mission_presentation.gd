@@ -308,6 +308,7 @@ func _create_presentation_nodes() -> void:
 	add_child(_victory_screen)
 	add_child(_combat_audio)
 	_hud.get_node("Root").add_child(_mobile_controls)
+	_hud.bind_mobile_controls(_mobile_controls)
 	if _pause_menu != null:
 		_pause_menu.restart_requested.connect(_on_pause_restart)
 	if _death_screen != null:

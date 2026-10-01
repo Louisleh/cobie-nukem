@@ -46,6 +46,7 @@ jobs:
           node --version
           node tools/performance/test_web_evidence_probe.js
           node tools/performance/test_menu_return_url.js
+          node tools/performance/test_web_retention_sampler.js
 
       - name: Workstation prerequisite regression and report
         run: |

@@ -67,6 +67,9 @@ echo "==> visual capture user-data isolation"
 python3 tools/visual_quality/test_capture_tool.py
 run_godot_test res://tests/run_tests.gd
 run_godot_test res://tests/unit/input_system_test.gd
+run_godot_test res://tests/integration/input_profile_service_boundary_test.gd
+run_godot_test res://tests/integration/input_focus_release_test.gd
+run_godot_test res://tests/integration/touch_mouse_emulation_test.gd
 run_godot_test res://tests/unit/combat_test_runner.gd
 run_godot_test res://tests/unit/enemy_contract_tests.gd
 run_godot_test res://tests/unit/enemy_sprite_presentation_test.gd
@@ -129,6 +132,8 @@ run_godot_test res://tests/smoke/performance_smoke.gd
 # The zone profiler is a rendered/native evidence command and is intentionally
 # not run headlessly here. See docs/AGENTIC_GAMEDEV_WORKFLOW.md.
 bash tools/asset_ip_scan.sh
+python3 -m unittest discover -s tools/tests -p test_architecture_check.py -v
+python3 -m unittest discover -s tools/tests -p test_release_pack_check.py -v
 bash tools/architecture_check.sh
 run_godot_test res://tools/validate_content.gd
 
@@ -164,38 +169,18 @@ if [[ "${QA_EXPORTS:-0}" == "1" ]]; then
   test -s builds/web/index.html
   test -s builds/macos/CobieNukem.zip
 
-  inspect_release_pack() {
-    local pack_path="$1"
-    local marker
-    local forbidden_markers=(
-      "godot_ai_bridge"
-      "GodotAIBridgeRuntime"
-      "production_asset_gallery"
-      "vertical_slice_capture"
-      "assets/models/pilot"
-      "assets/sprites/experiments"
-      "docs/evidence"
-      "cobie_production_pilot.blend"
-      "/Users/louislehmann"
-    )
-    for marker in "${forbidden_markers[@]}"; do
-      if strings "$pack_path" | grep -Fq "$marker"; then
-        echo "ERROR forbidden development marker entered release pack $pack_path: $marker"
-        return 1
-      fi
-    done
-  }
-
-  inspect_release_pack builds/web/index.pck
+  bash tools/check_release_pack.sh builds/web/index.pck
   mac_pack_entry="$(unzip -Z1 builds/macos/CobieNukem.zip | grep -E '\.pck$' | head -1)"
   if [[ -z "$mac_pack_entry" ]]; then
     echo "ERROR macOS archive does not contain a PCK"
     exit 1
   fi
   mac_pack_tmp="$(mktemp)"
+  trap 'rm -f "$mac_pack_tmp"' EXIT
   unzip -p builds/macos/CobieNukem.zip "$mac_pack_entry" > "$mac_pack_tmp"
-  inspect_release_pack "$mac_pack_tmp"
+  bash tools/check_release_pack.sh "$mac_pack_tmp"
   rm -f "$mac_pack_tmp"
+  trap - EXIT
 else
   echo "SKIP exports (set QA_EXPORTS=1 for release artifacts)"
 fi
