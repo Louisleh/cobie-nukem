@@ -19,13 +19,14 @@ var _zone_generation: Dictionary = {}
 
 
 func configure(values: Array[EncounterDefinition], spawner: Callable) -> void:
+	for zone_id: Variant in _zone_generation.keys():
+		_invalidate_zone_generation(zone_id)
 	for zone_id: Variant in active.keys():
 		_clear_active_zone(zone_id)
 	definitions.clear()
 	active.clear()
 	completed.clear()
 	failed.clear()
-	_zone_generation.clear()
 	spawn_callable = spawner
 	for definition in values:
 		definitions[definition.zone_id] = definition
@@ -124,7 +125,8 @@ func _spawn_wave(definition: EncounterDefinition, wave_index: int, expected_gene
 		if target != null and actor.has_method("set_target"):
 			actor.set_target(target)
 		if actor.has_signal("died"):
-			actor.died.connect(func(dead_actor: Node, _source: Node) -> void: _on_actor_died(dead_actor, definition), CONNECT_ONE_SHOT)
+			var actor_generation := int(state.generation)
+			actor.died.connect(func(dead_actor: Node, _source: Node) -> void: _on_actor_died(dead_actor, definition, actor_generation), CONNECT_ONE_SHOT)
 		actor_spawned.emit(actor, definition)
 	if definition.completion_policy == EncounterDefinition.CompletionPolicy.FIRE_AND_FORGET:
 		wave_completed.emit(definition, wave_index)
@@ -135,8 +137,8 @@ func _spawn_wave(definition: EncounterDefinition, wave_index: int, expected_gene
 func reset_zone(zone_id: StringName) -> bool:
 	if not definitions.has(zone_id):
 		return false
+	_invalidate_zone_generation(zone_id)
 	if active.has(zone_id):
-		_invalidate_zone_generation(zone_id)
 		_clear_active_zone(zone_id)
 	active.erase(zone_id)
 	completed.erase(zone_id)
@@ -236,19 +238,34 @@ func advance_external_wave(zone_id: StringName) -> bool:
 	return true
 
 
-func _on_actor_died(actor: Node, definition: EncounterDefinition) -> void:
-	actor_defeated.emit(actor, definition)
+func _on_actor_died(actor: Node, definition: EncounterDefinition, actor_generation: int) -> void:
+	# Deferred deletion can deliver a previous activation's death after retry.
+	if int(_zone_generation.get(definition.zone_id, -1)) != actor_generation:
+		return
+	if active.has(definition.zone_id) and not active[definition.zone_id].actors.has(actor):
+		return
 	if not active.has(definition.zone_id):
+		if not completed.has(definition.zone_id) or definitions.get(definition.zone_id) != definition:
+			return
+	actor_defeated.emit(actor, definition)
+	# Signal observers may synchronously reset/reconfigure and reactivate the zone.
+	if int(_zone_generation.get(definition.zone_id, -1)) != actor_generation or not active.has(definition.zone_id):
 		return
 	var state: Dictionary = active[definition.zone_id]
+	if not state.actors.has(actor):
+		return
 	state.actors.erase(actor)
 	state.remaining = maxi(0, int(state.remaining) - 1)
 	if definition.completion_policy == EncounterDefinition.CompletionPolicy.BOSS_DEFEATED and is_instance_valid(state.get("boss_target")) and state.boss_target == actor:
 		wave_completed.emit(definition, int(state.get("wave", 0)))
+		if int(_zone_generation.get(definition.zone_id, -1)) != actor_generation or not active.has(definition.zone_id):
+			return
 		_complete(definition, true)
 		return
 	if int(state.remaining) == 0:
 		wave_completed.emit(definition, int(state.get("wave", 0)))
+		if int(_zone_generation.get(definition.zone_id, -1)) != actor_generation or not active.has(definition.zone_id):
+			return
 		_advance_or_complete(definition)
 
 

@@ -20,6 +20,11 @@ func _run() -> void:
 	await _test_external_three_waves()
 	await _test_advance_rejection_contract()
 	await _test_restore_and_timer_invalidation()
+	await _test_stale_actor_death_after_immediate_retry()
+	await _test_stale_actor_death_after_reconfigure()
+	await _test_retry_during_actor_defeated_notification()
+	await _test_retry_during_wave_completed_notification()
+	await _test_fire_and_forget_death_notification_boundaries()
 	if failures.is_empty():
 		print("EXTERNAL WAVE ENCOUNTER TEST: PASS")
 		quit(0)
@@ -121,6 +126,134 @@ func _test_restore_and_timer_invalidation() -> void:
 	await process_frame
 	_assert(wave_completed == [0, 1], "restored EXTERNAL wave still completes through normal contract")
 	await _cleanup_runner()
+
+
+func _test_stale_actor_death_after_immediate_retry() -> void:
+	var zone_id := &"immediate_retry"
+	var definition := _make_external_definition(1, 0.0, zone_id)
+	runner = _build_runner(definition)
+	_connect_wave_listeners()
+	var defeated_ids: Array[int] = []
+	runner.actor_defeated.connect(func(actor: Node, _definition: EncounterDefinition) -> void: defeated_ids.append(actor.get_instance_id()))
+	var first_actors: Array = runner.activate_zone(zone_id)
+	_assert(first_actors.size() == 1, "immediate retry starts with one actor")
+	if first_actors.size() != 1:
+		await _cleanup_runner()
+		return
+	var stale_actor := first_actors[0] as ProbeEncounterActor
+	_assert(runner.reset_zone(zone_id), "immediate retry resets the active encounter")
+	var retry_actors: Array = runner.activate_zone(zone_id)
+	_assert(retry_actors.size() == 1, "immediate retry creates the replacement actor before deletion flush")
+	if retry_actors.size() != 1:
+		await _cleanup_runner()
+		return
+	var current_actor := retry_actors[0] as ProbeEncounterActor
+	_assert(stale_actor.is_queued_for_deletion(), "previous actor is pending deferred deletion during immediate retry")
+	# Deliberately deliver the previous activation's signal before queue_free flushes.
+	stale_actor.died.emit(stale_actor, runner)
+	_assert(defeated_ids.is_empty(), "stale death does not emit actor_defeated for the replacement encounter")
+	_assert(int(runner.active.get(zone_id, {}).get("remaining", -1)) == 1, "stale death leaves the replacement encounter's remaining count unchanged")
+	_assert(runner.active.get(zone_id, {}).get("actors", []) == [current_actor], "stale death preserves the replacement actor membership")
+	_assert(wave_completed.is_empty() and not runner.completed.has(zone_id), "stale death cannot complete the replacement wave or encounter")
+	current_actor.died.emit(current_actor, runner)
+	_assert(defeated_ids == [current_actor.get_instance_id()], "current actor death emits exactly its own defeat event")
+	_assert(wave_completed == [0] and runner.completed.has(zone_id), "current actor death still completes the replacement encounter normally")
+	await _cleanup_runner()
+
+
+func _test_stale_actor_death_after_reconfigure() -> void:
+	var zone_id := &"reconfigure_retry"
+	var definition := _make_external_definition(1, 0.0, zone_id)
+	runner = _build_runner(definition)
+	_connect_wave_listeners()
+	var defeated_ids: Array[int] = []
+	runner.actor_defeated.connect(func(actor: Node, _definition: EncounterDefinition) -> void: defeated_ids.append(actor.get_instance_id()))
+	var stale_actor := runner.activate_zone(zone_id)[0] as ProbeEncounterActor
+	runner.configure([definition], Callable(self, "_spawn_test_actor"))
+	var current_actor := runner.activate_zone(zone_id)[0] as ProbeEncounterActor
+	stale_actor.died.emit(stale_actor, runner)
+	_assert(defeated_ids.is_empty(), "reconfiguration rejects death from its previous activation")
+	_assert(int(runner.active.get(zone_id, {}).get("remaining", -1)) == 1, "reconfiguration preserves replacement remaining count after stale death")
+	_assert(wave_completed.is_empty() and not runner.completed.has(zone_id), "reconfiguration stale death cannot complete the replacement encounter")
+	current_actor.died.emit(current_actor, runner)
+	_assert(defeated_ids == [current_actor.get_instance_id()], "reconfiguration still forwards the current actor's defeat")
+	_assert(wave_completed == [0] and runner.completed.has(zone_id), "reconfigured current actor still completes normally")
+	await _cleanup_runner()
+
+
+func _test_retry_during_actor_defeated_notification() -> void:
+	var zone_id := &"notification_retry"
+	var definition := _make_external_definition(1, 0.0, zone_id)
+	runner = _build_runner(definition)
+	_connect_wave_listeners()
+	var defeated_ids: Array[int] = []
+	runner.actor_defeated.connect(func(actor: Node, _definition: EncounterDefinition) -> void:
+		defeated_ids.append(actor.get_instance_id())
+		if defeated_ids.size() == 1:
+			runner.reset_zone(zone_id)
+			runner.activate_zone(zone_id)
+	)
+	var first_actor := runner.activate_zone(zone_id)[0] as ProbeEncounterActor
+	first_actor.died.emit(first_actor, runner)
+	var current_actor := spawned.back() as ProbeEncounterActor
+	_assert(current_actor != first_actor, "defeat listener synchronously creates a replacement actor")
+	_assert(int(runner.active.get(zone_id, {}).get("remaining", -1)) == 1, "returning death callback cannot decrement the listener's replacement encounter")
+	_assert(runner.active.get(zone_id, {}).get("actors", []) == [current_actor], "returning death callback preserves the listener's replacement actor")
+	_assert(wave_completed.is_empty() and not runner.completed.has(zone_id), "returning death callback cannot complete the listener's replacement encounter")
+	current_actor.died.emit(current_actor, runner)
+	_assert(defeated_ids == [first_actor.get_instance_id(), current_actor.get_instance_id()], "both legitimate activations forward exactly one defeat")
+	_assert(wave_completed == [0] and runner.completed.has(zone_id), "replacement completes only when its own actor dies")
+	await _cleanup_runner()
+
+
+func _test_retry_during_wave_completed_notification() -> void:
+	var zone_id := &"wave_notification_retry"
+	var definition := _make_external_definition(1, 0.0, zone_id)
+	runner = _build_runner(definition)
+	_connect_wave_listeners()
+	runner.wave_completed.connect(func(_definition: EncounterDefinition, _wave_index: int) -> void:
+		if wave_completed.size() == 1:
+			runner.reset_zone(zone_id)
+			runner.activate_zone(zone_id)
+	)
+	var first_actor := runner.activate_zone(zone_id)[0] as ProbeEncounterActor
+	first_actor.died.emit(first_actor, runner)
+	var current_actor := spawned.back() as ProbeEncounterActor
+	_assert(current_actor != first_actor, "wave completion listener synchronously creates a replacement actor")
+	_assert(int(runner.active.get(zone_id, {}).get("remaining", -1)) == 1, "returning wave completion cannot discard the listener's replacement state")
+	_assert(runner.active.get(zone_id, {}).get("actors", []) == [current_actor], "returning wave completion preserves the listener's replacement actor")
+	_assert(wave_completed == [0] and not runner.completed.has(zone_id), "old wave completion cannot mark the replacement encounter complete")
+	current_actor.died.emit(current_actor, runner)
+	_assert(wave_completed == [0, 0] and runner.completed.has(zone_id), "replacement wave and encounter complete only through the current actor's death")
+	await _cleanup_runner()
+
+
+func _test_fire_and_forget_death_notification_boundaries() -> void:
+	for boundary in ["reset", "configure"]:
+		var zone_id := &"fire_and_forget_retry"
+		var definition := _make_external_definition(1, 0.0, zone_id)
+		definition.completion_policy = EncounterDefinition.CompletionPolicy.FIRE_AND_FORGET
+		definition.waves[0]["spawns"].append({"scene": "res://tests/unit/missing", "position": Vector3.ONE})
+		definition.enemy_budget = 2
+		runner = _build_runner(definition)
+		var defeated_ids: Array[int] = []
+		runner.actor_defeated.connect(func(actor: Node, _definition: EncounterDefinition) -> void: defeated_ids.append(actor.get_instance_id()))
+		var original_actors: Array = runner.activate_zone(zone_id)
+		_assert(runner.completed.has(zone_id), "FIRE_AND_FORGET completes on spawn before death notification")
+		var legitimate_actor := original_actors[0] as ProbeEncounterActor
+		var stale_actor := original_actors[1] as ProbeEncounterActor
+		legitimate_actor.died.emit(legitimate_actor, runner)
+		_assert(defeated_ids == [legitimate_actor.get_instance_id()], "FIRE_AND_FORGET preserves valid postcompletion defeat notification")
+		if boundary == "reset":
+			runner.reset_zone(zone_id)
+		else:
+			runner.configure([definition], Callable(self, "_spawn_test_actor"))
+		var current_actor := runner.activate_zone(zone_id)[0] as ProbeEncounterActor
+		stale_actor.died.emit(stale_actor, runner)
+		_assert(defeated_ids == [legitimate_actor.get_instance_id()], "FIRE_AND_FORGET rejects old death after %s and reactivation" % boundary)
+		current_actor.died.emit(current_actor, runner)
+		_assert(defeated_ids == [legitimate_actor.get_instance_id(), current_actor.get_instance_id()], "FIRE_AND_FORGET preserves current postcompletion death after %s" % boundary)
+		await _cleanup_runner()
 
 
 func _build_runner(definition: EncounterDefinition) -> EncounterRunner:
