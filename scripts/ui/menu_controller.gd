@@ -109,4 +109,13 @@ func _quit() -> void:
 		# hard-coded production URL.
 		JavaScriptBridge.eval("(() => { const here = new URL(window.location.href); const parts = here.pathname.split('/').filter(Boolean); if (parts.at(-1) === 'play') parts.pop(); const target = new URL('/' + parts.join('/') + (parts.length ? '/' : ''), here).href; if (window.top !== window) window.top.location.href = target; else window.location.href = target; })();", true)
 		return
+	if _routing:
+		return
+	_routing = true
+	_set_buttons_disabled(true)
+	# Retire native playback while the mixer is still running, before final
+	# tree teardown. Exit-tree cleanup alone can occur too late for immediate Quit.
+	sounds.stop_all()
+	music.stop()
+	music.stream = null
 	get_tree().quit()
