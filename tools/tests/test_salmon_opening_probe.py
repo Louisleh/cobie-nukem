@@ -17,11 +17,24 @@ SPEC.loader.exec_module(probe)
 
 class OpeningProbeTests(unittest.TestCase):
     def test_exact_diagnostics_and_sentinel(self):
-        text = "SALMON OPENING PROBE: COMPLETE\n" + "\n".join(probe.ALLOWED)
+        self.assertEqual(probe.ALLOWED, set(), "opening probes require clean engine logs")
+        text = "SALMON OPENING PROBE: COMPLETE\n"
         probe.check_log(text)
-        for bad in (text + "\nSCRIPT ERROR: bad", text + "\nERROR: near match", text + "\n" + next(iter(probe.ALLOWED)), "PASS", text + "\nWARNING: ObjectDB instances leaked at exit"):
-            with self.assertRaises(ValueError):
-                probe.check_log(bad)
+        diagnostics = (
+            "SCRIPT ERROR: bad",
+            "ERROR: near match",
+            "ERROR: 1 shaders of type ParticlesShaderGLES3 were never freed",
+            "ERROR: 1 RID allocations of type 'N5GLES36ShaderE' were leaked at exit.",
+            "WARNING: 4 ObjectDB instances were leaked at exit",
+            "ERROR: 1 resources still in use at exit.",
+            "WARNING: orphan node",
+        )
+        for diagnostic in diagnostics:
+            with self.subTest(diagnostic=diagnostic):
+                with self.assertRaises(ValueError):
+                    probe.check_log(text + diagnostic)
+        with self.assertRaises(ValueError):
+            probe.check_log("PASS")
 
     def test_receipt_rejects_forgery_and_escaped_saves(self):
         # Synthetic headers test receipt validation, not rendered acceptance.
