@@ -118,6 +118,7 @@ func _test_world_builder_navigation_contract() -> void:
 	route_presentation.apply_route_gate_presentation(owner)
 	_test_route_gate_presentation_contract(owner, route_presentation)
 	await physics_frame
+	await _test_ruse_block_spawn_clearance(owner)
 	await _test_spatial_route_geometry(owner, builder)
 
 	var pre_bake_sources: Array[Node] = _navigation_source_nodes(owner)
@@ -296,6 +297,46 @@ func _all_gate_shapes_disabled(gate: StaticBody3D) -> bool:
 		if child is CollisionShape3D and not (child as CollisionShape3D).disabled:
 			return false
 	return true
+
+
+func _test_ruse_block_spawn_clearance(owner: Node3D) -> void:
+	# Route/soak probes can clear counters without ever placing an authored body.
+	# Check real scene shapes against the production world, excluding floor contact.
+	await physics_frame
+	var floor_rids: Array[RID] = []
+	for floor_body: Node in _navigation_source_nodes(owner):
+		floor_rids.append((floor_body as StaticBody3D).get_rid())
+	var checked := 0
+	for encounter: EncounterDefinition in MANIFEST.encounters:
+		if encounter.zone_id != &"ruse_block": continue
+		var wave_index := 0
+		for wave: Dictionary in encounter.effective_waves():
+			for spawn: Dictionary in wave.get("spawns", []):
+				var packed := load(String(spawn.scene)) as PackedScene
+				var actor := packed.instantiate() as Node3D if packed != null else null
+				_expect(actor != null, "Slice authored enemy scene instantiates for clearance check")
+				if actor == null: continue
+				var collider := actor.get_node_or_null("CollisionShape3D") as CollisionShape3D
+				_expect(collider != null and collider.shape != null, "Slice enemy exposes its real collision shape")
+				if collider != null and collider.shape != null:
+					var placed := actor.transform
+					placed.origin = spawn.position
+					var query := PhysicsShapeQueryParameters3D.new()
+					query.shape = collider.shape
+					query.transform = owner.global_transform * placed * collider.transform
+					query.collision_mask = 1
+					query.exclude = floor_rids
+					query.collide_with_areas = false
+					var hits := owner.get_world_3d().direct_space_state.intersect_shape(query, 32)
+					var blockers: Array[String] = []
+					for hit: Dictionary in hits:
+						var body := hit.get("collider") as Node
+						blockers.append(String(body.name) if body != null else "unknown collider")
+					_expect(hits.is_empty(), "Slice wave%d %s at%s has solid-spawn clearance; blockers=%s" % [wave_index, String(spawn.scene).get_file(), spawn.position, blockers])
+					checked += 1
+				actor.free()
+			wave_index += 1
+	_expect(checked == 4, "Both existing Slice waves have all four authored shapes checked")
 
 
 func _test_elevated_navigation_sources(navigation_map: RID, owner: Node3D) -> void:

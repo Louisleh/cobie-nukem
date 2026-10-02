@@ -12,7 +12,7 @@ choreography_profile = ExtResource("2")
 spawns = []
 waves = Array[Dictionary]([{
 "spawns": [
-	{"scene":"res://scenes/enemies/squirrel_trooper.tscn","position":Vector3(-7,0,-34),"role_id":"skirmisher","approach_id":"storefront_left"},
+	{"scene":"res://scenes/enemies/squirrel_trooper.tscn","position":Vector3(-4.5,0,-34),"role_id":"skirmisher","approach_id":"storefront_left"},
 	{"scene":"res://scenes/enemies/leash_enforcement_drone.tscn","position":Vector3(0,2.8,-40),"role_id":"aerial_harrier","approach_id":"patio_rear"},
 	{"scene":"res://scenes/enemies/umbrella_shield_enforcer.tscn","position":Vector3(5,0,-45),"role_id":"shield_anchor","approach_id":"plaza_right"}
 ]}, {
