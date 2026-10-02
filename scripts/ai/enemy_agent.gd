@@ -252,6 +252,7 @@ func _update_health_bar_presentation() -> void:
 	var view_camera := get_viewport().get_camera_3d()
 	if view_camera == null:
 		return
+	_health_bar.global_basis = view_camera.global_basis.orthonormalized() # Keep the fill offset toward the camera.
 	var distance := global_position.distance_to(view_camera.global_position)
 	_health_bar.visible = distance >= 2.6 and distance <= 24.0
 	_health_bar.scale = Vector3.ONE * clampf(distance * 0.016, 0.08, 0.34)
@@ -272,7 +273,6 @@ func _update_health_bar() -> void:
 	else:
 		_health_bar_fill_material.albedo_color = Color("ef5b4c")
 	_health_bar_fill_material.emission = _health_bar_fill_material.albedo_color
-
 func _move_for_combat(distance: float, delta: float) -> void:
 	if definition.retreat_distance > 0.0 and distance < definition.retreat_distance:
 		var retreat := global_position + target.global_position.direction_to(global_position) * 4.0
