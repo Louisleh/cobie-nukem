@@ -119,6 +119,7 @@ func _test_world_builder_navigation_contract() -> void:
 	_test_route_gate_presentation_contract(owner, route_presentation)
 	await physics_frame
 	await _test_authored_spawn_clearance(owner)
+	await _test_closed_gate_side_lanes(owner, builder)
 	await _test_spatial_route_geometry(owner, builder)
 
 	var pre_bake_sources: Array[Node] = _navigation_source_nodes(owner)
@@ -340,6 +341,94 @@ func _test_authored_spawn_clearance(owner: Node3D) -> void:
 	_expect(checked == EXPECTED_ENEMY_TOTAL, "All 26 existing Rain City authored shapes are checked")
 	var expected_by_zone := {&"downtown_alley": 3, &"ruse_block": 4, &"waterfront_seawall": 6, &"terminal_service": 5, &"harbour_pier": 8}
 	_expect(checked_by_zone == expected_by_zone, "Spawn-clearance coverage includes all five authored route zones")
+
+
+func _test_closed_gate_side_lanes(owner: Node3D, builder: VancouverWaterfrontWorldBuilder) -> void:
+	# Sweep the shipping player's actual capsule through supported lower-route lanes.
+	# This is staged collision evidence, never an ordinary player-completion claim.
+	var player := preload("res://scenes/player/cobie_player.tscn").instantiate() as CobiePlayer
+	var collider := player.get_node("CollisionShape3D") as CollisionShape3D
+	var space := owner.get_world_3d().direct_space_state
+	var floor_rids: Array[RID] = []
+	for floor_body: Node in _navigation_source_nodes(owner):
+		floor_rids.append((floor_body as StaticBody3D).get_rid())
+	# Include a full unattenuated first tick as a conservative discrete-jump bound.
+	var jump_speed := player.feel_profile.jump_velocity
+	var jump_rise := jump_speed * jump_speed / (2.0 * float(ProjectSettings.get_setting("physics/3d/default_gravity")) * player.gravity_scale) + jump_speed / float(Engine.physics_ticks_per_second)
+	var checked := 0
+	for raw_gate: Node in get_nodes_in_group(&"rain_city_encounter_gates"):
+		var gate := raw_gate as StaticBody3D
+		if gate == null or not owner.is_ancestor_of(gate): continue
+		var zone_id: StringName = gate.get_meta(&"encounter_gate_zone", &"")
+		for state in ["closed", "open", "reset"]:
+			builder.set_route_gate_open(zone_id, state == "open")
+			await physics_frame
+			await physics_frame
+			for lane_x in [-9.5 if zone_id == &"downtown_alley" else -11.5, -6.0, 0.0, 6.0, 9.5 if zone_id == &"downtown_alley" else 11.5]:
+				var start := Vector3(lane_x, 0.03, gate.position.z + 1.5)
+				var end := start + Vector3(0.0, 0.0, -3.0)
+				for point in [start, end]:
+					var support := PhysicsRayQueryParameters3D.create(owner.to_global(point + Vector3.UP * 2.0), owner.to_global(point + Vector3.DOWN), player.collision_mask)
+					var floor_hit := space.intersect_ray(support)
+					_expect(not floor_hit.is_empty() and floor_rids.has(floor_hit.get("rid", RID())), "%s lane%s has authored floor support before and after the hold" % [zone_id, lane_x])
+					if not floor_hit.is_empty():
+						if point == start: start.y = float(floor_hit.position.y) + 0.03
+						else: end.y = float(floor_hit.position.y) + 0.03
+				var placed := player.transform
+				placed.origin = start
+				var query := PhysicsShapeQueryParameters3D.new()
+				query.shape = collider.shape
+				query.transform = owner.global_transform * placed * collider.transform
+				query.motion = owner.global_basis * (end - start)
+				query.collision_mask = player.collision_mask
+				query.collide_with_areas = false
+				_expect(space.intersect_shape(query).is_empty(), "%s lane%s sweep starts clear" % [zone_id, lane_x])
+				var fractions := space.cast_motion(query)
+				var crossed := fractions.size() == 2 and fractions[0] >= 0.999
+				print("CLOSED_GATE_LANE %s %s x%s fraction%s" % [zone_id, state, lane_x, fractions])
+				if fractions.size() == 2 and state != "open":
+					var route := MissionRouteRuntime.new()
+					route.configure(MANIFEST.route_definition)
+					for id: StringName in EXPECTED_ZONE_IDS:
+						route.submit_actor_position(MANIFEST.route_definition.zone_for_id(id).bounds.get_center())
+						if id == zone_id: break
+					route.submit_actor_position(start.lerp(end, fractions[0]))
+					_expect(route.current_zone == zone_id, "%s %s lane%s stops before next zone/checkpoint progression" % [zone_id, state, lane_x])
+					route.free()
+				_expect(crossed == (state == "open"), "%s %s blocks side-lane%s until encounter clearance" % [zone_id, state, lane_x])
+				query.transform.origin.y += jump_rise
+				var apex_fractions := space.cast_motion(query)
+				_expect(apex_fractions.size() == 2 and (apex_fractions[0] >= 0.999) == (state == "open"), "%s %s lane%s retains hold at shipping jump apex" % [zone_id, state, lane_x])
+				checked += 1
+	# The powered revisit crosses this boundary after the prior encounter is clear.
+	builder.set_route_gate_open(&"waterfront_seawall", true)
+	for powered in [false, true, false]:
+		builder.set_route_gate_open(&"rainline_return", powered)
+		await physics_frame
+		await physics_frame
+		var query := PhysicsShapeQueryParameters3D.new()
+		query.shape = collider.shape
+		query.transform = owner.global_transform * Transform3D(Basis.IDENTITY, Vector3(-9.5, 1.405, -87.8)) * collider.transform
+		query.motion = owner.global_basis * Vector3(0.0, 0.0, -8.7)
+		query.collision_mask = player.collision_mask
+		var fractions := space.cast_motion(query)
+		_expect(fractions.size() == 2 and (fractions[0] >= 0.999) == powered, "Powered return preserves closed/open/reset traversal with the prior encounter clear")
+	builder.set_route_gate_open(&"waterfront_seawall", false)
+	builder.set_route_gate_open(&"rainline_return", true)
+	await physics_frame
+	await physics_frame
+	var held_return := PhysicsShapeQueryParameters3D.new()
+	held_return.shape = collider.shape
+	held_return.transform = owner.global_transform * Transform3D(Basis.IDENTITY, Vector3(-9.5, 1.405, -87.8)) * collider.transform
+	held_return.motion = owner.global_basis * Vector3(0.0, 0.0, -8.7)
+	held_return.collision_mask = player.collision_mask
+	var held_fractions := space.cast_motion(held_return)
+	_expect(held_fractions.size() == 2 and held_fractions[0] < 0.999, "Power alone does not bypass the uncleared Waterfront encounter hold")
+	builder.set_route_gate_open(&"rainline_return", false)
+	await physics_frame
+	await physics_frame
+	player.free()
+	_expect(checked == 60, "Four encounter barriers cover center, side and supported edge lanes through closed/open/reset states")
 
 
 func _test_elevated_navigation_sources(navigation_map: RID, owner: Node3D) -> void:

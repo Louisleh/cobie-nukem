@@ -178,17 +178,19 @@ func _build_landmarks() -> void:
 
 func _build_encounter_gates() -> void:
 	var gate_specs := {
-		&"downtown_alley": Vector3(0.0, 1.45, -19.0),
-		&"ruse_block": Vector3(0.0, 1.45, -53.0),
-		&"waterfront_seawall": Vector3(0.0, 1.45, -95.0),
-		&"terminal_service": Vector3(0.0, 1.45, -128.0),
+		&"downtown_alley": Vector3(0.0, 1.2, -19.0),
+		&"ruse_block": Vector3(0.0, 1.2, -52.0),
+		&"waterfront_seawall": Vector3(0.0, 1.2, -94.0),
+		&"terminal_service": Vector3(0.0, 1.2, -128.0),
 	}
+	# Hold the full floor passage before the next zone can advance its checkpoint.
+	var gate_widths := {&"downtown_alley": 24.0, &"ruse_block": 32.0, &"waterfront_seawall": 32.0, &"terminal_service": 36.0}
 	for raw_zone_id in gate_specs:
 		var zone_id := StringName(raw_zone_id)
 		var gate := _prop_box(
 			"EncounterGate_%s" % zone_id,
 			gate_specs[zone_id],
-			Vector3(9.6, 2.9, 0.45),
+			Vector3(float(gate_widths[zone_id]), 2.4, 0.45),
 			Color("e6a53a"),
 			true,
 			true

@@ -1,5 +1,11 @@
 # Decisions
 
+## D-022 — Rain City encounter holds contain the supported passage
+
+The existing Clear Area holds retain encounter-completion ownership while their collision spans the traversable passage and stops next-zone checkpoint advancement. The narrow 9.6 m slabs allowed supported side lanes around all four holds; Slice and Waterfront slabs also sat beyond their successor-zone bounds. Repair the existing gameplay-owned geometry rather than changing shared MissionRouteRuntime semantics, adding invisible guard systems or altering encounter content.
+
+The 2.4 m holds retain both authored cross-area sightlines. Actual-capsule ground and conservative jump-bound sweeps, closed/open/reset state checks and powered-return conjunction checks preserve the lower route, three loops and revisit contract. Presentation continues to dress the same authoritative dimensions without gaining collision ownership. Human readability, navigation and ordinary jump execution remain open.
+
 ## D-020 — Opening quality uses bounded author/critic loops, not autonomous score chasing
 
 Rain City remains the definitive vertical slice, while the title/startup experience and Salmon Creek's first 30 seconds become bounded WCB-008 child packets because they determine whether a player reaches that slice with trust and excitement. This is an opening-quality tranche, not new mission, weapon, enemy, economy, or meta-progression breadth. It does not remove `BETA`, close Rain City's human prerequisite, or transfer collision/navigation/progression ownership.

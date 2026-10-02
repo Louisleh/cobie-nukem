@@ -19,6 +19,12 @@ The required lower accessibility route remains continuous from the opening check
 
 `resources/routes/vancouver_route_definition.tres` declares the optional `terminal_service → waterfront_seawall` revisit edge. `MissionRouteRuntime` still advances objectives/checkpoints only to the next ordered zone; walking the optional edge must not regress progression.
 
+## Encounter holds
+
+The four existing encounter holds span the supported route passage rather than only the narrow connector. Closed and reset holds stop the shipping player before the next ordered zone boundary can advance its checkpoint; clearing the encounter opens the same hold. The Slice and Waterfront planes align with their successor-zone boundaries. Their gameplay-owned dimensions preserve both canonical cross-area sightline probes.
+
+Collision regression uses the real player capsule on supported centre, side and edge lanes at ground height and a conservative shipping jump upper bound. It verifies closed/open/reset passage and route progression at the stopping position. The powered Rain Line revisit traverses after its power gate opens and the prior Waterfront encounter is clear; power alone does not bypass an uncleared encounter hold. These are staged mechanical checks, not exhaustive diagonal traversal, ordinary jump execution or human route acceptance.
+
 ## Route-state and checkpoint invariant
 
 The Rain Line return gate starts collision-closed. Completing `restore_terminal` opens it. New runs and reset state close it. Checkpoint restoration reopens it exactly when the restored objective snapshot contains `restore_terminal`.
