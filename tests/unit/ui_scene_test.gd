@@ -29,6 +29,7 @@ func _initialize() -> void:
 	_check_responsive_main_menu_contract()
 	_check_cobie_portrait_contract()
 	await _check_hud_safe_area_contract()
+	await _check_hud_reticle_alignment_contract()
 	await _check_death_screen_contract()
 	await _check_pause_restart_contract()
 	await _check_caption_contracts()
@@ -510,6 +511,41 @@ func _check_hud_safe_area_contract() -> void:
 						failures.append("HUD compact controls overlap at %s: %s and %s" % [logical_size, compact_rects[first_index], compact_rects[second_index]])
 		elif access_rect.intersects(weapon_rect) or access_rect.intersects(ammo_rect) or access_rect.intersects(reload_rect):
 			failures.append("HUD access status overlaps the lower-right weapon cluster at %s" % logical_size)
+	test_viewport.queue_free()
+	await process_frame
+
+
+func _check_hud_reticle_alignment_contract() -> void:
+	# Shipping HUD and camera share a viewport; the bottom bar does not crop 3D.
+	# Extract the real camera without starting player physics or weapon services.
+	var player := load("res://scenes/player/cobie_player.tscn").instantiate() as Node
+	var camera := player.get_node("Head/Camera") as Camera3D
+	var camera_pose := (player.get_node("Head") as Node3D).transform * camera.transform
+	camera.get_parent().remove_child(camera)
+	for child in camera.get_children():
+		child.free()
+	player.free()
+	camera.transform = camera_pose
+	var test_viewport := SubViewport.new()
+	test_viewport.own_world_3d = true
+	test_viewport.size = Vector2i(640, 360)
+	root.add_child(test_viewport)
+	test_viewport.add_child(camera)
+	camera.make_current()
+	var hud := load("res://scenes/ui/hud.tscn").instantiate() as GameHUD
+	test_viewport.add_child(hud)
+	var crosshair := hud.get_node("Root/Crosshair") as Control
+	for viewport_size in [Vector2i(640, 360), Vector2i(576, 360), Vector2i(480, 360), Vector2i(860, 360)]:
+		test_viewport.size = viewport_size
+		await process_frame
+		await process_frame
+		var forward_point := camera.global_position - camera.global_basis.z * 10.0
+		var projected_forward := camera.unproject_position(forward_point)
+		var reticle_center := crosshair.get_global_transform_with_canvas() * (crosshair.size * 0.5)
+		if crosshair.size.x <= 0.0 or crosshair.size.y <= 0.0 or not projected_forward.is_finite() or not reticle_center.is_finite():
+			failures.append("Shipping HUD/camera must expose valid reticle geometry at %s" % viewport_size)
+		elif reticle_center.distance_to(projected_forward) > 0.5:
+			failures.append("Shipping HUD reticle must align with camera forward at %s: reticle=%s projected=%s" % [viewport_size, reticle_center, projected_forward])
 	test_viewport.queue_free()
 	await process_frame
 
