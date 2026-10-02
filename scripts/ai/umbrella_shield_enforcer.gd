@@ -35,10 +35,11 @@ enum _TimerMode { IDLE, OPENING, RECOVERY }
 
 
 func _ready() -> void:
-	super._ready()
-	attack_kind = &"umbrella_bolt"
+	# Base readiness applies difficulty; initialize fallbacks before that scaling.
 	_opening_window_seconds = maxf(0.05, base_opening_window_seconds)
 	_recovery_window_seconds = maxf(0.05, base_recovery_window_seconds)
+	super._ready()
+	attack_kind = &"umbrella_bolt"
 	_guard_timer = Timer.new()
 	_guard_timer.name = "UmbrellaGuardTimer"
 	_guard_timer.one_shot = true

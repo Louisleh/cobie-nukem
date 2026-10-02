@@ -20,6 +20,7 @@ func _run() -> void:
 	if packed == null:
 		_finish()
 		return
+	await _test_initial_difficulty_windows(packed)
 
 	var enemy := packed.instantiate() as UmbrellaShieldEnforcer
 	_expect(enemy != null, "Umbrella enforcer instantiates as UmbrellaShieldEnforcer")
@@ -116,6 +117,25 @@ func _run() -> void:
 	_finish()
 
 
+func _test_initial_difficulty_windows(packed: PackedScene) -> void:
+	var game_state := root.get_node("GameState")
+	var previous_id: StringName = game_state.difficulty_id
+	for path in DIFFICULTY_PROFILES:
+		var profile := load(path) as DifficultyProfile
+		game_state.select_difficulty(profile.id)
+		var spawned := packed.instantiate() as UmbrellaShieldEnforcer
+		root.add_child(spawned)
+		spawned.set_physics_process(false)
+		await process_frame
+		# Test the actual initial ready order, without a later apply_difficulty call.
+		_expect(is_equal_approx(spawned.health, profile.scaled_enemy_health(spawned.definition.max_health)), "%s spawn applies authored health difficulty" % profile.id)
+		_expect(is_equal_approx(spawned.get_opening_window_seconds(), maxf(0.05, spawned.base_opening_window_seconds / profile.enemy_aggression_multiplier)), "%s initial opening window preserves difficulty scaling" % profile.id)
+		_expect(is_equal_approx(spawned.get_recovery_window_seconds(), maxf(0.05, spawned.base_recovery_window_seconds / profile.enemy_aggression_multiplier)), "%s initial recovery window preserves difficulty scaling" % profile.id)
+		spawned.free()
+	game_state.select_difficulty(previous_id)
+	await process_frame
+
+
 func _expect(condition: bool, message: String) -> void:
 	if not condition:
 		failures.append(message)
@@ -129,4 +149,3 @@ func _finish() -> void:
 		for failure in failures:
 			push_error(failure)
 		quit(1)
-
