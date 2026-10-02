@@ -2,6 +2,12 @@
 
 This file distinguishes confirmed product limitations from unperformed validation. Update it for every release candidate; do not silently convert “not tested” into “passed.”
 
+## October 2 feedback candidate gates
+
+- Rain City remains `BETA`; Terminal Use, the complete ordinary mission/finale and human combat readability are unverified on the current candidate. Staged production contact/damage tests pass, but do not prove historical ordinary shots hit.
+- The native menu-owned WAV/playback leak was reproduced in a staged short baseline and narrowly repaired. Clean candidate staged runs include a 520-second pause. The original damaged 46 HP long-history C5 warning remains historically unattributed; current exported normal-Quit checks and any remaining release blocker must be recorded separately.
+- Native/Web strict retention, continuous opening/audio, current browser/native traces, Safari, physical iPad, flight stick, mix, comfort and default-difficulty fairness remain open. No readiness score or human acceptance is increased by preparing this feedback package.
+
 ## Local progression candidate gates
 
 - Progress is an offline guest profile stored in native/Web user storage. There is intentionally no login, cloud sync, telemetry, account recovery, paid currency, advertising, daily streak, randomized reward, or social leaderboard.

@@ -2,6 +2,16 @@
 
 All notable changes are recorded here. This project follows a lightweight form of [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); release versions are assigned by the owner.
 
+## 0.11.0-alpha.1-rc2 — feedback candidate
+
+- Clear service-owned input on focus loss and reject touch-emulated weapon clicks.
+- Separate touch ammunition information from action controls and align the desktop reticle with the camera-forward ray.
+- Keep Rain City encounter holds inside their active zones; move Slice and terminal actors clear of solid props; reject stale death callbacks across retries.
+- Keep enemy health fill facing the camera and preserve Enforcer difficulty-specific guard windows during initial spawn.
+- Stop menu-owned native audio before Quit; retain the historical long damaged-run shutdown uncertainty separately from the reproduced audio-owner repair.
+- Derive distribution package version from the visible runtime build identity and reject mismatched version overrides.
+- Retain all beta labels and human/device, complete-mission, readability and fairness gates. This candidate is prepared for feedback; publication is recorded only after the release gates and public hash check pass.
+
 ## Unreleased
 
 ### Added

@@ -1,4 +1,18 @@
-# Release Notes — 0.11.0-alpha.1-rc1 Doghouse Progression Pilot
+# Release Notes — 0.11.0-alpha.1-rc2 Feedback Candidate
+
+Reviewed gameplay source: `a8e1a321c97c5924faa157421c9c046d00888e44`; reviewed documentation closeout: `a191a26a13ae5786dcd6bc8336c3b3ffdf4823db`. Release metadata identifies `2026-10-02-feedback-rc2`, built with Godot `4.7.1.stable.official.a13da4feb`. The final stamped source and artifact identities belong in `TEST_EVIDENCE.md`; this preparation entry does not claim publication.
+
+Player-visible fixes include focus/touch input ownership, a separate touch ammo lane, camera-forward reticle alignment, camera-facing health fill, Rain City actor clearance and encounter holds, retry callback ownership, initial Enforcer guard timing, and native menu playback retirement on Quit. No new mission, weapon, enemy variant or balance expansion is included in this release packet.
+
+For feedback, start Rain City on Best Friend. Check whether immediate hit feedback, health loss, guard opening and permanent shield break are clear at ordinary combat distances. Also check focus recovery, pause/menu return and touch ammo readability. Yellow target lock alone does not prove contact; four confirmed hits need not kill an Enforcer.
+
+Levels 2–5 remain public `BETA`. Human combat readability, full Rain City/Terminal/finale playthroughs, feel, fairness, mix, motion comfort, Safari and physical-device acceptance remain open. The historical damaged 46 HP long-pause C5 shutdown was not retroactively attributed by the later staged menu-audio diagnosis. Current release checks must report their exact scope without rewriting that history. Readiness indices remain unchanged and unaccepted.
+
+The current July RC package and exact downloaded public hash are preserved for rollback. Only a verified Web package will be copied into the existing owner website; macOS remains an unsigned local validation artifact.
+
+---
+
+# Prior Release Notes — 0.11.0-alpha.1-rc1 Doghouse Progression Pilot
 
 Built on 2026-07-18 with Godot `4.7.stable.official.5b4e0cb0f`. Runtime feature revision: `3c2de29`; build ID: `2026-07-18-doghouse-progression-rc1`.
 
