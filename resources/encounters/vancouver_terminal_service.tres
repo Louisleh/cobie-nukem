@@ -18,7 +18,7 @@ waves = Array[Dictionary]([{
 ]}, {
 "delay_seconds": 2.0,
 "spawns": [
-	{"scene":"res://scenes/enemies/compliance_gull.tscn","position":Vector3(-7,4,-116),"role_id":"dive_support","approach_id":"control_upper"},
+	{"scene":"res://scenes/enemies/compliance_gull.tscn","position":Vector3(-4.5,4,-116),"role_id":"dive_support","approach_id":"control_upper"},
 	{"scene":"res://scenes/enemies/leash_enforcement_drone.tscn","position":Vector3(6,3,-122),"role_id":"aerial_harrier","approach_id":"control_upper"}
 ]}])
 enemy_budget = 5
