@@ -1,4 +1,28 @@
-# Release Notes — 0.11.0-alpha.1-rc1 Doghouse Progression Pilot
+# Release Notes — 0.11.0-alpha.1-rc2 Feedback Build
+
+Feedback prerelease prepared on 2026-10-02 using Godot 4.7.1 stable and matching templates. Runtime candidate baseline: `b0c8ed20ffa3a409d62d1731d6294410dacae71b`; build ID `2026-10-02-feedback-rc2`. The tagged source includes this identity stamp and release documentation. Publication evidence records the full export source and package hashes.
+
+## Player-visible changes since RC1
+
+- Authored Salmon Creek opening and Rain City environment/landmark work, including Rain City Slice's pizza-oven storefront.
+- Mission preparation and render-resource lifetime fixes, keyboard focus-loss recovery, and touch Pause protection against an unintended shot.
+- Mirrored touch ammo lane separated from action controls, with owned HUD coordinator lifecycle checks.
+- Root-mounted Return to Site and package-validation fixes.
+
+These are engineering and presentation improvements available for feedback, not a claim of completed premium-quality missions.
+
+## Feedback boundary
+
+- Web only. Levels 2–5 remain `BETA`; human/device/feel/full-route approval and sustained performance/retention remain open.
+- PR #75 is deliberately unmerged. The earlier long-pause native Quit reported four ObjectDB survivors; shorter checks do not attribute or close it. RC2 publication is explicitly authorized feedback distribution, not main-branch integration acceptance.
+- Browser first entry and first fire can stall. Keyboard/mouse is the feedback baseline; Safari and physical iPad/controller checks are unverified.
+- Back up local progress with the existing campaign backup code before testing. Public feedback should include version, browser/device, mission, reproduction steps and expected/observed behavior; omit personal information and save backup codes.
+- Use GitHub Issues for reproducible bugs. No analytics, telemetry, account, cloud sync or feedback backend is added.
+- RC1 remains the rollback release. macOS signing/notarization is outside this Web-only publication.
+
+---
+
+# Prior Release Notes — 0.11.0-alpha.1-rc1 Doghouse Progression Pilot
 
 Built on 2026-07-18 with Godot `4.7.stable.official.5b4e0cb0f`. Runtime feature revision: `3c2de29`; build ID: `2026-07-18-doghouse-progression-rc1`.
 

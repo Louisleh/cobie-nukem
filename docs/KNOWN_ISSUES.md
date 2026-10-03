@@ -2,6 +2,13 @@
 
 This file distinguishes confirmed product limitations from unperformed validation. Update it for every release candidate; do not silently convert “not tested” into “passed.”
 
+## RC2 feedback prerelease (2026-10-02)
+
+- RC2 is a Web feedback build from candidate `b0c8ed2`, not definitive-slice or main-branch acceptance. PR #75 remains unmerged: an earlier ordinary native Fire → long pause → menu/Quit logged four ObjectDB survivors. Shorter checks were clean; the original owner remains unattributed. No native download is published for this feedback release.
+- First-entry/first-fire browser stalls and sustained native/Web retention remain unresolved. A smoke test does not establish sustained frame pacing or full mission completion.
+- Human route comprehension, combat feel, fairness, audio mix, motion comfort/photosensitivity, Safari and physical iPad/controller checks remain open. Levels 2–5 retain `BETA`.
+- Export your local campaign backup code before testing. Feedback should name RC2, the device/browser, mission and steps; omit personal data and retained backup codes from public issues.
+
 ## Local progression candidate gates
 
 - Progress is an offline guest profile stored in native/Web user storage. There is intentionally no login, cloud sync, telemetry, account recovery, paid currency, advertising, daily streak, randomized reward, or social leaderboard.
