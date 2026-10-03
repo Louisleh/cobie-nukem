@@ -9,6 +9,8 @@ Compared with the published RC2 (`fe2b1be`, gameplay `b0c8ed2`), RC3 adds:
 - The reticle aligns with camera aim and enemy health fill faces the camera.
 - Initial Enforcer guard timing preserves the selected difficulty settings; native menu playback retirement on Quit is included without claiming the historical native shutdown case is closed.
 
+Browser first entry and first fire can still stall; this input repair does not establish a performance fix.
+
 Levels2–5 remain BETA. This is Web feedback preparation, not full-mission, native-shutdown, sustained-performance or human/device acceptance. Safari, physical iPad/controller, feel, fairness, mix, motion comfort and ordinary-distance combat readability remain open. The owner accepts disclosed native-only verification limits for Web feedback; no native public download or signing is proposed.
 
 Current public rollback: RC2 PCK70,074,532 bytes, SHA256 `5077f60dc3ffb459616628af31f57f3a34e97633259153009110773bd09e6387`, website merge `74afe9ba5c5b9eeaec24ba1c87afeae24cf7f89d`. The older RC1 rollback and all frozen local candidates remain preserved. No remote mutation is authorized by this preparation; direct destination approval remains pending.

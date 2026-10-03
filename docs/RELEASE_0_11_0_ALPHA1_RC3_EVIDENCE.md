@@ -7,3 +7,5 @@ Version: `0.11.0-alpha.1-rc3`. Build ID: `2026-10-03-feedback-rc3`. Gameplay rev
 Current live RC2 remains `fe2b1bed1d925734a501644e02fc5fea4657375f`, with b0 gameplay, site merge `74afe9ba5c5b9eeaec24ba1c87afeae24cf7f89d` and PCK SHA256 `5077f60dc3ffb459616628af31f57f3a34e97633259153009110773bd09e6387`. Existing RC1 and all local RC2/HUD artifacts are preserved.
 
 The final receipt will bind the stamped export commit, full local checks, package hashes, extracted stamp and fresh packaged-browser observations. Native packages are unsigned local validation outputs; ordinary native Quit and human/device/full-mission gates are not promoted.
+
+Native Info.plist uses short version `0.11.0` and numeric build `11.1.3`; the full RC3 identity remains in BuildInfo. The preliminary metadata attempt and its successful functional matrix are preserved separately and not accepted as release output. Browser first-entry/first-fire stalls remain unresolved.

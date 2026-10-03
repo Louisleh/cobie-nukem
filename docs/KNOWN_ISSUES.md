@@ -2,6 +2,8 @@
 
 ## RC3 local feedback preparation — October 3
 
+Browser first-entry and first-fire stalls remain unresolved; the input repair is not a performance fix.
+
 RC3 includes cumulative reviewed a8 repairs plus the HUD mouse-routing fix; published RC2 still uses b0 gameplay. Exact candidate identity and checks belong in RELEASE_0_11_0_ALPHA1_RC3_EVIDENCE.md. No publication is claimed. Native normal-Quit, full-route, sustained performance, Safari, physical-device and human quality gates remain open. The original desktop pointer-lock WrongDocumentError cause remains unattributed; subsequent qualified foreground capture/firing checks passed. Keep Levels2–5 BETA and native packages local/unsigned.
 
 This file distinguishes confirmed product limitations from unperformed validation. Update it for every release candidate; do not silently convert “not tested” into “passed.”
