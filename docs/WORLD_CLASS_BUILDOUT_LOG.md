@@ -1174,3 +1174,11 @@ Alive intact stock case and OPEN FRESH STOCK at99health/39armor (`025-live.png`,
 - Integrated commit: NONE at preparation. All human/device and prior original C5/Terminal/full-mission gates remain as recorded; no readiness scores change.
 
 - Independent release review confirms current exported ordinary native Quit remains essential; the original 46 HP history stays separate. Updated build/deployment instructions to omit the stale RC1 override and derive the package version from BuildInfo. This documentation correction does not change the validated runtime.
+
+
+## October 3 — owner-authorized Web feedback release disposition
+
+- Louis explicitly asks for the latest playable Web version live even with disclosed bugs. He accepts the native-only observation limit for this browser feedback release; no new OS permission is required or requested as a prerequisite. This supersedes the prior local release interpretation while preserving actual technical browser, data, security and identity blockers.
+- The prepared runtime/export source 18e71c4fdb1e06cc5079798c97ab024bb5a9d142 passes the full 65-entrypoint release matrix in 153.546 seconds, with 13 expected negative-fixture warnings, no engine/script/leak/orphan diagnostic, fresh Web/macOS exports and both PCK checks. Documentation head 0c12ba81 updates packaging instructions; package layout/version/hash checks pass. Gameplay remains exactly reviewed a8e1a321 plus visible release identity.
+- Native observation: accessibility-enabled exact export reaches title/menu/Doghouse/selector/gameplay with audio enabled. The first 240-second qualification timed out; the second ended after 99.836 seconds without observing pause. Both were forcibly closed and remain INVALID for normal-Quit acceptance. No native shutdown pass is claimed; original C5 remains historically unresolved.
+- The first browser session was stopped at the parent checkpoint with zero smoke-test actions; no browser acceptance transfers from it. A fresh bounded packaged browser check precedes source and site integration. Remaining human/device, full-mission, native verification and readiness gates remain unchanged. The public July package is preserved for rollback.

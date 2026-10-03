@@ -8,6 +8,8 @@ For feedback, start Rain City on Best Friend. Check whether immediate hit feedba
 
 Levels 2–5 remain public `BETA`. Human combat readability, full Rain City/Terminal/finale playthroughs, feel, fairness, mix, motion comfort, Safari and physical-device acceptance remain open. The historical damaged 46 HP long-pause C5 shutdown was not retroactively attributed by the later staged menu-audio diagnosis. Current release checks must report their exact scope without rewriting that history. Readiness indices remain unchanged and unaccepted.
 
+Owner release disposition (October 3): Louis explicitly authorizes publishing this latest playable **Web feedback RC**, accepting disclosed noncritical bugs and the unverified native shutdown check. Two bounded accessibility-driven native attempts did not verify ordinary pause/menu/Quit and are not counted as passing. No new leak diagnostic was observed. This is not native release certification, BETA removal, full-mission approval or human acceptance. Browser crash, data-loss, security and package-identity blockers still stop Web publication.
+
 The current July RC package and exact downloaded public hash are preserved for rollback. Only a verified Web package will be copied into the existing owner website; macOS remains an unsigned local validation artifact.
 
 ---
