@@ -20,3 +20,7 @@ On application focus loss, the service discards its local keyboard/mouse event c
 ### Touch mouse emulation and gameplay actions
 
 Godot keeps touch-to-mouse emulation enabled for ordinary GUI controls. `PlayerInputAdapter.event_action` rejects mouse-button events carrying `InputEvent.DEVICE_ID_EMULATION`, so touching a gameplay control cannot also issue an emulated mouse action before its named touch action. Genuine mouse events and explicit named `InputEventAction` touch actions retain their existing paths. This policy does not rewrite engine/global strengths, GUI emulation or weapon-shortcut handling; fabricated emulated-wheel shortcuts are outside this touch-left event-matching contract. `tests/integration/touch_mouse_emulation_test.gd` verifies the actual player weapon/ammo consumer and preserved input controls.
+
+### Display-only HUD mouse routing
+
+The footer, portrait and boss display ignore mouse events. Browser pointer lock can retain the client coordinates where capture began, including a position over those HUD regions. Their paint must not consume firing before the player's existing `_unhandled_input` path. Interactive menu/overlay controls retain their normal GUI event ownership. `tests/integration/hud_mouse_routing_test.gd` sends mouse events through a real viewport with the production HUD/player/weapon and verifies both weapon ammunition and a separate interactive overlay; packaged-browser evidence remains a separate check.
