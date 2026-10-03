@@ -1,6 +1,6 @@
 # RC3 cumulative feedback candidate — local preparation
 
-Status: LOCAL ONLY, release preparation verified. No remote tag, release, PR, merge or deployment was performed or authorized by this preparation. Direct destination approval remains pending.
+Status: PUBLISHED WEB FEEDBACK RELEASE on October 3. The local-preparation receipt below is preserved; the subsequent owner-authorized publication is recorded in the final section. The optional ZIP download remains blocked by transport failures.
 
 Version: `0.11.0-alpha.1-rc3`. Build ID: `2026-10-03-feedback-rc3`. Gameplay revision: `cb52fce42ada92336b1fbba8dd10a033ba446dac`; cumulative reviewed baseline: `a8e1a321c97c5924faa157421c9c046d00888e44`.
 
@@ -52,3 +52,14 @@ Packages are under `builds/packages/`; browser assets under `builds/pages/`. Run
 6. Preserve the currently published RC2 site commit `74afe9ba5c5b9eeaec24ba1c87afeae24cf7f89d` / PCK `5077f60dc3ffb459616628af31f57f3a34e97633259153009110773bd09e6387` for rollback, plus the older RC1/local evidence. No deletion, new host, signing, spending or security changes are part of this packet.
 
 Remaining limitations: unresolved first-entry/first-fire stalls, ordinary native Quit/C5 history, complete Terminal/full-mission routes, strict retention/continuous opening evidence, human readability/feel and physical target-device acceptance. Readiness scores remain unchanged. Native-only observation was waived as a Web feedback release gate, not recorded as a pass. Optional Blender MCP remains absent and authentication configuration was deliberately not inspected; complete optional workstation health is not claimed.
+
+
+## October 3 publication outcome
+
+New owner approval was accepted. Source branch `codex/rc3-feedback-publication` published the reviewed documentation head `c30a65f71bf6b61ded0e690838b6d168d6b8c365`; [source CI37141090567](https://github.com/Louisleh/cobie-nukem/actions/runs/37141090567) passed. [Release/tag v0.11.0-alpha.1-rc3](https://github.com/Louisleh/cobie-nukem/releases/tag/v0.11.0-alpha.1-rc3) targets the exact frozen export source `07577cc22efed1475205f15bc232aa3217c5f58c`. Game main/PR75 integration remains separate.
+
+[Site PR216](https://github.com/Louisleh/louislehmann-site/pull/216), head `d89062bc02915d1214ed95fc663eb581e47e56fe`, squash-merged as `60f47f81cbe0fe37303f912e504e19a2bf392734` at17:50:55UTC. PR CI37141722003, main CI37142018198 and Vercel production deployment6831031628 passed. The exact nine runtime files match the frozen package. Source/site artifact hashes and all previous rollback files remain preserved. HTTP/1.1 with a bounded request buffer resolved the site push TLS failure without persistent configuration changes.
+
+[Live browser build](https://www.louislehmann.fyi/games/cobie-nukem/play/) verified at17:52:29UTC: downloaded PCK70,075,140 bytes, SHA256 `308a2e95470fe5b4271456dbc3cd9aefe11ef2957c3d5483fb5c24f8a92ad353`. Landing/play HTML are byte-identical to the merged candidate. Ordinary and cache-busted boot visibly identify RC3/cb52fce42ada. Live Chrome54.313s confirms primary15→13, secondary12, footer mouseStart15→13, pause/Main Menu/Doghouse with no console warning/error. A later Resume click in that first trace stayed paused; its labels are not accepted as actual states. One focused49.892s follow-up with explicit longer ordinary input waits confirms mouse Resume recaptures at13 rounds, next shot12 and actual Main Menu return, without keyboard fallback or console warning/error. No timing-robustness or human/device/full-route claim is added.
+
+The release contains notes and hash/build metadata. The optional74,697,631-byte itch ZIP could not be attached after three HTTPS upload failures (TLS bad-record-MAC, reset, broken pipe); no partial asset remains. Public release notes disclose this remaining delivery gap. The frozen ZIP remains local at the previously recorded hash, and no alternate package was substituted. The playable Web deployment is complete. All owned jobs ended. Publication receipts and screenshot evidence are in `outputs/cobie-rc3-publication/`; prior native/performance/full-mission limitations remain unchanged.
