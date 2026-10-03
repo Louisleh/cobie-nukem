@@ -1,4 +1,21 @@
-# Release Notes — 0.11.0-alpha.1-rc2 Feedback Candidate
+# Release Notes — 0.11.0-alpha.1-rc3 Feedback Candidate
+
+Local preparation only; not published. Build `2026-10-03-feedback-rc3`, gameplay revision `cb52fce42ada92336b1fbba8dd10a033ba446dac`, Godot4.7.1. This candidate includes all reviewed repairs through `a8e1a321c97c5924faa157421c9c046d00888e44` and the independently reviewed HUD mouse-routing fix. Exact stamped source, packages and validation are recorded in `RELEASE_0_11_0_ALPHA1_RC3_EVIDENCE.md`.
+
+Compared with the published RC2 (`fe2b1be`, gameplay `b0c8ed2`), RC3 adds:
+
+- Display-only portrait, footer and boss HUD no longer swallow mouse firing when pointer capture starts over them. Interactive menus keep their normal click ownership.
+- Encounter retry callbacks cannot affect a later encounter generation; specified Rain City actors clear solid props and encounter hold widths preserve combat transitions.
+- The reticle aligns with camera aim and enemy health fill faces the camera.
+- Initial Enforcer guard timing preserves the selected difficulty settings; native menu playback retirement on Quit is included without claiming the historical native shutdown case is closed.
+
+Levels2–5 remain BETA. This is Web feedback preparation, not full-mission, native-shutdown, sustained-performance or human/device acceptance. Safari, physical iPad/controller, feel, fairness, mix, motion comfort and ordinary-distance combat readability remain open. The owner accepts disclosed native-only verification limits for Web feedback; no native public download or signing is proposed.
+
+Current public rollback: RC2 PCK70,074,532 bytes, SHA256 `5077f60dc3ffb459616628af31f57f3a34e97633259153009110773bd09e6387`, website merge `74afe9ba5c5b9eeaec24ba1c87afeae24cf7f89d`. The older RC1 rollback and all frozen local candidates remain preserved. No remote mutation is authorized by this preparation; direct destination approval remains pending.
+
+---
+
+# Prior Local Preparation — 0.11.0-alpha.1-rc2 (not the published RC2)
 
 Reviewed gameplay source: `a8e1a321c97c5924faa157421c9c046d00888e44`; reviewed documentation closeout: `a191a26a13ae5786dcd6bc8336c3b3ffdf4823db`. Release metadata identifies `2026-10-02-feedback-rc2`, built with Godot `4.7.1.stable.official.a13da4feb`. The final stamped source and artifact identities belong in `TEST_EVIDENCE.md`; this preparation entry does not claim publication.
 
