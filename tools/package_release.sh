@@ -3,7 +3,10 @@ set -euo pipefail
 
 cd "$(dirname "$0")/.."
 
-VERSION="${VERSION:-0.5.0-rc1}"
+RUNTIME_VERSION="$(sed -n 's/^const VERSION := "\([^"]*\)"/\1/p' scripts/core/build_info.gd | head -1)"
+[[ -n "$RUNTIME_VERSION" ]] || { echo "ERROR runtime version missing from BuildInfo"; exit 1; }
+VERSION="${VERSION:-$RUNTIME_VERSION}"
+[[ "$VERSION" == "$RUNTIME_VERSION" ]] || { echo "ERROR package version differs from runtime BuildInfo"; exit 1; }
 REVISION="${GITHUB_SHA:-$(git rev-parse --verify HEAD 2>/dev/null || printf unknown)}"
 SHORT_REVISION="${REVISION:0:12}"
 RUNTIME_REVISION="$(sed -n 's/^const REVISION := "\([^"]*\)"/\1/p' scripts/core/build_info.gd | head -1)"
