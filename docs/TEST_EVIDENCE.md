@@ -428,3 +428,8 @@ Final stamped release-package sizes and hashes replace neither these pre-stamp v
 | `cobie-nukem-0.2.0-rc1-macos-unsigned.zip` | 66,987,145 | `c6f32804a0d3f1dff31c0bd8fbad6035063d3e65923fa30e11074b643fbfbf52` |
 
 Browser acceptance used the locally served packaged Pages artifact at `http://127.0.0.1:8060/`. No Godot asset/navigation failure was observed. A generic in-app Chromium automation error appeared around screenshot/clipboard operations and is not attributed to game code. Audio implementation and timing are contract-tested, but subjective mix quality still needs human listening on the target speakers/headphones.
+
+
+## 2026-10-03 — local cumulative RC3 feedback package
+
+Source/export `07577cc22efed1475205f15bc232aa3217c5f58c`, gameplay `cb52fce42ada`, version `0.11.0-alpha.1-rc3`. Complete release validation with fresh Web/macOS exports passes66 entrypoints in161.745s,13 expected fixture warnings and no bad diagnostics; five auxiliary CI commands pass. Packaging version rejection, archive integrity, exact embedded stamps/HUD properties and numeric native plist verification pass. Foreground packaged Chrome completes51.673s with21 screenshots and zero console warnings/errors; portrait/footer capture firing, pause/Resume and menu recovery pass. Independent review finds no blocker. No full-route, native Quit, physical-device, human acceptance or performance-stall closure is claimed. No remote publication occurred. Exact hashes, preserved failed/preliminary attempts and the publication checklist are in [RC3 evidence](RELEASE_0_11_0_ALPHA1_RC3_EVIDENCE.md).
