@@ -4,13 +4,13 @@
 
 **Created:** 2026-07-11
 
-**Last status review:** 2026-07-21
+**Last status review:** 2026-10-02 (feedback publication only)
 
-**Current public baseline:** `0.11.0-alpha.1-rc1` (`3c2de29` gameplay/runtime revision; source integration `6e107e7`; website deployment `32bcd39`; PCK SHA-256 `1d86d7747dd73f4a8f120da85d832a816018dbbfdcb8d01a1089e23f45e16501`)
+**Current public baseline:** `0.11.0-alpha.1-rc2` Web feedback prerelease (`b0c8ed2` candidate baseline; exact tagged/export source `fe2b1bed1d925734a501644e02fc5fea4657375f`; website `74afe9ba5c5b9eeaec24ba1c87afeae24cf7f89d`; public PCK SHA-256 `5077f60dc3ffb459616628af31f57f3a34e97633259153009110773bd09e6387`). See [RC2 evidence](RELEASE_0_11_0_ALPHA1_RC2_EVIDENCE.md). PR75 remains unmerged and the native/retention/human/device quality gates remain open; public feedback is not WCB acceptance. RC1 remains rollback.
 
 **Current production gate:** The five-mission/Doghouse alpha remains publicly playable and byte-verified, but new breadth is frozen. The active program is the audited world-class Rain City 3/6/9 buildout in `docs/PRD.md` §1.5, dependency-ordered in `docs/IMPLEMENTATION_PLAN.md`, with live state in `docs/WORLD_CLASS_BUILDOUT_LOG.md`. Levels 2–5 remain explicit `BETA` missions until human/device/art/balance approval.
 
-**Last released alpha:** [`0.11.0-alpha.1-rc1`](https://github.com/Louisleh/cobie-nukem/releases/tag/v0.11.0-alpha.1-rc1) (`3c2de29`) — live at <https://www.louislehmann.fyi/games/cobie-nukem/>; Levels 2–5 retain honest `BETA` badges because human full-route, final-art, and physical-device validation are open
+**Last released alpha:** [RC2 Web feedback prerelease](https://github.com/Louisleh/cobie-nukem/releases/tag/v0.11.0-alpha.1-rc2), live at <https://www.louislehmann.fyi/games/cobie-nukem/>. Levels 2–5 retain BETA; no public native download or new human/device approval.
 
 **Engine:** Godot 4.7 stable, GDScript, Compatibility renderer
 **Purpose:** Turn the family-playtest vertical slice into a sustainable, original multi-level game without sacrificing responsiveness, humor, Web support, or unusual-controller accessibility.
